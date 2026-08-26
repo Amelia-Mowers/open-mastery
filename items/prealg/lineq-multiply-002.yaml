@@ -1,6 +1,7 @@
 id: prealg.lineq.multiply.002
 skills: [prealg.lineq.multiply]
 difficulty: 2
+representation: null
 params: { b: 2, variable: r }
 generator: { b: { int: [2, 20] } }
 widget: { type: equation-input, config: { stem: "Solve: -{variable} = {b}." } }

@@ -1,6 +1,7 @@
 id: prealg.lineq.reciprocal.002
 skills: [prealg.lineq.reciprocal]
 difficulty: 2
+representation: null
 params: { p: 5, q: 6, b: 15, variable: y }
 generator:
   q: { int: [2, 9] }

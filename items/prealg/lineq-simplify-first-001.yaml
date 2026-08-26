@@ -1,6 +1,7 @@
 id: prealg.lineq.simplify-first.001
 skills: [prealg.lineq.simplify-first]
 difficulty: 1
+representation: null
 params: { c1: 8, c2: 9, c3: 5, d1: -3, ans: 1, variable: x }
 generator:
   c1: { int: [5, 12] }

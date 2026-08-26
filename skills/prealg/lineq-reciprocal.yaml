@@ -1,5 +1,10 @@
 id: prealg.lineq.reciprocal
 name: Solve (p/q)x = b by multiplying by the reciprocal
+preamble:
+  plain: "When x is multiplied by a fraction, you'll flip that fraction and multiply both sides by it — the flips cancel out and leave x alone."
+  vocab:
+    - { term: reciprocal, meaning: "a fraction flipped upside down: the reciprocal of 2/3 is 3/2" }
+    - { term: coefficient, meaning: "the number multiplying x" }
 prereqs: [prealg.lineq.multiply]
 standards: [CCSS.MATH.CONTENT.7.EE.B.4.A]
 source: { book: openstax-prealgebra-2e, section: "8.2" }

@@ -1,6 +1,7 @@
 id: prealg.lineq.multiply.f01
 skills: [prealg.lineq.multiply]
 difficulty: 1
+representation: balance-scale
 params: { a: 6, b: -4, variable: x }
 widget: { type: equation-input, config: { stem: "Finish solving: {variable}/{a} = {b}." } }
 answer: { type: expr, value: "{variable} = {a*b}", equivalence: symbolic }
