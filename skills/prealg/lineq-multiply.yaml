@@ -1,7 +1,7 @@
 id: prealg.lineq.multiply
-name: Solve x/a = b and -x = b using the Multiplication Property of Equality
+name: Solve x/a = b using the Multiplication Property of Equality
 preamble:
-  plain: "Sometimes x has been divided by a number, or flipped negative. You'll learn to undo that by multiplying both sides by the same thing."
+  plain: "When x has been divided by a number, you'll undo it by multiplying both sides by that same number."
   vocab:
     - { term: Multiplication Property of Equality, meaning: "multiply both sides of an equation by the same number and it stays true" }
 standards: [CCSS.MATH.CONTENT.6.EE.B.7]

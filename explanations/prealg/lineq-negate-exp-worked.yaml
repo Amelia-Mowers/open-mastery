@@ -1,0 +1,11 @@
+id: prealg.lineq.negate.exp-worked
+skill: prealg.lineq.negate
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "-{variable} = {b}" }, caption: "Watch it worked on the board." }
+  - { t: 3.5, patch: { line: "(-1) · (-{variable}) = (-1) · {b}", note: "multiply both sides by -1" }, caption: "-{variable} is really -1 times {variable} — so multiply both sides by -1." }
+  - { t: 8, patch: { line: "{variable} = {-b}", note: "(-1)(-1) = 1, the negatives cancel" }, caption: "Two negatives cancel: {variable} = {-b}." }
+  - { t: 10.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
