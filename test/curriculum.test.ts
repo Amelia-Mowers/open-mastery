@@ -193,6 +193,13 @@ describe('bundle validation (release gates)', () => {
     expect(issues.some((i) => i.code === 'unknown_param')).toBe(true)
   })
 
+  it('checks widget.config string templates (e.g. the stem)', () => {
+    const b = goodBundle()
+    b.items[0]!.widget.config['stem'] = 'Solve: {a}{variable} = {nope}.'
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'unknown_param' && i.where.includes('widget.config.stem'))).toBe(true)
+  })
+
   it('flags generators that fail or whose answer cannot evaluate', () => {
     const b = goodBundle()
     b.items[0]!.generator = { a: { int: [5, 4] } }
