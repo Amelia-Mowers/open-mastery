@@ -47,10 +47,12 @@ function findActionable(): Actionable {
   if (check) return { kind: 'start-check', el: check }
   const handoff = screen.queryByRole('button', { name: 'Now you try.' })
   if (handoff) return { kind: 'handoff', el: handoff }
+  const startLesson = screen.queryByRole('button', { name: 'Start the lesson' })
+  if (startLesson) return { kind: 'handoff', el: startLesson }
   const submit = screen.queryByRole('button', { name: 'Check answer' })
   if (submit && screen.queryByTestId('stem')) return { kind: 'item' }
-  const scrub = screen.queryByRole('slider', { name: 'Lesson timeline' })
-  if (scrub) return { kind: 'player', el: scrub }
+  const segs = screen.queryAllByRole('button', { name: /Go to step/ })
+  if (segs.length > 0) return { kind: 'player', el: segs[segs.length - 1]! }
   throw new Error('nothing actionable yet')
 }
 
@@ -73,8 +75,8 @@ describe('PWA client against the site server', () => {
           await user.click(a.el)
           break
         case 'player':
-          // scrub straight to the handoff instead of waiting out autoplay
-          fireEvent.change(a.el, { target: { value: (a.el as HTMLInputElement).max } })
+          // jump straight to the handoff instead of waiting out autoplay
+          fireEvent.click(a.el)
           break
         case 'item': {
           if (screen.queryByText(/MASTERY CHECK/)) sawCheckItem = true
@@ -108,7 +110,7 @@ describe('PWA client against the site server', () => {
       const a = await waitFor(findActionable, { timeout: 4000 })
       if (a.kind === 'item') break
       if (a.kind === 'handoff') await user.click(a.el)
-      if (a.kind === 'player') fireEvent.change(a.el, { target: { value: (a.el as HTMLInputElement).max } })
+      if (a.kind === 'player') fireEvent.click(a.el)
     }
     await user.click(await screen.findByRole('button', { name: 'Hint' }))
     expect(await screen.findByTestId('hint-1')).toBeInTheDocument()
@@ -124,6 +126,44 @@ describe('PWA client against the site server', () => {
     }
     const attempt = events.find((e) => e.kind === 'attempt')
     expect(attempt).toMatchObject({ hintLevel: 1, assisted: true })
+  }, 30_000)
+
+  it('"Show me how" plays the explanation with the problem\u2019s numbers and marks the try as helped', async () => {
+    const user = userEvent.setup()
+    render(<App apiBase={base} initialStudent="show-kid" />)
+
+    // walk to the first practice item
+    for (let i = 0; i < 10; i++) {
+      const a = await waitFor(findActionable, { timeout: 4000 })
+      if (a.kind === 'item') break
+      if (a.kind === 'handoff') await user.click(a.el)
+      if (a.kind === 'player') fireEvent.click(a.el)
+    }
+    const stem = screen.getByTestId('stem').textContent ?? ''
+    await user.click(screen.getByRole('button', { name: 'Show me how' }))
+
+    // preamble names the skill, then the walk-through plays
+    await screen.findByText(/what you're learning/i)
+    await user.click(screen.getByRole('button', { name: 'Start the lesson' }))
+    const segs = await screen.findAllByRole('button', { name: /Go to step/ })
+    fireEvent.click(segs[segs.length - 1]!)
+    await user.click(await screen.findByRole('button', { name: 'Now you try.' }))
+
+    // back on the SAME problem, now marked as a helped try
+    await waitFor(() => expect(screen.getByTestId('stem').textContent).toBe(stem))
+    expect(screen.getByText(/counts as a helped try/)).toBeInTheDocument()
+    await user.type(screen.getByRole('textbox'), answerFor(stem))
+    await user.click(screen.getByRole('button', { name: 'Check answer' }))
+    await screen.findByRole('status')
+
+    const { events } = (await (await fetch(`${base}/api/events?student=show-kid`)).json()) as {
+      events: Array<{ kind: string; assisted?: boolean; hintLevel?: number; explanationId?: string }>
+    }
+    // the on-demand view was logged, and the attempt carries assistance
+    expect(events.some((e) => e.kind === 'explanation_viewed')).toBe(true)
+    const attempt = events.filter((e) => e.kind === 'attempt').pop()!
+    expect(attempt.assisted).toBe(true)
+    expect(attempt.hintLevel).toBeGreaterThanOrEqual(1)
   }, 30_000)
 
   it('a struggling student is flagged softly and can choose to keep practicing', async () => {
@@ -148,7 +188,7 @@ describe('PWA client against the site server', () => {
           await user.click(found.el)
           break
         case 'player':
-          fireEvent.change(found.el, { target: { value: (found.el as HTMLInputElement).max } })
+          fireEvent.click(found.el)
           break
         case 'item':
           await user.type(screen.getByRole('textbox'), '999999')

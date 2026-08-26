@@ -13,6 +13,7 @@ import { createReadStream, existsSync, statSync } from 'node:fs'
 import { extname, join, normalize } from 'node:path'
 import type { Bundle } from '@openmastery/schema'
 import {
+  applyEvent,
   buildIndex,
   freshSession,
   initialStudentState,
@@ -196,7 +197,13 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         // params_from: item — the timeline renders with the skill's primary
         // item family (authored params of its first practice item)
         const params = practiceItems(action.skillId, cur)[0]?.params ?? {}
-        return json(res, 200, { action, explanation: cur.explanations.get(action.explanationId), params, points })
+        return json(res, 200, {
+          action,
+          explanation: cur.explanations.get(action.explanationId),
+          params,
+          skillName: cur.skills.get(action.skillId)?.name ?? action.skillId,
+          points,
+        })
       }
       return json(res, 200, { action, points })
     }
@@ -251,6 +258,46 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         openFlags: st.student.openFlags,
         points: pointsFor(studentId),
       })
+    }
+
+    if (req.method === 'GET' && url.pathname === '/api/explain') {
+      // on-demand explanation for a skill, with the CURRENT instance params
+      // when an item of that skill is pending (same variables as the problem)
+      const skillId = url.searchParams.get('skill') ?? ''
+      const exclude = (url.searchParams.get('exclude') ?? '').split(',').filter(Boolean)
+      const skill = cur.skills.get(skillId)
+      if (!skill) return json(res, 404, { error: `unknown skill '${skillId}'` })
+      const all = cur.explanationsBySkill.get(skillId) ?? []
+      // primary-first order: instruction list, then any remaining
+      const ordered = [
+        ...skill.instruction.map((id) => all.find((e) => e.id === id)).filter((e) => e !== undefined),
+        ...all.filter((e) => !skill.instruction.includes(e.id)),
+      ]
+      const explanation = ordered.find((e) => !exclude.includes(e.representation)) ?? null
+      const pending = st.pending
+      const params =
+        pending?.kind === 'serve_item' && pending.skillId === skillId
+          ? pending.instance.params
+          : (practiceItems(skillId, cur)[0]?.params ?? {})
+      return json(res, 200, { explanation, params, skillName: skill.name })
+    }
+
+    if (req.method === 'POST' && url.pathname === '/api/explained') {
+      // log a completed on-demand explanation view; the pending item (if any)
+      // stays pending — the student returns to the same problem
+      const body = (await readBody(req)) as { explanationId?: string; skillId?: string }
+      const expl = body.explanationId ? cur.explanations.get(body.explanationId) : undefined
+      if (!expl || typeof body.skillId !== 'string')
+        return json(res, 400, { error: 'explanationId and skillId required' })
+      const ev = ctx.stamp({
+        kind: 'explanation_viewed',
+        explanationId: expl.id,
+        skillId: body.skillId,
+        completed: true,
+        representation: expl.representation,
+      })
+      applyEvent(st.student, ev, ctx.bkt)
+      return json(res, 200, { ok: true, points: pointsFor(studentId) })
     }
 
     if (req.method === 'POST' && url.pathname === '/api/reset') {

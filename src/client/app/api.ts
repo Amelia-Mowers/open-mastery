@@ -11,7 +11,15 @@ export interface ServerNext {
   explanation?: Explanation
   /** params the explanation timeline should render with (params_from: item) */
   params?: Record<string, number | string>
+  /** what the lesson teaches (the skill name), for the preamble */
+  skillName?: string
   points: number
+}
+
+export interface ExplainResult {
+  explanation: Explanation | null
+  params: Record<string, number | string>
+  skillName: string
 }
 
 export interface AttemptOutcome {
@@ -66,6 +74,18 @@ export class SiteApi {
 
   async startCheck(skillId: string): Promise<void> {
     await this.post('/api/start-check', { skillId })
+  }
+
+  /** on-demand explanation for a skill; same variables as the pending item */
+  async explain(skillId: string, excludeReps: string[] = []): Promise<ExplainResult> {
+    const extra: Record<string, string> = { skill: skillId }
+    if (excludeReps.length > 0) extra['exclude'] = excludeReps.join(',')
+    const r = await fetch(this.url('/api/explain', extra))
+    return (await r.json()) as ExplainResult
+  }
+
+  async explained(explanationId: string, skillId: string): Promise<void> {
+    await this.post('/api/explained', { explanationId, skillId })
   }
 
   async bundle(): Promise<BundleView> {

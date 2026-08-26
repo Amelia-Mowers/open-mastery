@@ -173,3 +173,27 @@ body {
 .faded-step-text { font: 600 20px 'Lora', Georgia, serif; }
 .faded-step.done .faded-step-text { color: #5c5245; }
 .faded-step-arrow { color: #b05f28; font-size: 18px; }
+
+/* ---- segmented step timeline + speed ---- */
+.step-track {
+  flex: 1; min-width: 140px; display: flex; gap: 5px; align-items: stretch; height: 16px;
+}
+.step-seg {
+  flex: 1; position: relative; border: none; padding: 0; cursor: pointer;
+  background: #e6ddd0; border-radius: 6px; overflow: hidden;
+}
+.step-seg:hover { background: #d8cdbb; }
+.step-fill {
+  position: absolute; inset: 0 auto 0 0; background: #b05f28;
+  border-radius: 6px; transition: width 0.1s linear;
+}
+.step-seg[aria-current='step'] { outline: 2px solid #b05f28; outline-offset: 1.5px; }
+.btn-speed {
+  padding: 8px 12px; font: 800 13px 'Nunito Sans', sans-serif; min-width: 52px;
+}
+.handoff-row { margin-top: 14px; }
+
+/* ---- lesson preamble ---- */
+.preamble-lead { font-size: 14px; margin: 14px 0 4px; }
+.preamble-title { font: 700 26px 'Lora', Georgia, serif; margin: 0 0 10px; }
+.explained-note { margin: 8px 0 0; }

@@ -1,5 +1,6 @@
-/** The explanation player (§6, build step 4): scrub, pause, backward-seek
- * replay, patch-driven widgets, handoff. */
+/** The explanation player (§6, build step 4+): preamble, scrub via step
+ * segments, speed control, pause, backward-seek replay, patch-driven widgets
+ * (balance, number-line, envelopes), handoff and the another-way chain. */
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { fireEvent, render, screen, cleanup } from '@testing-library/react'
 import { explanationSchema } from '@openmastery/schema'
@@ -38,12 +39,24 @@ const numberLineExp = explanationSchema.parse({
   review: { status: 'vetted' },
 })
 
+const envelopeExp = explanationSchema.parse({
+  id: 'alg1.test.exp-envelopes',
+  skill: 'alg1.test.skill',
+  representation: 'envelopes-counters',
+  widget: 'envelope-model',
+  params_from: 'item',
+  timeline: [
+    { t: 0, patch: { envelopes: '{a}', counters: '{b}' }, caption: '{a} envelopes hold {b} counters.' },
+    { t: 4, patch: { partition: true }, caption: 'Share into {a} equal groups.' },
+    { t: 8, patch: { reveal: true }, caption: 'Each envelope holds {b/a}.' },
+    { t: 10, handoff: { prompt: 'Now you try.' } },
+  ],
+  review: { status: 'vetted' },
+})
+
 const P = { a: 4, b: 28, variable: 'x' }
-const scrubTo = (t: number) => {
-  fireEvent.change(screen.getByRole('slider', { name: 'Lesson timeline' }), {
-    target: { value: String(t) },
-  })
-}
+const goToStep = (n: number, total: number) =>
+  fireEvent.click(screen.getByRole('button', { name: `Go to step ${n} of ${total}` }))
 
 describe('explanation player', () => {
   it('drives the balance scale through the timeline and hands off', () => {
@@ -51,20 +64,18 @@ describe('explanation player', () => {
     const { container } = render(
       <LessonPlayer explanation={balanceExp} params={P} kind="lesson" onDone={onDone} />,
     )
-    // t=0 patch applied immediately
     expect(screen.getByText('4x')).toBeInTheDocument()
     expect(screen.getByText('28')).toBeInTheDocument()
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
 
-    scrubTo(6) // op step
+    goToStep(3, 5) // op step at t=6
     expect(container.querySelector('[data-op-badge="left"]')).toHaveTextContent('÷ 4')
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Divide both sides by 4.')
 
-    scrubTo(11) // handoff
-    expect(container.querySelector('[data-op-badge="left"]')).toBeNull() // resolved step cleared it
-    expect(screen.getByText('7')).toBeInTheDocument() // x = 7
-    const cta = screen.getByRole('button', { name: 'Now you try.' })
-    fireEvent.click(cta)
+    goToStep(5, 5) // handoff
+    expect(container.querySelector('[data-op-badge="left"]')).toBeNull()
+    expect(screen.getByText('7')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: 'Now you try.' }))
     expect(onDone).toHaveBeenCalledOnce()
   })
 
@@ -72,38 +83,88 @@ describe('explanation player', () => {
     const { container } = render(
       <LessonPlayer explanation={balanceExp} params={P} kind="lesson" onDone={() => {}} />,
     )
-    scrubTo(6)
+    goToStep(3, 5)
     expect(container.querySelector('[data-op-badge="left"]')).not.toBeNull()
-    scrubTo(0)
+    goToStep(1, 5)
     expect(container.querySelector('[data-op-badge="left"]')).toBeNull()
     expect(container.querySelector('[data-pan="left"]')).toHaveTextContent('4x')
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
   })
 
-  it('pause/play toggles and scrubbing pauses autoplay', () => {
+  it('pause/play toggles; seeking pauses; speed control cycles', () => {
     render(<LessonPlayer explanation={balanceExp} params={P} kind="lesson" onDone={() => {}} />)
-    // starts playing
     expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument()
-    scrubTo(3)
-    // manual seek pauses
+    goToStep(2, 5)
     expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument()
+    const speed = screen.getByRole('button', { name: /Playback speed/ })
+    expect(speed).toHaveTextContent('1×')
+    fireEvent.click(speed)
+    expect(speed).toHaveTextContent('1.5×')
+    fireEvent.click(speed)
+    expect(speed).toHaveTextContent('2×')
+  })
+
+  it('shows a preamble naming what you are learning before play begins', () => {
+    render(
+      <LessonPlayer
+        explanation={balanceExp}
+        params={P}
+        kind="lesson"
+        title="Solve ax = b using the Division Property of Equality"
+        onDone={() => {}}
+      />,
+    )
+    expect(screen.getByText(/what you're learning/i)).toBeInTheDocument()
+    expect(screen.getByText('Solve ax = b using the Division Property of Equality')).toBeInTheDocument()
+    // timeline not visible yet
+    expect(screen.queryByRole('button', { name: /Go to step/ })).toBeNull()
+    fireEvent.click(screen.getByRole('button', { name: 'Start the lesson' }))
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
+  })
+
+  it('offers "another way" at the handoff when a handler is provided', () => {
+    const onAnother = vi.fn()
+    render(
+      <LessonPlayer explanation={balanceExp} params={P} kind="lesson" onDone={() => {}} onAnotherWay={onAnother} />,
+    )
+    expect(screen.queryByRole('button', { name: 'Show me another way' })).toBeNull()
+    goToStep(5, 5)
+    fireEvent.click(screen.getByRole('button', { name: 'Show me another way' }))
+    expect(onAnother).toHaveBeenCalledOnce()
   })
 
   it('sets up a number line from the timeline and drives highlight/marker', () => {
     const { container } = render(
       <LessonPlayer explanation={numberLineExp} params={P} kind="lesson" onDone={() => {}} />,
     )
-    // ticks 0, 7, 14, 21, 28 from min/max/step templates
     for (const tick of [0, 7, 14, 21, 28])
       expect(container.querySelector(`[data-tick="${tick}"]`)).not.toBeNull()
-    scrubTo(3)
+    goToStep(2, 4)
     expect(container.querySelector('[data-tick="7"]')).toHaveAttribute('data-highlighted')
     expect(container.querySelector('[data-tick="7"]')).toHaveAttribute('data-marked')
-    scrubTo(6)
+    goToStep(3, 4)
     expect(container.querySelector('[data-tick="28"]')).toHaveAttribute('data-marked')
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('So x = 7.')
+  })
+
+  it('plays the OpenStax envelopes-and-counters model: setup → partition → reveal', () => {
+    const { container } = render(
+      <LessonPlayer explanation={envelopeExp} params={P} kind="lesson" onDone={() => {}} />,
+    )
+    expect(container.querySelectorAll('[data-envelope]')).toHaveLength(4)
+    expect(container.querySelectorAll('[data-counter]')).toHaveLength(28)
+    expect(container.querySelectorAll('[data-partition]')).toHaveLength(0)
+
+    goToStep(2, 4) // partition into 4 groups of 7
+    expect(container.querySelectorAll('[data-partition]')).toHaveLength(4)
+    expect(container.querySelectorAll('[data-counter]')).toHaveLength(28)
+
+    goToStep(3, 4) // reveal: each envelope = 7
+    const shares = container.querySelectorAll('[data-share]')
+    expect(shares).toHaveLength(4)
+    expect(shares[0]).toHaveTextContent('= 7')
   })
 
   it('falls back to caption-only when the widget has no lesson support', () => {

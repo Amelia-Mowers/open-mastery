@@ -14,10 +14,15 @@ export interface ItemCardProps {
   item: ClientItem
   /** points before this attempt (to show the delta as juice) */
   pointsBefore: number
+  /** the student watched the full explanation for this instance — the
+   * attempt counts as helped (submitted at hint level) */
+  explanationAssisted: boolean
   onSubmit: (raw: string, hintLevel: number, latencyMs: number) => Promise<AttemptOutcome>
   /** continue; focus 'skill-id' keeps practicing that skill, null moves on */
   onContinue: (focus?: string | null) => void
   onStartCheck: (skillId: string) => void
+  /** play the skill's explanation with this problem's numbers */
+  onExplain: () => void
   /** the check is unlocked but the student chose more practice first */
   showInlineCheckOffer: boolean
 }
@@ -33,14 +38,22 @@ export function ItemCard({
   action,
   item,
   pointsBefore,
+  explanationAssisted,
   onSubmit,
   onContinue,
   onStartCheck,
+  onExplain,
   showInlineCheckOffer,
 }: ItemCardProps) {
   const params = action.instance.params as Params
   const isCheck = action.itemKind === 'check'
-  const [revealedHints, setRevealedHints] = useState(isCheck ? 0 : (action.offeredHintLevel ?? 0))
+  const [revealedHints, setRevealedHints] = useState(
+    isCheck
+      ? 0
+      : explanationAssisted
+        ? Math.max(1, Math.min(item.hints.length, 2))
+        : (action.offeredHintLevel ?? 0),
+  )
   const [outcome, setOutcome] = useState<AttemptOutcome | null>(null)
   const [busy, setBusy] = useState(false)
   const startedAt = useMemo(() => performance.now(), [action.instance.paramHash])
@@ -149,7 +162,17 @@ export function ItemCard({
             Hint
           </button>
         )}
+        {!isCheck && outcome === null && (
+          <button className="btn btn-quiet" onClick={onExplain}>
+            Show me how
+          </button>
+        )}
       </div>
+      {explanationAssisted && outcome === null && (
+        <p className="muted explained-note">
+          You watched the full walk-through, so this one counts as a helped try.
+        </p>
+      )}
       {item.hints.slice(0, revealedHints).map((h, i) => (
         <p key={i} className="hint" data-testid={`hint-${i + 1}`}>
           {renderText(h, params)}

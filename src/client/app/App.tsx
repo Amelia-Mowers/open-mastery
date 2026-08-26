@@ -1,10 +1,23 @@
 /** Student session shell: a thin loop over the site server. */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import type { Explanation } from '@openmastery/schema'
 import { SiteApi, type AttemptOutcome, type ServerNext } from './api'
 import { LessonPlayer } from './LessonPlayer'
 import { ItemCard } from './ItemCard'
 import { Dashboard } from './Dashboard'
 import type { Params } from './render'
+
+/** an on-demand explanation being played over the normal flow */
+interface OverlayExplanation {
+  explanation: Explanation
+  params: Params
+  skillId: string
+  skillName: string
+  /** representations already seen in this chain (for "another way") */
+  seenReps: string[]
+  /** where to return when done */
+  context: { kind: 'lesson-chain' } | { kind: 'item'; instanceKey: string }
+}
 
 export interface AppProps {
   /** API origin; '' = same origin (the site server serves the client) */
@@ -132,6 +145,10 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   const focusSkill = useRef<string | null>(null)
   /** skills whose check-unlocked interstitial was dismissed for now */
   const [checkDismissed, setCheckDismissed] = useState<ReadonlySet<string>>(new Set())
+  /** an on-demand explanation playing over the flow */
+  const [overlay, setOverlay] = useState<OverlayExplanation | null>(null)
+  /** instances the student asked to be shown — their attempts count assisted */
+  const [explained, setExplained] = useState<ReadonlySet<string>>(new Set())
 
   const refresh = useCallback(() => {
     setNext(null)
@@ -162,12 +179,62 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   const reset = () => {
     focusSkill.current = null
     setCheckDismissed(new Set())
+    setOverlay(null)
+    setExplained(new Set())
     void api.reset().then(refresh)
   }
+
+  /** fetch the next unseen-representation explanation and play it */
+  const openExplanation = useCallback(
+    async (skillId: string, seenReps: string[], context: OverlayExplanation['context']) => {
+      const r = await api.explain(skillId, seenReps)
+      if (!r.explanation) return // every representation seen — nothing to chain
+      setOverlay({
+        explanation: r.explanation,
+        params: r.params as Params,
+        skillId,
+        skillName: r.skillName,
+        seenReps: [...seenReps, r.explanation.representation],
+        context,
+      })
+    },
+    [api],
+  )
+
+  const closeOverlay = useCallback(async () => {
+    if (!overlay) return
+    await api.explained(overlay.explanation.id, overlay.skillId)
+    if (overlay.context.kind === 'lesson-chain') {
+      // the underlying lesson action completes with the whole chain
+      await api.explanationViewed()
+      setOverlay(null)
+      refresh()
+    } else {
+      // back to the same problem; its attempt now counts as helped
+      setExplained(new Set([...explained, overlay.context.instanceKey]))
+      setOverlay(null)
+    }
+  }, [api, overlay, explained, refresh])
 
   let body
   if (view === 'dashboard') {
     body = <Dashboard api={api} />
+  } else if (overlay) {
+    body = (
+      <LessonPlayer
+        key={overlay.explanation.id}
+        explanation={overlay.explanation}
+        params={overlay.params}
+        kind={overlay.context.kind === 'item' ? 'lesson' : 'alt_explanation'}
+        title={overlay.skillName}
+        onDone={() => {
+          void closeOverlay()
+        }}
+        onAnotherWay={() => {
+          void openExplanation(overlay.skillId, overlay.seenReps, overlay.context)
+        }}
+      />
+    )
   } else if (error) {
     body = (
       <section className="card">
@@ -190,14 +257,20 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
       </section>
     )
   } else if (next.action.kind === 'lesson' || next.action.kind === 'alt_explanation') {
+    const { skillId } = next.action
+    const rep = next.explanation!.representation
     body = (
       <LessonPlayer
         key={next.action.explanationId}
         explanation={next.explanation!}
         params={(next.params ?? {}) as Params}
         kind={next.action.kind}
+        title={urlParam('autostart') === '1' ? undefined : (next.skillName ?? skillId)}
         onDone={() => {
           void api.explanationViewed().then(refresh)
+        }}
+        onAnotherWay={() => {
+          void openExplanation(skillId, [rep], { kind: 'lesson-chain' })
         }}
       />
     )
@@ -229,18 +302,24 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
       </section>
     )
   } else {
+    const instanceKey = `${next.action.instance.itemId}#${next.action.instance.paramHash}`
+    const { skillId } = next.action
     body = (
       <ItemCard
-        key={`${next.action.instance.itemId}#${next.action.instance.paramHash}`}
+        key={instanceKey}
         action={next.action}
         item={next.item!}
         pointsBefore={next.points}
+        explanationAssisted={explained.has(instanceKey)}
         onSubmit={onSubmit}
         onContinue={(focus) => {
           if (focus !== undefined) focusSkill.current = focus
           refresh()
         }}
         onStartCheck={startCheck}
+        onExplain={() => {
+          void openExplanation(skillId, [], { kind: 'item', instanceKey })
+        }}
         showInlineCheckOffer={next.action.checkAvailable === true}
       />
     )
