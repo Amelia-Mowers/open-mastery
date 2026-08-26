@@ -9,6 +9,7 @@
     "types": ["vitest/globals", "@testing-library/jest-dom"],
     "skipLibCheck": true,
     "noUncheckedIndexedAccess": true,
+    "allowImportingTsExtensions": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true
   },
