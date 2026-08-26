@@ -107,6 +107,20 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
     stamp: stampFor(studentId),
   })
 
+  /** Visible progress points, derived from the log (no rankings — personal
+   * only, per invariant 3): unassisted correct +5, assisted correct +2,
+   * completed explanation +2, mastery +25. */
+  const pointsFor = (studentId: string): number => {
+    let pts = 0
+    for (const e of log) {
+      if (e.studentId !== studentId) continue
+      if (e.kind === 'attempt' && e.correct) pts += e.assisted ? 2 : 5
+      else if (e.kind === 'explanation_viewed' && e.completed) pts += 2
+      else if (e.kind === 'mastery_granted') pts += 25
+    }
+    return pts
+  }
+
   const json = (res: ServerResponse, status: number, body: unknown): void => {
     const s = JSON.stringify(body)
     res.writeHead(status, { 'content-type': 'application/json', 'content-length': Buffer.byteLength(s) })
@@ -168,21 +182,23 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
     const ctx = ctxFor(studentId)
 
     if (req.method === 'GET' && url.pathname === '/api/next') {
-      const action = nextAction(st.student, st.session, ctx)
+      const focusSkill = url.searchParams.get('skill')
+      const action = nextAction(st.student, st.session, ctx, focusSkill ? { focusSkill } : {})
       st.pending = action
       // clients render; grading data (the answer key) never leaves the server
+      const points = pointsFor(studentId)
       if (action.kind === 'serve_item') {
         const item = cur.items.get(action.instance.itemId)!
         const { answer: _answer, ...safe } = item
-        return json(res, 200, { action, item: safe })
+        return json(res, 200, { action, item: safe, points })
       }
       if (action.kind === 'lesson' || action.kind === 'alt_explanation') {
         // params_from: item — the timeline renders with the skill's primary
         // item family (authored params of its first practice item)
         const params = practiceItems(action.skillId, cur)[0]?.params ?? {}
-        return json(res, 200, { action, explanation: cur.explanations.get(action.explanationId), params })
+        return json(res, 200, { action, explanation: cur.explanations.get(action.explanationId), params, points })
       }
-      return json(res, 200, { action })
+      return json(res, 200, { action, points })
     }
 
     if (req.method === 'POST' && url.pathname === '/api/attempt') {
@@ -204,6 +220,7 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
           kind: e.kind,
           skillId: 'skillId' in e ? e.skillId : undefined,
         })),
+        points: pointsFor(studentId),
       })
     }
 
@@ -232,7 +249,15 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         skills: st.student.skills,
         assisted: [...st.student.assisted],
         openFlags: st.student.openFlags,
+        points: pointsFor(studentId),
       })
+    }
+
+    if (req.method === 'POST' && url.pathname === '/api/reset') {
+      // dev convenience: wipe this student's slot and log entries
+      slots.delete(studentId)
+      for (let i = log.length - 1; i >= 0; i--) if (log[i]!.studentId === studentId) log.splice(i, 1)
+      return json(res, 200, { ok: true })
     }
 
     if (req.method === 'GET' && url.pathname === '/api/events') {

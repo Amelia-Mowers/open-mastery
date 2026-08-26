@@ -40,10 +40,10 @@ type Actionable =
   | { kind: 'item' }
 
 function findActionable(): Actionable {
-  if (screen.queryByText(/Skill mastered/)) return { kind: 'granted' }
+  if (screen.queryByText(/Mastered!/)) return { kind: 'granted' }
   const cont = screen.queryByRole('button', { name: 'Continue' })
   if (cont) return { kind: 'continue', el: cont }
-  const check = screen.queryByRole('button', { name: 'Start the check' })
+  const check = screen.queryByRole('button', { name: 'Take the check' })
   if (check) return { kind: 'start-check', el: check }
   const handoff = screen.queryByRole('button', { name: 'Now you try.' })
   if (handoff) return { kind: 'handoff', el: handoff }
@@ -88,7 +88,7 @@ describe('PWA client against the site server', () => {
     expect(granted).toBe(true)
     expect(sawCheckItem).toBe(true)
     // the mastery moment names the evidence
-    expect(screen.getByText(/two unassisted problems/)).toBeInTheDocument()
+    expect(screen.getByText(/new stone lands on your cairn/)).toBeInTheDocument()
     // server agrees: the skill is mastered
     const state = (await (await fetch(`${base}/api/state?student=jsdom-kid`)).json()) as {
       skills: Record<string, { phase: string }>
@@ -113,12 +113,66 @@ describe('PWA client against the site server', () => {
     await user.type(screen.getByRole('textbox'), answerFor(stem))
     await user.click(screen.getByRole('button', { name: 'Check answer' }))
     const fb = await screen.findByRole('status')
-    expect(fb.textContent).toMatch(/reduced evidence/)
+    expect(fb.textContent).toMatch(/the hint helped/)
 
     const { events } = (await (await fetch(`${base}/api/events?student=hint-kid`)).json()) as {
       events: Array<{ kind: string; hintLevel?: number; assisted?: boolean }>
     }
     const attempt = events.find((e) => e.kind === 'attempt')
     expect(attempt).toMatchObject({ hintLevel: 1, assisted: true })
+  }, 30_000)
+
+  it('a struggling student is flagged softly and can choose to keep practicing', async () => {
+    const user = userEvent.setup()
+    render(<App apiBase={base} initialStudent="grit-kid" />)
+
+    // answer everything wrong until the guide-flag moment offers a choice
+    let keepBtn: HTMLElement | null = null
+    for (let i = 0; i < 40 && !keepBtn; i++) {
+      const found = await waitFor((): Actionable | { kind: 'park'; el: HTMLElement } => {
+        const keep = screen.queryByRole('button', { name: 'Keep practicing this' })
+        if (keep) return { kind: 'park', el: keep }
+        return findActionable()
+      }, { timeout: 4000 })
+      if (found.kind === 'park') {
+        keepBtn = found.el
+        break
+      }
+      switch (found.kind) {
+        case 'continue':
+        case 'handoff':
+        case 'next':
+          await user.click(found.el)
+          break
+        case 'item':
+          await user.type(screen.getByRole('textbox'), '999999')
+          await user.click(screen.getByRole('button', { name: 'Check answer' }))
+          break
+        default:
+          break
+      }
+    }
+    expect(keepBtn).not.toBeNull()
+    // the message is supportive, not punitive
+    expect(screen.getByText(/your guide will come check in/i)).toBeInTheDocument()
+
+    // choosing to keep practicing serves the SAME skill again
+    await user.click(keepBtn!)
+    await waitFor(() => expect(screen.getByTestId('stem')).toBeInTheDocument(), { timeout: 4000 })
+    const { events } = (await (await fetch(`${base}/api/events?student=grit-kid`)).json()) as {
+      events: Array<{ kind: string; skillId?: string; reason?: string }>
+    }
+    const flag = events.find((e) => e.kind === 'guide_flag')!
+    expect(flag).toBeDefined()
+    // and answering there emits attempts on the flagged skill with no new flags
+    await user.type(screen.getByRole('textbox'), '999999')
+    await user.click(screen.getByRole('button', { name: 'Check answer' }))
+    await screen.findByRole('button', { name: 'Continue' })
+    const after = (await (await fetch(`${base}/api/events?student=grit-kid`)).json()) as {
+      events: Array<{ kind: string; skillId?: string }>
+    }
+    expect(after.events.filter((e) => e.kind === 'guide_flag')).toHaveLength(1)
+    const attempts = after.events.filter((e) => e.kind === 'attempt')
+    expect(attempts[attempts.length - 1]!.skillId).toBe(flag.skillId)
   }, 30_000)
 })

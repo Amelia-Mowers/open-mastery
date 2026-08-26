@@ -1,4 +1,5 @@
-/** One served item: stem, answer widget, optional viz, hints, feedback. */
+/** One served item: stem, answer widget, optional viz, hints, feedback.
+ * All copy here is child-facing: encouraging, no mastery-model internals. */
 import { useMemo, useState } from 'react'
 import type { NextAction } from '../../core/engine'
 import { createWidget } from '../widgets/registry'
@@ -11,19 +12,32 @@ type ServeAction = Extract<NextAction, { kind: 'serve_item' }>
 export interface ItemCardProps {
   action: ServeAction
   item: ClientItem
+  /** points before this attempt (to show the delta as juice) */
+  pointsBefore: number
   onSubmit: (raw: string, hintLevel: number, latencyMs: number) => Promise<AttemptOutcome>
-  onContinue: () => void
+  /** continue; focus 'skill-id' keeps practicing that skill, null moves on */
+  onContinue: (focus?: string | null) => void
   onStartCheck: (skillId: string) => void
+  /** the check is unlocked but the student chose more practice first */
+  showInlineCheckOffer: boolean
 }
 
 const KICKERS: Record<ServeAction['itemKind'], string> = {
-  faded: 'FADED EXAMPLE',
+  faded: 'FINISH THIS ONE',
   practice: 'PRACTICE',
   check: 'MASTERY CHECK',
-  probe: 'QUICK CHECK OF AN EARLIER SKILL',
+  probe: 'QUICK LOOK AT AN EARLIER SKILL',
 }
 
-export function ItemCard({ action, item, onSubmit, onContinue, onStartCheck }: ItemCardProps) {
+export function ItemCard({
+  action,
+  item,
+  pointsBefore,
+  onSubmit,
+  onContinue,
+  onStartCheck,
+  showInlineCheckOffer,
+}: ItemCardProps) {
   const params = action.instance.params as Params
   const isCheck = action.itemKind === 'check'
   const [revealedHints, setRevealedHints] = useState(isCheck ? 0 : (action.offeredHintLevel ?? 0))
@@ -33,6 +47,15 @@ export function ItemCard({ action, item, onSubmit, onContinue, onStartCheck }: I
 
   const widget = useMemo(() => {
     const { stem: _stem, ...config } = (item.widget.config ?? {}) as Record<string, unknown>
+    // give inputs a friendly placeholder from the item's variable param
+    const variable = typeof params['variable'] === 'string' ? params['variable'] : undefined
+    if (variable && config['variable'] === undefined &&
+        (item.widget.type === 'equation-input' || item.widget.type === 'expression-input')) {
+      config['variable'] = variable
+    }
+    if (item.widget.type === 'numeric-input' && config['placeholder'] === undefined) {
+      config['placeholder'] = '?'
+    }
     return createWidget(item.widget.type, config)
   }, [item.id, action.instance.paramHash])
 
@@ -61,16 +84,27 @@ export function ItemCard({ action, item, onSubmit, onContinue, onStartCheck }: I
 
   const mastered = outcome?.emitted.some((e) => e.kind === 'mastery_granted') ?? false
   const flagged = outcome?.emitted.some((e) => e.kind === 'guide_flag') ?? false
+  const delta = outcome ? outcome.points - pointsBefore : 0
+
+  const feedbackText = !outcome
+    ? ''
+    : outcome.correct
+      ? revealedHints > 0
+        ? 'You got it — the hint helped. Try the next one on your own!'
+        : 'Correct!'
+      : isCheck
+        ? 'Not this time — back to practice. The check will come around again.'
+        : 'Not quite — you’ll get another shot.'
 
   return (
     <section className="card" aria-label={KICKERS[action.itemKind]}>
       <div className="card-kicker">
         <span className={isCheck ? 'kicker kicker-check' : 'kicker'}>
           {KICKERS[action.itemKind]}
-          {isCheck && action.checkIndex !== undefined ? ` · ITEM ${action.checkIndex} OF 2` : ''}
+          {isCheck && action.checkIndex !== undefined ? ` · ${action.checkIndex} OF 2` : ''}
         </span>
-        {isCheck && <span className="muted">unassisted — hints are off</span>}
-        <span className="mono-chip">widget: {item.widget.type}</span>
+        {isCheck && <span className="muted">no hints on these — show what you know</span>}
+        {action.itemKind === 'probe' && <span className="muted">these count for the earlier skill</span>}
       </div>
       {stem && (
         <h2 className="stem" data-testid="stem">
@@ -105,32 +139,47 @@ export function ItemCard({ action, item, onSubmit, onContinue, onStartCheck }: I
           {renderText(h, params)}
         </p>
       ))}
-      {outcome && (
+      {outcome && !mastered && (
         <div className={outcome.correct ? 'feedback ok' : 'feedback bad'} role="status">
-          {outcome.correct ? 'Correct.' : 'Not quite.'}
-          {revealedHints > 0 && outcome.correct ? ' Assisted, so it carries reduced evidence.' : ''}
+          {feedbackText}
+          {delta > 0 && <span className="pts-delta">+{delta}</span>}
         </div>
       )}
       {mastered && (
         <div className="grant" role="status">
-          <strong>Skill mastered</strong> — two unassisted problems, two different item families.
+          <span className="grant-stone" aria-hidden />
+          <div>
+            <strong>Mastered!</strong> A new stone lands on your cairn.
+            {delta > 0 && <span className="pts-delta">+{delta}</span>}
+          </div>
         </div>
       )}
       {flagged && (
         <div className="parked" role="status">
-          Good stopping point — your guide has been flagged, and something else is up next.
+          You’ve worked hard on this one — your guide will come check in. You don’t have to stop,
+          though.
         </div>
       )}
-      {outcome && (
-        <button className="btn btn-primary" onClick={onContinue}>
-          Continue
-        </button>
-      )}
-      {action.checkAvailable && outcome === null && (
+      {outcome &&
+        (flagged ? (
+          <div className="answer-row">
+            <button className="btn btn-primary" onClick={() => onContinue(action.forSkillId)}>
+              Keep practicing this
+            </button>
+            <button className="btn" onClick={() => onContinue(null)}>
+              Switch it up
+            </button>
+          </div>
+        ) : (
+          <button className="btn btn-primary" onClick={() => onContinue()}>
+            Continue
+          </button>
+        ))}
+      {showInlineCheckOffer && outcome === null && (
         <div className="check-offer">
-          <span>Mastery check is ready — two fresh problems, no hints.</span>
+          <span>The mastery check is ready when you are.</span>
           <button className="btn btn-check" onClick={() => onStartCheck(action.forSkillId)}>
-            Start the check
+            Take the check
           </button>
         </div>
       )}

@@ -70,15 +70,17 @@ describe('corrective state machine (§5 table)', () => {
     expect(after.attempts).toBe(1)
   })
 
-  it('probe: one correct resumes; two misses flag prereq_failure and park', () => {
-    let s = freshSkillSession()
-    const r1 = applyProbeResult(s, true, policyV1)
+  it('probe: one correct resumes; probeMissLimit misses flag prereq_failure and park', () => {
+    const r1 = applyProbeResult(freshSkillSession(), true, policyV1)
     expect(r1.outcome).toEqual({ kind: 'resume' })
-    s = freshSkillSession()
-    const r2 = applyProbeResult(s, false, policyV1)
-    expect(r2.outcome).toEqual({ kind: 'continue_probe' })
-    const r3 = applyProbeResult(r2.session, false, policyV1)
-    expect(r3.outcome).toEqual({ kind: 'flag_and_park', reason: 'prereq_failure' })
-    expect(r3.session.parked).toBe(true)
+    let s = freshSkillSession()
+    for (let i = 0; i < policyV1.corrective.probeMissLimit - 1; i++) {
+      const r = applyProbeResult(s, false, policyV1)
+      expect(r.outcome).toEqual({ kind: 'continue_probe' })
+      s = r.session
+    }
+    const last = applyProbeResult(s, false, policyV1)
+    expect(last.outcome).toEqual({ kind: 'flag_and_park', reason: 'prereq_failure' })
+    expect(last.session.parked).toBe(true)
   })
 })

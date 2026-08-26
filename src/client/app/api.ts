@@ -11,12 +11,24 @@ export interface ServerNext {
   explanation?: Explanation
   /** params the explanation timeline should render with (params_from: item) */
   params?: Record<string, number | string>
+  points: number
 }
 
 export interface AttemptOutcome {
   verdict: { verdict: 'correct' } | { verdict: 'incorrect'; reason?: string } | { verdict: 'needs_llm'; reason: string }
   correct: boolean
   emitted: Array<{ kind: string; skillId?: string }>
+  points: number
+}
+
+export interface BundleView {
+  skills: Array<{ id: string; name: string; prereqs: string[] }>
+}
+
+export interface StateView {
+  skills: Record<string, { p: number; phase: string; attempts: number; lapsed?: boolean }>
+  openFlags: Array<{ reason: string; skillId?: string }>
+  points: number
 }
 
 export class SiteApi {
@@ -25,8 +37,9 @@ export class SiteApi {
     private readonly studentId: string,
   ) {}
 
-  private url(path: string): string {
-    return `${this.base}${path}?student=${encodeURIComponent(this.studentId)}`
+  private url(path: string, extra: Record<string, string> = {}): string {
+    const q = new URLSearchParams({ student: this.studentId, ...extra })
+    return `${this.base}${path}?${q.toString()}`
   }
 
   private async post<T>(path: string, body: unknown): Promise<T> {
@@ -38,8 +51,8 @@ export class SiteApi {
     return (await r.json()) as T
   }
 
-  async next(): Promise<ServerNext> {
-    const r = await fetch(this.url('/api/next'))
+  async next(focusSkill?: string): Promise<ServerNext> {
+    const r = await fetch(this.url('/api/next', focusSkill ? { skill: focusSkill } : {}))
     return (await r.json()) as ServerNext
   }
 
@@ -53,5 +66,19 @@ export class SiteApi {
 
   async startCheck(skillId: string): Promise<void> {
     await this.post('/api/start-check', { skillId })
+  }
+
+  async bundle(): Promise<BundleView> {
+    const r = await fetch(`${this.base}/api/bundle`)
+    return (await r.json()) as BundleView
+  }
+
+  async state(): Promise<StateView> {
+    const r = await fetch(this.url('/api/state'))
+    return (await r.json()) as StateView
+  }
+
+  async reset(): Promise<void> {
+    await this.post('/api/reset', {})
   }
 }

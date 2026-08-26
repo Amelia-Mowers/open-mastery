@@ -15,12 +15,16 @@ export const policyV1 = {
     prereqProbeAtMisses: 3,
     /** park the skill and flag the guide. Interpretation: the cap is part of
      * the miss-escalation machine, so it fires when a MISS lands at or beyond
-     * the cap — an all-correct run is never parked by attempt count. */
+     * the cap — an all-correct run is never parked by attempt count.
+     * Parking is SOFT: the skill leaves the automatic rotation and the guide
+     * is flagged, but a student who chooses to keep practicing it may (the
+     * selector honors an explicit focus request; no further escalation or
+     * flags while parked). */
     attemptCapPerSession: 6,
     /** probe exit: one correct resumes the skill; this many probe misses
      * flags `prereq_failure` and parks the skill for the session. (The doc
      * is silent on the probe exit; this matches its guide-flag vocabulary.) */
-    probeMissLimit: 2,
+    probeMissLimit: 3,
   },
 
   hints: {

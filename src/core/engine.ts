@@ -85,10 +85,17 @@ export type NextAction =
 
 // ---------- selection ----------
 
+export interface NextOptions {
+  /** student-chosen skill to work on; overrides ranking AND the parked
+   * exclusion (soft parking: opt-in practice continues after a flag) */
+  focusSkill?: string
+}
+
 export function nextAction(
   student: StudentState,
   session: SessionState,
   ctx: EngineCtx,
+  opts: NextOptions = {},
 ): NextAction {
   const pol = ctx.policy
 
@@ -139,14 +146,14 @@ export function nextAction(
   }
 
   // pick a skill
-  const eligible = eligibleSkills(student, ctx.cur).filter(
-    (id) => !skillSession(session, id).parked,
-  )
+  const allEligible = eligibleSkills(student, ctx.cur)
+  const unparked = allEligible.filter((id) => !skillSession(session, id).parked)
   const skillId =
-    session.currentSkill !== null &&
-    eligible.includes(session.currentSkill)
-      ? session.currentSkill
-      : (rankSkills(eligible, student, ctx.cur, ctx.bkt, pol)[0] ?? null)
+    opts.focusSkill !== undefined && allEligible.includes(opts.focusSkill)
+      ? opts.focusSkill
+      : session.currentSkill !== null && unparked.includes(session.currentSkill)
+        ? session.currentSkill
+        : (rankSkills(unparked, student, ctx.cur, ctx.bkt, pol)[0] ?? null)
   if (skillId === null) return { kind: 'session_done' }
 
   const skill = ctx.cur.skills.get(skillId)!
@@ -226,7 +233,15 @@ function instantiateFor(
   pol: PolicyV1,
 ): ItemInstance | null {
   const blocked = blockedSet(student, session)
-  for (const item of pool) {
+  // rotate item families: least-served this session first (variety — e.g.
+  // alternating sign families), then authored difficulty order
+  const servedCount = (itemId: string): number => {
+    let n = 0
+    for (const key of session.served) if (key.startsWith(`${itemId}#`)) n++
+    return n
+  }
+  const ordered = [...pool].sort((a, b) => servedCount(a.id) - servedCount(b.id))
+  for (const item of ordered) {
     const inst = instantiate(item, blocked, seedFor(session), pol.selector.isomorphSeedTries)
     if (inst) return inst
   }
@@ -337,7 +352,8 @@ export function recordAttempt(
       } else {
         // failed check: back to practice; the check will come around again
         session.check = null
-        afterMiss(student, session, ctx, action.forSkillId, emit)
+        if (!skillSession(session, action.forSkillId).parked)
+          afterMiss(student, session, ctx, action.forSkillId, emit)
       }
       break
     }
@@ -345,7 +361,10 @@ export function recordAttempt(
     case 'practice': {
       const sess = skillSession(session, action.skillId)
       session.bySkill[action.skillId] = applySkillAttempt(sess, correct, assisted)
-      if (!correct) afterMiss(student, session, ctx, action.skillId, emit)
+      // soft parking: opt-in practice on a parked skill escalates nothing —
+      // the guide is already flagged
+      if (!correct && !skillSession(session, action.skillId).parked)
+        afterMiss(student, session, ctx, action.skillId, emit)
       break
     }
   }
