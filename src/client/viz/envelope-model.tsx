@@ -103,6 +103,7 @@ export function createEnvelopeModel(): WidgetInstance<EnvelopeModelParams, null,
               alignItems: 'flex-start',
               justifyContent: 'center',
               alignContent: 'center',
+              minHeight: 170,
             }}
           >
             {Array.from({ length: n }, (_, i) => (
@@ -110,7 +111,7 @@ export function createEnvelopeModel(): WidgetInstance<EnvelopeModelParams, null,
             ))}
           </div>
           <div style={{ width: 2.5, background: '#5c4a38' }} aria-hidden />
-          <div style={{ flex: 1.2, padding: '16px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+          <div style={{ flex: 1.2, padding: '16px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 170 }}>
             {state.partition && groups.length > 0 ? (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {groups.map((g, gi) => (

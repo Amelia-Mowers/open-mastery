@@ -121,6 +121,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   fontFamily: "'Lora', serif",
                   padding: '6px 4px',
                   borderBottom: selected ? '4px solid #b05f28' : marked ? '4px solid #5c4a38' : '4px solid transparent',
+                  transition: 'background 0.25s ease, border-color 0.25s ease, color 0.25s ease',
                 }}
               >
                 {t}

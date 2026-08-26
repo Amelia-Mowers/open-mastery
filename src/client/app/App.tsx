@@ -5,6 +5,7 @@ import { SiteApi, type AttemptOutcome, type ServerNext } from './api'
 import { LessonPlayer } from './LessonPlayer'
 import { ItemCard } from './ItemCard'
 import { Dashboard } from './Dashboard'
+import { SmoothHeight } from './SmoothHeight'
 import type { Params } from './render'
 
 /** an alternative explanation chained from the current lesson */
@@ -135,6 +136,9 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   const api = useMemo(() => new SiteApi(apiBase, student), [apiBase, student])
   const [next, setNext] = useState<ServerNext | null>(null)
   const [error, setError] = useState<string | null>(null)
+  /** a fetch is in flight — the previous card stays, dimmed, so the height
+   * glides to the next one instead of flashing through a loading state */
+  const [fetching, setFetching] = useState(false)
   const [view, setView] = useState<'work' | 'dashboard'>(
     urlParam('view') === 'dashboard' ? 'dashboard' : 'work',
   )
@@ -147,7 +151,7 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   const [overlay, setOverlay] = useState<OverlayExplanation | null>(null)
 
   const refresh = useCallback(() => {
-    setNext(null)
+    setFetching(true)
     api
       .next(focusSkill.current ?? undefined)
       .then((n) => {
@@ -155,6 +159,7 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
         setPoints(n.points)
       })
       .catch((e: unknown) => setError(String(e)))
+      .finally(() => setFetching(false))
   }, [api])
 
   useEffect(refresh, [refresh])
@@ -340,7 +345,7 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
         onLeave={onLeave}
         onReset={reset}
       />
-      {body}
+      <SmoothHeight dim={fetching && next !== null && view !== 'dashboard'}>{body}</SmoothHeight>
     </main>
   )
 }

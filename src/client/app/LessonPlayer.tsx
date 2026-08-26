@@ -267,7 +267,11 @@ export function LessonPlayer({
       <div className="lesson-stage" key={epoch}>
         {widget ? widget.element : null}
       </div>
-      <p className={widget ? 'lesson-caption lesson-caption-under' : 'lesson-caption'} data-testid="lesson-caption">
+      <p
+        key={caption}
+        className={widget ? 'lesson-caption lesson-caption-under' : 'lesson-caption'}
+        data-testid="lesson-caption"
+      >
         {caption}
       </p>
       <div className="lesson-controls">

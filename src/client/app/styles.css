@@ -222,3 +222,42 @@ body {
 
 .player-close { margin-left: auto; padding: 4px 10px; font-size: 15px; }
 .card-kicker .player-close { margin-left: 8px; }
+
+/* ---- smooth height + soft loading ---- */
+.smooth-height { transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+.smooth-inner { transition: opacity 0.18s ease; }
+.smooth-inner.dim { opacity: 0.55; pointer-events: none; }
+
+/* ---- micro-interactions ---- */
+.btn { transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.btn:hover { border-color: #b6a88f; }
+.btn:active { transform: scale(0.96); }
+.btn-primary:hover, .btn-check:hover, .btn-round:hover { filter: brightness(1.08); }
+.btn-primary:hover { box-shadow: 0 3px 10px rgba(176, 95, 40, 0.28); }
+.step-seg { transition: background 0.2s ease; }
+.answer-row input { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.answer-row input:focus { box-shadow: 0 0 0 3px rgba(176, 95, 40, 0.14); }
+
+/* ---- entrances (fade + rise instead of pop-in) ---- */
+.hint, .explained-note, .check-offer, .handoff-row, .parked, .viz, .lesson-caption { animation: cairn-rise 0.28s ease both; }
+.faded-step { animation: cairn-rise 0.3s ease both; }
+.faded-step:nth-child(1) { animation-delay: 0.03s; }
+.faded-step:nth-child(2) { animation-delay: 0.1s; }
+.faded-step:nth-child(3) { animation-delay: 0.17s; }
+.faded-step:nth-child(4) { animation-delay: 0.24s; }
+.faded-step:nth-child(5) { animation-delay: 0.31s; }
+.skill-node { animation: cairn-rise 0.35s ease both; }
+.vocab-row { animation: cairn-rise 0.3s ease both; }
+.vocab-row:nth-child(2) { animation-delay: 0.08s; }
+.vocab-row:nth-child(3) { animation-delay: 0.16s; }
+.preamble-title, .preamble-plain { animation: cairn-rise 0.3s ease both; }
+.preamble-plain { animation-delay: 0.06s; }
+
+/* ---- calm mode ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}

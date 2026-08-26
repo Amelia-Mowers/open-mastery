@@ -6,9 +6,9 @@ import { describe, it, expect } from 'vitest'
 import { existsSync } from 'node:fs'
 import { fileURLToPath } from 'node:url'
 import { dirname, join } from 'node:path'
-import { renderTemplate, type Bundle, type Env, type Item } from '@openmastery/schema'
+import { explanationSchema, renderTemplate, type Bundle, type Env, type Item } from '@openmastery/schema'
 import { loadBundleDir } from '@openmastery/schema/load'
-import { createDevSite, type DevSite } from '../../src/server/dev'
+import { createDevSite, paramsForExplanation, type DevSite } from '../../src/server/dev'
 import { fixtureBundle } from '../core/fixtures'
 
 const curriculumRoot = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'curriculum')
@@ -80,6 +80,33 @@ async function getJson<T>(base: string, path: string, studentId: string): Promis
   const r = await fetch(`${base}${path}?student=${studentId}`)
   return (await r.json()) as T
 }
+
+describe('explanation params match the timeline family', () => {
+  const exp = explanationSchema.parse({
+    id: 'alg1.test.exp-balance',
+    skill: 'alg1.test.skill',
+    representation: 'balance-scale',
+    widget: 'balance-scale',
+    params_from: 'item',
+    timeline: [
+      { t: 0, patch: { left: '{a}{variable}', right: '{b}' }, caption: '{variable} is multiplied by {a}.' },
+      { t: 2, handoff: { prompt: 'Now you try.' } },
+    ],
+    review: { status: 'vetted' },
+  })
+  const family = { a: 7, b: 6, variable: 'n' }
+
+  it('uses the instance params when they can feed every template', () => {
+    const instance = { a: 4, b: 28, variable: 'x' }
+    expect(paramsForExplanation(exp, instance, family)).toBe(instance)
+  })
+
+  it('falls back to the family params for a different-family instance (the -r = 2 case)', () => {
+    const rawInstance = { b: 2, variable: 'r' } // no `a` — timeline would render literal braces
+    expect(paramsForExplanation(exp, rawInstance, family)).toBe(family)
+    expect(paramsForExplanation(exp, null, family)).toBe(family)
+  })
+})
 
 describe('local site server loop (build step 3)', () => {
   it('a correct student masters the fixture bundle end to end over HTTP', async () => {

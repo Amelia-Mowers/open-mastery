@@ -133,7 +133,7 @@ export function Dashboard({ api }: { api: SiteApi }) {
               }),
             )}
           </svg>
-          {bundle.skills.map((s) => {
+          {bundle.skills.map((s, idx) => {
             const phase = state.skills[s.id]?.phase ?? 'unseen'
             const unlocked = s.prereqs.every((pr) => state.skills[pr]?.phase === 'mastered')
             const style =
@@ -154,6 +154,7 @@ export function Dashboard({ api }: { api: SiteApi }) {
                   background: style.bg,
                   color: style.fg,
                   borderColor: flaggedIds.has(s.id) ? '#a8453a' : 'transparent',
+                  animationDelay: `${idx * 0.07}s`,
                 }}
               >
                 <div className="skill-node-name">{s.name}</div>

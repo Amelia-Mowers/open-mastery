@@ -11,7 +11,7 @@
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
 import { createReadStream, existsSync, statSync } from 'node:fs'
 import { extname, join, normalize } from 'node:path'
-import type { Bundle } from '@openmastery/schema'
+import { parseTemplate, templateIdentifiers, type Bundle, type Explanation } from '@openmastery/schema'
 import {
   applyEvent,
   buildIndex,
@@ -49,6 +49,38 @@ export interface DevSite {
 export interface DevSiteOptions {
   /** directory of built client assets to serve for non-/api requests */
   staticDir?: string
+}
+
+/** Every identifier an explanation timeline's templates reference. */
+function timelineIdentifiers(e: Explanation): Set<string> {
+  const out = new Set<string>()
+  const collect = (src: unknown): void => {
+    if (typeof src !== 'string' || !src.includes('{')) return
+    const p = parseTemplate(src)
+    if (!p.ok) return
+    for (const id of templateIdentifiers(p.value)) out.add(id)
+  }
+  for (const step of e.timeline) {
+    collect(step.caption)
+    collect(step.handoff?.prompt)
+    for (const v of Object.values(step.patch ?? {})) collect(v)
+  }
+  return out
+}
+
+/** Explanations are authored against a param FAMILY; an instance from a
+ * different family (e.g. the raw -x = b item, which has no `a`) can't feed
+ * the timeline — fall back to the family params so nothing renders as
+ * literal `{a}` braces. */
+export function paramsForExplanation(
+  e: Explanation,
+  instanceParams: Record<string, number | string> | null,
+  familyParams: Record<string, number | string>,
+): Record<string, number | string> {
+  if (!instanceParams) return familyParams
+  const needed = timelineIdentifiers(e)
+  for (const id of needed) if (!(id in instanceParams)) return familyParams
+  return instanceParams
 }
 
 const MIME: Record<string, string> = {
@@ -284,13 +316,14 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         eligible[0] ??
         null
       const pending = st.pending
-      const params =
+      const instanceParams =
         pending?.kind === 'serve_item' && pending.skillId === skillId
           ? pending.instance.params
-          : (practiceItems(skillId, cur)[0]?.params ?? {})
+          : null
+      const familyParams = practiceItems(skillId, cur)[0]?.params ?? {}
       return json(res, 200, {
         explanation,
-        params,
+        params: explanation ? paramsForExplanation(explanation, instanceParams, familyParams) : familyParams,
         skillName: skill.name,
         totalReps: new Set(all.map((e) => e.representation)).size,
       })
