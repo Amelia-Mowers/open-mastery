@@ -160,6 +160,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     for (const [key, val] of Object.entries(it.widget.config))
       if (typeof val === 'string' && val.includes('{'))
         checkTemplate(val, `${it.id}.widget.config.${key}`)
+    it.faded?.steps?.forEach((s, i) => checkTemplate(s, `${it.id}.faded.steps[${i}]`))
   }
   for (const e of bundle.explanations) {
     // params_from: item defers identifier scoping to the item; parse-check only

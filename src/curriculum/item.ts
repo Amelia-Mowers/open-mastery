@@ -49,10 +49,20 @@ export const rubricSchema = z
 
 export const fadedSpecSchema = z
   .object({
+    /** 1-based indices into `steps` shown pre-completed */
     reveal_steps: z.array(z.number().int().positive()),
+    /** 1-based indices the student fills in */
     student_completes: z.array(z.number().int().positive()).min(1),
+    /** the worked steps themselves, as cairn-expr templated lines */
+    steps: z.array(z.string().min(1)).optional(),
   })
   .strict()
+  .refine(
+    (f) =>
+      f.steps === undefined ||
+      [...f.reveal_steps, ...f.student_completes].every((i) => i <= f.steps!.length),
+    'reveal_steps/student_completes reference steps beyond the list',
+  )
 
 export const itemSchema = z
   .object({
