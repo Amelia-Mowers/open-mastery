@@ -171,6 +171,34 @@ describe('explanation player', () => {
     expect(shares[0]).toHaveTextContent('= 7')
   })
 
+  it("plays IM's tape diagram: parts, one-part highlight, total reveal", () => {
+    const tapeExp = explanationSchema.parse({
+      id: 'alg1.test.exp-tape',
+      skill: 'alg1.test.skill',
+      representation: 'tape-diagram',
+      widget: 'tape-diagram',
+      params_from: 'item',
+      timeline: [
+        { t: 0, patch: { parts: '{a}', partLabel: '?', total: '{variable}' }, caption: '{variable} as {a} equal parts.' },
+        { t: 4, patch: { partLabel: '{b}', highlight: ['1'] }, caption: 'One part is {b}.' },
+        { t: 8, patch: { total: '{variable} = {a*b}', highlight: [] }, caption: '{a} parts of {b}: {a*b}.' },
+        { t: 10, handoff: { prompt: 'Now you try.' } },
+      ],
+      review: { status: 'vetted' },
+    })
+    const { container } = render(
+      <LessonPlayer explanation={tapeExp} params={{ a: 4, b: 7, variable: 'x' }} kind="lesson" onDone={() => {}} />,
+    )
+    expect(container.querySelectorAll('[data-part]')).toHaveLength(4)
+    expect(container.querySelector('[data-total]')).toHaveTextContent('x')
+    goToStep(2, 3)
+    expect(container.querySelectorAll('[data-part]')[0]).toHaveAttribute('data-highlighted')
+    expect(container.querySelectorAll('[data-part]')[0]).toHaveTextContent('7')
+    goToStep(3, 3)
+    expect(container.querySelector('[data-total]')).toHaveTextContent('x = 28')
+    expect(container.querySelector('[data-highlighted]')).toBeNull()
+  })
+
   it('falls back to caption-only when the widget has no lesson support', () => {
     const captionOnly = explanationSchema.parse({
       ...numberLineExp,

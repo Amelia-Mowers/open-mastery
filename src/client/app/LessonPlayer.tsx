@@ -11,6 +11,7 @@ import type { Explanation } from '@openmastery/schema'
 import type { WidgetInstance } from '../widgets/contract'
 import { createBalanceScale } from '../viz/balance-scale'
 import { createEnvelopeModel } from '../viz/envelope-model'
+import { createTapeDiagram } from '../viz/tape-diagram'
 import { createNumberLine } from '../widgets/number-line'
 import {
   adaptBalancePatch,
@@ -73,6 +74,24 @@ function envelopeSetup(
   return null
 }
 
+function tapeSetup(
+  timeline: ReadonlyArray<{ patch?: Record<string, unknown> | undefined }>,
+  params: Params,
+): { parts: number; partLabel: string; total: string } | null {
+  for (const s of timeline) {
+    const p = s.patch
+    if (!p || !('parts' in p) || !('partLabel' in p) || !('total' in p)) continue
+    const parts = evalNumber(p['parts'], params)
+    if (parts === null || parts < 1 || parts > 14) return null
+    return {
+      parts,
+      partLabel: renderText(String(p['partLabel']), params),
+      total: renderText(String(p['total']), params),
+    }
+  }
+  return null
+}
+
 function createLessonWidget(explanation: Explanation, params: Params): LessonWidget | null {
   if (explanation.widget === 'balance-scale') {
     const w = createBalanceScale()
@@ -101,6 +120,26 @@ function createLessonWidget(explanation: Explanation, params: Params): LessonWid
         const view: { partition?: boolean; reveal?: boolean } = {}
         if ('partition' in patch) view.partition = patch['partition'] === true
         if ('reveal' in patch) view.reveal = patch['reveal'] === true
+        w.applyPatch(view)
+      },
+    }
+  }
+  if (explanation.widget === 'tape-diagram') {
+    const setup = tapeSetup(explanation.timeline, params)
+    if (!setup) return null
+    const w = createTapeDiagram()
+    return {
+      element: w.render(setup, 'lesson'),
+      apply: (patch) => {
+        const view: { partLabel?: string; total?: string; highlight?: number[] } = {}
+        if ('partLabel' in patch) view.partLabel = renderText(String(patch['partLabel']), params)
+        if ('total' in patch) view.total = renderText(String(patch['total']), params)
+        if ('highlight' in patch) {
+          const raw = patch['highlight']
+          view.highlight = Array.isArray(raw)
+            ? raw.map((v) => evalNumber(v, params)).filter((x): x is number => x !== null)
+            : []
+        }
         w.applyPatch(view)
       },
     }

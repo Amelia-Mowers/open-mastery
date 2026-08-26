@@ -4,6 +4,7 @@ import { createExpressionInput, type ExpressionInputConfig } from './expression-
 import { createNumberLine, type NumberLineConfig } from './number-line'
 import { createBalanceScale } from '../viz/balance-scale'
 import { createEnvelopeModel } from '../viz/envelope-model'
+import { createTapeDiagram } from '../viz/tape-diagram'
 
 export class UnknownWidgetError extends Error {
   constructor(readonly widgetType: string) {
@@ -19,6 +20,7 @@ export type WidgetType =
   | 'number-line'
   | 'balance-scale'
   | 'envelope-model'
+  | 'tape-diagram'
 
 /**
  * Create a widget instance by curriculum widget type.
@@ -41,6 +43,8 @@ export function createWidget(
       return createBalanceScale() as never
     case 'envelope-model':
       return createEnvelopeModel() as never
+    case 'tape-diagram':
+      return createTapeDiagram() as never
     default:
       throw new UnknownWidgetError(type)
   }
