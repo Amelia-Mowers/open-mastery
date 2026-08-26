@@ -256,6 +256,64 @@ describe('explanation player', () => {
     expect(products[1]).toHaveTextContent('112')
   })
 
+  it('plays the opposite-flip: mark b, flip across zero, resolve at -b', () => {
+    const flipExp = explanationSchema.parse({
+      id: 'alg1.test.exp-flip',
+      skill: 'alg1.test.skill',
+      representation: 'opposite-flip',
+      widget: 'opposite-flip',
+      params_from: 'item',
+      timeline: [
+        { t: 0, patch: { value: '{b}' }, caption: 'The opposite of {variable} is {b}.' },
+        { t: 4, patch: { flip: true }, caption: 'Mirror twins across zero.' },
+        { t: 8, patch: { resolve: true }, caption: '{variable} = {-b}.' },
+        { t: 10, handoff: { prompt: 'Now you try.' } },
+      ],
+      review: { status: 'vetted' },
+    })
+    const { container } = render(
+      <LessonPlayer explanation={flipExp} params={{ b: 2, variable: 'r' }} kind="lesson" onDone={() => {}} />,
+    )
+    expect(container.querySelector('[data-point-b]')).not.toBeNull()
+    expect(container.querySelector('[data-arc]')).toBeNull()
+    goToStep(2, 3)
+    expect(container.querySelector('[data-arc]')).not.toBeNull()
+    expect(container.querySelector('[data-point-neg]')).not.toBeNull()
+    goToStep(3, 3)
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('r = -2.')
+  })
+
+  it('plays the whiteboard worked-equation: lines append with operation notes', () => {
+    const workedExp = explanationSchema.parse({
+      id: 'alg1.test.exp-worked',
+      skill: 'alg1.test.skill',
+      representation: 'worked-equation',
+      widget: 'worked-equation',
+      params_from: 'item',
+      timeline: [
+        { t: 0, patch: { start: '-{variable} = {b}' }, caption: 'On the board.' },
+        { t: 4, patch: { line: '(-1) · (-{variable}) = (-1) · {b}', note: 'multiply both sides by -1' }, caption: 'Both sides.' },
+        { t: 8, patch: { line: '{variable} = {-b}', note: 'the negatives cancel' }, caption: 'Done.' },
+        { t: 10, handoff: { prompt: 'Now you try.' } },
+      ],
+      review: { status: 'vetted' },
+    })
+    const { container } = render(
+      <LessonPlayer explanation={workedExp} params={{ b: 2, variable: 'r' }} kind="lesson" onDone={() => {}} />,
+    )
+    expect(container.querySelectorAll('[data-line]')).toHaveLength(1)
+    expect(container.querySelectorAll('[data-line]')[0]).toHaveTextContent('-r = 2')
+    goToStep(3, 3)
+    const lines = container.querySelectorAll('[data-line]')
+    expect(lines).toHaveLength(3)
+    expect(lines[1]).toHaveTextContent('(-1) · (-r) = (-1) · 2')
+    expect(lines[2]).toHaveTextContent('r = -2')
+    expect(container.querySelectorAll('[data-note]')[0]).toHaveTextContent('multiply both sides by -1')
+    // backward seek rebuilds and replays the lines
+    goToStep(1, 3)
+    expect(container.querySelectorAll('[data-line]')).toHaveLength(1)
+  })
+
   it('falls back to caption-only when the widget has no lesson support', () => {
     const captionOnly = explanationSchema.parse({
       ...numberLineExp,

@@ -14,6 +14,8 @@ import { createEnvelopeModel } from '../viz/envelope-model'
 import { createTapeDiagram } from '../viz/tape-diagram'
 import { createHangerDiagram } from '../viz/hanger-diagram'
 import { createAreaModel } from '../viz/area-model'
+import { createOppositeFlip } from '../viz/opposite-flip'
+import { createWorkedEquation } from '../viz/worked-equation'
 import { createNumberLine } from '../widgets/number-line'
 import {
   adaptBalancePatch,
@@ -209,6 +211,48 @@ function createLessonWidget(explanation: Explanation, params: Params): LessonWid
             ? raw.map((v) => evalNumber(v, params)).filter((x): x is number => x !== null)
             : []
         }
+        w.applyPatch(view)
+      },
+    }
+  }
+  if (explanation.widget === 'opposite-flip') {
+    let value: number | null = null
+    for (const step of explanation.timeline) {
+      const p = step.patch
+      if (p && 'value' in p) {
+        value = evalNumber(p['value'], params)
+        break
+      }
+    }
+    if (value === null || value === 0 || Math.abs(value) > 999) return null
+    const w = createOppositeFlip()
+    return {
+      element: w.render({ value }, 'lesson'),
+      apply: (patch) => {
+        const view: { flip?: boolean; resolve?: boolean } = {}
+        if ('flip' in patch) view.flip = patch['flip'] === true
+        if ('resolve' in patch) view.resolve = patch['resolve'] === true
+        w.applyPatch(view)
+      },
+    }
+  }
+  if (explanation.widget === 'worked-equation') {
+    let start: string | null = null
+    for (const step of explanation.timeline) {
+      const p = step.patch
+      if (p && 'start' in p) {
+        start = renderText(String(p['start']), params)
+        break
+      }
+    }
+    if (start === null) return null
+    const w = createWorkedEquation()
+    return {
+      element: w.render({ start }, 'lesson'),
+      apply: (patch) => {
+        if (!('line' in patch)) return
+        const view: { line?: string; note?: string } = { line: renderText(String(patch['line']), params) }
+        if ('note' in patch && patch['note'] != null) view.note = renderText(String(patch['note']), params)
         w.applyPatch(view)
       },
     }

@@ -37,7 +37,7 @@ const label = (p: HangerDiagramParams): string =>
 export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null, HangerDiagramView> {
   const store = new WidgetStore<HangerState>({ split: false, share: null, reveal: false })
 
-  function Shape({ text, share, i }: { text: string; share: string | null; i: number }) {
+  function Shape({ text, share, i, size }: { text: string; share: string | null; i: number; size: number }) {
     return (
       <div
         data-shape
@@ -53,15 +53,15 @@ export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null,
         <span aria-hidden style={{ width: 2, height: 14, background: '#8b8070', display: 'block' }} />
         <span
           style={{
-            width: 40,
-            height: 40,
+            width: size,
+            height: size,
             borderRadius: '50%',
             border: '2.5px solid #b05f28',
             background: '#f3e4d4',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            font: "600 18px 'Lora', Georgia, serif",
+            font: `600 ${Math.round(size * 0.45)}px 'Lora', Georgia, serif`,
             color: '#8a4d1d',
           }}
         >
@@ -90,26 +90,26 @@ export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null,
   function View({ params, mode: _mode }: { params: HangerDiagramParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
     const n = Math.max(1, Math.round(params.copies))
+    // everything must hang UNDER the bar: shapes shrink as the count grows
+    const size = n > 8 ? 26 : n > 5 ? 32 : 40
     return (
       <div role="img" aria-label={label(params)} style={{ maxWidth: 560, margin: '0 auto' }}>
-        {/* hook + crossbar */}
+        {/* hook + crossbar spanning the full hanging area */}
         <svg viewBox="0 0 560 34" aria-hidden style={{ width: '100%', display: 'block' }}>
           <line x1="280" y1="0" x2="280" y2="14" stroke="#5c4a38" strokeWidth="3.5" />
           <circle cx="280" cy="16" r="5" fill="#5c4a38" />
-          <line x1="70" y1="30" x2="490" y2="30" stroke="#8b6a4d" strokeWidth="6" strokeLinecap="round" />
+          <line x1="14" y1="30" x2="546" y2="30" stroke="#8b6a4d" strokeWidth="6" strokeLinecap="round" />
           <line x1="280" y1="18" x2="280" y2="30" stroke="#5c4a38" strokeWidth="3.5" />
-          <line x1="140" y1="30" x2="140" y2="34" stroke="#8b8070" strokeWidth="2.5" />
-          <line x1="420" y1="30" x2="420" y2="34" stroke="#8b8070" strokeWidth="2.5" />
         </svg>
-        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 6%' }}>
-          {/* left: n copies of the shape */}
-          <div style={{ display: 'flex', gap: 8, alignItems: 'flex-start', flexWrap: 'wrap', maxWidth: '46%' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 2.5%' }}>
+          {/* left: n copies of the shape, centered under the left half */}
+          <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', flexWrap: 'wrap', width: '47%', justifyContent: 'center' }}>
             {Array.from({ length: n }, (_, i) => (
-              <Shape key={i} i={i} text={params.shapeLabel} share={state.reveal ? state.share : null} />
+              <Shape key={i} i={i} size={size} text={params.shapeLabel} share={state.reveal ? state.share : null} />
             ))}
           </div>
           {/* right: the weight, whole or split into n equal pieces */}
-          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, maxWidth: '46%' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: '47%' }}>
             <span aria-hidden style={{ width: 2, height: 14, background: '#8b8070', display: 'block' }} />
             {state.split ? (
               <div data-weight-split style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -118,7 +118,7 @@ export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null,
                     key={i}
                     data-piece
                     style={{
-                      minWidth: 34,
+                      minWidth: n > 8 ? 24 : 34,
                       textAlign: 'center',
                       padding: '8px 6px',
                       background: '#e7d9be',

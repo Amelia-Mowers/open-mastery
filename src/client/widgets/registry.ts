@@ -7,6 +7,8 @@ import { createEnvelopeModel } from '../viz/envelope-model'
 import { createTapeDiagram } from '../viz/tape-diagram'
 import { createHangerDiagram } from '../viz/hanger-diagram'
 import { createAreaModel } from '../viz/area-model'
+import { createOppositeFlip } from '../viz/opposite-flip'
+import { createWorkedEquation } from '../viz/worked-equation'
 
 export class UnknownWidgetError extends Error {
   constructor(readonly widgetType: string) {
@@ -25,6 +27,8 @@ export type WidgetType =
   | 'tape-diagram'
   | 'hanger-diagram'
   | 'area-model'
+  | 'opposite-flip'
+  | 'worked-equation'
 
 /**
  * Create a widget instance by curriculum widget type.
@@ -53,6 +57,10 @@ export function createWidget(
       return createHangerDiagram() as never
     case 'area-model':
       return createAreaModel() as never
+    case 'opposite-flip':
+      return createOppositeFlip() as never
+    case 'worked-equation':
+      return createWorkedEquation() as never
     default:
       throw new UnknownWidgetError(type)
   }

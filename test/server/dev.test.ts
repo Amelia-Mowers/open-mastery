@@ -153,7 +153,7 @@ describe('local site server loop (build step 3)', () => {
 
   it.skipIf(!hasCurriculum)('the real Prealgebra §8.2 curriculum runs the full loop: all four skills mastered', async () => {
     const bundle = loadCurriculum()
-    expect(bundle.skills).toHaveLength(4)
+    expect(bundle.skills).toHaveLength(5)
     const site = createDevSite(bundle)
     const base = await listen(site)
     try {
@@ -162,13 +162,14 @@ describe('local site server loop (build step 3)', () => {
       for (const id of [
         'prealg.lineq.divide',
         'prealg.lineq.multiply',
+        'prealg.lineq.negate',
         'prealg.lineq.reciprocal',
         'prealg.lineq.simplify-first',
       ]) {
         expect(state.skills[id]?.phase, id).toBe('mastered')
       }
       const { events } = await getJson<{ events: Array<{ kind: string; skillId?: string }> }>(base, '/api/events', 'learner')
-      expect(events.filter((e) => e.kind === 'mastery_granted')).toHaveLength(4)
+      expect(events.filter((e) => e.kind === 'mastery_granted')).toHaveLength(5)
     } finally {
       await site.stop()
     }
