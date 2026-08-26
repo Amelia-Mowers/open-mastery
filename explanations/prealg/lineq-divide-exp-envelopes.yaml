@@ -1,0 +1,11 @@
+id: prealg.lineq.divide.exp-envelopes
+skill: prealg.lineq.divide
+representation: envelopes-counters
+widget: envelope-model
+params_from: item
+timeline:
+  - { t: 0, patch: { envelopes: "{a}", counters: "{b}" }, caption: "{a} envelopes hold the same total as {b} counters — that is {a}{variable} = {b}." }
+  - { t: 4, patch: { partition: true }, caption: "Share the {b} counters into {a} equal groups — one group for each envelope." }
+  - { t: 8, patch: { reveal: true }, caption: "Every envelope holds {b/a} counters. So {variable} = {b/a}." }
+  - { t: 10.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
