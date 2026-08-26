@@ -1,11 +1,14 @@
-/** One served item: stem, answer widget, optional viz, hints, feedback.
+/** One served item: stem, answer widget, optional viz, hints, feedback, and
+ * an in-place walk-through of the skill with this problem's own numbers.
  * All copy here is child-facing: encouraging, no mastery-model internals. */
 import { useMemo, useState } from 'react'
+import type { Explanation } from '@openmastery/schema'
 import type { NextAction } from '../../core/engine'
 import { createWidget } from '../widgets/registry'
 import { createBalanceScale } from '../viz/balance-scale'
+import { LessonPlayer } from './LessonPlayer'
 import { renderText, type Params } from './render'
-import type { AttemptOutcome, ClientItem } from './api'
+import type { AttemptOutcome, ClientItem, ExplainResult } from './api'
 
 type ServeAction = Extract<NextAction, { kind: 'serve_item' }>
 
@@ -14,17 +17,24 @@ export interface ItemCardProps {
   item: ClientItem
   /** points before this attempt (to show the delta as juice) */
   pointsBefore: number
-  /** the student watched the full explanation for this instance — the
-   * attempt counts as helped (submitted at hint level) */
-  explanationAssisted: boolean
   onSubmit: (raw: string, hintLevel: number, latencyMs: number) => Promise<AttemptOutcome>
   /** continue; focus 'skill-id' keeps practicing that skill, null moves on */
   onContinue: (focus?: string | null) => void
   onStartCheck: (skillId: string) => void
-  /** play the skill's explanation with this problem's numbers */
-  onExplain: () => void
+  /** fetch an explanation for this problem's skill (server supplies the
+   * pending instance's params; the item's representation is preferred) */
+  fetchExplanation: (excludeReps: string[]) => Promise<ExplainResult>
+  /** report a completed walk-through so it lands in the event log */
+  onExplained: (explanationId: string) => void
   /** the check is unlocked but the student chose more practice first */
   showInlineCheckOffer: boolean
+}
+
+interface InlinePlay {
+  explanation: Explanation
+  params: Params
+  seenReps: string[]
+  totalReps: number
 }
 
 const KICKERS: Record<ServeAction['itemKind'], string> = {
@@ -38,24 +48,22 @@ export function ItemCard({
   action,
   item,
   pointsBefore,
-  explanationAssisted,
   onSubmit,
   onContinue,
   onStartCheck,
-  onExplain,
+  fetchExplanation,
+  onExplained,
   showInlineCheckOffer,
 }: ItemCardProps) {
   const params = action.instance.params as Params
   const isCheck = action.itemKind === 'check'
-  const [revealedHints, setRevealedHints] = useState(
-    isCheck
-      ? 0
-      : explanationAssisted
-        ? Math.max(1, Math.min(item.hints.length, 2))
-        : (action.offeredHintLevel ?? 0),
-  )
+  const [revealedHints, setRevealedHints] = useState(isCheck ? 0 : (action.offeredHintLevel ?? 0))
   const [outcome, setOutcome] = useState<AttemptOutcome | null>(null)
   const [busy, setBusy] = useState(false)
+  /** the walk-through playing inside this card */
+  const [inline, setInline] = useState<InlinePlay | null>(null)
+  /** watched the walk-through → this try counts as helped */
+  const [explained, setExplained] = useState(false)
   const startedAt = useMemo(() => performance.now(), [action.instance.paramHash])
 
   const widget = useMemo(() => {
@@ -93,6 +101,25 @@ export function ItemCard({
     } finally {
       setBusy(false)
     }
+  }
+
+  const openWalkthrough = async (excludeReps: string[]) => {
+    const r = await fetchExplanation(excludeReps)
+    if (!r.explanation) return
+    setInline({
+      explanation: r.explanation,
+      params: r.params as Params,
+      seenReps: [...excludeReps, r.explanation.representation],
+      totalReps: r.totalReps,
+    })
+  }
+
+  const finishWalkthrough = () => {
+    if (!inline) return
+    onExplained(inline.explanation.id)
+    setExplained(true)
+    setRevealedHints((h) => Math.max(h, 1, Math.min(item.hints.length, 2)))
+    setInline(null)
   }
 
   const mastered = outcome?.emitted.some((e) => e.kind === 'mastery_granted') ?? false
@@ -140,40 +167,60 @@ export function ItemCard({
           })}
         </ol>
       )}
-      {viz &&
-        item.viz && (
-          <div className="viz">
-            {viz.render(
-              {
-                left: renderText(item.viz.bind['left'] ?? '', params),
-                right: renderText(item.viz.bind['right'] ?? '', params),
-              },
-              'problem',
+      {inline ? (
+        <LessonPlayer
+          key={inline.explanation.id}
+          explanation={inline.explanation}
+          params={inline.params}
+          kind="walkthrough"
+          embedded
+          onDone={finishWalkthrough}
+          onCancel={() => setInline(null)}
+          onAnotherWay={
+            inline.totalReps > 1
+              ? () => {
+                  void openWalkthrough(inline.seenReps)
+                }
+              : undefined
+          }
+        />
+      ) : (
+        <>
+          {viz && item.viz && (
+            <div className="viz">
+              {viz.render(
+                {
+                  left: renderText(item.viz.bind['left'] ?? '', params),
+                  right: renderText(item.viz.bind['right'] ?? '', params),
+                },
+                'problem',
+              )}
+            </div>
+          )}
+          <div className="answer-row">
+            {widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
+            <button className="btn btn-primary" onClick={() => void submit()} disabled={busy || outcome !== null}>
+              Check answer
+            </button>
+            {maxHints > revealedHints && outcome === null && (
+              <button className="btn" onClick={() => setRevealedHints((h) => h + 1)}>
+                Hint
+              </button>
+            )}
+            {!isCheck && outcome === null && (
+              <button className="btn btn-quiet" onClick={() => void openWalkthrough([])}>
+                Show me how
+              </button>
             )}
           </div>
-        )}
-      <div className="answer-row">
-        {widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
-        <button className="btn btn-primary" onClick={() => void submit()} disabled={busy || outcome !== null}>
-          Check answer
-        </button>
-        {maxHints > revealedHints && outcome === null && (
-          <button className="btn" onClick={() => setRevealedHints((h) => h + 1)}>
-            Hint
-          </button>
-        )}
-        {!isCheck && outcome === null && (
-          <button className="btn btn-quiet" onClick={onExplain}>
-            Show me how
-          </button>
-        )}
-      </div>
-      {explanationAssisted && outcome === null && (
+        </>
+      )}
+      {explained && outcome === null && !inline && (
         <p className="muted explained-note">
           You watched the full walk-through, so this one counts as a helped try.
         </p>
       )}
-      {item.hints.slice(0, revealedHints).map((h, i) => (
+      {!inline && item.hints.slice(0, revealedHints).map((h, i) => (
         <p key={i} className="hint" data-testid={`hint-${i + 1}`}>
           {renderText(h, params)}
         </p>
@@ -214,7 +261,7 @@ export function ItemCard({
             Continue
           </button>
         ))}
-      {showInlineCheckOffer && outcome === null && (
+      {showInlineCheckOffer && outcome === null && !inline && (
         <div className="check-offer">
           <span>The mastery check is ready when you are.</span>
           <button className="btn btn-check" onClick={() => onStartCheck(action.forSkillId)}>

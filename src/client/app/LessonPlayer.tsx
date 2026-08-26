@@ -1,9 +1,10 @@
-/** The explanation player (§6, build step 4): a preamble naming what you're
- * learning, timed autoplay over the §4.3 timeline, play/pause, speed control,
- * a segmented step timeline (each rectangle fills through its step; click to
- * jump), backward-seek replay onto a fresh widget, interaction mid-timeline,
- * and handoff into faded/practice — with an optional "show me another way"
- * chain. Captions are the source of truth and are rendered by the player. */
+/** The explanation player (§6, build step 4): an intro naming what you're
+ * learning (new-skill entry only), timed autoplay over the §4.3 timeline,
+ * play/pause, speed control, a segmented step timeline (each rectangle fills
+ * through its step; click to jump), backward-seek replay onto a fresh widget,
+ * interaction mid-timeline, and handoff into faded/practice — with an
+ * optional looping "show me another way" chain. Captions are the source of
+ * truth and are rendered by the player. */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { ReactElement } from 'react'
 import type { Explanation } from '@openmastery/schema'
@@ -20,19 +21,36 @@ import {
   type Params,
 } from './render'
 
+export interface LessonIntro {
+  title: string
+  /** plain-words version of what you're learning */
+  plain?: string
+  vocab?: Array<{ term: string; meaning: string }>
+}
+
 export interface LessonPlayerProps {
   explanation: Explanation
   params: Params
-  kind: 'lesson' | 'alt_explanation'
-  /** what you're learning — shown as a preamble before play begins */
-  title?: string
+  kind: 'lesson' | 'alt_explanation' | 'walkthrough'
+  /** shown once, before play begins — new-skill entry only */
+  intro?: LessonIntro
+  /** render without the outer card (playing inside an item card) */
+  embedded?: boolean
   onDone: () => void
-  /** offered at the handoff: chain into an unseen representation */
+  /** offered at the handoff: chain into another representation (loops) */
   onAnotherWay?: () => void
+  /** leave without finishing (embedded walk-throughs only) — no logging */
+  onCancel?: () => void
 }
 
 const TICK_MS = 100
 const SPEEDS = [1, 1.5, 2, 0.5] as const
+
+const KICKER: Record<LessonPlayerProps['kind'], string> = {
+  lesson: 'LESSON',
+  alt_explanation: "LET'S LOOK AT IT DIFFERENTLY",
+  walkthrough: 'WALK-THROUGH · SAME NUMBERS',
+}
 
 interface LessonWidget {
   element: ReactElement
@@ -94,27 +112,56 @@ export function LessonPlayer({
   explanation,
   params,
   kind,
-  title,
+  intro,
+  embedded,
   onDone,
   onAnotherWay,
+  onCancel,
 }: LessonPlayerProps) {
   const steps = explanation.timeline
-  const handoffT = steps.find((s) => s.handoff)?.t ?? steps[steps.length - 1]!.t
+  const handoffStep = steps.find((s) => s.handoff)
+  const handoffT = handoffStep?.t ?? steps[steps.length - 1]!.t
+  // segments cover the content steps; a trailing handoff-only step is the
+  // resting point, not a segment of its own
+  const contentSteps = steps.filter((s) => s.patch !== undefined || s.caption !== undefined)
+  const lastContentT = contentSteps[contentSteps.length - 1]?.t ?? 0
 
-  const [preamble, setPreamble] = useState(title !== undefined)
+  const [preamble, setPreamble] = useState(intro !== undefined)
   const [time, setTime] = useState(0)
-  const [playing, setPlaying] = useState(title === undefined)
+  const [playing, setPlaying] = useState(intro === undefined)
   const [speedIdx, setSpeedIdx] = useState(0)
+  /** the handoff row stays once the end has been reached, even when scrubbing back */
+  const [reachedEnd, setReachedEnd] = useState(false)
   /** bumped to rebuild the widget for backward seeks (patches only merge) */
   const [epoch, setEpoch] = useState(0)
   const appliedRef = useRef(-1)
+  const widgetRef = useRef<LessonWidget | null>(null)
 
   const widget = useMemo(() => createLessonWidget(explanation, params), [explanation.id, epoch])
+  // a fresh widget (new explanation or backward seek) replays from the top
+  if (widgetRef.current !== widget) {
+    widgetRef.current = widget
+    appliedRef.current = -1
+  }
 
-  // last step whose time has been reached
+  // last step whose time has been reached (over ALL steps — patches included)
   let stepIdx = -1
   for (let i = 0; i < steps.length; i++) if (steps[i]!.t <= time + 1e-9) stepIdx = i
-  const current = steps[Math.max(stepIdx, 0)]!
+
+  useEffect(() => {
+    if (time >= lastContentT - 1e-9) setReachedEnd(true)
+  }, [time, lastContentT])
+
+  // reset per explanation (the another-way chain swaps explanations in place)
+  const firstExplanation = useRef(explanation.id)
+  useEffect(() => {
+    if (firstExplanation.current === explanation.id) return
+    firstExplanation.current = explanation.id
+    setTime(0)
+    setReachedEnd(false)
+    setPlaying(true) // chained representations play right away — no preamble
+    setPreamble(false)
+  }, [explanation.id])
 
   // apply newly-reached patches (forward only; backward is handled by epoch)
   useEffect(() => {
@@ -126,7 +173,7 @@ export function LessonPlayer({
     appliedRef.current = stepIdx
   }, [stepIdx, widget, steps])
 
-  // autoplay: advance until the handoff step, then rest there
+  // autoplay: advance until the handoff time, then rest there
   useEffect(() => {
     if (!playing || preamble) return
     const speed = SPEEDS[speedIdx]!
@@ -148,35 +195,49 @@ export function LessonPlayer({
     let targetIdx = -1
     for (let i = 0; i < steps.length; i++) if (steps[i]!.t <= target + 1e-9) targetIdx = i
     if (targetIdx < appliedRef.current) {
-      appliedRef.current = -1
-      setEpoch((e) => e + 1) // fresh widget; patches replay via the effect
+      setEpoch((e) => e + 1) // fresh widget; patches replay from the top
     }
     setTime(target)
   }
 
-  /** fill fraction of step segment i at the current time */
+  /** fill fraction of content segment i at the current time */
   const fillOf = (i: number): number => {
-    const start = steps[i]!.t
-    const end = i + 1 < steps.length ? steps[i + 1]!.t : handoffT
+    const start = contentSteps[i]!.t
+    const end = i + 1 < contentSteps.length ? contentSteps[i + 1]!.t : handoffT
+    if (end <= start) return time >= start - 1e-9 ? 1 : 0
     if (time <= start) return 0
-    if (time >= end || end <= start) return 1
+    if (time >= end) return 1
     return (time - start) / (end - start)
   }
+  const currentSegIdx = contentSteps.reduce((acc, s, i) => (s.t <= time + 1e-9 ? i : acc), 0)
 
-  const atHandoff = current.handoff !== undefined && stepIdx === steps.length - 1
-  const caption = current.caption ? renderText(current.caption, params) : ''
+  // the caption sticks: latest step at/before now that HAS one
+  let caption = ''
+  for (let i = 0; i <= stepIdx; i++) {
+    const c = steps[i]!.caption
+    if (c !== undefined) caption = renderText(c, params)
+  }
 
-  if (preamble) {
+  if (preamble && intro) {
     return (
       <section className="card unlock" aria-label="What you're learning">
         <div className="card-kicker">
-          <span className={kind === 'lesson' ? 'kicker' : 'kicker kicker-alt'}>
-            {kind === 'lesson' ? 'NEW SKILL' : 'ANOTHER WAY TO SEE IT'}
-          </span>
+          <span className="kicker">NEW SKILL</span>
           <span className="mono-chip">representation: {explanation.representation}</span>
         </div>
-        <p className="muted preamble-lead">{kind === 'lesson' ? "Here's what you're learning:" : 'Same idea, new picture:'}</p>
-        <h1 className="preamble-title">{title}</h1>
+        <p className="muted preamble-lead">Here's what you're learning:</p>
+        <h1 className="preamble-title">{intro.title}</h1>
+        {intro.plain && <p className="preamble-plain">{intro.plain}</p>}
+        {intro.vocab && intro.vocab.length > 0 && (
+          <dl className="preamble-vocab">
+            {intro.vocab.map((v) => (
+              <div key={v.term} className="vocab-row">
+                <dt>{v.term}</dt>
+                <dd>{v.meaning}</dd>
+              </div>
+            ))}
+          </dl>
+        )}
         <div className="answer-row" style={{ justifyContent: 'center' }}>
           <button
             className="btn btn-primary"
@@ -192,19 +253,20 @@ export function LessonPlayer({
     )
   }
 
-  return (
-    <section className="card" aria-label={kind === 'lesson' ? 'Lesson' : 'Another way to see it'}>
+  const body = (
+    <>
       <div className="card-kicker">
-        <span className={kind === 'lesson' ? 'kicker' : 'kicker kicker-alt'}>
-          {kind === 'lesson' ? 'LESSON' : "LET'S LOOK AT IT DIFFERENTLY"}
-        </span>
+        <span className={kind === 'lesson' ? 'kicker' : 'kicker kicker-alt'}>{KICKER[kind]}</span>
         <span className="mono-chip">representation: {explanation.representation}</span>
+        {onCancel && (
+          <button className="btn btn-quiet player-close" aria-label="Back to the problem" onClick={onCancel}>
+            ✕
+          </button>
+        )}
       </div>
-      {widget ? (
-        <div className="lesson-stage" key={epoch}>
-          {widget.element}
-        </div>
-      ) : null}
+      <div className="lesson-stage" key={epoch}>
+        {widget ? widget.element : null}
+      </div>
       <p className={widget ? 'lesson-caption lesson-caption-under' : 'lesson-caption'} data-testid="lesson-caption">
         {caption}
       </p>
@@ -220,14 +282,14 @@ export function LessonPlayer({
           {playing ? '❚❚' : '▶'}
         </button>
         <div className="step-track" role="group" aria-label="Lesson timeline">
-          {steps.map((_, i) => (
+          {contentSteps.map((s, i) => (
             <button
               key={i}
               type="button"
               className="step-seg"
-              aria-label={`Go to step ${i + 1} of ${steps.length}`}
-              aria-current={i === stepIdx ? 'step' : undefined}
-              onClick={() => seek(steps[i]!.t)}
+              aria-label={`Go to step ${i + 1} of ${contentSteps.length}`}
+              aria-current={i === currentSegIdx ? 'step' : undefined}
+              onClick={() => seek(s.t)}
             >
               <span className="step-fill" style={{ width: `${fillOf(i) * 100}%` }} />
             </button>
@@ -241,10 +303,10 @@ export function LessonPlayer({
           {SPEEDS[speedIdx]}×
         </button>
       </div>
-      {atHandoff && (
+      {reachedEnd && (
         <div className="answer-row handoff-row">
           <button className="btn btn-primary handoff" onClick={onDone}>
-            {renderText(current.handoff!.prompt, params)}
+            {handoffStep ? renderText(handoffStep.handoff!.prompt, params) : 'Now you try.'}
           </button>
           {onAnotherWay && (
             <button className="btn" onClick={onAnotherWay}>
@@ -253,6 +315,13 @@ export function LessonPlayer({
           )}
         </div>
       )}
+    </>
+  )
+
+  if (embedded) return <div className="embedded-player">{body}</div>
+  return (
+    <section className="card" aria-label={KICKER[kind]}>
+      {body}
     </section>
   )
 }

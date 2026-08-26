@@ -197,3 +197,28 @@ body {
 .preamble-lead { font-size: 14px; margin: 14px 0 4px; }
 .preamble-title { font: 700 26px 'Lora', Georgia, serif; margin: 0 0 10px; }
 .explained-note { margin: 8px 0 0; }
+
+/* ---- fixed-height lesson stage + embedded walk-through ---- */
+.lesson-stage {
+  min-height: 265px; display: flex; align-items: center; justify-content: center;
+}
+.lesson-stage > * { width: 100%; }
+.lesson-caption-under { min-height: 64px; display: flex; align-items: center; justify-content: center; }
+.embedded-player {
+  border: 1.5px solid #e6ddd0; border-radius: 12px; padding: 16px 18px 18px;
+  background: #fdfaf4; margin: 4px 0 14px; animation: cairn-rise 0.25s ease;
+}
+.preamble-plain {
+  font: 600 16px 'Nunito Sans', sans-serif; color: #5c5245;
+  max-width: 480px; margin: 0 auto 14px; line-height: 1.5;
+}
+.preamble-vocab { margin: 0 auto 16px; max-width: 460px; text-align: left; }
+.vocab-row { display: flex; gap: 10px; align-items: baseline; margin-bottom: 7px; }
+.vocab-row dt {
+  flex: none; font: 700 12.5px 'Nunito Sans', sans-serif; color: #8a5320;
+  background: #f3e4d4; padding: 2px 9px; border-radius: 10px;
+}
+.vocab-row dd { margin: 0; font: 600 13.5px 'Nunito Sans', sans-serif; color: #7a6f61; }
+
+.player-close { margin-left: auto; padding: 4px 10px; font-size: 15px; }
+.card-kicker .player-close { margin-left: 8px; }

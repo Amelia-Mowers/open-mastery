@@ -6,6 +6,7 @@ import {
   instantiate,
   nextCheckBaseItem,
   rankSkills,
+  targetDifficulty,
   weakestPrereq,
 } from '../../src/core/select'
 import { instanceKey } from '../../src/core/events'
@@ -76,6 +77,21 @@ describe('selector (§5)', () => {
     const faded = cur.items.get('alg1.linear.solve-one-step.f01')!
     const key = instanceKey(faded.id, paramHash(faded.params))
     expect(instantiate(faded, new Set([key]), 1, 32)).toBeNull()
+  })
+
+  it('checks are capstones: the hardest base item comes first', () => {
+    const first = nextCheckBaseItem(SKILL_B, [], cur)!
+    const second = nextCheckBaseItem(SKILL_B, [first.id], cur)!
+    expect(first.difficulty).toBeGreaterThanOrEqual(second.difficulty)
+    expect(first.difficulty).toBe(2)
+  })
+
+  it('practice difficulty ramps with the mastery estimate', () => {
+    const pool = cur.itemsBySkill.get(SKILL_B)!.filter((it) => it.faded == null)
+    expect(targetDifficulty(0.2, pool)).toBe(1)
+    expect(targetDifficulty(0.55, pool)).toBe(2)
+    expect(targetDifficulty(0.95, pool)).toBe(2)
+    expect(targetDifficulty(0.5, [])).toBe(1)
   })
 
   it('check base items are generator-backed, non-choice, and distinct', () => {

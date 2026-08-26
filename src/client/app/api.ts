@@ -13,6 +13,10 @@ export interface ServerNext {
   params?: Record<string, number | string>
   /** what the lesson teaches (the skill name), for the preamble */
   skillName?: string
+  /** plain-language framing + vocab for the preamble */
+  preamble?: { plain: string; vocab: Array<{ term: string; meaning: string }> }
+  /** distinct representations available for this skill */
+  totalReps?: number
   points: number
 }
 
@@ -20,6 +24,7 @@ export interface ExplainResult {
   explanation: Explanation | null
   params: Record<string, number | string>
   skillName: string
+  totalReps: number
 }
 
 export interface AttemptOutcome {
@@ -76,12 +81,23 @@ export class SiteApi {
     await this.post('/api/start-check', { skillId })
   }
 
-  /** on-demand explanation for a skill; same variables as the pending item */
-  async explain(skillId: string, excludeReps: string[] = []): Promise<ExplainResult> {
+  /** on-demand explanation for a skill; same variables as the pending item.
+   * `prefer` asks for the problem's own metaphor; when every representation
+   * has been seen, the chain loops (everything but the current one). */
+  async explain(skillId: string, excludeReps: string[] = [], prefer?: string): Promise<ExplainResult> {
     const extra: Record<string, string> = { skill: skillId }
     if (excludeReps.length > 0) extra['exclude'] = excludeReps.join(',')
+    if (prefer) extra['prefer'] = prefer
     const r = await fetch(this.url('/api/explain', extra))
-    return (await r.json()) as ExplainResult
+    const result = (await r.json()) as ExplainResult
+    if (result.explanation === null && excludeReps.length > 0) {
+      // loop: everything is fresh again except what's on screen right now
+      const again = await fetch(
+        this.url('/api/explain', { skill: skillId, exclude: excludeReps[excludeReps.length - 1]! }),
+      )
+      return (await again.json()) as ExplainResult
+    }
+    return result
   }
 
   async explained(explanationId: string, skillId: string): Promise<void> {

@@ -197,11 +197,14 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         // params_from: item — the timeline renders with the skill's primary
         // item family (authored params of its first practice item)
         const params = practiceItems(action.skillId, cur)[0]?.params ?? {}
+        const skill = cur.skills.get(action.skillId)
         return json(res, 200, {
           action,
           explanation: cur.explanations.get(action.explanationId),
           params,
-          skillName: cur.skills.get(action.skillId)?.name ?? action.skillId,
+          skillName: skill?.name ?? action.skillId,
+          preamble: skill?.preamble,
+          totalReps: new Set((cur.explanationsBySkill.get(action.skillId) ?? []).map((e) => e.representation)).size,
           points,
         })
       }
@@ -265,6 +268,8 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       // when an item of that skill is pending (same variables as the problem)
       const skillId = url.searchParams.get('skill') ?? ''
       const exclude = (url.searchParams.get('exclude') ?? '').split(',').filter(Boolean)
+      // the problem's own metaphor, when it declares one
+      const prefer = url.searchParams.get('prefer')
       const skill = cur.skills.get(skillId)
       if (!skill) return json(res, 404, { error: `unknown skill '${skillId}'` })
       const all = cur.explanationsBySkill.get(skillId) ?? []
@@ -273,13 +278,22 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         ...skill.instruction.map((id) => all.find((e) => e.id === id)).filter((e) => e !== undefined),
         ...all.filter((e) => !skill.instruction.includes(e.id)),
       ]
-      const explanation = ordered.find((e) => !exclude.includes(e.representation)) ?? null
+      const eligible = ordered.filter((e) => !exclude.includes(e.representation))
+      const explanation =
+        (prefer ? eligible.find((e) => e.representation === prefer) : undefined) ??
+        eligible[0] ??
+        null
       const pending = st.pending
       const params =
         pending?.kind === 'serve_item' && pending.skillId === skillId
           ? pending.instance.params
           : (practiceItems(skillId, cur)[0]?.params ?? {})
-      return json(res, 200, { explanation, params, skillName: skill.name })
+      return json(res, 200, {
+        explanation,
+        params,
+        skillName: skill.name,
+        totalReps: new Set(all.map((e) => e.representation)).size,
+      })
     }
 
     if (req.method === 'POST' && url.pathname === '/api/explained') {

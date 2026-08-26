@@ -24,6 +24,7 @@ import {
   nextCheckBaseItem,
   practiceItems,
   rankSkills,
+  targetDifficulty,
   weakestPrereq,
   type ItemInstance,
 } from './select.ts'
@@ -177,7 +178,7 @@ export function nextAction(
   }
 
   const pool = practiceItems(skillId, ctx.cur)
-  const inst = instantiateFor(pool, student, session, pol)
+  const inst = instantiateFor(pool, student, session, pol, skillId)
   if (!inst) return { kind: 'session_done' } // out of items (bundle bug)
   return serveWorkItem('practice', skillId, inst, student, session, ctx)
 }
@@ -231,16 +232,28 @@ function instantiateFor(
   student: StudentState,
   session: SessionState,
   pol: PolicyV1,
+  /** when set, ramp difficulty toward this skill's current p */
+  rampSkillId?: string,
 ): ItemInstance | null {
   const blocked = blockedSet(student, session)
-  // rotate item families: least-served this session first (variety — e.g.
-  // alternating sign families), then authored difficulty order
+  // difficulty ramps with the mastery estimate; within a difficulty, rotate
+  // item families least-served-first (variety — e.g. alternating sign
+  // families)
+  const p = rampSkillId !== undefined ? (student.skills[rampSkillId]?.p ?? 0) : 0
+  const target = rampSkillId !== undefined ? targetDifficulty(p, pool) : null
   const servedCount = (itemId: string): number => {
     let n = 0
     for (const key of session.served) if (key.startsWith(`${itemId}#`)) n++
     return n
   }
-  const ordered = [...pool].sort((a, b) => servedCount(a.id) - servedCount(b.id))
+  const ordered = [...pool].sort((a, b) => {
+    if (target !== null) {
+      const da = Math.abs(a.difficulty - target)
+      const db = Math.abs(b.difficulty - target)
+      if (da !== db) return da - db
+    }
+    return servedCount(a.id) - servedCount(b.id)
+  })
   for (const item of ordered) {
     const inst = instantiate(item, blocked, seedFor(session), pol.selector.isomorphSeedTries)
     if (inst) return inst

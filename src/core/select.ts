@@ -92,7 +92,7 @@ export function practiceItems(skillId: string, cur: CurriculumIndex): Item[] {
 }
 
 /** Pick the next check base item: check-eligible, distinct from the base
- * items already used in this check. */
+ * items already used in this check. Checks are capstones — hardest first. */
 export function nextCheckBaseItem(
   skillId: string,
   usedBaseItems: readonly string[],
@@ -101,7 +101,19 @@ export function nextCheckBaseItem(
   const candidates = (cur.itemsBySkill.get(skillId) ?? []).filter(
     (it) => isCheckEligible(it) && !usedBaseItems.includes(it.id),
   )
+  candidates.sort((a, b) => b.difficulty - a.difficulty || a.id.localeCompare(b.id))
   return candidates[0] ?? null
+}
+
+/** Practice difficulty ramp: map the skill's current p onto the pool's
+ * difficulty range — low estimates get the easiest family, high estimates the
+ * hardest (v1: difficulty still only orders items within a skill). */
+export function targetDifficulty(p: number, pool: readonly Item[]): number {
+  if (pool.length === 0) return 1
+  const ds = pool.map((it) => it.difficulty)
+  const lo = Math.min(...ds)
+  const hi = Math.max(...ds)
+  return lo + Math.round(Math.min(1, Math.max(0, p)) * (hi - lo))
 }
 
 /** The weakest unmastered-or-lapsed prerequisite, or null when every prereq

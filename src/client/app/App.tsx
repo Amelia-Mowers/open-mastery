@@ -7,16 +7,14 @@ import { ItemCard } from './ItemCard'
 import { Dashboard } from './Dashboard'
 import type { Params } from './render'
 
-/** an on-demand explanation being played over the normal flow */
+/** an alternative explanation chained from the current lesson */
 interface OverlayExplanation {
   explanation: Explanation
   params: Params
   skillId: string
-  skillName: string
-  /** representations already seen in this chain (for "another way") */
+  /** representations seen in this chain — the loop cycles through them */
   seenReps: string[]
-  /** where to return when done */
-  context: { kind: 'lesson-chain' } | { kind: 'item'; instanceKey: string }
+  totalReps: number
 }
 
 export interface AppProps {
@@ -145,10 +143,8 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   const focusSkill = useRef<string | null>(null)
   /** skills whose check-unlocked interstitial was dismissed for now */
   const [checkDismissed, setCheckDismissed] = useState<ReadonlySet<string>>(new Set())
-  /** an on-demand explanation playing over the flow */
+  /** an alternative explanation playing in the lesson slot */
   const [overlay, setOverlay] = useState<OverlayExplanation | null>(null)
-  /** instances the student asked to be shown — their attempts count assisted */
-  const [explained, setExplained] = useState<ReadonlySet<string>>(new Set())
 
   const refresh = useCallback(() => {
     setNext(null)
@@ -180,22 +176,20 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
     focusSkill.current = null
     setCheckDismissed(new Set())
     setOverlay(null)
-    setExplained(new Set())
     void api.reset().then(refresh)
   }
 
-  /** fetch the next unseen-representation explanation and play it */
-  const openExplanation = useCallback(
-    async (skillId: string, seenReps: string[], context: OverlayExplanation['context']) => {
+  /** chain into the next representation (api.explain loops when exhausted) */
+  const openAnotherWay = useCallback(
+    async (skillId: string, seenReps: string[]) => {
       const r = await api.explain(skillId, seenReps)
-      if (!r.explanation) return // every representation seen — nothing to chain
+      if (!r.explanation) return
       setOverlay({
         explanation: r.explanation,
         params: r.params as Params,
         skillId,
-        skillName: r.skillName,
         seenReps: [...seenReps, r.explanation.representation],
-        context,
+        totalReps: r.totalReps,
       })
     },
     [api],
@@ -204,17 +198,11 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   const closeOverlay = useCallback(async () => {
     if (!overlay) return
     await api.explained(overlay.explanation.id, overlay.skillId)
-    if (overlay.context.kind === 'lesson-chain') {
-      // the underlying lesson action completes with the whole chain
-      await api.explanationViewed()
-      setOverlay(null)
-      refresh()
-    } else {
-      // back to the same problem; its attempt now counts as helped
-      setExplained(new Set([...explained, overlay.context.instanceKey]))
-      setOverlay(null)
-    }
-  }, [api, overlay, explained, refresh])
+    // the underlying lesson action completes with the whole chain
+    await api.explanationViewed()
+    setOverlay(null)
+    refresh()
+  }, [api, overlay, refresh])
 
   let body
   if (view === 'dashboard') {
@@ -225,14 +213,17 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
         key={overlay.explanation.id}
         explanation={overlay.explanation}
         params={overlay.params}
-        kind={overlay.context.kind === 'item' ? 'lesson' : 'alt_explanation'}
-        title={overlay.skillName}
+        kind="alt_explanation"
         onDone={() => {
           void closeOverlay()
         }}
-        onAnotherWay={() => {
-          void openExplanation(overlay.skillId, overlay.seenReps, overlay.context)
-        }}
+        onAnotherWay={
+          overlay.totalReps > 1
+            ? () => {
+                void openAnotherWay(overlay.skillId, overlay.seenReps)
+              }
+            : undefined
+        }
       />
     )
   } else if (error) {
@@ -259,19 +250,32 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   } else if (next.action.kind === 'lesson' || next.action.kind === 'alt_explanation') {
     const { skillId } = next.action
     const rep = next.explanation!.representation
+    // the preamble belongs to the NEW-SKILL entry only, never to alternative
+    // explanations or chained representations
+    const intro =
+      next.action.kind === 'lesson' && urlParam('autostart') !== '1'
+        ? {
+            title: next.skillName ?? skillId,
+            ...(next.preamble ? { plain: next.preamble.plain, vocab: next.preamble.vocab } : {}),
+          }
+        : undefined
     body = (
       <LessonPlayer
         key={next.action.explanationId}
         explanation={next.explanation!}
         params={(next.params ?? {}) as Params}
         kind={next.action.kind}
-        title={urlParam('autostart') === '1' ? undefined : (next.skillName ?? skillId)}
+        intro={intro}
         onDone={() => {
           void api.explanationViewed().then(refresh)
         }}
-        onAnotherWay={() => {
-          void openExplanation(skillId, [rep], { kind: 'lesson-chain' })
-        }}
+        onAnotherWay={
+          (next.totalReps ?? 1) > 1
+            ? () => {
+                void openAnotherWay(skillId, [rep])
+              }
+            : undefined
+        }
       />
     )
   } else if (
@@ -304,21 +308,22 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   } else {
     const instanceKey = `${next.action.instance.itemId}#${next.action.instance.paramHash}`
     const { skillId } = next.action
+    const itemRep = next.item?.representation ?? undefined
     body = (
       <ItemCard
         key={instanceKey}
         action={next.action}
         item={next.item!}
         pointsBefore={next.points}
-        explanationAssisted={explained.has(instanceKey)}
         onSubmit={onSubmit}
         onContinue={(focus) => {
           if (focus !== undefined) focusSkill.current = focus
           refresh()
         }}
         onStartCheck={startCheck}
-        onExplain={() => {
-          void openExplanation(skillId, [], { kind: 'item', instanceKey })
+        fetchExplanation={(exclude) => api.explain(skillId, exclude, itemRep ?? undefined)}
+        onExplained={(explanationId) => {
+          void api.explained(explanationId, skillId)
         }}
         showInlineCheckOffer={next.action.checkAvailable === true}
       />

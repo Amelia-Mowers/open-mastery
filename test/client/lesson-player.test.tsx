@@ -68,11 +68,11 @@ describe('explanation player', () => {
     expect(screen.getByText('28')).toBeInTheDocument()
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
 
-    goToStep(3, 5) // op step at t=6
+    goToStep(3, 4) // op step at t=6
     expect(container.querySelector('[data-op-badge="left"]')).toHaveTextContent('÷ 4')
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Divide both sides by 4.')
 
-    goToStep(5, 5) // handoff
+    goToStep(4, 4) // handoff
     expect(container.querySelector('[data-op-badge="left"]')).toBeNull()
     expect(screen.getByText('7')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Now you try.' }))
@@ -83,9 +83,9 @@ describe('explanation player', () => {
     const { container } = render(
       <LessonPlayer explanation={balanceExp} params={P} kind="lesson" onDone={() => {}} />,
     )
-    goToStep(3, 5)
+    goToStep(3, 4)
     expect(container.querySelector('[data-op-badge="left"]')).not.toBeNull()
-    goToStep(1, 5)
+    goToStep(1, 4)
     expect(container.querySelector('[data-op-badge="left"]')).toBeNull()
     expect(container.querySelector('[data-pan="left"]')).toHaveTextContent('4x')
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
@@ -94,7 +94,7 @@ describe('explanation player', () => {
   it('pause/play toggles; seeking pauses; speed control cycles', () => {
     render(<LessonPlayer explanation={balanceExp} params={P} kind="lesson" onDone={() => {}} />)
     expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument()
-    goToStep(2, 5)
+    goToStep(2, 4)
     expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: 'Play' }))
     expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument()
@@ -112,7 +112,11 @@ describe('explanation player', () => {
         explanation={balanceExp}
         params={P}
         kind="lesson"
-        title="Solve ax = b using the Division Property of Equality"
+        intro={{
+          title: 'Solve ax = b using the Division Property of Equality',
+          plain: 'Undo multiplication by dividing both sides.',
+          vocab: [{ term: 'equation', meaning: 'a math sentence saying two things are equal' }],
+        }}
         onDone={() => {}}
       />,
     )
@@ -130,7 +134,7 @@ describe('explanation player', () => {
       <LessonPlayer explanation={balanceExp} params={P} kind="lesson" onDone={() => {}} onAnotherWay={onAnother} />,
     )
     expect(screen.queryByRole('button', { name: 'Show me another way' })).toBeNull()
-    goToStep(5, 5)
+    goToStep(4, 4)
     fireEvent.click(screen.getByRole('button', { name: 'Show me another way' }))
     expect(onAnother).toHaveBeenCalledOnce()
   })
@@ -141,10 +145,10 @@ describe('explanation player', () => {
     )
     for (const tick of [0, 7, 14, 21, 28])
       expect(container.querySelector(`[data-tick="${tick}"]`)).not.toBeNull()
-    goToStep(2, 4)
+    goToStep(2, 3)
     expect(container.querySelector('[data-tick="7"]')).toHaveAttribute('data-highlighted')
     expect(container.querySelector('[data-tick="7"]')).toHaveAttribute('data-marked')
-    goToStep(3, 4)
+    goToStep(3, 3)
     expect(container.querySelector('[data-tick="28"]')).toHaveAttribute('data-marked')
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('So x = 7.')
   })
@@ -157,11 +161,11 @@ describe('explanation player', () => {
     expect(container.querySelectorAll('[data-counter]')).toHaveLength(28)
     expect(container.querySelectorAll('[data-partition]')).toHaveLength(0)
 
-    goToStep(2, 4) // partition into 4 groups of 7
+    goToStep(2, 3) // partition into 4 groups of 7
     expect(container.querySelectorAll('[data-partition]')).toHaveLength(4)
     expect(container.querySelectorAll('[data-counter]')).toHaveLength(28)
 
-    goToStep(3, 4) // reveal: each envelope = 7
+    goToStep(3, 3) // reveal: each envelope = 7
     const shares = container.querySelectorAll('[data-share]')
     expect(shares).toHaveLength(4)
     expect(shares[0]).toHaveTextContent('= 7')

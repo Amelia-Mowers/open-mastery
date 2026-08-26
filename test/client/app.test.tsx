@@ -142,9 +142,10 @@ describe('PWA client against the site server', () => {
     const stem = screen.getByTestId('stem').textContent ?? ''
     await user.click(screen.getByRole('button', { name: 'Show me how' }))
 
-    // preamble names the skill, then the walk-through plays
-    await screen.findByText(/what you're learning/i)
-    await user.click(screen.getByRole('button', { name: 'Start the lesson' }))
+    // the walk-through plays IN PLACE: stem stays visible, no preamble
+    await screen.findByText(/WALK-THROUGH/)
+    expect(screen.getByTestId('stem')).toBeInTheDocument()
+    expect(screen.queryByText(/what you're learning/i)).toBeNull()
     const segs = await screen.findAllByRole('button', { name: /Go to step/ })
     fireEvent.click(segs[segs.length - 1]!)
     await user.click(await screen.findByRole('button', { name: 'Now you try.' }))
