@@ -4,8 +4,8 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, caption: "{a}{variable} = {b} means {a} equal jumps land exactly on {b}." }
-  - { t: 3, caption: "Each jump has size {b} ÷ {a} = {b/a}." }
-  - { t: 6, caption: "So {variable} = {b/a}." }
-  - { t: 8, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { min: 0, max: "{b}", step: "{b/a}" }, caption: "{a}{variable} = {b} means {a} equal jumps must land exactly on {b}." }
+  - { t: 3.5, patch: { highlight: ["{b/a}"], marker: "{b/a}" }, caption: "The first jump lands on {b/a} — that is the size of every jump." }
+  - { t: 7, patch: { marker: "{b}" }, caption: "After {a} equal jumps you reach {b}. So {variable} = {b/a}." }
+  - { t: 9, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

@@ -6,6 +6,12 @@ widget: { type: equation-input, config: { stem: "Finish solving: {variable}/{a} 
 answer: { type: expr, value: "{variable} = {a*b}", equivalence: symbolic }
 hints:
   - "Step 2 already multiplied both sides by {a}."
-faded: { reveal_steps: [1, 2], student_completes: [3] }
+faded:
+  reveal_steps: [1, 2]
+  student_completes: [3]
+  steps:
+    - "{variable}/{a} = {b}"
+    - "Multiply both sides by {a}:  {variable}/{a} × {a} = {b} × {a}"
+    - "{variable} = ?"
 source: { book: openstax-prealgebra-2e, section: "8.2" }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
