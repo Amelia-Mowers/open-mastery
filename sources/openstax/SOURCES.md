@@ -3,13 +3,35 @@
 The corpus is fetched, not committed (see `.gitignore`). Run `./fetch.sh`
 from this directory to reproduce the exact pinned checkouts.
 
-## License — read this before deriving anything
+## Catalog licensing policy: CC BY 4.0 ONLY — no NC content, ever
+
+NC binds the *end licensee*, and for-profit tutoring centers are a core
+Cairn deployment (architecture §4.5: "Site (school / center / tutor)"). An
+NC-licensed track would be schools-only content: two catalogs with
+different allowed audiences, parity drift, and a standing liability trap
+for a center that loads the wrong bundle. So the OpenMastery catalog
+carries **no NC-licensed content at all**. If a site ever needs
+post-relicense editions, commercial terms are a transaction between them
+and the publisher — not something OpenMastery intermediates.
+
+Both pillar OER publishers have relicensed their current editions:
+
+- **OpenStax** → CC BY-NC-SA 4.0 (repo dates below)
+- **Illustrative Mathematics** → IM v.360 (© 2024, TK © 2025) is CC BY-NC
+  4.0; the **first edition (© 2019–2021) remains CC BY 4.0**
+  ([IM terms of use](https://illustrativemathematics.org/im-trademark-usage-policy/),
+  verified 2026-08-26). When IM content is added, derive only from the
+  first edition.
+
+CC BY is irrevocable for copies obtained under it, so the pinned
+pre-relicense revisions stay usable forever.
+
+## OpenStax — read this before deriving anything
 
 OpenStax relicensed these repositories to **CC BY-NC-SA 4.0** (prealgebra
-bundle on 2026-03-12, algebra-1 on 2025-04-07). NC-SA is incompatible with
-this repo's CC BY 4.0 license, so **derivation happens ONLY from the pinned
-pre-relicense revisions below**, which were published under CC BY 4.0 —
-irrevocably, per the license's own terms. Do not derive from `main`.
+bundle on 2026-03-12, algebra-1 on 2025-04-07), so **derivation happens
+ONLY from the pinned pre-relicense revisions below**, which were published
+under CC BY 4.0. Do not derive from `main`.
 
 | repo | pinned commit (last CC BY 4.0 revision) | contents |
 |---|---|---|
