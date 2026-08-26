@@ -78,6 +78,10 @@ export type NextAction =
       /** the skill being worked on (differs from skillId for probes) */
       forSkillId: string
       instance: ItemInstance
+      /** show the item's representation scaffold (concreteness fading:
+       * false once the mastery estimate clears policy.scaffolding.fadeAtP,
+       * and always false for checks) */
+      scaffolded: boolean
       offeredHintLevel?: number
       checkAvailable?: boolean
       checkIndex?: number
@@ -120,6 +124,7 @@ export function nextAction(
         skillId: o.prereqId,
         forSkillId: o.skillId,
         instance: inst,
+        scaffolded: true,
       }
     }
     // no probe item available: drop the overlay and fall through
@@ -138,6 +143,7 @@ export function nextAction(
           skillId: c.skillId,
           forSkillId: c.skillId,
           instance: inst,
+          scaffolded: false,
           checkIndex: c.passedInstanceIds.length + 1,
         }
       }
@@ -191,12 +197,15 @@ function serveWorkItem(
   session: SessionState,
   ctx: EngineCtx,
 ): NextAction {
+  const p = student.skills[skillId]?.p ?? ctx.bkt(skillId).L0
   const action: NextAction = {
     kind: 'serve_item',
     itemKind,
     skillId,
     forSkillId: skillId,
     instance,
+    // faded examples always keep their scaffolding; practice fades it out
+    scaffolded: itemKind === 'faded' || p < ctx.policy.scaffolding.fadeAtP,
   }
   const offered = session.pendingHint[skillId]
   if (offered !== undefined) action.offeredHintLevel = offered

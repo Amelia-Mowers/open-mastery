@@ -320,6 +320,7 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
         action={next.action}
         item={next.item!}
         pointsBefore={next.points}
+        mastery={next.mastery ?? 0}
         onSubmit={onSubmit}
         onContinue={(focus) => {
           if (focus !== undefined) focusSkill.current = focus

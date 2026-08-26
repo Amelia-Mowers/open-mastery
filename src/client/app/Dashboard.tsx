@@ -159,6 +159,9 @@ export function Dashboard({ api }: { api: SiteApi }) {
               >
                 <div className="skill-node-name">{s.name}</div>
                 <div className="skill-node-phase">{style.label}</div>
+                <div className="node-bar" aria-hidden>
+                  <span style={{ width: `${Math.round((state.skills[s.id]?.p ?? 0) * 100)}%` }} />
+                </div>
               </div>
             )
           })}

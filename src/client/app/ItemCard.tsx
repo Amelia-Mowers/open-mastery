@@ -6,6 +6,7 @@ import type { Explanation } from '@openmastery/schema'
 import type { NextAction } from '../../core/engine'
 import { createWidget } from '../widgets/registry'
 import { createBalanceScale } from '../viz/balance-scale'
+import { createEnvelopeModel } from '../viz/envelope-model'
 import { LessonPlayer } from './LessonPlayer'
 import { renderText, type Params } from './render'
 import type { AttemptOutcome, ClientItem, ExplainResult } from './api'
@@ -17,6 +18,8 @@ export interface ItemCardProps {
   item: ClientItem
   /** points before this attempt (to show the delta as juice) */
   pointsBefore: number
+  /** mastery estimate (0..1) for this item's skill, before the attempt */
+  mastery: number
   onSubmit: (raw: string, hintLevel: number, latencyMs: number) => Promise<AttemptOutcome>
   /** continue; focus 'skill-id' keeps practicing that skill, null moves on */
   onContinue: (focus?: string | null) => void
@@ -48,6 +51,7 @@ export function ItemCard({
   action,
   item,
   pointsBefore,
+  mastery,
   onSubmit,
   onContinue,
   onStartCheck,
@@ -64,6 +68,8 @@ export function ItemCard({
   const [inline, setInline] = useState<InlinePlay | null>(null)
   /** watched the walk-through → this try counts as helped */
   const [explained, setExplained] = useState(false)
+  /** the bar the student sees; jumps to the server's post-attempt value */
+  const [shownMastery, setShownMastery] = useState(mastery)
   const startedAt = useMemo(() => performance.now(), [action.instance.paramHash])
 
   const widget = useMemo(() => {
@@ -80,10 +86,32 @@ export function ItemCard({
     return createWidget(item.widget.type, config)
   }, [item.id, action.instance.paramHash])
 
-  const viz = useMemo(() => {
-    if (item.viz?.template !== 'balance-scale') return null
-    return createBalanceScale()
-  }, [item.id, action.instance.paramHash])
+  /** the scaffold, when the engine says this serve keeps one (concreteness
+   * fading). For variety it rotates between the item's own metaphor and the
+   * envelope model when the params fit it — a stable per-instance choice. */
+  const scaffold = useMemo(() => {
+    if (!action.scaffolded || item.viz?.template !== 'balance-scale') return null
+    const a = params['a']
+    const b = params['b']
+    const envelopeFits =
+      typeof a === 'number' && Number.isInteger(a) && a >= 2 && a <= 14 &&
+      typeof b === 'number' && Number.isInteger(b) && b > 0 && b <= 80
+    const rotate = envelopeFits && parseInt(action.instance.paramHash.slice(0, 2), 16) % 2 === 1
+    if (rotate) {
+      const w = createEnvelopeModel()
+      return { element: w.render({ envelopes: a as number, counters: b as number }, 'problem') }
+    }
+    const w = createBalanceScale()
+    return {
+      element: w.render(
+        {
+          left: renderText(item.viz.bind['left'] ?? '', params),
+          right: renderText(item.viz.bind['right'] ?? '', params),
+        },
+        'problem',
+      ),
+    }
+  }, [item.id, action.instance.paramHash, action.scaffolded])
 
   const stem = typeof item.widget.config?.['stem'] === 'string'
     ? renderText(item.widget.config['stem'] as string, params)
@@ -97,7 +125,9 @@ export function ItemCard({
     if (raw.trim() === '') return
     setBusy(true)
     try {
-      setOutcome(await onSubmit(raw, revealedHints, Math.round(performance.now() - startedAt)))
+      const out = await onSubmit(raw, revealedHints, Math.round(performance.now() - startedAt))
+      setOutcome(out)
+      if (out.mastery !== undefined) setShownMastery(out.mastery)
     } finally {
       setBusy(false)
     }
@@ -145,6 +175,13 @@ export function ItemCard({
         </span>
         {isCheck && <span className="muted">no hints on these — show what you know</span>}
         {action.itemKind === 'probe' && <span className="muted">these count for the earlier skill</span>}
+        <span className="mastery-meter" aria-label={`Mastery ${Math.round(shownMastery * 100)} percent`}>
+          <span className="mastery-label">MASTERY</span>
+          <span className="m-bar" aria-hidden>
+            <span className="m-fill" style={{ width: `${Math.round(shownMastery * 100)}%` }} />
+          </span>
+          <b data-testid="mastery-pct">{Math.round(shownMastery * 100)}%</b>
+        </span>
       </div>
       {stem && (
         <h2 className="stem" data-testid="stem">
@@ -186,17 +223,7 @@ export function ItemCard({
         />
       ) : (
         <>
-          {viz && item.viz && (
-            <div className="viz">
-              {viz.render(
-                {
-                  left: renderText(item.viz.bind['left'] ?? '', params),
-                  right: renderText(item.viz.bind['right'] ?? '', params),
-                },
-                'problem',
-              )}
-            </div>
-          )}
+          {scaffold && <div className="viz">{scaffold.element}</div>}
           <div className="answer-row">
             {widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
             <button className="btn btn-primary" onClick={() => void submit()} disabled={busy || outcome !== null}>

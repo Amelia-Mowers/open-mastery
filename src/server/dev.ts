@@ -14,6 +14,7 @@ import { extname, join, normalize } from 'node:path'
 import { parseTemplate, templateIdentifiers, type Bundle, type Explanation } from '@openmastery/schema'
 import {
   applyEvent,
+  bktUpdate,
   buildIndex,
   freshSession,
   initialStudentState,
@@ -141,18 +142,45 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
   })
 
   /** Visible progress points, derived from the log (no rankings — personal
-   * only, per invariant 3): unassisted correct +5, assisted correct +2,
-   * completed explanation +2, mastery +25. */
+   * only, per invariant 3). The BASIS is mastery itself: each skill is worth
+   * the mastery percent gained (highest estimate ever reached minus the
+   * starting estimate — misses never take points away), so the mastery bar
+   * and the points tell the same story. Small flat bonuses: +2 per completed
+   * explanation (capped at one per explanation), +10 per mastery. */
   const pointsFor = (studentId: string): number => {
-    let pts = 0
+    const p = new Map<string, number>()
+    const maxP = new Map<string, number>()
+    const explained = new Set<string>()
+    let flat = 0
+    const bump = (skillId: string, value: number): void => {
+      p.set(skillId, value)
+      if (value > (maxP.get(skillId) ?? 0)) maxP.set(skillId, value)
+    }
     for (const e of log) {
       if (e.studentId !== studentId) continue
-      if (e.kind === 'attempt' && e.correct) pts += e.assisted ? 2 : 5
-      else if (e.kind === 'explanation_viewed' && e.completed) pts += 2
-      else if (e.kind === 'mastery_granted') pts += 25
+      if (e.kind === 'attempt') {
+        const prm = bktDefaults.get(e.skillId) ?? fallback
+        const prior = p.get(e.skillId) ?? prm.L0
+        bump(e.skillId, bktUpdate(prior, e.correct, e.correct ? e.hintLevel : 0, prm))
+      } else if (e.kind === 'mastery_granted') {
+        bump(e.skillId, Math.max(p.get(e.skillId) ?? 0, 0.95))
+        flat += 10
+      } else if (e.kind === 'explanation_viewed' && e.completed && !explained.has(e.explanationId)) {
+        explained.add(e.explanationId)
+        flat += 2
+      }
+    }
+    let pts = flat
+    for (const [skillId, top] of maxP) {
+      const L0 = (bktDefaults.get(skillId) ?? fallback).L0
+      pts += Math.max(0, Math.floor((top - L0) * 100))
     }
     return pts
   }
+
+  /** current mastery estimate for a skill (the bar the student sees) */
+  const masteryOf = (studentId: string, skillId: string): number =>
+    slot(studentId).student.skills[skillId]?.p ?? (bktDefaults.get(skillId) ?? fallback).L0
 
   const json = (res: ServerResponse, status: number, body: unknown): void => {
     const s = JSON.stringify(body)
@@ -223,7 +251,7 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       if (action.kind === 'serve_item') {
         const item = cur.items.get(action.instance.itemId)!
         const { answer: _answer, ...safe } = item
-        return json(res, 200, { action, item: safe, points })
+        return json(res, 200, { action, item: safe, points, mastery: masteryOf(studentId, action.skillId) })
       }
       if (action.kind === 'lesson' || action.kind === 'alt_explanation') {
         // params_from: item — the timeline renders with the skill's primary
@@ -263,6 +291,7 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
           skillId: 'skillId' in e ? e.skillId : undefined,
         })),
         points: pointsFor(studentId),
+        mastery: masteryOf(studentId, pending.skillId),
       })
     }
 

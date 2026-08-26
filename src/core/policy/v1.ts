@@ -51,6 +51,16 @@ export const policyV1 = {
     pAfterLapse: 0.7,
   },
 
+  scaffolding: {
+    /** concreteness fading: below this mastery estimate a practice item is
+     * served WITH its representation scaffold (viz); at or above it the
+     * problem stands alone — the raw symbolic form is the goal, and checks
+     * are always raw. (BKT moves fast: one unassisted correct from L0 0.3
+     * already lands ~0.71, so this keeps the scaffold for roughly the first
+     * two practice wins — and brings it back when p drops on misses.) */
+    fadeAtP: 0.85,
+  },
+
   selector: {
     /** ~1 review per 3 new items (FSRS reviews arrive in build step 8) */
     interleaveReviewEvery: 4,

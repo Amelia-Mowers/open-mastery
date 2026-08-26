@@ -17,6 +17,8 @@ export interface ServerNext {
   preamble?: { plain: string; vocab: Array<{ term: string; meaning: string }> }
   /** distinct representations available for this skill */
   totalReps?: number
+  /** current mastery estimate for the served item's skill (0..1) */
+  mastery?: number
   points: number
 }
 
@@ -32,6 +34,8 @@ export interface AttemptOutcome {
   correct: boolean
   emitted: Array<{ kind: string; skillId?: string }>
   points: number
+  /** mastery estimate for the attempted skill AFTER this attempt */
+  mastery?: number
 }
 
 export interface BundleView {

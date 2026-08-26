@@ -164,6 +164,31 @@ describe('synthetic students (§10): the fast executable spec', () => {
     expect(instanceKey(c.instance.itemId, c.instance.paramHash)).not.toBe(key)
   })
 
+  it('scaffolding fades with mastery: early practice keeps the representation, later practice and checks are raw', () => {
+    const { ctx } = makeCtx()
+    const student = initialStudentState()
+    const session = freshSession()
+    // reach SKILL_A practice with a low estimate: scaffolded
+    runLoop(student, session, ctx, alwaysCorrect, 20, (s) => s.skills[SKILL_A]?.phase === 'practice')
+    const early = nextAction(student, session, ctx)
+    if (early.kind !== 'serve_item') throw new Error('expected serve')
+    expect(early.itemKind).toBe('practice')
+    expect(student.skills[SKILL_A]!.p).toBeLessThan(0.85)
+    expect(early.scaffolded).toBe(true)
+    // push the estimate past the fade threshold: raw problems from here
+    runLoop(student, session, ctx, alwaysCorrect, 30, (s) => (s.skills[SKILL_A]?.p ?? 0) >= 0.85)
+    const late = nextAction(student, session, ctx)
+    if (late.kind !== 'serve_item') throw new Error('expected serve')
+    expect(late.scaffolded).toBe(false)
+    // checks are always raw
+    student.skills[SKILL_A]!.p = 0.95
+    expect(startCheck(student, session, ctx, SKILL_A)).toBe(true)
+    const check = nextAction(student, session, ctx)
+    if (check.kind !== 'serve_item') throw new Error('expected check serve')
+    expect(check.itemKind).toBe('check')
+    expect(check.scaffolded).toBe(false)
+  })
+
   const invariants = (name: string, seed: number, model: (s: number) => ReturnType<typeof guesser>) =>
     it(`${name}: log invariants hold (unique serves, p bounds, mastery evidence, fold consistency)`, () => {
       const { ctx, all } = makeCtx()
