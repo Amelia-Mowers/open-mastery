@@ -87,6 +87,9 @@ export const itemSchema = z
     faded: fadedSpecSchema.nullish().default(null),
     source: sourceRefSchema.optional(),
     review: reviewSchema,
+    /** ids are immutable and never reused; a moved/renamed item is a new id
+     * pointing at its predecessor */
+    supersedes: itemIdSchema.optional(),
   })
   .strict()
 
