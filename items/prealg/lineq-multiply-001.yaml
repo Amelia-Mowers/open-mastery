@@ -1,0 +1,13 @@
+id: prealg.lineq.multiply.001
+skills: [prealg.lineq.multiply]
+difficulty: 1
+params: { a: 7, b: -6, variable: n }
+generator: { a: { int: [2, 9] }, b: { int: [-15, -2] } }
+widget: { type: equation-input, config: { stem: "Solve: {variable}/{a} = {b}." } }
+answer: { type: expr, value: "{variable} = {a*b}", equivalence: symbolic }
+viz: { template: balance-scale, bind: { left: "{variable}/{a}", right: "{b}" } }
+hints:
+  - "{variable} is divided by {a}. What operation undoes division?"
+  - "Multiply both sides by {a}."
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

@@ -1,0 +1,10 @@
+id: prealg.lineq.multiply.exp-numberline
+skill: prealg.lineq.multiply
+representation: number-line
+widget: number-line
+params_from: item
+timeline:
+  - { t: 0, caption: "{variable}/{a} = {b} says: one of the {a} equal parts of {variable} is {b}." }
+  - { t: 4, caption: "{a} parts of size {b} reach {a*b}, so {variable} = {a*b}." }
+  - { t: 7, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

@@ -1,0 +1,12 @@
+id: prealg.lineq.reciprocal.exp-balance
+skill: prealg.lineq.reciprocal
+representation: balance-scale
+widget: balance-scale
+params_from: item
+timeline:
+  - { t: 0, patch: { left: "{p}/{q} {variable}", right: "{b}" }, caption: "The scale is balanced." }
+  - { t: 3, patch: { highlight: left.coef }, caption: "The coefficient of {variable} is {p}/{q}. Its reciprocal is {q}/{p}." }
+  - { t: 6, patch: { op: multiply, by: "{q}/{p}" }, caption: "Multiply both sides by {q}/{p} — reciprocals multiply to 1." }
+  - { t: 9, patch: { left: "{variable}", right: "{q*b/p}", op: null, highlight: null }, caption: "{variable} = {q*b/p}." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

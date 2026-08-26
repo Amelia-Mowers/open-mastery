@@ -1,0 +1,11 @@
+id: prealg.lineq.divide.exp-numberline
+skill: prealg.lineq.divide
+representation: number-line
+widget: number-line
+params_from: item
+timeline:
+  - { t: 0, caption: "{a}{variable} = {b} means {a} equal jumps land exactly on {b}." }
+  - { t: 3, caption: "Each jump has size {b} ÷ {a} = {b/a}." }
+  - { t: 6, caption: "So {variable} = {b/a}." }
+  - { t: 8, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

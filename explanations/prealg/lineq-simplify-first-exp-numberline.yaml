@@ -1,0 +1,10 @@
+id: prealg.lineq.simplify-first.exp-numberline
+skill: prealg.lineq.simplify-first
+representation: number-line
+widget: number-line
+params_from: item
+timeline:
+  - { t: 0, caption: "First tidy each side: {c1}{variable} + {c2}{variable} - {c3}{variable} is {c1+c2-c3} jumps of size {variable}." }
+  - { t: 4, caption: "{c1+c2-c3} equal jumps land on {(c1+c2-c3)*ans}, so each jump is {ans}." }
+  - { t: 7, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

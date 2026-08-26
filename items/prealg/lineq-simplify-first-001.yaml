@@ -1,0 +1,20 @@
+id: prealg.lineq.simplify-first.001
+skills: [prealg.lineq.simplify-first]
+difficulty: 1
+params: { c1: 8, c2: 9, c3: 5, d1: -3, ans: 1, variable: x }
+generator:
+  c1: { int: [5, 12] }
+  c2: { int: [2, 9] }
+  c3: { int: [2, 4] }
+  d1: { int: [-9, 9] }
+  ans: { int: [-9, 9] }
+widget:
+  type: equation-input
+  config:
+    stem: "Solve: {c1}{variable} + {c2}{variable} - {c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}."
+answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic }
+hints:
+  - "Combine the like terms on each side first."
+  - "The left side becomes {c1+c2-c3}{variable}."
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

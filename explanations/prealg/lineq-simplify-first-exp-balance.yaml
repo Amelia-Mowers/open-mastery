@@ -1,0 +1,13 @@
+id: prealg.lineq.simplify-first.exp-balance
+skill: prealg.lineq.simplify-first
+representation: balance-scale
+widget: balance-scale
+params_from: item
+timeline:
+  - { t: 0, caption: "Both sides need simplifying before we can solve." }
+  - { t: 3, caption: "Combine the {variable}-terms: {c1} + {c2} - {c3} = {c1+c2-c3}, so the left side is {c1+c2-c3}{variable}." }
+  - { t: 6, caption: "Combine the numbers: {d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans}." }
+  - { t: 9, patch: { left: "{c1+c2-c3}{variable}", right: "{(c1+c2-c3)*ans}" }, caption: "Now it is a one-step equation." }
+  - { t: 12, patch: { op: divide, by: "{c1+c2-c3}" }, caption: "Divide both sides by {c1+c2-c3}: {variable} = {ans}." }
+  - { t: 14, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

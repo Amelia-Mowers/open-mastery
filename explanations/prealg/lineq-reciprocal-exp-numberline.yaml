@@ -1,0 +1,10 @@
+id: prealg.lineq.reciprocal.exp-numberline
+skill: prealg.lineq.reciprocal
+representation: number-line
+widget: number-line
+params_from: item
+timeline:
+  - { t: 0, caption: "{p}/{q} {variable} = {b}: {p} of the {q} equal parts of {variable} total {b}." }
+  - { t: 4, caption: "One part is {b} ÷ {p} = {b/p}, and {variable} has {q} parts: {q} × {b/p} = {q*b/p}." }
+  - { t: 7, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

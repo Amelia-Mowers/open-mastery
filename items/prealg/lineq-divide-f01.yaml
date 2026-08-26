@@ -1,0 +1,11 @@
+id: prealg.lineq.divide.f01
+skills: [prealg.lineq.divide]
+difficulty: 1
+params: { a: 5, b: 40, variable: x }
+widget: { type: equation-input, config: { stem: "Finish solving: {a}{variable} = {b}." } }
+answer: { type: expr, value: "{variable} = {b/a}", equivalence: symbolic }
+hints:
+  - "Step 2 already divided both sides by {a}."
+faded: { reveal_steps: [1, 2], student_completes: [3] }
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

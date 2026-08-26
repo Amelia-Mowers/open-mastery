@@ -1,0 +1,12 @@
+id: prealg.lineq.multiply.002
+skills: [prealg.lineq.multiply]
+difficulty: 2
+params: { b: 2, variable: r }
+generator: { b: { int: [2, 20] } }
+widget: { type: equation-input, config: { stem: "Solve: -{variable} = {b}." } }
+answer: { type: expr, value: "{variable} = {-b}", equivalence: symbolic }
+hints:
+  - "-{variable} means -1 times {variable}."
+  - "Multiply (or divide) both sides by -1."
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

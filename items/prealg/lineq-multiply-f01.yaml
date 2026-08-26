@@ -1,0 +1,11 @@
+id: prealg.lineq.multiply.f01
+skills: [prealg.lineq.multiply]
+difficulty: 1
+params: { a: 6, b: -4, variable: x }
+widget: { type: equation-input, config: { stem: "Finish solving: {variable}/{a} = {b}." } }
+answer: { type: expr, value: "{variable} = {a*b}", equivalence: symbolic }
+hints:
+  - "Step 2 already multiplied both sides by {a}."
+faded: { reveal_steps: [1, 2], student_completes: [3] }
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
