@@ -3,7 +3,7 @@
  * must see the mastery moment. Browser-level (Playwright) E2E comes with the
  * device CI lane; this covers the client logic end to end without mocks. */
 import { describe, it, expect, beforeAll, afterAll } from 'vitest'
-import { render, screen, waitFor } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createDevSite, type DevSite } from '../../src/server/dev'
 import { fixtureBundle } from '../core/fixtures'
@@ -36,7 +36,7 @@ type Actionable =
   | { kind: 'continue'; el: HTMLElement }
   | { kind: 'start-check'; el: HTMLElement }
   | { kind: 'handoff'; el: HTMLElement }
-  | { kind: 'next'; el: HTMLElement }
+  | { kind: 'player'; el: HTMLElement }
   | { kind: 'item' }
 
 function findActionable(): Actionable {
@@ -49,8 +49,8 @@ function findActionable(): Actionable {
   if (handoff) return { kind: 'handoff', el: handoff }
   const submit = screen.queryByRole('button', { name: 'Check answer' })
   if (submit && screen.queryByTestId('stem')) return { kind: 'item' }
-  const next = screen.queryByRole('button', { name: 'Next' })
-  if (next) return { kind: 'next', el: next }
+  const scrub = screen.queryByRole('slider', { name: 'Lesson timeline' })
+  if (scrub) return { kind: 'player', el: scrub }
   throw new Error('nothing actionable yet')
 }
 
@@ -70,8 +70,11 @@ describe('PWA client against the site server', () => {
         case 'continue':
         case 'start-check':
         case 'handoff':
-        case 'next':
           await user.click(a.el)
+          break
+        case 'player':
+          // scrub straight to the handoff instead of waiting out autoplay
+          fireEvent.change(a.el, { target: { value: (a.el as HTMLInputElement).max } })
           break
         case 'item': {
           if (screen.queryByText(/MASTERY CHECK/)) sawCheckItem = true
@@ -104,7 +107,8 @@ describe('PWA client against the site server', () => {
     for (let i = 0; i < 10; i++) {
       const a = await waitFor(findActionable, { timeout: 4000 })
       if (a.kind === 'item') break
-      if (a.kind === 'handoff' || a.kind === 'next') await user.click(a.el)
+      if (a.kind === 'handoff') await user.click(a.el)
+      if (a.kind === 'player') fireEvent.change(a.el, { target: { value: (a.el as HTMLInputElement).max } })
     }
     await user.click(await screen.findByRole('button', { name: 'Hint' }))
     expect(await screen.findByTestId('hint-1')).toBeInTheDocument()
@@ -141,8 +145,10 @@ describe('PWA client against the site server', () => {
       switch (found.kind) {
         case 'continue':
         case 'handoff':
-        case 'next':
           await user.click(found.el)
+          break
+        case 'player':
+          fireEvent.change(found.el, { target: { value: (found.el as HTMLInputElement).max } })
           break
         case 'item':
           await user.type(screen.getByRole('textbox'), '999999')

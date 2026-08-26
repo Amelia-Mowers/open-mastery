@@ -144,3 +144,32 @@ body {
 }
 .skill-node-name { font: 700 12.5px 'Nunito Sans', sans-serif; line-height: 1.25; }
 .skill-node-phase { font: 600 10.5px ui-monospace, Menlo, monospace; margin-top: 3px; opacity: 0.85; }
+
+/* ---- explanation player ---- */
+.btn-round {
+  width: 42px; height: 42px; padding: 0; border-radius: 50%;
+  font-size: 14px; line-height: 1; flex: none;
+  background: #b05f28; color: #fff; border: none;
+}
+.lesson-controls { flex-wrap: wrap; }
+.lesson-scrub {
+  flex: 1; min-width: 120px; accent-color: #b05f28; height: 6px;
+}
+.dots .dot { border: none; padding: 0; cursor: pointer; }
+.handoff { animation: cairn-pop 0.3s ease; }
+.lesson-caption-under {
+  min-height: 56px; padding: 12px 6%; font-size: 18px; margin-top: 4px;
+}
+
+/* ---- faded worked steps ---- */
+.faded-steps { list-style: none; margin: 4px 0 14px; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.faded-step { display: flex; align-items: baseline; gap: 12px; }
+.faded-step-tag {
+  flex: none; width: 84px; text-align: right;
+  font: 700 11px ui-monospace, Menlo, monospace;
+}
+.faded-step.done .faded-step-tag { color: #4f7f5d; }
+.faded-step.yours .faded-step-tag { color: #b05f28; }
+.faded-step-text { font: 600 20px 'Lora', Georgia, serif; }
+.faded-step.done .faded-step-text { color: #5c5245; }
+.faded-step-arrow { color: #b05f28; font-size: 18px; }

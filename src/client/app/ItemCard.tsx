@@ -111,6 +111,22 @@ export function ItemCard({
           {stem}
         </h2>
       )}
+      {action.itemKind === 'faded' && item.faded?.steps && (
+        <ol className="faded-steps">
+          {item.faded.steps.map((s, i) => {
+            const n = i + 1
+            const revealed = item.faded!.reveal_steps.includes(n)
+            const yours = item.faded!.student_completes.includes(n)
+            return (
+              <li key={n} className={revealed ? 'faded-step done' : 'faded-step yours'}>
+                <span className="faded-step-tag">{revealed ? `step ${n} ✓` : 'your turn'}</span>
+                <span className="faded-step-text">{renderText(s, params)}</span>
+                {yours && <span className="faded-step-arrow" aria-hidden>→</span>}
+              </li>
+            )
+          })}
+        </ol>
+      )}
       {viz &&
         item.viz && (
           <div className="viz">

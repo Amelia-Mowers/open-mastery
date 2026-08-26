@@ -69,7 +69,15 @@ export function fixtureBundle(): Bundle {
       params: { a: 5, b: 40, variable: 'x' },
       widget: { type: 'equation-input', config: { stem: 'Finish solving: {a}{variable} = {b}.' } },
       answer: { type: 'expr', value: '{variable} = {b/a}' },
-      faded: { reveal_steps: [1, 2], student_completes: [3] },
+      faded: {
+        reveal_steps: [1, 2],
+        student_completes: [3],
+        steps: [
+          '{a}{variable} = {b}',
+          'Divide both sides by {a}:  {a}{variable} ÷ {a} = {b} ÷ {a}',
+          '{variable} = ?',
+        ],
+      },
       review,
     }),
   ]
