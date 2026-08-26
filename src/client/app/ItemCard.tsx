@@ -8,7 +8,7 @@ import { createWidget } from '../widgets/registry'
 import { createBalanceScale } from '../viz/balance-scale'
 import { createEnvelopeModel } from '../viz/envelope-model'
 import { LessonPlayer } from './LessonPlayer'
-import { renderText, type Params } from './render'
+import { evalNumber, renderText, type Params } from './render'
 import type { AttemptOutcome, ClientItem, ExplainResult } from './api'
 
 type ServeAction = Extract<NextAction, { kind: 'serve_item' }>
@@ -82,6 +82,17 @@ export function ItemCard({
     }
     if (item.widget.type === 'numeric-input' && config['placeholder'] === undefined) {
       config['placeholder'] = '?'
+    }
+    // number-line answer inputs take templated bounds ("{-2*b}" …) evaluated
+    // against this instance's params
+    if (item.widget.type === 'number-line') {
+      for (const key of ['min', 'max', 'step']) {
+        const v = config[key]
+        if (typeof v === 'string') {
+          const n = evalNumber(v, params)
+          if (n !== null) config[key] = n
+        }
+      }
     }
     return createWidget(item.widget.type, config)
   }, [item.id, action.instance.paramHash])

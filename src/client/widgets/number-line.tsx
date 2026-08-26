@@ -57,7 +57,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
     const disabled = mode === 'review'
     const current = state.value ?? config.min
     return (
-      <div style={{ fontFamily: "'Lora', serif" }}>
+      <div style={{ fontFamily: "'Lora', serif", minWidth: 300, flex: '1 1 300px', maxWidth: 560 }}>
         {params.prompt && <div style={{ color: '#5c5245', marginBottom: 8 }}>{params.prompt}</div>}
         <div
           role="slider"

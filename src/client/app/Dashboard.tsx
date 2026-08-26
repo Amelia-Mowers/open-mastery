@@ -62,7 +62,8 @@ export function Dashboard({ api }: { api: SiteApi }) {
         pos.set(id, { x: ((i + 1) / (layer.length + 1)) * 100, y: li * rowH + 40 }),
       )
     })
-    return { layers, pos, height: layers.length * rowH + 20, skillById }
+    const maxLayer = Math.max(...layers.map((l) => l.length), 1)
+    return { layers, pos, height: layers.length * rowH + 20, skillById, maxLayer }
   }, [bundle])
 
   if (!bundle || !state || !layout) return <p className="muted loading">Loading…</p>
@@ -151,6 +152,8 @@ export function Dashboard({ api }: { api: SiteApi }) {
                 style={{
                   left: `${p.x}%`,
                   top: p.y,
+                  // centers are 100/(n+1)% apart — width must fit that spacing
+                  width: `min(200px, ${Math.max(10, Math.floor(100 / (layout.maxLayer + 1)) - 2)}%)`,
                   background: style.bg,
                   color: style.fg,
                   borderColor: flaggedIds.has(s.id) ? '#a8453a' : 'transparent',
