@@ -70,6 +70,10 @@ export const itemSchema = z
     skills: z.array(skillIdSchema).min(1),
     /** v1: orders items within a skill only; not used in P(correct) */
     difficulty: z.number().int().min(1).max(5),
+    /** the representation this problem's framing/viz uses, so on-demand
+     * explanations can match the metaphor; null/absent = raw problem (a
+     * representation is chosen for it) */
+    representation: z.string().min(1).nullish(),
     params: z.record(z.string(), paramValueSchema),
     generator: z.record(z.string(), constraintSchema).nullish(),
     widget: widgetRefSchema,

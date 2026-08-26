@@ -7,10 +7,22 @@ export const bktDefaultsSchema = z
   .object({ L0: prob, T: prob, S: prob, G: prob })
   .strict()
 
+/** Child-facing lesson preamble: what you're learning in plain words, plus
+ * the vocabulary the formal name uses. */
+export const preambleSchema = z
+  .object({
+    plain: z.string().min(1),
+    vocab: z
+      .array(z.object({ term: z.string().min(1), meaning: z.string().min(1) }).strict())
+      .default([]),
+  })
+  .strict()
+
 export const skillSchema = z
   .object({
     id: skillIdSchema,
     name: z.string().min(1),
+    preamble: preambleSchema.optional(),
     prereqs: z.array(skillIdSchema).default([]),
     standards: z.array(z.string()).default([]),
     source: sourceRefSchema.optional(),

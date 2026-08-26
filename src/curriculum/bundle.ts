@@ -120,6 +120,18 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         s.id,
         `needs ≥2 vetted explanations with distinct representations (has ${vetted.length} vetted, ${reps.size} distinct)`,
       )
+    // an item's declared representation should have a matching explanation
+    for (const it of bundle.items) {
+      if (!it.skills.includes(s.id) || it.representation == null) continue
+      const reps = new Set((explBySkill.get(s.id) ?? []).map((e) => e.representation))
+      if (!reps.has(it.representation))
+        push(
+          'warning',
+          'unknown_representation',
+          `${it.id}.representation`,
+          `no explanation of '${s.id}' uses representation '${it.representation}'`,
+        )
+    }
     const checkEligible = bundle.items.filter(
       (it) =>
         it.skills.includes(s.id) &&
