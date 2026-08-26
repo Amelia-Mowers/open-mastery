@@ -11,7 +11,7 @@ export interface BalanceScaleView {
   left?: string
   right?: string
   highlight?: 'left.coef' | 'left' | 'right' | null
-  op?: { op: 'divide'; by: string } | null
+  op?: { op: 'divide' | 'multiply'; by: string } | null
   caption?: string
 }
 
@@ -76,7 +76,7 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
                   borderRadius: 14,
                 }}
               >
-                ÷ {state.op.by}
+                {state.op.op === 'divide' ? '÷' : '×'} {state.op.by}
               </span>
             )}
           </div>
@@ -94,7 +94,7 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
                   borderRadius: 14,
                 }}
               >
-                ÷ {state.op.by}
+                {state.op.op === 'divide' ? '÷' : '×'} {state.op.by}
               </span>
             )}
           </div>

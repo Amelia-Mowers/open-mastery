@@ -40,8 +40,9 @@ export function fixtureBundle(): Bundle {
       difficulty,
       params: { a: 7, b: 21, variable: 'x' },
       generator: { a: { int: [2, 12] }, b: { mult_of: 'a', range: [10, 60] } },
-      widget: { type: 'equation-input', config: {} },
+      widget: { type: 'equation-input', config: { stem: 'Solve: {a}{variable} = {b}.' } },
       answer: { type: 'expr', value: '{variable} = {b/a}', equivalence: 'symbolic' },
+      hints: ['What operation undoes multiplying by {a}?', 'Divide both sides by {a}.'],
       review,
     })
   const mkInverseItem = (num: string, difficulty: number) =>
@@ -51,8 +52,9 @@ export function fixtureBundle(): Bundle {
       difficulty,
       params: { a: 6, b: 24 },
       generator: { a: { int: [2, 12] }, b: { mult_of: 'a', range: [10, 72] } },
-      widget: { type: 'numeric-input', config: {} },
+      widget: { type: 'numeric-input', config: { stem: 'What is {b} ÷ {a}?' } },
       answer: { type: 'expr', value: '{b/a}' },
+      hints: ['How many groups of {a} make {b}?', '{b} ÷ {a} = {b/a}.'],
       review,
     })
   const items = [
@@ -65,7 +67,7 @@ export function fixtureBundle(): Bundle {
       skills: ['alg1.linear.solve-one-step'],
       difficulty: 1,
       params: { a: 5, b: 40, variable: 'x' },
-      widget: { type: 'equation-input', config: {} },
+      widget: { type: 'equation-input', config: { stem: 'Finish solving: {a}{variable} = {b}.' } },
       answer: { type: 'expr', value: '{variable} = {b/a}' },
       faded: { reveal_steps: [1, 2], student_completes: [3] },
       review,

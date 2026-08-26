@@ -6,7 +6,10 @@
   "type": "module",
   "scripts": {
     "test": "vitest run",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "server": "node src/server/main.ts",
+    "dev": "vite",
+    "build": "vite build"
   },
   "dependencies": {
     "@openmastery/schema": "file:../schema",
@@ -20,9 +23,11 @@
     "@types/node": "^26.3.0",
     "@types/react": "^19.1.0",
     "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^5.2.0",
     "fast-check": "^4.9.0",
     "jsdom": "^26.1.0",
     "typescript": "^5.8.3",
+    "vite": "^7.3.6",
     "vitest": "^3.2.4"
   }
 }

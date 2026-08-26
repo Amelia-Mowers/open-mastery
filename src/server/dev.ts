@@ -9,6 +9,8 @@
  * Node-portable on purpose (node:http); runs under Bun unchanged.
  */
 import { createServer, type IncomingMessage, type Server, type ServerResponse } from 'node:http'
+import { createReadStream, existsSync, statSync } from 'node:fs'
+import { extname, join, normalize } from 'node:path'
 import type { Bundle } from '@openmastery/schema'
 import {
   buildIndex,
@@ -16,6 +18,7 @@ import {
   initialStudentState,
   nextAction,
   policyV1,
+  practiceItems,
   recordAttempt,
   recordExplanationViewed,
   startCheck,
@@ -42,7 +45,24 @@ export interface DevSite {
   stop: () => Promise<void>
 }
 
-export function createDevSite(bundle: Bundle): DevSite {
+export interface DevSiteOptions {
+  /** directory of built client assets to serve for non-/api requests */
+  staticDir?: string
+}
+
+const MIME: Record<string, string> = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'text/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json',
+  '.webmanifest': 'application/manifest+json',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png',
+  '.ico': 'image/x-icon',
+  '.woff2': 'font/woff2',
+}
+
+export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSite {
   const cur = buildIndex(bundle)
   const bktDefaults = new Map(bundle.skills.map((s) => [s.id, s.bkt_defaults as BktParams]))
   const fallback: BktParams = { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
@@ -113,9 +133,28 @@ export function createDevSite(bundle: Bundle): DevSite {
     })
   })
 
+  function serveStatic(pathname: string, res: ServerResponse): boolean {
+    const dir = opts.staticDir
+    if (!dir) return false
+    const rel = normalize(pathname).replace(/^([/\\]|\.\.)+/, '')
+    for (const candidate of [join(dir, rel === '' ? 'index.html' : rel), join(dir, 'index.html')]) {
+      if (existsSync(candidate) && statSync(candidate).isFile()) {
+        res.writeHead(200, { 'content-type': MIME[extname(candidate)] ?? 'application/octet-stream' })
+        createReadStream(candidate).pipe(res)
+        return true
+      }
+    }
+    return false
+  }
+
   async function handle(req: IncomingMessage, res: ServerResponse): Promise<void> {
     const url = new URL(req.url ?? '/', 'http://localhost')
     const studentId = url.searchParams.get('student') ?? ''
+
+    if (req.method === 'GET' && !url.pathname.startsWith('/api/')) {
+      if (serveStatic(url.pathname, res)) return
+      return json(res, 404, { error: 'not found (no staticDir configured)' })
+    }
 
     if (req.method === 'GET' && url.pathname === '/api/bundle') {
       return json(res, 200, {
@@ -138,7 +177,10 @@ export function createDevSite(bundle: Bundle): DevSite {
         return json(res, 200, { action, item: safe })
       }
       if (action.kind === 'lesson' || action.kind === 'alt_explanation') {
-        return json(res, 200, { action, explanation: cur.explanations.get(action.explanationId) })
+        // params_from: item — the timeline renders with the skill's primary
+        // item family (authored params of its first practice item)
+        const params = practiceItems(action.skillId, cur)[0]?.params ?? {}
+        return json(res, 200, { action, explanation: cur.explanations.get(action.explanationId), params })
       }
       return json(res, 200, { action })
     }
@@ -153,7 +195,16 @@ export function createDevSite(bundle: Bundle): DevSite {
         latencyMs: body.latencyMs ?? 0,
       })
       st.pending = null
-      return json(res, 200, { verdict: result.verdict, correct: result.correct })
+      return json(res, 200, {
+        verdict: result.verdict,
+        correct: result.correct,
+        // event kinds emitted by this attempt (mastery_granted, guide_flag…)
+        // so the client can surface the moment; full payloads stay server-side
+        emitted: result.events.map((e) => ({
+          kind: e.kind,
+          skillId: 'skillId' in e ? e.skillId : undefined,
+        })),
+      })
     }
 
     if (req.method === 'POST' && url.pathname === '/api/explanation-viewed') {

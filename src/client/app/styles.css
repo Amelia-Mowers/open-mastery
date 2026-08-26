@@ -1,0 +1,79 @@
+/* Cairn client shell — palette from the design mockup. */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #f2ede4;
+  color: #2e2822;
+  font-family: 'Nunito Sans', system-ui, sans-serif;
+}
+.shell { max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
+.topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 0; margin-bottom: 18px;
+  border-bottom: 1px solid #e6ddd0;
+}
+.cairn-mark { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.cairn-mark i { display: block; border-radius: 2px; height: 5px; }
+.cairn-mark i:nth-child(1) { width: 9px; background: #b05f28; }
+.cairn-mark i:nth-child(2) { width: 14px; background: #8b6a4d; }
+.cairn-mark i:nth-child(3) { width: 19px; background: #5c4a38; }
+.brand { font: 700 20px 'Lora', Georgia, serif; }
+.spacer { flex: 1; }
+.mono-chip {
+  font: 600 11px ui-monospace, Menlo, monospace; color: #8b8070;
+  background: #ece5d8; padding: 3px 8px; border-radius: 5px;
+}
+.muted { font-size: 13px; color: #8b8070; }
+.loading { padding: 30px 0; }
+
+.card {
+  background: #fffdf9; border: 1px solid #e6ddd0; border-radius: 14px;
+  padding: 26px; margin-bottom: 16px;
+}
+.card-kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.kicker { font: 700 11px 'Nunito Sans', sans-serif; letter-spacing: 0.08em; color: #b05f28; }
+.kicker-alt { color: #8a5320; }
+.kicker-check { color: #fff; background: #5c4a38; padding: 4px 10px; border-radius: 5px; }
+.card-kicker .mono-chip { margin-left: auto; background: #f2ede4; }
+
+.stem { font: 600 26px 'Lora', Georgia, serif; margin: 6px 0 18px; }
+.viz { margin: 0 auto 18px; }
+.lesson-stage { margin: 8px auto 4px; }
+.lesson-caption { font: 600 17px 'Lora', Georgia, serif; color: #5c5245; min-height: 24px; }
+.lesson-controls { display: flex; align-items: center; gap: 16px; margin-top: 18px; }
+.dots { display: flex; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #d8cdbb; display: inline-block; }
+.dot-on { background: #b05f28; }
+
+.answer-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+.answer-row input {
+  font: 600 22px 'Lora', Georgia, serif; text-align: center;
+  padding: 10px; width: 170px;
+  border: 2px solid #d8cdbb; border-radius: 10px; background: #fff;
+}
+.answer-row input:focus { outline: none; border-color: #b05f28; }
+
+.btn {
+  border: 1px solid #d8cdbb; cursor: pointer; background: transparent; color: #7a6f61;
+  font: 700 14px 'Nunito Sans', sans-serif; padding: 11px 20px; border-radius: 9px;
+}
+.btn-primary { border: none; background: #b05f28; color: #fff; }
+.btn-primary:disabled { opacity: 0.5; cursor: default; }
+.btn-check { border: none; background: #4f7f5d; color: #fff; }
+.btn-quiet { border: none; background: transparent; font-weight: 600; }
+
+.hint {
+  background: #f3e4d4; border-radius: 9px; padding: 10px 14px;
+  font: 600 14px 'Nunito Sans', sans-serif; color: #6b4318; margin: 10px 0 0;
+}
+.feedback { border-radius: 9px; padding: 11px 14px; font-weight: 700; margin: 14px 0; }
+.feedback.ok { background: #e9efe6; color: #3f6a4d; }
+.feedback.bad { background: #f5dfda; color: #96453a; }
+.grant { background: #dbe8d6; color: #3f6a4d; border-radius: 9px; padding: 12px 14px; margin: 8px 0; }
+.parked { background: #f5dfda; color: #96453a; border-radius: 9px; padding: 12px 14px; margin: 8px 0; }
+.check-offer {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: #e9efe6; border-radius: 10px; padding: 13px 16px; margin-top: 16px;
+  font: 700 14px 'Nunito Sans', sans-serif; color: #3f6a4d;
+}
+.join h1, .done h1 { font: 700 24px 'Lora', Georgia, serif; margin: 0 0 8px; }
