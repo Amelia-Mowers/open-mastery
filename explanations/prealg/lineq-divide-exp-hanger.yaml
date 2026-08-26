@@ -1,0 +1,12 @@
+id: prealg.lineq.divide.exp-hanger
+skill: prealg.lineq.divide
+representation: hanger-diagram
+widget: hanger-diagram
+params_from: item
+timeline:
+  - { t: 0, patch: { copies: "{a}", shapeLabel: "{variable}", weight: "{b}" }, caption: "The hanger balances: {a} copies of {variable} weigh the same as {b}." }
+  - { t: 4, caption: "Count the shapes — that IS the {a} in {a}{variable} = {b}." }
+  - { t: 7.5, patch: { split: true, share: "{b/a}" }, caption: "Share {b} into {a} equal pieces — the hanger stays balanced." }
+  - { t: 11.5, patch: { reveal: true }, caption: "Each {variable} balances one piece: {variable} = {b/a}." }
+  - { t: 14, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

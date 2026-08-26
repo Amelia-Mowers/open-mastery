@@ -11,6 +11,7 @@ bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 fluency: false
 instruction:
   - prealg.lineq.divide.exp-envelopes
+  - prealg.lineq.divide.exp-hanger
   - prealg.lineq.divide.exp-balance
   - prealg.lineq.divide.exp-numberline
 faded_examples: [prealg.lineq.divide.f01]
