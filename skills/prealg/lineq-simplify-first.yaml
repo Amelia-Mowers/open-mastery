@@ -13,3 +13,4 @@ fluency: false
 instruction:
   - prealg.lineq.simplify-first.exp-balance
   - prealg.lineq.simplify-first.exp-numberline
+  - prealg.lineq.simplify-first.exp-worked

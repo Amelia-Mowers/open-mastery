@@ -1,13 +1,12 @@
 id: prealg.lineq.reciprocal.exp-shortcut
 skill: prealg.lineq.reciprocal
-representation: symbolic-steps
-widget: symbolic-steps
+representation: worked-equation
+widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, caption: "{p}/{q} {variable} = {b}. Here is the shortcut — one move instead of two." }
-  - { t: 4, caption: "Flip the fraction upside down: the reciprocal of {p}/{q} is {q}/{p}." }
-  - { t: 8, caption: "Multiply BOTH sides by {q}/{p}:   {q}/{p} · {p}/{q} {variable} = {q}/{p} · {b}." }
-  - { t: 12.5, caption: "A fraction times its reciprocal is 1 — the left side collapses to 1{variable}, which is just {variable}." }
-  - { t: 17, caption: "{variable} = {q}/{p} · {b} = {q*b/p}. Same answer, fewer steps — once the flip feels natural." }
-  - { t: 19.5, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { start: "{p}/{q} {variable} = {b}" }, caption: "The shortcut — one move instead of two." }
+  - { t: 4, patch: { line: "{q}/{p} · {p}/{q} {variable} = {q}/{p} · {b}", note: "multiply both sides by the reciprocal {q}/{p}" }, caption: "Flip {p}/{q} upside down and multiply both sides by it." }
+  - { t: 9, patch: { line: "1{variable} = {q}/{p} · {b}", note: "reciprocals multiply to 1" }, caption: "A fraction times its reciprocal is 1 — the left side collapses." }
+  - { t: 13, patch: { line: "{variable} = {q*b/p}" }, caption: "{variable} = {q*b/p}. Fewer steps — once the flip feels natural." }
+  - { t: 15.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

@@ -39,6 +39,15 @@ into 3×2 and 3×x demonstrates 3(2+x) = 6 + 3x by area. The right
 representation for our simplify-first distribute family (−a(x − b)) and
 later equivalent-expressions work. Widget candidate: `area-model`.
 
+### House-made widgets (provenance note)
+
+`opposite-flip` was designed in-house: the CONCEPT (opposites as mirror
+points equidistant from zero on a number line) is standard and appears in
+IM G6 Unit 7 (Rational Numbers), but the animated flip-arc execution is
+original to this project, not a translation of a specific published
+diagram. `worked-equation` (whiteboard worked steps) follows OpenStax's
+color-coded step convention in spirit; the animated layout is ours.
+
 ### Also noted (later chapters)
 - Number-line arrows for signed-number operations (Grade 7 Unit 5).
 - Double number lines / ratio tables (Grade 6 Units 2–3).

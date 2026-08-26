@@ -18,6 +18,16 @@ widgets/explanation timelines.
 Implemented so far: tape diagram (G7 U6 L2–3), hanger diagram (G6 U6 L3),
 area model (G6 U6 L10), plus OpenStax's envelopes-and-counters (§3.5).
 
+## Don't map textbook sections to skills naively
+
+A textbook section is NOT a skill. OpenStax §8.2 quietly contained three
+equation forms (ax = b, x/a = b, -x = b) — the last snuck in as "an
+example" and initially got no coverage of its own. When converting a
+section: FIRST enumerate every distinct equation/problem FORM it contains
+(scan the examples and exercise sets), then decide the skill split — one
+skill per form that needs its own explanation, with prereq edges between
+them. The book's section structure is a reading order, not a skill graph.
+
 ## The programmatic-widget standard
 
 **Every equation FORM gets explicit representation coverage — never
@@ -27,9 +37,18 @@ is a smell: split it into its own skill with explanations and, if needed,
 its own widget/animation authored against ITS params. Widgets are
 programmatic: they render from the actual instance variables, and a lesson
 that silently falls back to another family's numbers is a bug, not a
-feature. The whiteboard-style `worked-equation` widget is the house option
-for symbolic explanations (animated lines + operation notes) — prefer it
-over caption-only timelines.
+feature.
+
+**`worked-equation` (whiteboard worked steps with movement) is the
+STANDARD representation shape: most skills should carry one** alongside
+their concrete model — it is the abstraction the concrete models fade
+toward. Prefer it over caption-only timelines, always.
+
+**Inputs are widgets too.** Where the representation IS the answer space,
+let the student answer by manipulating it (e.g. negate items answer by
+moving the dot on a number line; `min`/`max`/`step` config values may be
+cairn-expr templates evaluated per instance). Direct text entry is the
+fallback, not the default.
 
 ## Ground rules
 

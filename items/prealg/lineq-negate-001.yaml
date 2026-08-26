@@ -4,7 +4,13 @@ difficulty: 1
 representation: opposite-flip
 params: { b: 2, variable: r }
 generator: { b: { int: [2, 20] } }
-widget: { type: equation-input, config: { stem: "Solve: -{variable} = {b}." } }
+widget:
+  type: number-line
+  config:
+    stem: "Solve: -{variable} = {b}.  Move the dot to {variable}."
+    min: "{-2*abs(b)}"
+    max: "{2*abs(b)}"
+    step: "{abs(b)}"
 answer: { type: expr, value: "{variable} = {-b}", equivalence: symbolic }
 hints:
   - "-{variable} means the opposite of {variable}."

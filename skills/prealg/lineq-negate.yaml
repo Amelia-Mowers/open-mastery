@@ -1,5 +1,5 @@
 id: prealg.lineq.negate
-name: Solve -x = b — the opposite of x
+name: Solve -x = b, the opposite of x
 preamble:
   plain: "-x doesn't mean x is negative — it means the OPPOSITE of x. If the opposite of x is 2, then x is the opposite of 2. One flip and you're done."
   vocab:

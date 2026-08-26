@@ -1,0 +1,11 @@
+id: prealg.lineq.divide.exp-worked
+skill: prealg.lineq.divide
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "{a}{variable} = {b}" }, caption: "On the board: {variable} is multiplied by {a}." }
+  - { t: 3.5, patch: { line: "{a}{variable} ÷ {a} = {b} ÷ {a}", note: "divide both sides by {a}" }, caption: "Undo the multiplication — divide both sides by {a}." }
+  - { t: 8, patch: { line: "{variable} = {b/a}", note: "{a} ÷ {a} = 1" }, caption: "{variable} = {b/a}." }
+  - { t: 10.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
