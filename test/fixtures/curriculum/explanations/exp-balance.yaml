@@ -1,0 +1,12 @@
+id: alg1.linear.solve-one-step.exp-balance
+skill: alg1.linear.solve-one-step
+representation: balance-scale
+widget: balance-scale
+params_from: item
+timeline:
+  - { t: 0,   patch: { left: "{a}{variable}", right: "{b}" }, caption: "Both sides are balanced." }
+  - { t: 2.5, patch: { highlight: left.coef }, caption: "{variable} is multiplied by {a}. Undo it by dividing." }
+  - { t: 5,   patch: { op: divide, by: "{a}" }, caption: "Divide both sides by {a}." }
+  - { t: 7.5, patch: { left: "{variable}", right: "{b/a}" }, caption: "{variable} = {b/a}." }
+  - { t: 9,   handoff: { prompt: "Now you try." } }
+review: { status: vetted }

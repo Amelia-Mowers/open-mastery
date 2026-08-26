@@ -1,0 +1,216 @@
+import { describe, it, expect } from 'vitest'
+import { z } from 'zod'
+import { skillSchema } from '../src/curriculum/skill.ts'
+import { itemSchema } from '../src/curriculum/item.ts'
+import { explanationSchema } from '../src/curriculum/explanation.ts'
+import { validateBundle, type Bundle } from '../src/curriculum/bundle.ts'
+import { normalizeLoadedDoc } from '../src/curriculum/normalize.ts'
+
+/** The architecture doc's own examples (§4.1–4.3) must validate. */
+const docSkill = {
+  id: 'alg1.linear.solve-one-step',
+  name: 'Solve one-step linear equations',
+  prereqs: ['alg1.arith.inverse-ops', 'alg1.expr.evaluate'],
+  standards: ['CCSS.MATH.CONTENT.6.EE.B.7'],
+  source: { book: 'openstax-prealgebra', section: '3.3' },
+  bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 },
+  fluency: false,
+  instruction: [
+    'alg1.linear.solve-one-step.exp-balance',
+    'alg1.linear.solve-one-step.exp-inverse',
+  ],
+  faded_examples: [],
+}
+
+const docItem = {
+  id: 'alg1.linear.solve-one-step.007',
+  skills: ['alg1.linear.solve-one-step'],
+  difficulty: 2,
+  params: { a: 7, b: 21, variable: 'x' },
+  generator: { a: { int: [2, 12] }, b: { mult_of: 'a', range: [10, 60] } },
+  widget: { type: 'equation-input', config: { allow_fraction: true } },
+  answer: { type: 'expr', value: '{variable} = {b/a}', equivalence: 'symbolic' },
+  rubric: null,
+  viz: { template: 'balance-scale', bind: { left: '{a}{variable}', right: '{b}' } },
+  hints: ['What operation undoes multiplying by {a}?', 'Divide both sides by {a}.'],
+  faded: null,
+  // exercise arrives as a number from unquoted YAML; normalizeLoadedDoc handles it
+  source: { book: 'openstax-prealgebra', section: '3.3', exercise: '41' },
+  review: { status: 'vetted', by: '@handle', date: '2026-08-24' },
+}
+
+const docExplanation = {
+  id: 'alg1.linear.solve-one-step.exp-balance',
+  skill: 'alg1.linear.solve-one-step',
+  representation: 'balance-scale',
+  widget: 'balance-scale',
+  params_from: 'item',
+  timeline: [
+    { t: 0, patch: { left: '{a}{variable}', right: '{b}' }, caption: 'Both sides are balanced.' },
+    { t: 2.5, patch: { highlight: 'left.coef' }, caption: '{variable} is multiplied by {a}. Undo it by dividing.' },
+    { t: 5, patch: { op: 'divide', by: '{a}' }, caption: 'Divide both sides by {a}.' },
+    { t: 7.5, patch: { left: '{variable}', right: '{b/a}' }, caption: '{variable} = {b/a}.' },
+    { t: 9, handoff: { prompt: 'Now you try.' } },
+  ],
+  review: { status: 'vetted' },
+}
+
+describe('file-level schemas', () => {
+  it("accept the architecture doc's own examples", () => {
+    expect(skillSchema.safeParse(docSkill).success).toBe(true)
+    expect(itemSchema.safeParse(docItem).success).toBe(true)
+    expect(explanationSchema.safeParse(docExplanation).success).toBe(true)
+  })
+
+  it('YAML loader quirks (bare dates, numeric exercise) are normalized before validation', () => {
+    const asLoaded = normalizeLoadedDoc({
+      ...docItem,
+      source: { book: 'openstax-prealgebra', section: 3.3, exercise: 41 },
+      review: { status: 'vetted', date: new Date('2026-08-24T00:00:00Z') },
+    })
+    const r = itemSchema.parse(asLoaded)
+    expect(r.review.date).toBe('2026-08-24')
+    expect(r.source?.section).toBe('3.3')
+    expect(r.source?.exercise).toBe('41')
+    // params named 'section' are NOT touched
+    expect(normalizeLoadedDoc({ params: { section: 3 } })).toEqual({ params: { section: 3 } })
+  })
+
+  it('rejects malformed ids, probabilities, and timelines', () => {
+    expect(skillSchema.safeParse({ ...docSkill, id: 'Alg1.Linear' }).success).toBe(false)
+    expect(skillSchema.safeParse({ ...docSkill, id: 'single-segment' }).success).toBe(false)
+    expect(
+      skillSchema.safeParse({ ...docSkill, bkt_defaults: { L0: 0.3, T: 0.15, S: 0, G: 0.2 } })
+        .success,
+    ).toBe(false)
+    expect(skillSchema.safeParse({ ...docSkill, instruction: [] }).success).toBe(false)
+    expect(
+      explanationSchema.safeParse({
+        ...docExplanation,
+        timeline: [
+          { t: 5, caption: 'later' },
+          { t: 1, caption: 'earlier' },
+        ],
+      }).success,
+    ).toBe(false)
+    expect(
+      explanationSchema.safeParse({ ...docExplanation, timeline: [{ t: 0 }] }).success,
+    ).toBe(false)
+    expect(itemSchema.safeParse({ ...docItem, difficulty: 0 }).success).toBe(false)
+    expect(itemSchema.safeParse({ ...docItem, unknown_field: 1 }).success).toBe(false)
+  })
+
+  it('generated params require an int/range domain', () => {
+    expect(
+      itemSchema.safeParse({ ...docItem, generator: { a: { mult_of: 'b' } } }).success,
+    ).toBe(false)
+  })
+
+  it('exports JSON Schema (the published spec)', () => {
+    const js = z.toJSONSchema(skillSchema)
+    expect(js.type).toBe('object')
+    expect((js as { required?: string[] }).required).toContain('id')
+  })
+})
+
+/** A minimal internally-consistent bundle that passes the release gates. */
+function goodBundle(): Bundle {
+  const skill = skillSchema.parse({
+    ...docSkill,
+    prereqs: [],
+    instruction: ['alg1.linear.solve-one-step.exp-balance'],
+  })
+  const expl1 = explanationSchema.parse(docExplanation)
+  const expl2 = explanationSchema.parse({
+    ...docExplanation,
+    id: 'alg1.linear.solve-one-step.exp-numberline',
+    representation: 'number-line',
+    widget: 'number-line',
+  })
+  const item1 = itemSchema.parse(docItem)
+  const item2 = itemSchema.parse({ ...docItem, id: 'alg1.linear.solve-one-step.008' })
+  return { skills: [skill], items: [item1, item2], explanations: [expl1, expl2] }
+}
+
+describe('bundle validation (release gates)', () => {
+  it('a consistent bundle has no issues', () => {
+    expect(validateBundle(goodBundle())).toEqual([])
+  })
+
+  it('flags dangling references and wrong-skill instruction', () => {
+    const b = goodBundle()
+    b.skills[0]!.prereqs = ['alg1.missing.skill']
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'dangling_ref' && i.severity === 'error')).toBe(true)
+  })
+
+  it('flags prerequisite cycles', () => {
+    const b = goodBundle()
+    const s2 = skillSchema.parse({
+      ...docSkill,
+      id: 'alg1.linear.two-step',
+      prereqs: ['alg1.linear.solve-one-step'],
+      instruction: ['alg1.linear.solve-one-step.exp-balance'],
+    })
+    b.skills[0]!.prereqs = ['alg1.linear.two-step']
+    b.skills.push(s2)
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'prereq_cycle')).toBe(true)
+  })
+
+  it('release gate: ≥2 vetted explanations with distinct representations', () => {
+    const b = goodBundle()
+    b.explanations[1]!.representation = 'balance-scale' // same rep as the first
+    const issues = validateBundle(b, { profile: 'release' })
+    expect(issues.some((i) => i.code === 'explanation_variety' && i.severity === 'error')).toBe(true)
+    // authoring profile downgrades to warning
+    const authoring = validateBundle(b, { profile: 'authoring' })
+    expect(authoring.some((i) => i.code === 'explanation_variety' && i.severity === 'warning')).toBe(true)
+  })
+
+  it('release gate: ≥2 generator-backed non-choice check items per skill', () => {
+    const b = goodBundle()
+    b.items[1]!.generator = null
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'check_items')).toBe(true)
+  })
+
+  it('rubric and faded items are not check-eligible', () => {
+    const b = goodBundle()
+    b.items[1] = itemSchema.parse({
+      ...docItem,
+      id: 'alg1.linear.solve-one-step.008',
+      rubric: { prompt: 'Explain your steps', criteria: ['mentions inverse operation'] },
+    })
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'check_items')).toBe(true)
+  })
+
+  it('flags templates referencing unknown params', () => {
+    const b = goodBundle()
+    b.items[0]!.hints.push('What about {mystery}?')
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'unknown_param')).toBe(true)
+  })
+
+  it('flags generators that fail or whose answer cannot evaluate', () => {
+    const b = goodBundle()
+    b.items[0]!.generator = { a: { int: [5, 4] } }
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'generator_failed')).toBe(true)
+  })
+
+  it('flags duplicate ids across kinds', () => {
+    const b = goodBundle()
+    b.items[1] = itemSchema.parse({ ...docItem, id: b.items[0]!.id })
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'duplicate_id')).toBe(true)
+  })
+
+  it('warns on degenerate BKT defaults (S + G ≥ 1)', () => {
+    const b = goodBundle()
+    b.skills[0]!.bkt_defaults = { L0: 0.3, T: 0.15, S: 0.6, G: 0.5 }
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'bkt_degenerate' && i.severity === 'warning')).toBe(true)
+  })
+})

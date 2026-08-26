@@ -1,0 +1,33 @@
+{
+  "name": "@openmastery/schema",
+  "version": "0.1.0",
+  "description": "Curriculum schema, bundle validator, and the cairn-expr template language for Cairn",
+  "license": "MIT",
+  "type": "module",
+  "main": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts",
+    "./expr": "./src/expr/index.ts",
+    "./curriculum": "./src/curriculum/index.ts",
+    "./load": "./src/curriculum/load.ts"
+  },
+  "bin": {
+    "openmastery-validate": "./bin/validate.ts"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit",
+    "validate": "node --experimental-strip-types bin/validate.ts"
+  },
+  "dependencies": {
+    "yaml": "^2.5.0",
+    "zod": "^4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "fast-check": "^4.0.0",
+    "typescript": "^5.6.0",
+    "vitest": "^3.0.0"
+  }
+}
