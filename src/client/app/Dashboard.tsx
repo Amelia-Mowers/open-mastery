@@ -45,7 +45,7 @@ export function Dashboard({ api }: { api: SiteApi }) {
     // node centers in percent, per layer; order each layer by the average x
     // of its prereqs (barycentric) so edges don't cross
     const pos = new Map<string, { x: number; y: number }>()
-    const rowH = 96
+    const rowH = 165
     layers.forEach((layer, li) => {
       if (li > 0) {
         layer.sort((a, b) => {
@@ -59,11 +59,11 @@ export function Dashboard({ api }: { api: SiteApi }) {
         })
       }
       layer.forEach((id, i) =>
-        pos.set(id, { x: ((i + 1) / (layer.length + 1)) * 100, y: li * rowH + 40 }),
+        pos.set(id, { x: ((i + 1) / (layer.length + 1)) * 100, y: li * rowH + 60 }),
       )
     })
     const maxLayer = Math.max(...layers.map((l) => l.length), 1)
-    return { layers, pos, height: layers.length * rowH + 20, skillById, maxLayer }
+    return { layers, pos, height: layers.length * rowH + 10, skillById, maxLayer }
   }, [bundle])
 
   if (!bundle || !state || !layout) return <p className="muted loading">Loading…</p>
@@ -123,9 +123,9 @@ export function Dashboard({ api }: { api: SiteApi }) {
                   <line
                     key={`${p}->${s.id}`}
                     x1={a.x}
-                    y1={a.y + 24}
+                    y1={a.y + 56}
                     x2={b.x}
-                    y2={b.y - 24}
+                    y2={b.y - 56}
                     stroke="#d8cdbb"
                     strokeWidth="0.6"
                     strokeDasharray="1.4 1.4"

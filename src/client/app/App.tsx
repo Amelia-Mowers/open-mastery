@@ -5,6 +5,7 @@ import { SiteApi, type AttemptOutcome, type ServerNext } from './api'
 import { LessonPlayer } from './LessonPlayer'
 import { ItemCard } from './ItemCard'
 import { Dashboard } from './Dashboard'
+import { Zoo } from './Zoo'
 import { SmoothHeight } from './SmoothHeight'
 import type { Params } from './render'
 
@@ -96,7 +97,7 @@ function Header({
 }: {
   student?: string
   points: number | null
-  view?: 'work' | 'dashboard'
+  view?: 'work' | 'dashboard' | 'zoo'
   onToggleView?: () => void
   onLeave?: () => void
   onReset?: () => void
@@ -139,8 +140,8 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   /** a fetch is in flight — the previous card stays, dimmed, so the height
    * glides to the next one instead of flashing through a loading state */
   const [fetching, setFetching] = useState(false)
-  const [view, setView] = useState<'work' | 'dashboard'>(
-    urlParam('view') === 'dashboard' ? 'dashboard' : 'work',
+  const [view, setView] = useState<'work' | 'dashboard' | 'zoo'>(
+    urlParam('view') === 'dashboard' ? 'dashboard' : urlParam('view') === 'zoo' ? 'zoo' : 'work',
   )
   const [points, setPoints] = useState<number | null>(null)
   /** skill the student explicitly chose to keep working (soft-park opt-in) */
@@ -210,7 +211,9 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
   }, [api, overlay, refresh])
 
   let body
-  if (view === 'dashboard') {
+  if (view === 'zoo') {
+    body = <Zoo />
+  } else if (view === 'dashboard') {
     body = <Dashboard api={api} />
   } else if (overlay) {
     body = (
