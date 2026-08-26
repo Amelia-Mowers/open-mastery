@@ -12,6 +12,8 @@ import type { WidgetInstance } from '../widgets/contract'
 import { createBalanceScale } from '../viz/balance-scale'
 import { createEnvelopeModel } from '../viz/envelope-model'
 import { createTapeDiagram } from '../viz/tape-diagram'
+import { createHangerDiagram } from '../viz/hanger-diagram'
+import { createAreaModel } from '../viz/area-model'
 import { createNumberLine } from '../widgets/number-line'
 import {
   adaptBalancePatch,
@@ -92,6 +94,38 @@ function tapeSetup(
   return null
 }
 
+function hangerSetup(
+  timeline: ReadonlyArray<{ patch?: Record<string, unknown> | undefined }>,
+  params: Params,
+): { copies: number; shapeLabel: string; weight: string } | null {
+  for (const s of timeline) {
+    const p = s.patch
+    if (!p || !('copies' in p) || !('shapeLabel' in p) || !('weight' in p)) continue
+    const copies = evalNumber(p['copies'], params)
+    if (copies === null || copies < 1 || copies > 14) return null
+    return {
+      copies,
+      shapeLabel: renderText(String(p['shapeLabel']), params),
+      weight: renderText(String(p['weight']), params),
+    }
+  }
+  return null
+}
+
+function areaSetup(
+  timeline: ReadonlyArray<{ patch?: Record<string, unknown> | undefined }>,
+  params: Params,
+): { height: string; parts: string[] } | null {
+  for (const s of timeline) {
+    const p = s.patch
+    if (!p || !('height' in p) || !('parts' in p) || !Array.isArray(p['parts'])) continue
+    const parts = (p['parts'] as unknown[]).map((v) => renderText(String(v), params))
+    if (parts.length < 1 || parts.length > 4) return null
+    return { height: renderText(String(p['height']), params), parts }
+  }
+  return null
+}
+
 function createLessonWidget(explanation: Explanation, params: Params): LessonWidget | null {
   if (explanation.widget === 'balance-scale') {
     const w = createBalanceScale()
@@ -134,6 +168,41 @@ function createLessonWidget(explanation: Explanation, params: Params): LessonWid
         const view: { partLabel?: string; total?: string; highlight?: number[] } = {}
         if ('partLabel' in patch) view.partLabel = renderText(String(patch['partLabel']), params)
         if ('total' in patch) view.total = renderText(String(patch['total']), params)
+        if ('highlight' in patch) {
+          const raw = patch['highlight']
+          view.highlight = Array.isArray(raw)
+            ? raw.map((v) => evalNumber(v, params)).filter((x): x is number => x !== null)
+            : []
+        }
+        w.applyPatch(view)
+      },
+    }
+  }
+  if (explanation.widget === 'hanger-diagram') {
+    const setup = hangerSetup(explanation.timeline, params)
+    if (!setup) return null
+    const w = createHangerDiagram()
+    return {
+      element: w.render(setup, 'lesson'),
+      apply: (patch) => {
+        const view: { split?: boolean; share?: string; reveal?: boolean } = {}
+        if ('split' in patch) view.split = patch['split'] === true
+        if ('reveal' in patch) view.reveal = patch['reveal'] === true
+        if ('share' in patch) view.share = renderText(String(patch['share']), params)
+        w.applyPatch(view)
+      },
+    }
+  }
+  if (explanation.widget === 'area-model') {
+    const setup = areaSetup(explanation.timeline, params)
+    if (!setup) return null
+    const w = createAreaModel()
+    return {
+      element: w.render(setup, 'lesson'),
+      apply: (patch) => {
+        const view: { products?: string[]; highlight?: number[] } = {}
+        if ('products' in patch && Array.isArray(patch['products']))
+          view.products = (patch['products'] as unknown[]).map((v) => renderText(String(v), params))
         if ('highlight' in patch) {
           const raw = patch['highlight']
           view.highlight = Array.isArray(raw)

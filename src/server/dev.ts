@@ -73,6 +73,19 @@ function timelineIdentifiers(e: Explanation): Set<string> {
  * different family (e.g. the raw -x = b item, which has no `a`) can't feed
  * the timeline — fall back to the family params so nothing renders as
  * literal `{a}` braces. */
+/** First candidate param set that can feed every template in the timeline. */
+export function feedableParams(
+  e: Explanation,
+  candidates: Array<Record<string, number | string> | null>,
+): Record<string, number | string> | null {
+  const needed = timelineIdentifiers(e)
+  for (const c of candidates) {
+    if (!c) continue
+    if ([...needed].every((id) => id in c)) return c
+  }
+  return null
+}
+
 export function paramsForExplanation(
   e: Explanation,
   instanceParams: Record<string, number | string> | null,
@@ -339,20 +352,24 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         ...skill.instruction.map((id) => all.find((e) => e.id === id)).filter((e) => e !== undefined),
         ...all.filter((e) => !skill.instruction.includes(e.id)),
       ]
-      const eligible = ordered.filter((e) => !exclude.includes(e.representation))
-      const explanation =
-        (prefer ? eligible.find((e) => e.representation === prefer) : undefined) ??
-        eligible[0] ??
-        null
       const pending = st.pending
       const instanceParams =
         pending?.kind === 'serve_item' && pending.skillId === skillId
           ? pending.instance.params
           : null
       const familyParams = practiceItems(skillId, cur)[0]?.params ?? {}
+      // only explanations the available params can actually feed
+      const eligible = ordered
+        .filter((e) => !exclude.includes(e.representation))
+        .map((e) => ({ e, params: feedableParams(e, [instanceParams, familyParams]) }))
+        .filter((x): x is { e: Explanation; params: Record<string, number | string> } => x.params !== null)
+      const chosen =
+        (prefer ? eligible.find((x) => x.e.representation === prefer) : undefined) ??
+        eligible[0] ??
+        null
       return json(res, 200, {
-        explanation,
-        params: explanation ? paramsForExplanation(explanation, instanceParams, familyParams) : familyParams,
+        explanation: chosen?.e ?? null,
+        params: chosen?.params ?? familyParams,
         skillName: skill.name,
         totalReps: new Set(all.map((e) => e.representation)).size,
       })

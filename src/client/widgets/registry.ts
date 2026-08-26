@@ -5,6 +5,8 @@ import { createNumberLine, type NumberLineConfig } from './number-line'
 import { createBalanceScale } from '../viz/balance-scale'
 import { createEnvelopeModel } from '../viz/envelope-model'
 import { createTapeDiagram } from '../viz/tape-diagram'
+import { createHangerDiagram } from '../viz/hanger-diagram'
+import { createAreaModel } from '../viz/area-model'
 
 export class UnknownWidgetError extends Error {
   constructor(readonly widgetType: string) {
@@ -21,6 +23,8 @@ export type WidgetType =
   | 'balance-scale'
   | 'envelope-model'
   | 'tape-diagram'
+  | 'hanger-diagram'
+  | 'area-model'
 
 /**
  * Create a widget instance by curriculum widget type.
@@ -45,6 +49,10 @@ export function createWidget(
       return createEnvelopeModel() as never
     case 'tape-diagram':
       return createTapeDiagram() as never
+    case 'hanger-diagram':
+      return createHangerDiagram() as never
+    case 'area-model':
+      return createAreaModel() as never
     default:
       throw new UnknownWidgetError(type)
   }

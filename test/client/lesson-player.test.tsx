@@ -199,6 +199,63 @@ describe('explanation player', () => {
     expect(container.querySelector('[data-highlighted]')).toBeNull()
   })
 
+  it("plays IM's hanger diagram: copies of the shape, split the weight, reveal shares", () => {
+    const hangerExp = explanationSchema.parse({
+      id: 'alg1.test.exp-hanger',
+      skill: 'alg1.test.skill',
+      representation: 'hanger-diagram',
+      widget: 'hanger-diagram',
+      params_from: 'item',
+      timeline: [
+        { t: 0, patch: { copies: '{a}', shapeLabel: '{variable}', weight: '{b}' }, caption: '{a} copies of {variable} balance {b}.' },
+        { t: 4, patch: { split: true, share: '{b/a}' }, caption: 'Share {b} into {a} pieces.' },
+        { t: 8, patch: { reveal: true }, caption: 'Each {variable} = {b/a}.' },
+        { t: 10, handoff: { prompt: 'Now you try.' } },
+      ],
+      review: { status: 'vetted' },
+    })
+    const { container } = render(
+      <LessonPlayer explanation={hangerExp} params={P} kind="lesson" onDone={() => {}} />,
+    )
+    // 4x = 28: four x-shapes vs one weight of 28
+    expect(container.querySelectorAll('[data-shape]')).toHaveLength(4)
+    expect(container.querySelector('[data-weight]')).toHaveTextContent('28')
+    goToStep(2, 3)
+    expect(container.querySelectorAll('[data-piece]')).toHaveLength(4)
+    expect(container.querySelectorAll('[data-piece]')[0]).toHaveTextContent('7')
+    goToStep(3, 3)
+    expect(container.querySelectorAll('[data-share]')).toHaveLength(4)
+    expect(container.querySelectorAll('[data-share]')[0]).toHaveTextContent('= 7')
+  })
+
+  it("plays IM's area model: partitioned rectangle with product reveal", () => {
+    const areaExp = explanationSchema.parse({
+      id: 'alg1.test.exp-area',
+      skill: 'alg1.test.skill',
+      representation: 'area-model',
+      widget: 'area-model',
+      params_from: 'item',
+      timeline: [
+        { t: 0, patch: { height: '{a}', parts: ['{variable}', '{b}'] }, caption: '{a}({variable} + {b}) as a rectangle.' },
+        { t: 4, patch: { highlight: ['1'] }, caption: 'The first piece is {a} by {variable}.' },
+        { t: 8, patch: { products: ['{a}{variable}', '{a*b}'], highlight: [] }, caption: '{a}({variable} + {b}) = {a}{variable} + {a*b}.' },
+        { t: 10, handoff: { prompt: 'Now you try.' } },
+      ],
+      review: { status: 'vetted' },
+    })
+    const { container } = render(
+      <LessonPlayer explanation={areaExp} params={P} kind="lesson" onDone={() => {}} />,
+    )
+    expect(container.querySelectorAll('[data-cell]')).toHaveLength(2)
+    expect(container.querySelector('[data-height-label]')).toHaveTextContent('4')
+    goToStep(2, 3)
+    expect(container.querySelectorAll('[data-cell]')[0]).toHaveAttribute('data-highlighted')
+    goToStep(3, 3)
+    const products = container.querySelectorAll('[data-product]')
+    expect(products[0]).toHaveTextContent('4x')
+    expect(products[1]).toHaveTextContent('112')
+  })
+
   it('falls back to caption-only when the widget has no lesson support', () => {
     const captionOnly = explanationSchema.parse({
       ...numberLineExp,
