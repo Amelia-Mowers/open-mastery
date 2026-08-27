@@ -5,8 +5,8 @@ widget: double-number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{p}/{q} mi", " in ", "1/{r} hr"], topLabel: "miles", bottomLabel: "hours", top: ["0", "{p}/{q}", "{p*r/q}"], bottom: ["0", "1/{r}", "1"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Fractions of a mile, fractions of an hour — the lines still work." }
-  - { t: 4, patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }, caption: "Miles on top: {p}/{q}.", expect: { type: pick, value: ["0"], prompt: "Which piece belongs on the TOP line?" } }
-  - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "It happened in 1/{r} of an hour.", expect: { type: pick, value: ["2"], prompt: "Which piece belongs on the BOTTOM line?" } }
+  - { t: 4, patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }, caption: "Miles on top: {p}/{q}.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
+  - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "It happened in 1/{r} of an hour.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — belong on the BOTTOM line?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: "2", reveal: ["0", "1", "2"] }, caption: "Stretch × {r} out to a WHOLE hour: {p*r/q} miles per hour." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

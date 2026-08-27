@@ -11,7 +11,7 @@ timeline:
     expect:
       type: pick
       value: ["0", "1"]
-      prompt: "Click the piece or pieces that go on the LEFT pan."
+      prompt: "Which piece — or pieces — of the equation go on the LEFT pan?"
       hint: "The whole {variable} side — every piece of it — sits on the left pan."
   - t: 8
     patch: { eqHighlight: ["3"], rightIn: true, highlight: right }
@@ -19,7 +19,7 @@ timeline:
     expect:
       type: pick
       value: ["3"]
-      prompt: "And which piece balances it on the RIGHT pan?"
+      prompt: "And which piece — or pieces — balance it on the RIGHT pan?"
       hint: "The lone number after the equals sign."
   - t: 12
     patch: { eqHighlight: ["1"], highlight: left, op: subtract, by: "{b}" }

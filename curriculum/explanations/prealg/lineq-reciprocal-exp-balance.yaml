@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{p}/{q}", "{variable}", " = ", "{b}"], left: "{p}/{q} {variable}", right: "{b}", leftIn: false, rightIn: false }, caption: "Here is the problem in symbols. Watch each piece land on the scale." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{p}/{q} {variable} goes on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
-  - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} goes on the right pan — and the scale balances.", expect: { type: pick, value: ["3"], prompt: "Which piece of the equation goes on the RIGHT pan?" } }
+  - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} goes on the right pan — and the scale balances.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "A fraction does two jobs at once: it multiplies {variable} by {p} AND divides by {q}. Undo them one at a time." }
   - { t: 16, patch: { op: multiply, by: "{q}", highlight: null }, caption: "First multiply both sides by {q} — that clears the divide.", expect: { type: op, value: "multiply {q}" } }
   - { t: 19.5, patch: { left: "{p}{variable}", right: "{q*b}", op: null }, caption: "Now it reads {p}{variable} = {q*b} — a problem you already know how to solve." }

@@ -5,8 +5,8 @@ widget: double-number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["y", " ÷ ", "x", " = same?"], topLabel: "x", bottomLabel: "y", top: ["0", "{a}", "{c}", "{e}"], bottom: ["0", "{a*k}", "{c*k}", "{e*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Proportional means the two lines stretch by ONE factor." }
-  - { t: 4, patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "1", "2", "3"] }, caption: "The x line: {a}, {c}, {e}.", expect: { type: pick, value: ["2"], prompt: "Which piece belongs on the TOP line?" } }
-  - { t: 8, patch: { eqHighlight: ["0"], bottomIn: true }, caption: "Each y below its x — every pair is × {k}.", expect: { type: pick, value: ["0"], prompt: "Which piece belongs on the BOTTOM line?" } }
+  - { t: 4, patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "1", "2", "3"] }, caption: "The x line: {a}, {c}, {e}.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
+  - { t: 8, patch: { eqHighlight: ["0"], bottomIn: true }, caption: "Each y below its x — every pair is × {k}.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the BOTTOM line?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: "2" }, caption: "Check any pair: {c*k} ÷ {c} = {k}, same as the others → proportional. One misaligned pair would break it." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

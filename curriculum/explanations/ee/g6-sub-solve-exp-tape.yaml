@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{p}", "{d}"], total: "{variable}", totalIn: false }, caption: "Here {variable} is the WHOLE bar — {p} was taken from it, {d} remained." }
   - { t: 4, patch: { eqHighlight: ["1"], highlight: ["1"] }, caption: "The piece that was taken away: {p}." }
   - { t: 8, patch: { eqHighlight: ["3"], highlight: ["2"] }, caption: "The piece that is left: {d}." }
-  - { t: 12, patch: { eqHighlight: ["0"], totalIn: true, highlight: [] }, caption: "The whole bar is {variable} — put the pieces back together.", expect: { type: pick, value: ["0"], prompt: "Which piece is the WHOLE amount the tape makes?" } }
+  - { t: 12, patch: { eqHighlight: ["0"], totalIn: true, highlight: [] }, caption: "The whole bar is {variable} — put the pieces back together.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — make the WHOLE amount the tape shows?" } }
   - { t: 16, patch: { eqHighlight: [], highlight: ["1", "2"] }, caption: "{variable} = {p} + {d} = {p+d}." }
   - { t: 19, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
