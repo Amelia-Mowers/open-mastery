@@ -54,6 +54,16 @@ non-readers) — scope it separately when its turn comes.
       hyphenation shipped; a true stacked-list layout under 560px is the
       real fix.
 
+- [ ] ENGAGEMENT batch (family playtest): sounds (correct/mastery
+      chimes), alternate palettes/themes, friendlier voice pass over all
+      student-facing copy, gamification beyond points (streaks? stones
+      gallery?), themed word-problem skins per item family.
+- [ ] square-tiles widget (exponents deserve their own picture — the
+      gridded area model is a stopgap; see GOLDEN_WIDGET §6b reuse rule).
+- [ ] g7 two-step SUBTRACTION variant (ax − b = c) as its own skill with
+      its own timelines (form_mismatch caught it riding the addition
+      skill).
+
 ## Engine / server
 
 - [ ] Build step 5: Bun site server + SQLite SiteStore, auth/enrollment,

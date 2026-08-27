@@ -153,6 +153,52 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         s.id,
         `needs ≥2 generator-backed, non-choice, non-rubric items eligible as check items (has ${checkEligible.length})`,
       )
+    // FORM-MISMATCH guard (fail loudly): an item's declared representation
+    // names the explanation its walkthrough prefers. If that explanation
+    // opens on an equation banner, the banner RENDERED WITH THE ITEM'S OWN
+    // PARAMS must appear in the item's stem — identifier overlap across
+    // different forms (x − p = q sharing p,d with x + p = q) otherwise feeds
+    // the wrong timeline silently.
+    for (const it of bundle.items.filter((i) => i.skills.includes(s.id) && i.faded == null)) {
+      const rep = it.representation
+      if (rep == null) continue
+      const stemTpl = it.widget.config?.['stem']
+      if (typeof stemTpl !== 'string') continue
+      const all = explBySkill.get(s.id) ?? []
+      const ordered = [
+        ...s.instruction.map((id) => all.find((e) => e.id === id)).filter((e) => e !== undefined),
+        ...all.filter((e) => !s.instruction.includes(e.id)),
+      ]
+      const expl = ordered.find((e) => e.representation === rep)
+      const banner = expl?.timeline.find((st) => Array.isArray(st.patch?.['equation']))?.patch?.[
+        'equation'
+      ] as unknown[] | undefined
+      if (!banner) continue
+      const renderAll = (parts: unknown[]): string | null => {
+        let out = ''
+        for (const seg of parts) {
+          const r = renderTemplate(String(seg), it.params as Env, { numberStyle: 'fraction' })
+          if (!r.ok) return null
+          out += r.value
+        }
+        return out
+      }
+      const bannerText = renderAll(banner)
+      const stemR = renderTemplate(stemTpl, it.params as Env, { numberStyle: 'fraction' })
+      if (bannerText === null || !stemR.ok) continue
+      const norm = (x: string): string => x.replace(/\s+/g, '')
+      const b = norm(bannerText)
+      const stem = norm(stemR.value)
+      // only meaningful when the banner is a concrete equation of THIS item
+      if (b.includes('=') && /\d/.test(b) && stem.includes('=') && !stem.includes(b))
+        push(
+          'warning',
+          'form_mismatch',
+          `${it.id} ↔ ${expl!.id}`,
+          `the '${rep}' explanation's equation banner renders as '${bannerText}' under this item's params, which does not appear in the stem '${stemR.value}' — wrong-form walkthrough risk`,
+        )
+    }
+
     // capstone rule: the skill's difficulty CEILING must be reachable with a
     // raw text answer — widget inputs scaffold the easier tiers, but checks
     // pick hardest-first and mastery evidence tops out at the raw form

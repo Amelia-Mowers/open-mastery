@@ -2,14 +2,14 @@ id: g7.ee.two-step.002
 skills: [g7.ee.two-step]
 difficulty: 2
 representation: balance-scale
-params: { a: 4, b: 5, ans: 6, variable: x }
-generator: { a: { int: [2, 9] }, b: { int: [2, 7] }, ans: { int: [4, 12] } }
-widget: { type: equation-input, config: { stem: "Solve: {a}{variable} − {b} = {a*ans-b}." } }
+params: { a: 6, b: 17, ans: 9, variable: y }
+generator: { a: { int: [4, 12] }, b: { int: [10, 40] }, ans: { int: [5, 15] } }
+widget: { type: equation-input, config: { stem: "Solve: {a}{variable} + {b} = {a*ans+b}." } }
 answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
 hints:
-  - "Undo the OUTSIDE operation first: add {b} to both sides."
+  - "Undo the OUTSIDE operation first: subtract {b} from both sides."
   - "That leaves {a}{variable} = {a*ans}. Now divide both sides by {a}."
 source: { book: ccss-ee-progression, section: "7.EE.B.4a" }
-verify: "{a*answer - b == a*ans - b}"
-viz: { template: balance-scale, bind: { left: "{a}{variable} - {b}", right: "{a*ans-b}" } }
+verify: "{a*answer + b == a*ans + b}"
+viz: { template: balance-scale, bind: { left: "{a}{variable} + {b}", right: "{a*ans+b}" } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

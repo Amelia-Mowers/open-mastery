@@ -301,3 +301,19 @@ body {
 .eq-hl { color: #b05f28; background: #f7e6d4; animation: cairn-bump 0.5s ease; display: inline-block; }
 
 .demo-banner { text-align: center; margin: 8px auto 0; max-width: 760px; padding: 6px 20px; }
+
+/* ---- focus guidance (playtest: "answer box unclear") ---- */
+@keyframes guide-pulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(176, 95, 40, 0); }
+  50% { box-shadow: 0 0 0 5px rgba(176, 95, 40, 0.25); }
+}
+.answer-row input:placeholder-shown,
+.viz-answer input:placeholder-shown {
+  animation: guide-pulse 1.6s ease-in-out 3;
+}
+/* a new problem announces itself (playtest: "unclear it was a new problem") */
+@keyframes stem-in {
+  from { opacity: 0; transform: translateX(-14px); background: #f7e6d4; }
+  to { opacity: 1; transform: none; background: transparent; }
+}
+.stem { animation: stem-in 0.5s ease; border-radius: 8px; }

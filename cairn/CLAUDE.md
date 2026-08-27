@@ -53,3 +53,8 @@
   at the workspace root (github.com/Amelia-Mowers/open-mastery). Commit at
   the ROOT — the old per-directory repos are archived as .git-local-archive
   and must not be used. Every push to main redeploys the Pages demo.
+- **Fail loudly.** A wrong-but-plausible render (an addition walkthrough
+  on a subtraction problem) is worse than an error. Prefer invariants
+  that make the state unrepresentable; where that's not mechanical, add
+  a validator check that at least WARNS (see [form_mismatch]). Never let
+  a fallback silently produce content that could teach the wrong thing.

@@ -85,6 +85,16 @@ Global `prefers-reduced-motion` handling covers the rest.
 - Verification lives at the item level (`verify:` + `answer.integer`) —
   the widget submits raw answers and never grades.
 
+## 6b. Reuse with care — new widgets are cheap
+
+Reuse a widget only when the REPRESENTATION genuinely matches, not
+because the data shape fits. The ratio-table can display any x→y pairs,
+but pressing it into service as a function machine (and the area model
+as "a square, sort of") reads as the wrong picture to a learner. A
+purpose-built widget costs an afternoon against this checklist — when in
+doubt, build the right picture. (Widget-type saturation is an
+observation about progressions reusing representations, not a budget.)
+
 ## 7. Fleet integration checklist (adding a widget)
 
 1. `src/client/viz/<name>.tsx` (or `widgets/` for pure inputs) meeting §1–6.

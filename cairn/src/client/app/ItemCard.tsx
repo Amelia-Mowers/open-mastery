@@ -149,6 +149,17 @@ export function ItemCard({
     : null
   const maxHints = isCheck ? 0 : Math.min(item.hints.length, 2)
 
+  /** answers lock the moment the verdict lands — review mode is inert */
+  const answerMode = outcome !== null ? 'review' : action.itemKind === 'faded' ? 'faded' : 'problem'
+
+  // guide the eye: focus the answer box when a fresh problem arrives
+  useEffect(() => {
+    const el = document.querySelector<HTMLElement>(
+      '.answer-row input, .viz-answer input, .viz-answer [role="slider"], .viz-answer [role="radiogroup"]',
+    )
+    el?.focus()
+  }, [action.instance.paramHash])
+
   const submit = async () => {
     if (busy || outcome) return
     const extracted = widget.extract() as { raw?: string; value?: number | null } | null
@@ -289,12 +300,11 @@ export function ItemCard({
           >
           {!TEXT_INPUTS.has(item.widget.type) && (
             <div className="viz-answer">
-              {widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
+              {widget.render({} as never, answerMode)}
             </div>
           )}
           <div className="answer-row">
-            {TEXT_INPUTS.has(item.widget.type) &&
-              widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
+            {TEXT_INPUTS.has(item.widget.type) && widget.render({} as never, answerMode)}
             <button type="submit" className="btn btn-primary" disabled={busy || outcome !== null}>
               Check answer
             </button>
