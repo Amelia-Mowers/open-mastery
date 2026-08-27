@@ -63,12 +63,20 @@ describe('stepwise player', () => {
     )
     expect(hasExpects(stepwiseExp().timeline)).toBe(true)
 
-    // decomposition gate: click the equation piece; wrong piece counts a miss
+    // decomposition gate: MULTI-select with explicit confirm — a wrong or
+    // partial set is a miss, exact set advances (no more, no fewer)
     await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
     expect(screen.getByText('Click the LEFT-pan piece.')).toBeInTheDocument()
-    await user.click(container.querySelector('[data-pick-seg="3"]')!)
-    expect(screen.getByTestId('stepwise-feedback')).toBeInTheDocument()
     await user.click(container.querySelector('[data-pick-seg="0"]')!)
+    await user.click(container.querySelector('[data-pick-seg="2"]')!) // '=' selected too
+    await user.click(screen.getByTestId('stepwise-check'))
+    expect(screen.getByTestId('stepwise-feedback').textContent).toContain('Not that piece')
+    // the wrong set STAYS selected for adjusting: drop '=', add '+ 5'
+    await user.click(container.querySelector('[data-pick-seg="2"]')!) // deselect '='
+    await user.click(container.querySelector('[data-pick-seg="1"]')!)
+    expect(container.querySelector('[data-pick-seg="0"]')!.getAttribute('aria-pressed')).toBe('true')
+    expect(container.querySelector('[data-pick-seg="2"]')!.getAttribute('aria-pressed')).toBe('false')
+    await user.click(screen.getByTestId('stepwise-check'))
 
     // op gate opens with its authored prompt; the confirmation has NOT played
     await waitFor(() => expect(screen.getByText('Which move comes FIRST?')).toBeInTheDocument())
@@ -105,7 +113,9 @@ describe('stepwise player', () => {
       <StepwisePlayer explanation={stepwiseExp()} params={P} stepDelayMs={10} onReachedEnd={done} />,
     )
     await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
+    await user.click(container.querySelector('[data-pick-seg="0"]')!)
     await user.click(container.querySelector('[data-pick-seg="1"]')!)
+    await user.click(screen.getByTestId('stepwise-check'))
     await waitFor(() => expect(container.querySelector('[data-op-sym="add"]')).toBeInTheDocument())
     for (let i = 0; i < 2; i++) {
       await user.click(container.querySelector('[data-op-sym="add"]')!)

@@ -80,6 +80,7 @@ export function StepwisePlayer({
   const [feedback, setFeedback] = useState<string | null>(null)
   const [move, setMove] = useState<OpMove>({ op: null, by: '' })
   const [typed, setTyped] = useState('')
+  const [picked, setPicked] = useState<ReadonlySet<number>>(new Set())
   /** reviewing an earlier step (index into steps), or null = live frontier */
   const [scrub, setScrub] = useState<number | null>(null)
   const tallies = useRef<StepwiseResult>({ misses: 0, reveals: 0 })
@@ -142,6 +143,7 @@ export function StepwisePlayer({
     setTries(0)
     setMove({ op: null, by: '' })
     setTyped('')
+    setPicked(new Set())
     setUnlocked((u) => new Set([...u, applied]))
   }
 
@@ -157,7 +159,9 @@ export function StepwisePlayer({
         : typeof waitingOn.value === 'string'
           ? renderText(waitingOn.value, params)
           : String(waitingOn.value)
-    setFeedback(`${lead} ${shown}. Watch it play — you'll get the next one.`)
+    setFeedback(
+      `${lead} ${waitingOn.type === 'pick' ? `this piece — ${shown}` : shown}. Watch it play — you'll get the next one.`,
+    )
     unlock()
   }
 
@@ -166,7 +170,11 @@ export function StepwisePlayer({
     engage()
     const correct =
       waitingOn.type === 'pick'
-        ? (waitingOn.value as unknown[]).map((v) => String(Number(v))).includes(raw)
+        ? // set equality: exactly the expected segments, no more, no fewer
+          (() => {
+            const want = new Set((waitingOn.value as unknown[]).map(Number))
+            return picked.size === want.size && [...picked].every((i) => want.has(i))
+          })()
         : gradeAnswer(
             { type: waitingOn.type, value: waitingOn.value } as AnswerSpec,
             params as never,
@@ -178,16 +186,17 @@ export function StepwisePlayer({
       return
     }
     tallies.current.misses += 1
+    const missLead = waitingOn.type === 'pick' ? 'Not that piece.' : 'Not quite.'
     if (tries === 0) {
       setTries(1)
       setFeedback(
         waitingOn.hint !== undefined
-          ? renderText(waitingOn.hint, params)
-          : 'Not quite — look at the equation and try again.',
+          ? `${missLead} ${renderText(waitingOn.hint, params)}`
+          : `${missLead} Look at the equation and try again.`,
       )
       return
     }
-    reveal('The move:')
+    reveal(waitingOn.type === 'pick' ? 'It was' : 'The move:')
   }
 
   const gatePrompt = (e: StepExpect): string =>
@@ -251,21 +260,41 @@ export function StepwisePlayer({
         <div className="stepwise-gate" data-testid="stepwise-gate">
           <p className="stepwise-prompt">{gatePrompt(waitingOn)}</p>
           {waitingOn.type === 'pick' ? (
-            <div className="stepwise-pick" role="group" aria-label="Pick the piece of the equation">
-              {(live.equation ?? []).map((seg, i) =>
-                seg.trim() === '' ? null : (
-                  <button
-                    key={i}
-                    type="button"
-                    className="stepwise-pick-seg"
-                    data-pick-seg={i}
-                    onClick={() => submitStep(String(i))}
-                  >
-                    {seg.trim()}
-                  </button>
-                ),
-              )}
-            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault()
+                if (picked.size > 0) submitStep('')
+              }}
+            >
+              <div className="stepwise-pick" role="group" aria-label="Pick the piece of the equation">
+                {(live.equation ?? []).map((seg, i) =>
+                  seg.trim() === '' ? null : (
+                    <button
+                      key={i}
+                      type="button"
+                      className="stepwise-pick-seg"
+                      data-pick-seg={i}
+                      aria-pressed={picked.has(i)}
+                      onClick={() =>
+                        setPicked((ps) => {
+                          const next = new Set(ps)
+                          if (next.has(i)) next.delete(i)
+                          else next.add(i)
+                          return next
+                        })
+                      }
+                    >
+                      {seg.trim()}
+                    </button>
+                  ),
+                )}
+              </div>
+              <div className="answer-row" style={{ justifyContent: 'center' }}>
+                <button type="submit" className="btn btn-primary" data-testid="stepwise-check" disabled={picked.size === 0}>
+                  That's my pick
+                </button>
+              </div>
+            </form>
           ) : waitingOn.type === 'op' ? (
             <form
               onSubmit={(e) => {

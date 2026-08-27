@@ -352,6 +352,12 @@ body {
   transition: border-color 0.2s ease, background 0.2s ease;
 }
 .stepwise-pick-seg:hover { border-color: #b05f28; background: #f7e6d4; }
+.stepwise-pick-seg[aria-pressed="true"] {
+  border-color: #b05f28;
+  background: #f7e6d4;
+  color: #8a4d1d;
+  box-shadow: 0 2px 0 rgba(138, 77, 29, 0.25);
+}
 
 /* ---- symbolic equation banner (decomposition lessons) ---- */
 .lesson-equation {
