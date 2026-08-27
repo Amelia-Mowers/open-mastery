@@ -87,6 +87,10 @@ export function StepwisePlayer({
   const tallies = useRef<StepwiseResult>({ misses: 0, reveals: 0 })
   const endNotified = useRef(false)
   const engagedNotified = useRef(false)
+  /** last active gate content height — the between-gates state holds this
+   * size so the panel tweens gate→gate directly, never dipping small */
+  const gateRef = useRef<HTMLDivElement | null>(null)
+  const lastGateH = useRef<number | null>(null)
 
   const pending = applied < steps.length ? steps[applied]! : null
   const waitingOn: StepExpect | null =
@@ -100,6 +104,14 @@ export function StepwisePlayer({
     engagedNotified.current = true
     onEngaged?.()
   }
+
+  // remember the open gate's rendered height (updates as hints appear)
+  useEffect(() => {
+    if (waitingOn !== null && gateRef.current) {
+      const h = gateRef.current.offsetHeight
+      if (h > 0) lastGateH.current = h
+    }
+  })
 
   // a reveal note lingers while its move plays; clear it once the NEXT
   // gate's input is open (waitingOn non-null at a fresh frontier)
@@ -265,17 +277,24 @@ export function StepwisePlayer({
       {gatesAhead && scrub === null && (
         <div className="stepwise-gate" data-testid="stepwise-gate">
           {waitingOn === null ? (
-            <div className="stepwise-gate-content" key={`wait-${applied}`}>
-              {feedback !== null ? (
+            <div
+              className="stepwise-gate-content"
+              key={`wait-${applied}`}
+              style={{
+                minHeight: lastGateH.current ?? undefined,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              {feedback !== null && (
                 <p className="stepwise-feedback" data-testid="stepwise-feedback">
                   {feedback}
                 </p>
-              ) : (
-                <p className="stepwise-wait">Watch the move play…</p>
               )}
             </div>
           ) : (
-          <div className="stepwise-gate-content" key={`gate-${applied}`}>
+          <div className="stepwise-gate-content" key={`gate-${applied}`} ref={gateRef}>
           <p className="stepwise-prompt">{gatePrompt(waitingOn)}</p>
           {waitingOn.type === 'pick' ? (
             <form

@@ -317,12 +317,7 @@ body {
 .stepwise-skip, .stepwise-done { text-align: center; margin: 6px 0 2px; font-size: 13.5px; }
 @keyframes sw-fade { from { opacity: 0; } to { opacity: 1; } }
 .stepwise-gate-content { animation: sw-fade 0.35s ease both; }
-.stepwise-wait {
-  text-align: center;
-  font: 600 14.5px 'Nunito Sans', sans-serif;
-  color: #8b8070;
-  margin: 4px 0;
-}
+
 .stepwise-track {
   display: flex;
   align-items: center;
