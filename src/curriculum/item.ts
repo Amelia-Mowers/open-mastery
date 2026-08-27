@@ -32,6 +32,11 @@ export const answerSchema = z
     /** templated via cairn-expr, e.g. "{variable} = {b/a}" */
     value: z.union([z.string(), z.number(), z.array(z.union([z.string(), z.number()]))]),
     equivalence: z.enum(['symbolic', 'numeric', 'exact']).optional(),
+    /** syntactic form guard for open-expression answers (symbolic
+     * equivalence would otherwise accept an echo of the stem):
+     * 'expanded' = no parentheses in the submission; 'combined' = the
+     * variable appears at most once */
+    form: z.enum(['expanded', 'combined']).optional(),
     tolerance: z.number().nonnegative().optional(),
     units: z.string().optional(),
     /** per-item display flag for non-integer rationals (§4.3a) */

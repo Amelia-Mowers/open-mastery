@@ -129,3 +129,15 @@ function astArb() {
   })).expr
   return { arb }
 }
+
+describe('parseExprLoose (implicit multiplication in human/rendered notation)', () => {
+  it('inserts * for juxtaposition but leaves function calls alone', async () => {
+    const { parseExprLoose, insertImplicitMul } = await import('../src/expr/parse.ts')
+    expect(insertImplicitMul('3x + 6')).toBe('3*x + 6')
+    expect(insertImplicitMul('3(x+2)')).toBe('3*(x+2)')
+    expect(insertImplicitMul('(x+1)(x+2)')).toBe('(x+1)*(x+2)')
+    expect(insertImplicitMul('abs(x)')).toBe('abs(x)')
+    expect(parseExprLoose('3x + 6').ok).toBe(true)
+    expect(parseExprLoose('2(n+1) - 4n').ok).toBe(true)
+  })
+})

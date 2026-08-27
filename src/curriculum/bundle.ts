@@ -2,7 +2,9 @@ import type { Skill } from './skill.ts'
 import type { Item } from './item.ts'
 import type { Explanation } from './explanation.ts'
 import { parseTemplate, templateIdentifiers, renderTemplate } from '../expr/render.ts'
-import { parseExpr } from '../expr/parse.ts'
+import { parseExpr, parseExprLoose } from '../expr/parse.ts'
+import type { Expr } from '../expr/ast.ts'
+import { eq as ratEq } from '../expr/rational.ts'
 import { evaluate } from '../expr/eval.ts'
 import { isInt, type Rational } from '../expr/rational.ts'
 import { generateParams, type GeneratorSpec } from '../expr/generate.ts'
@@ -236,7 +238,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
       const rendered = renderTemplate(answerTpl, env, { numberStyle: 'fraction' })
       if (!rendered.ok) return null
       const last = rendered.value.split('=').pop()?.trim() ?? ''
-      const parsed = parseExpr(last)
+      const parsed = parseExprLoose(last)
       if (!parsed.ok) return null
       const v = evaluate(parsed.value, {})
       return v.ok && v.value.t === 'num' ? v.value.v : null
@@ -281,11 +283,76 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
       continue
     }
 
+    const exprIdentifiers = (e: Expr): Set<string> => {
+      const out = new Set<string>()
+      const walk = (x: Expr): void => {
+        if (x.k === 'var') out.add(x.name)
+        else if (x.k === 'neg') walk(x.e)
+        else if (x.k === 'bin' || x.k === 'cmp') {
+          walk(x.l)
+          walk(x.r)
+        } else if (x.k === 'call') x.args.forEach(walk)
+      }
+      walk(e)
+      return out
+    }
+    /** free identifiers of the rendered answer's value part (open expression
+     * answers like "3n + 5" have them; closed ones evaluate to a number) */
+    const openVars = (env: Env): string[] | null => {
+      if (!answerTpl) return null
+      const rendered = renderTemplate(answerTpl, env, { numberStyle: 'fraction' })
+      if (!rendered.ok) return null
+      const last = rendered.value.split('=').pop()?.trim() ?? ''
+      const parsed = parseExprLoose(last)
+      if (!parsed.ok) return null
+      const vars = [...exprIdentifiers(parsed.value)]
+      return vars.length > 0 ? vars : null
+    }
+    /** equivalence by sampling at integer points (the grader's method) */
+    const SAMPLE_POINTS = [2, 3, 5, -2, 7]
+    const sampledEquivalent = (aSrc: string, bSrc: string): boolean | null => {
+      const pa = parseExprLoose(aSrc)
+      const pb = parseExprLoose(bSrc)
+      if (!pa.ok || !pb.ok) return null
+      const vars = [...new Set([...exprIdentifiers(pa.value), ...exprIdentifiers(pb.value)])].sort()
+      for (let t = 0; t < 5; t++) {
+        const env: Env = {}
+        vars.forEach((v, j) => {
+          env[v] = SAMPLE_POINTS[(t + j * 2) % SAMPLE_POINTS.length]!
+        })
+        const va = evaluate(pa.value, env)
+        const vb = evaluate(pb.value, env)
+        if (!va.ok || !vb.ok) return va.ok === vb.ok ? null : false
+        if (va.value.t !== 'num' || vb.value.t !== 'num') return false
+        if (!ratEq(va.value.v, vb.value.v)) return false
+      }
+      return true
+    }
     const checkInstance = (env: Env, where: string) => {
       if (!answerTpl) return
       const r = renderTemplate(answerTpl, env)
       if (!r.ok) {
         push('error', 'answer_eval', where, r.error.message)
+        return
+      }
+      // OPEN expression answer ("3n + 5"): verify holds an independently
+      // authored ALTERNATE FORM; require symbolic agreement by sampling
+      const open = openVars(env)
+      if (open !== null) {
+        if (it.verify === undefined) {
+          push('error', 'verify_failed', where, 'open-expression answer needs a verify: alternate form')
+          return
+        }
+        const vr = renderTemplate(it.verify, env, { numberStyle: 'fraction' })
+        if (!vr.ok) {
+          push('error', 'verify_failed', where, `verify render failed: ${vr.error.message}`)
+          return
+        }
+        const aRendered = renderTemplate(answerTpl, env, { numberStyle: 'fraction' })
+        const aLast = aRendered.ok ? (aRendered.value.split('=').pop()?.trim() ?? '') : ''
+        const same = sampledEquivalent(aLast, vr.value.trim())
+        if (same !== true)
+          push('error', 'verify_failed', where, `answer '${aLast}' is not equivalent to verify form '${vr.value.trim()}'`)
         return
       }
       const ans = answerValue(env)

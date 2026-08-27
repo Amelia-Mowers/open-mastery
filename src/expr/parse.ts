@@ -197,3 +197,13 @@ export function printExpr(e: Expr): string {
       return `${e.fn}(${e.args.map(printExpr).join(', ')})`
   }
 }
+
+/** Insert the implicit multiplications people (and rendered templates)
+ * write: "3x" → "3*x", "3(x+2)" → "3*(x+2)", "(x+1)(x+2)" → ...*(x+2).
+ * Letter-before-paren is left alone so function calls (abs(x)) survive. */
+export const insertImplicitMul = (src: string): string =>
+  src.replace(/(\d)\s*(?=[a-zA-Z(])/g, '$1*').replace(/(\))\s*(?=[\w(])/g, '$1*')
+
+/** parseExpr over human/rendered notation (implicit multiplication allowed). */
+export const parseExprLoose = (src: string): ReturnType<typeof parseExpr> =>
+  parseExpr(insertImplicitMul(src))

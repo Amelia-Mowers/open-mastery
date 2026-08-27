@@ -248,3 +248,85 @@ describe('bundle validation (release gates)', () => {
     expect(issues.some((i) => i.code === 'bkt_degenerate' && i.severity === 'warning')).toBe(true)
   })
 })
+
+describe('open-expression answers: verify is the alternate form', () => {
+  const mk = (answer: string, verify?: string) => ({
+    skills: [
+      {
+        id: 't.open.skill',
+        name: 'T',
+        prereqs: [],
+        bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 },
+        instruction: ['t.open.skill.exp'],
+      },
+    ],
+    items: [
+      {
+        id: 't.open.skill.001',
+        skills: ['t.open.skill'],
+        difficulty: 1,
+        params: { a: 3, p: 5, variable: 'n' },
+        generator: { a: { int: [2, 9] }, p: { int: [1, 9] } },
+        widget: { type: 'expression-input', config: { stem: 'Write it.' } },
+        answer: { type: 'expr', value: answer, equivalence: 'symbolic' },
+        ...(verify === undefined ? {} : { verify }),
+        review: { status: 'vetted' },
+      },
+      {
+        id: 't.open.skill.002',
+        skills: ['t.open.skill'],
+        difficulty: 2,
+        params: { a: 3, p: 5 },
+        generator: { a: { int: [2, 9] }, p: { int: [1, 9] } },
+        widget: { type: 'numeric-input', config: { stem: 'What is {a}+{p}?' } },
+        answer: { type: 'expr', value: '{a+p}' },
+        verify: '{answer - p == a}',
+        review: { status: 'vetted' },
+      },
+    ],
+    explanations: [
+      {
+        id: 't.open.skill.exp',
+        skill: 't.open.skill',
+        representation: 'worked-equation',
+        widget: 'worked-equation',
+        params_from: 'item',
+        timeline: [
+          { t: 0, caption: 'Watch.' },
+          { t: 2, handoff: { prompt: 'Go.' } },
+        ],
+        review: { status: 'vetted' },
+      },
+      {
+        id: 't.open.skill.exp2',
+        skill: 't.open.skill',
+        representation: 'ratio-table',
+        widget: 'ratio-table',
+        params_from: 'item',
+        timeline: [
+          { t: 0, caption: 'Watch again.' },
+          { t: 2, handoff: { prompt: 'Go.' } },
+        ],
+        review: { status: 'vetted' },
+      },
+    ],
+  })
+  const errorsOf = (b: { skills: unknown[]; items: unknown[]; explanations: unknown[] }) =>
+    validateBundle({
+      skills: b.skills.map((x) => skillSchema.parse(x)),
+      items: b.items.map((x) => itemSchema.parse(x)),
+      explanations: b.explanations.map((x) => explanationSchema.parse(x)),
+    })
+      .filter((i) => i.severity === 'error')
+      .map((i) => i.code)
+
+  it('a matching alternate form passes', () => {
+    expect(errorsOf(mk('{a}{variable} + {p}', '{p} + {a}*{variable}'))).toEqual([])
+  })
+  it('a missing verify fails', () => {
+    expect(errorsOf(mk('{a}{variable} + {p}'))).toContain('verify_failed')
+  })
+  it('a NON-equivalent alternate form fails', () => {
+    expect(errorsOf(mk('{a}{variable} + {p}', '{p} + {a} + {variable}'))).toContain('verify_failed')
+  })
+})
