@@ -121,12 +121,15 @@ export const bktFor = (): ((skillId: string) => BktParams) => () => BKT
 export function makeStamper(studentId = 's1'): {
   stamp: (body: EventBody) => CairnEvent
   all: () => CairnEvent[]
+  clock: { t: number }
 } {
   let seq = 0
+  const clock = { t: 0 }
   const log: CairnEvent[] = []
   return {
     stamp: (body) => {
       seq += 1
+      clock.t += 1000
       const ev: CairnEvent = {
         ...body,
         siteSeq: seq,
@@ -135,16 +138,21 @@ export function makeStamper(studentId = 's1'): {
         coreVersion: 'core-test',
         bundleVersion: 'bundle-test',
         studentId,
-        t: seq * 1000,
+        t: clock.t,
       }
       log.push(ev)
       return ev
     },
     all: () => [...log],
+    clock,
   }
 }
 
-export function makeCtx(): { ctx: EngineCtx; all: () => CairnEvent[] } {
-  const { stamp, all } = makeStamper()
-  return { ctx: { cur: fixtureIndex(), bkt: bktFor(), policy: policyV1, stamp }, all }
+export function makeCtx(): { ctx: EngineCtx; all: () => CairnEvent[]; clock: { t: number } } {
+  const { stamp, all, clock } = makeStamper()
+  return {
+    ctx: { cur: fixtureIndex(), bkt: bktFor(), policy: policyV1, stamp, now: () => clock.t },
+    all,
+    clock,
+  }
 }

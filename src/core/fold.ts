@@ -9,6 +9,7 @@
  * Reducer version: reducer/v1. Changing what this file computes from old
  * events is an explicit versioned migration, never an edit of events.
  */
+import { fsrsInit, fsrsReview, type FsrsState } from './fsrs.ts'
 import { bktUpdate, type BktParams } from './bkt.ts'
 import { instanceKey, type CairnEvent } from './events.ts'
 
@@ -30,7 +31,9 @@ export interface SkillState {
   consecUnassistedCorrect: number
   masteredAt?: number
   lapsed?: boolean
-  fsrs?: { stability: number; difficulty: number; due: number }
+  fsrs?: FsrsState
+  /** running latency estimate (EMA) — the §5 rating's "skill median" proxy */
+  latencyEmaMs?: number
 }
 
 export interface StudentState {
@@ -88,6 +91,10 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       // grantP and the 0.5 halving, a fold/model constant, not policy.
       const k = ev.itemKind === 'faded' ? 2 : ev.hintLevel
       s.p = bktUpdate(s.p, ev.correct, ev.correct ? k : 0, params(ev.skillId))
+      s.latencyEmaMs =
+        s.latencyEmaMs === undefined ? ev.latencyMs : 0.7 * s.latencyEmaMs + 0.3 * ev.latencyMs
+      if (ev.itemKind === 'review' && ev.rating !== undefined && s.fsrs !== undefined)
+        s.fsrs = fsrsReview(s.fsrs, ev.rating, ev.t)
       if (ev.correct) s.lastCorrect = ev.t
       s.consecUnassistedCorrect = ev.correct && !ev.assisted ? s.consecUnassistedCorrect + 1 : 0
       if (ev.assisted) state.assisted.add(instanceKey(ev.itemId, ev.paramHash))
@@ -119,6 +126,9 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       s.p = Math.max(s.p, GRANT_P_FLOOR)
       s.masteredAt = ev.t
       s.lapsed = false
+      // the skill enters spaced review (a re-grant after a lapse re-enters
+      // fresh — v1 does not carry pre-lapse stability across)
+      s.fsrs = fsrsInit('good', ev.t)
       break
     }
     case 'mastery_lapsed': {

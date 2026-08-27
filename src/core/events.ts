@@ -28,7 +28,7 @@ export interface Envelope {
  * curriculum-free. (Additive over §4.7, as are skillId/paramHash: the doc's
  * accounting rules — probe attempts scope to the prereq, assistance scopes to
  * (itemId, paramHash) — need them explicit on the event.) */
-export type AttemptItemKind = 'faded' | 'practice' | 'check' | 'probe'
+export type AttemptItemKind = 'faded' | 'practice' | 'check' | 'probe' | 'review'
 
 export type EventBody =
   | {
@@ -43,6 +43,9 @@ export type EventBody =
       hintLevel: number
       latencyMs: number
       assisted: boolean
+      /** review attempts only: the §5 BKT→FSRS rating, computed at emit time
+       * so the fold replays FSRS deterministically */
+      rating?: 'again' | 'hard' | 'good' | 'easy'
       trace?: unknown
     }
   | {

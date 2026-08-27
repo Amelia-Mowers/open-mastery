@@ -43,6 +43,7 @@ interface InlinePlay {
 
 const KICKERS: Record<ServeAction['itemKind'], string> = {
   faded: 'FINISH THIS ONE',
+  review: 'QUICK REVIEW',
   practice: 'PRACTICE',
   check: 'MASTERY CHECK',
   probe: 'QUICK LOOK AT AN EARLIER SKILL',

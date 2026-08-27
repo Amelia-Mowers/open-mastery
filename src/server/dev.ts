@@ -115,15 +115,17 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
   const fallback: BktParams = { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 
   // envelope stamping: the server is the single writer and assigns order;
-  // site time is a monotonic counter here (the real server folds clock_set)
+  // site time follows the wall clock, kept monotonic (the real server folds
+  // clock_set) — FSRS review due-dates live in this coordinate
   let siteSeq = 0
   let siteTime = 0
+  const siteNow = (): number => Math.max(siteTime, Date.now())
   const log: CairnEvent[] = []
   const stampFor =
     (studentId: string) =>
     (body: EventBody): CairnEvent => {
       siteSeq += 1
-      siteTime += 1000
+      siteTime = Math.max(siteTime + 1, Date.now())
       const ev: CairnEvent = {
         ...body,
         siteSeq,
@@ -148,6 +150,7 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
     return s
   }
   const ctxFor = (studentId: string): EngineCtx => ({
+    now: siteNow,
     cur,
     bkt: (skillId) => bktDefaults.get(skillId) ?? fallback,
     policy: policyV1,

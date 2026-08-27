@@ -68,6 +68,9 @@ export function rankSkills(
   cur: CurriculumIndex,
   bkt: (skillId: string) => BktParams,
   pol: PolicyV1,
+  /** session serve-seq of each skill's last serve — band ties go to the
+   * LEAST recently served skill, which is what makes practice interleave */
+  recency?: (skillId: string) => number,
 ): string[] {
   const [lo, hi] = pol.selector.expectedCorrectness
   const bandDistance = (id: string): number => {
@@ -81,6 +84,11 @@ export function rankSkills(
     const da = bandDistance(a)
     const db = bandDistance(b)
     if (da !== db) return da - db
+    if (recency) {
+      const ra = recency(a)
+      const rb = recency(b)
+      if (ra !== rb) return ra - rb
+    }
     return cur.skillOrder.indexOf(a) - cur.skillOrder.indexOf(b)
   })
 }

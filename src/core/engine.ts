@@ -39,6 +39,8 @@ export interface EngineCtx {
   policy: PolicyV1
   /** wraps an EventBody in a server envelope (assigns siteSeq and site time) */
   stamp: (body: EventBody) => CairnEvent
+  /** current site time (same coordinate as event `t`) — review due checks */
+  now: () => number
 }
 
 export interface SessionState {
@@ -53,6 +55,10 @@ export interface SessionState {
     | { kind: 'alt_explanation'; skillId: string; explanationId: string; representation: string }
     | { kind: 'probe'; skillId: string; prereqId: string }
   check: null | { skillId: string; baseItemsUsed: string[]; passedInstanceIds: string[] }
+  /** monotonically counts served items (recency for interleaving) */
+  serveSeq: number
+  /** items served since the last spaced review (cadence, §5) */
+  sinceReview: number
 }
 
 export const freshSession = (): SessionState => ({
@@ -62,6 +68,8 @@ export const freshSession = (): SessionState => ({
   pendingHint: {},
   overlay: null,
   check: null,
+  serveSeq: 0,
+  sinceReview: 0,
 })
 
 const skillSession = (session: SessionState, skillId: string): SkillSession =>
@@ -72,7 +80,7 @@ export type NextAction =
   | { kind: 'alt_explanation'; skillId: string; explanationId: string; representation: string }
   | {
       kind: 'serve_item'
-      itemKind: 'faded' | 'practice' | 'check' | 'probe'
+      itemKind: 'faded' | 'practice' | 'check' | 'probe' | 'review'
       /** the skill the attempt will count against (prereq for probes) */
       skillId: string
       /** the skill being worked on (differs from skillId for probes) */
@@ -152,15 +160,58 @@ export function nextAction(
     session.check = null
   }
 
-  // pick a skill
+  // ---- spaced review (§5): mastered skills come due on the FSRS clock;
+  // interleave ~1 review per interleaveReviewEvery new items ----
+  const now = ctx.now()
+  const dueReviews = Object.entries(student.skills)
+    .filter(([, st]) => st.phase === 'mastered' && st.fsrs !== undefined && st.fsrs.due <= now)
+    .sort((a, b) => a[1].fsrs!.due - b[1].fsrs!.due)
+    .map(([id]) => id)
+  const reviewTurn = session.sinceReview >= pol.selector.interleaveReviewEvery
+
+  // ---- pick a skill: blocked acquisition, interleaved consolidation.
+  // Stay on the current skill only through ACQUISITION (lesson, faded, and
+  // the first acquisitionRun practice serves — novices benefit from a short
+  // blocked run); after that every serve re-ranks, and band ties go to the
+  // least recently served skill, which interleaves the working set. ----
   const allEligible = eligibleSkills(student, ctx.cur)
   const unparked = allEligible.filter((id) => !skillSession(session, id).parked)
+  const inAcquisition = (id: string): boolean => {
+    const phase = student.skills[id]?.phase ?? 'unseen'
+    return (
+      phase === 'unseen' ||
+      phase === 'lesson' ||
+      phase === 'faded' ||
+      (phase === 'practice' && skillSession(session, id).practiceServes < pol.selector.acquisitionRun)
+    )
+  }
+  // working-set cap: never START a new skill while maxActiveSkills are
+  // already underway (breadth with breathing room, not a lesson avalanche)
+  const activeCount = Object.values(student.skills).filter((st) =>
+    st.phase === 'lesson' || st.phase === 'faded' || st.phase === 'practice',
+  ).length
+  const started = (id: string): boolean => (student.skills[id]?.phase ?? 'unseen') !== 'unseen'
+  const capped =
+    activeCount >= pol.selector.maxActiveSkills ? unparked.filter(started) : unparked
+  const pickPool = capped.length > 0 ? capped : unparked
   const skillId =
     opts.focusSkill !== undefined && allEligible.includes(opts.focusSkill)
       ? opts.focusSkill
-      : session.currentSkill !== null && unparked.includes(session.currentSkill)
+      : session.currentSkill !== null &&
+          unparked.includes(session.currentSkill) &&
+          inAcquisition(session.currentSkill)
         ? session.currentSkill
-        : (rankSkills(unparked, student, ctx.cur, ctx.bkt, pol)[0] ?? null)
+        : (rankSkills(pickPool, student, ctx.cur, ctx.bkt, pol, (id) =>
+            skillSession(session, id).lastServedSeq,
+          )[0] ?? null)
+
+  // a review is served on cadence, or whenever nothing else is eligible
+  if (dueReviews.length > 0 && (reviewTurn || skillId === null) && opts.focusSkill === undefined) {
+    for (const reviewSkill of dueReviews) {
+      const inst = instantiateFor(practiceItems(reviewSkill, ctx.cur), student, session, pol, reviewSkill)
+      if (inst) return serveWorkItem('review', reviewSkill, inst, student, session, ctx)
+    }
+  }
   if (skillId === null) return { kind: 'session_done' }
 
   const skill = ctx.cur.skills.get(skillId)!
@@ -184,13 +235,18 @@ export function nextAction(
 }
 
 function serveWorkItem(
-  itemKind: 'faded' | 'practice',
+  itemKind: 'faded' | 'practice' | 'review',
   skillId: string,
   instance: ItemInstance,
   student: StudentState,
   session: SessionState,
   ctx: EngineCtx,
 ): NextAction {
+  session.serveSeq += 1
+  const sess = skillSession(session, skillId)
+  sess.lastServedSeq = session.serveSeq
+  if (itemKind === 'practice') sess.practiceServes += 1
+  session.sinceReview = itemKind === 'review' ? 0 : session.sinceReview + 1
   const p = student.skills[skillId]?.p ?? ctx.bkt(skillId).L0
   const action: NextAction = {
     kind: 'serve_item',
@@ -198,8 +254,9 @@ function serveWorkItem(
     skillId,
     forSkillId: skillId,
     instance,
-    // faded examples always keep their scaffolding; practice fades it out
-    scaffolded: itemKind === 'faded' || p < ctx.policy.scaffolding.fadeAtP,
+    // faded examples always keep their scaffolding; practice fades it out;
+    // reviews are always raw (retrieval of the mastered, unscaffolded form)
+    scaffolded: itemKind === 'faded' || (itemKind === 'practice' && p < ctx.policy.scaffolding.fadeAtP),
   }
   const offered = session.pendingHint[skillId]
   if (offered !== undefined) action.offeredHintLevel = offered
@@ -313,6 +370,21 @@ export function recordAttempt(
     applyEvent(student, ev, ctx.bkt)
   }
 
+  // §5 BKT→FSRS handoff: rate the review from correctness, help, and latency
+  // against the skill's own running estimate; the rating rides ON the event
+  // so the fold replays the FSRS update deterministically
+  let rating: 'again' | 'hard' | 'good' | 'easy' | undefined
+  if (action.itemKind === 'review') {
+    const ema = student.skills[action.skillId]?.latencyEmaMs ?? ctx.policy.fsrs.defaultLatencyMs
+    rating = !correct
+      ? 'again'
+      : assisted || submission.latencyMs > ctx.policy.fsrs.hardLatencyFactor * ema
+        ? 'hard'
+        : submission.latencyMs < ctx.policy.fsrs.easyLatencyFactor * ema
+          ? 'easy'
+          : 'good'
+  }
+
   emit({
     kind: 'attempt',
     itemId: action.instance.itemId,
@@ -324,11 +396,12 @@ export function recordAttempt(
     hintLevel,
     latencyMs: submission.latencyMs,
     assisted,
+    ...(rating !== undefined ? { rating } : {}),
   })
 
   session.served.add(instanceKey(action.instance.itemId, action.instance.paramHash))
   delete session.pendingHint[action.skillId]
-  session.currentSkill = action.forSkillId
+  if (action.itemKind !== 'review') session.currentSkill = action.forSkillId
 
   switch (action.itemKind) {
     case 'probe': {
@@ -371,6 +444,13 @@ export function recordAttempt(
         if (!skillSession(session, action.forSkillId).parked)
           afterMiss(student, session, ctx, action.forSkillId, emit)
       }
+      break
+    }
+    case 'review': {
+      // a failed review lapses the mastery (§5): demote to practice, reset p,
+      // require a fresh unassisted check to re-master. No corrective ladder —
+      // the lapse IS the response. A passed review just pushed `due` out.
+      if (!correct) emit({ kind: 'mastery_lapsed', skillId: action.skillId })
       break
     }
     case 'faded':

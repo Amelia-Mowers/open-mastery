@@ -62,8 +62,16 @@ export const policyV1 = {
   },
 
   selector: {
-    /** ~1 review per 3 new items (FSRS reviews arrive in build step 8) */
+    /** ~1 review per 3 new items */
     interleaveReviewEvery: 4,
+    /** working-set cap: never START a new skill while this many are already
+     * in lesson/faded/practice — breadth with breathing room, not a lesson
+     * avalanche after every unlock */
+    maxActiveSkills: 3,
+    /** blocked acquisition: stay on a skill through its lesson, faded phase,
+     * and this many practice serves — THEN it joins the interleaved rotation
+     * (novices benefit from a short blocked run; interleave after) */
+    acquisitionRun: 2,
     /** target expected-correctness band, practice/review phases only */
     expectedCorrectness: [0.7, 0.9],
     /** avoid re-serving any of the last N instances */
@@ -73,8 +81,12 @@ export const policyV1 = {
   },
 
   fsrs: {
-    /** correct with latency > this × skill median rates 'hard' (§5) */
+    /** correct with latency > this × the skill's latency estimate → 'hard' (§5) */
     hardLatencyFactor: 1.5,
+    /** correct, unassisted, faster than this × the estimate → 'easy' (§5) */
+    easyLatencyFactor: 0.6,
+    /** stand-in estimate until the skill has its own latency EMA */
+    defaultLatencyMs: 20000,
     /** use bundle latency defaults until a site has this many attempts */
     minAttemptsForSiteMedian: 30,
   },

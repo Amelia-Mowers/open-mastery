@@ -24,10 +24,17 @@ export interface SkillSession {
   /** alternative explanation already used this session (v1 has exactly one
    * alternative before the probe) */
   altShown: boolean
+  /** practice serves so far (the blocked-acquisition run counts these) */
+  practiceServes: number
+  /** session serve counter at the last serve of this skill (interleaving
+   * prefers the least-recently-served skill within the band) */
+  lastServedSeq: number
 }
 
 export const freshSkillSession = (): SkillSession => ({
   attempts: 0,
+  practiceServes: 0,
+  lastServedSeq: 0,
   consecMisses: 0,
   probeMisses: 0,
   parked: false,
