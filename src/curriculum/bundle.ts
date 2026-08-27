@@ -151,6 +151,21 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         s.id,
         `needs ≥2 generator-backed, non-choice, non-rubric items eligible as check items (has ${checkEligible.length})`,
       )
+    // capstone rule: the skill's difficulty CEILING must be reachable with a
+    // raw text answer — widget inputs scaffold the easier tiers, but checks
+    // pick hardest-first and mastery evidence tops out at the raw form
+    const skillItems = bundle.items.filter((it) => it.skills.includes(s.id) && it.faded == null)
+    if (skillItems.length > 0) {
+      const maxD = Math.max(...skillItems.map((it) => it.difficulty))
+      const rawTypes = new Set(['numeric-input', 'expression-input', 'equation-input'])
+      if (!skillItems.some((it) => it.difficulty === maxD && rawTypes.has(it.widget.type)))
+        push(
+          'warning',
+          'capstone_raw',
+          s.id,
+          `hardest items (difficulty ${maxD}) are all widget inputs — the ceiling should be a raw text answer`,
+        )
+    }
   }
 
   // ---- template validity + identifier scoping ----
