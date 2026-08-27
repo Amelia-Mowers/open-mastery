@@ -1,0 +1,298 @@
+/* Cairn client shell — palette from the design mockup. */
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: #f2ede4;
+  color: #2e2822;
+  font-family: 'Nunito Sans', system-ui, sans-serif;
+}
+.shell { max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
+.topbar {
+  display: flex; align-items: center; gap: 10px;
+  padding: 12px 0; margin-bottom: 18px;
+  border-bottom: 1px solid #e6ddd0;
+}
+.cairn-mark { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
+.cairn-mark i { display: block; border-radius: 2px; height: 5px; }
+.cairn-mark i:nth-child(1) { width: 9px; background: #b05f28; }
+.cairn-mark i:nth-child(2) { width: 14px; background: #8b6a4d; }
+.cairn-mark i:nth-child(3) { width: 19px; background: #5c4a38; }
+.brand { font: 700 20px 'Lora', Georgia, serif; }
+.spacer { flex: 1; }
+.mono-chip {
+  font: 600 11px ui-monospace, Menlo, monospace; color: #8b8070;
+  background: #ece5d8; padding: 3px 8px; border-radius: 5px;
+}
+.muted { font-size: 13px; color: #8b8070; }
+.loading { padding: 30px 0; }
+
+.card {
+  background: #fffdf9; border: 1px solid #e6ddd0; border-radius: 14px;
+  padding: 26px; margin-bottom: 16px;
+}
+.card-kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.kicker { font: 700 11px 'Nunito Sans', sans-serif; letter-spacing: 0.08em; color: #b05f28; }
+.kicker-alt { color: #8a5320; }
+.kicker-check { color: #fff; background: #5c4a38; padding: 4px 10px; border-radius: 5px; }
+.card-kicker .mono-chip { margin-left: auto; background: #f2ede4; }
+
+.stem { font: 600 26px 'Lora', Georgia, serif; margin: 6px 0 18px; }
+.viz { margin: 0 auto 18px; }
+.lesson-stage { margin: 8px auto 4px; }
+.lesson-caption {
+  font: 600 21px 'Lora', Georgia, serif; color: #5c5245;
+  min-height: 120px; display: flex; align-items: center; justify-content: center;
+  text-align: center; padding: 20px 8%; margin: 0;
+  background: #f7f3ec; border-radius: 12px;
+}
+.lesson-controls { display: flex; align-items: center; gap: 16px; margin-top: 18px; }
+.dots { display: flex; gap: 6px; }
+.dot { width: 8px; height: 8px; border-radius: 50%; background: #d8cdbb; display: inline-block; }
+.dot-on { background: #b05f28; }
+
+.answer-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+.viz-answer { margin: 4px 0 16px; }
+.answer-row input {
+  font: 600 22px 'Lora', Georgia, serif; text-align: center;
+  padding: 10px; width: 170px;
+  border: 2px solid #d8cdbb; border-radius: 10px; background: #fff;
+}
+.answer-row input:focus { outline: none; border-color: #b05f28; }
+
+.btn {
+  border: 1px solid #d8cdbb; cursor: pointer; background: transparent; color: #7a6f61;
+  font: 700 14px 'Nunito Sans', sans-serif; padding: 11px 20px; border-radius: 9px;
+}
+.btn-primary { border: none; background: #b05f28; color: #fff; }
+.btn-primary:disabled { opacity: 0.5; cursor: default; }
+.btn-check { border: none; background: #4f7f5d; color: #fff; }
+.btn-quiet { border: none; background: transparent; font-weight: 600; }
+
+.hint {
+  background: #f3e4d4; border-radius: 9px; padding: 10px 14px;
+  font: 600 14px 'Nunito Sans', sans-serif; color: #6b4318; margin: 10px 0 0;
+}
+.feedback { border-radius: 9px; padding: 11px 14px; font-weight: 700; margin: 14px 0; }
+.feedback.ok { background: #e9efe6; color: #3f6a4d; }
+.feedback.bad { background: #f5dfda; color: #96453a; }
+.grant { background: #dbe8d6; color: #3f6a4d; border-radius: 9px; padding: 12px 14px; margin: 8px 0; }
+.parked { background: #f5dfda; color: #96453a; border-radius: 9px; padding: 12px 14px; margin: 8px 0; }
+.check-offer {
+  display: flex; align-items: center; gap: 14px; flex-wrap: wrap;
+  background: #e9efe6; border-radius: 10px; padding: 13px 16px; margin-top: 16px;
+  font: 700 14px 'Nunito Sans', sans-serif; color: #3f6a4d;
+}
+.join h1, .done h1 { font: 700 24px 'Lora', Georgia, serif; margin: 0 0 8px; }
+
+/* ---- juice ---- */
+@keyframes cairn-pop { from { transform: scale(0.6); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes cairn-rise { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+@keyframes cairn-shake { 0%, 100% { transform: none; } 25% { transform: translateX(-4px); } 75% { transform: translateX(4px); } }
+@keyframes cairn-bump { 0% { transform: scale(1); } 40% { transform: scale(1.3); } 100% { transform: scale(1); } }
+@keyframes stone-drop { from { opacity: 0; transform: translateY(-14px); } to { opacity: 1; transform: none; } }
+
+.card { animation: cairn-rise 0.25s ease; }
+.feedback.ok { animation: cairn-pop 0.25s ease; }
+.feedback.bad { animation: cairn-shake 0.3s ease; }
+.pts-delta {
+  display: inline-block; margin-left: 10px; padding: 2px 9px; border-radius: 12px;
+  background: #b05f28; color: #fff; font: 800 12.5px 'Nunito Sans', sans-serif;
+  animation: cairn-bump 0.45s ease;
+}
+.points-chip {
+  font: 800 13px 'Nunito Sans', sans-serif; color: #8a5320;
+  background: #f3e4d4; padding: 4px 11px; border-radius: 14px;
+  white-space: nowrap;
+}
+.points-chip.bump { animation: cairn-bump 0.45s ease; }
+.grant {
+  display: flex; align-items: center; gap: 14px;
+  background: linear-gradient(135deg, #dbe8d6, #e9efe6); color: #3f6a4d;
+  border: 1.5px solid #c9dcc4; border-radius: 12px; padding: 16px;
+  font-size: 16px; margin: 14px 0; animation: cairn-pop 0.4s ease;
+}
+.grant-stone {
+  width: 34px; height: 22px; border-radius: 8px; background: #5c4a38; flex: none;
+  box-shadow: 0 -12px 0 -4px #8b6a4d, 0 -22px 0 -8px #b05f28;
+  margin-top: 14px;
+}
+
+/* ---- mastery-check unlock ---- */
+.unlock { text-align: center; }
+.unlock h1 { font: 700 26px 'Lora', Georgia, serif; margin: 6px 0; }
+.unlock .answer-row { justify-content: center; margin-top: 16px; }
+.unlock-burst {
+  width: 54px; height: 54px; line-height: 54px; margin: 0 auto;
+  border-radius: 50%; background: #e9efe6; color: #4f7f5d;
+  font-size: 26px; animation: cairn-bump 0.6s ease;
+}
+
+/* ---- dashboard ---- */
+.dash-top { display: flex; align-items: center; gap: 26px; flex-wrap: wrap; }
+.cairn-stack { flex: 1; min-width: 220px; text-align: center; }
+.stones { display: flex; flex-direction: column-reverse; align-items: center; gap: 3px; min-height: 60px; justify-content: flex-start; }
+.stone { height: 20px; border-radius: 9px; animation: stone-drop 0.4s ease both; }
+.stack-label { font: 700 13px 'Nunito Sans', sans-serif; color: #7a6f61; margin: 10px 0 0; }
+.dash-points { text-align: center; padding: 0 18px; }
+.dash-points-num { font: 800 40px 'Lora', Georgia, serif; color: #8a5320; }
+.dash-h { font: 700 17px 'Lora', Georgia, serif; margin: 0 0 14px; }
+.skill-map { position: relative; }
+.skill-edges { position: absolute; inset: 0; width: 100%; height: 100%; }
+.skill-node {
+  position: absolute; transform: translate(-50%, -50%);
+  width: 200px; max-width: 42vw; padding: 9px 12px; border-radius: 11px;
+  border: 2px solid transparent; text-align: center;
+}
+.skill-node-name {
+  font: 700 12.5px 'Nunito Sans', sans-serif; line-height: 1.25; overflow-wrap: break-word;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
+.skill-node-phase { font: 600 10.5px ui-monospace, Menlo, monospace; margin-top: 3px; opacity: 0.85; }
+
+/* ---- explanation player ---- */
+.btn-round {
+  width: 42px; height: 42px; padding: 0; border-radius: 50%;
+  font-size: 14px; line-height: 1; flex: none;
+  background: #b05f28; color: #fff; border: none;
+}
+.lesson-controls { flex-wrap: wrap; }
+.lesson-scrub {
+  flex: 1; min-width: 120px; accent-color: #b05f28; height: 6px;
+}
+.dots .dot { border: none; padding: 0; cursor: pointer; }
+.handoff { animation: cairn-pop 0.3s ease; }
+.lesson-caption-under {
+  min-height: 56px; padding: 12px 6%; font-size: 18px; margin-top: 4px;
+}
+
+/* ---- faded worked steps ---- */
+.faded-steps { list-style: none; margin: 4px 0 14px; padding: 0; display: flex; flex-direction: column; gap: 9px; }
+.faded-step { display: flex; align-items: baseline; gap: 12px; }
+.faded-step-tag {
+  flex: none; width: 84px; text-align: right;
+  font: 700 11px ui-monospace, Menlo, monospace;
+}
+.faded-step.done .faded-step-tag { color: #4f7f5d; }
+.faded-step.yours .faded-step-tag { color: #b05f28; }
+.faded-step-text { font: 600 20px 'Lora', Georgia, serif; }
+.faded-step.done .faded-step-text { color: #5c5245; }
+.faded-step-arrow { color: #b05f28; font-size: 18px; }
+
+/* ---- segmented step timeline + speed ---- */
+.step-track {
+  flex: 1; min-width: 140px; display: flex; gap: 5px; align-items: stretch; height: 16px;
+}
+.step-seg {
+  flex: 1; position: relative; border: none; padding: 0; cursor: pointer;
+  background: #e6ddd0; border-radius: 6px; overflow: hidden;
+}
+.step-seg:hover { background: #d8cdbb; }
+.step-fill {
+  position: absolute; inset: 0 auto 0 0; background: #b05f28;
+  border-radius: 6px; transition: width 0.1s linear;
+}
+.step-seg[aria-current='step'] { outline: 2px solid #b05f28; outline-offset: 1.5px; }
+.btn-speed {
+  padding: 8px 12px; font: 800 13px 'Nunito Sans', sans-serif; min-width: 52px;
+}
+.handoff-row { margin-top: 14px; }
+
+/* ---- lesson preamble ---- */
+.preamble-lead { font-size: 14px; margin: 14px 0 4px; }
+.preamble-title { font: 700 26px 'Lora', Georgia, serif; margin: 0 0 10px; }
+.explained-note { margin: 8px 0 0; }
+
+/* ---- fixed-height lesson stage + embedded walk-through ---- */
+.lesson-stage {
+  min-height: 265px; display: flex; align-items: center; justify-content: center;
+}
+.lesson-stage > * { width: 100%; }
+.lesson-caption-under { min-height: 64px; display: flex; align-items: center; justify-content: center; }
+.embedded-player {
+  border: 1.5px solid #e6ddd0; border-radius: 12px; padding: 16px 18px 18px;
+  background: #fdfaf4; margin: 4px 0 14px; animation: cairn-rise 0.25s ease;
+}
+.preamble-plain {
+  font: 600 16px 'Nunito Sans', sans-serif; color: #5c5245;
+  max-width: 480px; margin: 0 auto 14px; line-height: 1.5;
+}
+.preamble-vocab { margin: 0 auto 16px; max-width: 460px; text-align: left; }
+.vocab-row { display: flex; gap: 10px; align-items: baseline; margin-bottom: 7px; }
+.vocab-row dt {
+  flex: none; font: 700 12.5px 'Nunito Sans', sans-serif; color: #8a5320;
+  background: #f3e4d4; padding: 2px 9px; border-radius: 10px;
+}
+.vocab-row dd { margin: 0; font: 600 13.5px 'Nunito Sans', sans-serif; color: #7a6f61; }
+
+.player-close { margin-left: auto; padding: 4px 10px; font-size: 15px; }
+.card-kicker .player-close { margin-left: 8px; }
+
+/* ---- smooth height + soft loading ---- */
+.smooth-height { transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
+.smooth-inner { transition: opacity 0.18s ease; }
+.smooth-inner.dim { opacity: 0.55; pointer-events: none; }
+
+/* ---- micro-interactions ---- */
+.btn { transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
+.btn:hover { border-color: #b6a88f; }
+.btn:active { transform: scale(0.96); }
+.btn-primary:hover, .btn-check:hover, .btn-round:hover { filter: brightness(1.08); }
+.btn-primary:hover { box-shadow: 0 3px 10px rgba(176, 95, 40, 0.28); }
+.step-seg { transition: background 0.2s ease; }
+.answer-row input { transition: border-color 0.2s ease, box-shadow 0.2s ease; }
+.answer-row input:focus { box-shadow: 0 0 0 3px rgba(176, 95, 40, 0.14); }
+
+/* ---- entrances (fade + rise instead of pop-in) ---- */
+.hint, .explained-note, .check-offer, .handoff-row, .parked, .viz, .lesson-caption { animation: cairn-rise 0.28s ease both; }
+.faded-step { animation: cairn-rise 0.3s ease both; }
+.faded-step:nth-child(1) { animation-delay: 0.03s; }
+.faded-step:nth-child(2) { animation-delay: 0.1s; }
+.faded-step:nth-child(3) { animation-delay: 0.17s; }
+.faded-step:nth-child(4) { animation-delay: 0.24s; }
+.faded-step:nth-child(5) { animation-delay: 0.31s; }
+@keyframes node-rise {
+  from { opacity: 0; transform: translate(-50%, calc(-50% + 10px)); }
+  to { opacity: 1; transform: translate(-50%, -50%); }
+}
+.skill-node { animation: node-rise 0.35s ease both; }
+.vocab-row { animation: cairn-rise 0.3s ease both; }
+.vocab-row:nth-child(2) { animation-delay: 0.08s; }
+.vocab-row:nth-child(3) { animation-delay: 0.16s; }
+.preamble-title, .preamble-plain { animation: cairn-rise 0.3s ease both; }
+.preamble-plain { animation-delay: 0.06s; }
+
+/* ---- calm mode ---- */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ---- mastery meter ---- */
+.mastery-meter { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; }
+.mastery-label { font: 700 10.5px 'Nunito Sans', sans-serif; letter-spacing: 0.07em; color: #8b8070; }
+.m-bar { width: 96px; height: 8px; background: #ece5d8; border-radius: 4px; overflow: hidden; display: inline-block; }
+.m-fill {
+  display: block; height: 100%; background: linear-gradient(90deg, #c9803f, #b05f28);
+  border-radius: 4px; transition: width 0.7s cubic-bezier(0.34, 1.3, 0.5, 1);
+}
+.mastery-meter b { font: 800 12.5px 'Nunito Sans', sans-serif; color: #8a5320; min-width: 34px; }
+.card-kicker .mastery-meter + .mono-chip { margin-left: 0; }
+.node-bar { height: 5px; background: rgba(255, 255, 255, 0.55); border-radius: 3px; margin-top: 6px; overflow: hidden; }
+.node-bar span { display: block; height: 100%; background: #b05f28; border-radius: 3px; transition: width 0.6s ease; }
+
+/* ---- widget zoo ---- */
+.zoo-card .card-kicker .mono-chip { max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.zoo-extract { display: inline-block; margin-top: 10px; }
+
+/* ---- symbolic equation banner (decomposition lessons) ---- */
+.lesson-equation {
+  text-align: center; font: 600 30px 'Lora', Georgia, serif; color: #2e2822;
+  margin: 2px 0 8px; letter-spacing: 0.01em;
+}
+.eq-seg { transition: color 0.3s ease; border-radius: 8px; padding: 1px 3px; }
+.eq-hl { color: #b05f28; background: #f7e6d4; animation: cairn-bump 0.5s ease; display: inline-block; }
+
+.demo-banner { text-align: center; margin: 8px auto 0; max-width: 760px; padding: 6px 20px; }

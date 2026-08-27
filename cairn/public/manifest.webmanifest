@@ -1,0 +1,10 @@
+{
+  "name": "Cairn",
+  "short_name": "Cairn",
+  "description": "Mastery learning, one stone at a time",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#f2ede4",
+  "theme_color": "#b05f28",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }]
+}
