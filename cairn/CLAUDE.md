@@ -25,6 +25,14 @@
   counters; area-model = fill the products; worked-equation = write the
   next line. Inputs are constructed responses — never multiple choice
   unless the answer is genuinely categorical (choice widget).
+- **STEPWISE PROBLEMS (the unified-widget direction)**: timeline steps
+  may carry `expect` ({type: op|expr|numeric, value, prompt?, hint?}) —
+  in stepwise play (`StepwisePlayer`) the timeline PAUSES there and the
+  student constructs the move; the step's patch plays as confirmation.
+  ItemCard's faded phase auto-upgrades to stepwise when the lead
+  explanation has expects; the answer box below stays live (the skip).
+  Autoplay lessons ignore expects. Author expects on the steps that ARE
+  moves (both-sides ops, next lines), never on scene-setting steps.
 - **`GOLDEN_WIDGET.md` is the widget standard** — trinity roles, staged
   decomposition entrances paired with `eqHighlight`, semantic (never
   numeric) widget fit, review-mode inertness, keyboard operation, motion,

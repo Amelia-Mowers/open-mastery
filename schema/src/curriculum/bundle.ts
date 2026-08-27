@@ -296,9 +296,27 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     // params_from: item defers identifier scoping to the item; parse-check only
     const scope = e.params_from === 'item' ? null : new Set(Object.keys(e.params ?? {}))
     e.timeline.forEach((step, i) => {
+      // stepwise expects: an op expect's move word is literal text, so its
+      // shape is statically checkable; templates get the same parse/scope
+      // treatment as captions
+      if (step.expect !== undefined) {
+        if (
+          step.expect.type === 'op' &&
+          !/^(add|subtract|multiply|divide)\s+\S/.test(String(step.expect.value))
+        )
+          push(
+            'error',
+            'expect_shape',
+            `${e.id}.timeline[${i}]`,
+            `op expect value must be '<add|subtract|multiply|divide> <operand>' (got '${String(step.expect.value)}')`,
+          )
+      }
       for (const src of [
         step.caption,
         step.handoff?.prompt,
+        typeof step.expect?.value === 'string' ? step.expect.value : undefined,
+        step.expect?.prompt,
+        step.expect?.hint,
         ...Object.values(step.patch ?? {}).filter((v): v is string => typeof v === 'string'),
       ]) {
         if (src === undefined) continue

@@ -293,6 +293,30 @@ body {
 .zoo-extract { display: inline-block; margin-top: 10px; }
 .zoo-note { color: var(--ink-soft, #8b8070); font-size: 14.5px; margin: 4px 0; }
 
+/* stepwise problem player: the gate where the student constructs the move */
+.stepwise-gate {
+  background: #fbf3e7;
+  border: 2px dashed #e0c9a6;
+  border-radius: 14px;
+  padding: 12px 16px 14px;
+  margin: 10px 0 4px;
+  animation: cairn-rise 0.35s ease both;
+}
+.stepwise-prompt {
+  text-align: center;
+  font: 700 16.5px 'Lora', Georgia, serif;
+  color: #8a4d1d;
+  margin: 2px 0 4px;
+}
+.stepwise-feedback {
+  text-align: center;
+  font: 600 15px 'Nunito Sans', sans-serif;
+  color: #b05f28;
+  margin: 8px 0 2px;
+  animation: cairn-rise 0.3s ease both;
+}
+.stepwise-skip, .stepwise-done { text-align: center; margin: 6px 0 2px; font-size: 13.5px; }
+
 /* ---- symbolic equation banner (decomposition lessons) ---- */
 .lesson-equation {
   text-align: center; font: 600 30px 'Lora', Georgia, serif; color: #2e2822;

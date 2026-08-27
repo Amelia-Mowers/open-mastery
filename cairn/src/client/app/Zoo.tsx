@@ -5,6 +5,7 @@
  * Each demo autoplays; the handoff button replays it. */
 import { useEffect, useState } from 'react'
 import { LessonPlayer } from './LessonPlayer'
+import { StepwisePlayer, hasExpects } from './StepwisePlayer'
 import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry'
 import { FALLBACK_DEMOS, type ZooDemo } from './zoo-demos'
 import type { CairnApi } from './api'
@@ -74,15 +75,6 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
   const [inputWidget] = useState(() =>
     item ? createWidget(item.widget.type, evalConfig(item.widget.config ?? {}, item.params as Params)) : null,
   )
-  if (!item || !fadedWidget || !inputWidget)
-    return (
-      <section className="card zoo-card">
-        <p className="zoo-note">
-          No representation-matched item yet — the faded ("finish this one") and answer-input
-          previews need an item with <code>representation: {demo.explanation.representation}</code>.
-        </p>
-      </section>
-    )
   // same truncation as ItemCard's faded lead: content steps minus the
   // resolution — the answer space below IS the resolution
   const content = demo.explanation.timeline.filter(
@@ -90,26 +82,50 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
   )
   const truncated =
     content.length >= 2 ? { ...demo.explanation, timeline: content.slice(0, -1) } : null
+  const stepwise = truncated !== null && hasExpects(truncated.timeline)
+  const fadedParams = (item?.fadedParams ?? demo.params) as Params
+  const noItem = !item || !fadedWidget || !inputWidget
+  // the stepwise preview needs only the timeline; the faded/input previews
+  // need a representation-matched item — absence is visible debt
+  const debtNote = noItem ? (
+    <section className="card zoo-card">
+      <p className="zoo-note">
+        No representation-matched item yet — the {stepwise ? 'answer-input preview needs' : 'faded ("finish this one") and answer-input previews need'} an
+        item with <code>representation: {demo.explanation.representation}</code>.
+      </p>
+    </section>
+  ) : null
+  if (noItem && !stepwise) return debtNote
   return (
     <>
-      {truncated && (
+      {truncated && (stepwise || !noItem) && (
         <section className="card zoo-card">
           <div className="card-kicker">
-            <span className="kicker">FINISH THIS ONE — FADED PHASE</span>
-            <span className="mono-chip">{JSON.stringify(item.fadedParams)}</span>
+            <span className="kicker">
+              {stepwise ? 'STEPWISE — WORK IT MOVE BY MOVE' : 'FINISH THIS ONE — FADED PHASE'}
+            </span>
+            <span className="mono-chip">{JSON.stringify(fadedParams)}</span>
           </div>
-          <LessonPlayer
-            key={replay}
-            explanation={truncated}
-            params={item.fadedParams as Params}
-            kind="walkthrough"
-            embedded
-            tail="none"
-            onDone={() => setReplay((r) => r + 1)}
-          />
-          <div className="viz-answer">{fadedWidget.render({} as never, 'faded')}</div>
+          {stepwise ? (
+            <StepwisePlayer key={replay} explanation={truncated} params={fadedParams} />
+          ) : (
+            <LessonPlayer
+              key={replay}
+              explanation={truncated}
+              params={fadedParams}
+              kind="walkthrough"
+              embedded
+              tail="none"
+              onDone={() => setReplay((r) => r + 1)}
+            />
+          )}
+          {!stepwise && fadedWidget && (
+            <div className="viz-answer">{fadedWidget.render({} as never, 'faded')}</div>
+          )}
         </section>
       )}
+      {debtNote}
+      {item && inputWidget && (
       <section className="card zoo-card">
         <div className="card-kicker">
           <span className="kicker">PRACTICE PROBLEM — {item.widget.type.toUpperCase()}</span>
@@ -126,6 +142,7 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
         </div>
         {extracted && <p className="mono-chip zoo-extract">{extracted}</p>}
       </section>
+      )}
     </>
   )
 }

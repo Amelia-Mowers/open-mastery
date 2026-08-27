@@ -7,6 +7,7 @@ import type { NextAction } from '../../core/engine'
 import { createWidget } from '../widgets/registry'
 import { createBalanceScale } from '../viz/balance-scale'
 import { createEnvelopeModel } from '../viz/envelope-model'
+import { StepwisePlayer, hasExpects } from './StepwisePlayer'
 import { LessonPlayer } from './LessonPlayer'
 import { evalNumber, renderText, type Params } from './render'
 import type { AttemptOutcome, ClientItem, ExplainResult } from './api'
@@ -269,17 +270,26 @@ export function ItemCard({
         </h2>
       )}
       {action.itemKind === 'faded' && fadedLead && !inline && (
-        <LessonPlayer
-          key={`lead-${action.instance.paramHash}`}
-          explanation={fadedLead.explanation}
-          params={fadedLead.params}
-          kind="walkthrough"
-          sameNumbers={fadedLead.sameNumbers}
-          embedded
-          tail="none"
-          onReachedEnd={() => setLeadDone(true)}
-          onDone={() => {}}
-        />
+        hasExpects(fadedLead.explanation.timeline) ? (
+          <StepwisePlayer
+            key={`lead-${action.instance.paramHash}`}
+            explanation={fadedLead.explanation}
+            params={fadedLead.params}
+            onReachedEnd={() => setLeadDone(true)}
+          />
+        ) : (
+          <LessonPlayer
+            key={`lead-${action.instance.paramHash}`}
+            explanation={fadedLead.explanation}
+            params={fadedLead.params}
+            kind="walkthrough"
+            sameNumbers={fadedLead.sameNumbers}
+            embedded
+            tail="none"
+            onReachedEnd={() => setLeadDone(true)}
+            onDone={() => {}}
+          />
+        )
       )}
       {inline ? (
         <LessonPlayer

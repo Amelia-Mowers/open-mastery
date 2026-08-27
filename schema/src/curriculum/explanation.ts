@@ -1,17 +1,37 @@
 import { z } from 'zod'
 import { explanationIdSchema, skillIdSchema, reviewSchema } from './common.ts'
 
+/** Stepwise expectation: in worked/stepwise play the timeline PAUSES before
+ * this step and the student must supply the move; the step's patch then
+ * plays as confirmation. `value` is graded like an item answer of the same
+ * type ('op' = "<move word> <operand>"). Autoplay (lesson rung) ignores it. */
+export const stepExpectSchema = z
+  .object({
+    type: z.enum(['op', 'expr', 'numeric']),
+    value: z.union([z.string(), z.number()]),
+    /** question shown at the pause, e.g. "What move comes first?" */
+    prompt: z.string().min(1).optional(),
+    /** shown after a wrong try (second wrong try reveals the move) */
+    hint: z.string().optional(),
+  })
+  .strict()
+
 export const timelineStepSchema = z
   .object({
     t: z.number().min(0),
     patch: z.record(z.string(), z.unknown()).optional(),
     caption: z.string().optional(),
     handoff: z.object({ prompt: z.string().min(1) }).strict().optional(),
+    expect: stepExpectSchema.optional(),
   })
   .strict()
   .refine(
     (s) => s.patch !== undefined || s.caption !== undefined || s.handoff !== undefined,
     'a timeline step needs at least one of patch, caption, handoff',
+  )
+  .refine(
+    (s) => s.expect === undefined || s.patch !== undefined,
+    'an expect step needs a patch — the confirmation the correct move plays',
   )
 
 export const explanationSchema = z
@@ -41,3 +61,4 @@ export const explanationSchema = z
 
 export type Explanation = z.infer<typeof explanationSchema>
 export type TimelineStep = z.infer<typeof timelineStepSchema>
+export type StepExpect = z.infer<typeof stepExpectSchema>

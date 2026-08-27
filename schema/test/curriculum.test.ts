@@ -169,6 +169,25 @@ describe('bundle validation (release gates)', () => {
     expect(authoring.some((i) => i.code === 'explanation_variety' && i.severity === 'warning')).toBe(true)
   })
 
+  it('stepwise expects: need a confirmation patch, and op expects need a legal move shape', () => {
+    const b = goodBundle()
+    const tl = b.explanations[0]!.timeline
+    // a well-formed op expect on a patch step validates clean
+    tl[0]!.expect = { type: 'op', value: 'subtract {b}' }
+    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'form_mismatch'])
+    expect(validateBundle(b).filter((i) => !advisory.has(i.code))).toEqual([])
+    // a move word outside add/subtract/multiply/divide is an error
+    tl[0]!.expect = { type: 'op', value: 'banish {b}' }
+    expect(validateBundle(b).some((i) => i.code === 'expect_shape' && i.severity === 'error')).toBe(true)
+    // schema-level: an expect step without a patch is unrepresentable
+    expect(() =>
+      explanationSchema.parse({
+        ...b.explanations[0]!,
+        timeline: [{ t: 0, caption: 'watch', expect: { type: 'op', value: 'subtract 2' } }],
+      }),
+    ).toThrow(/needs a patch/)
+  })
+
   it('op answers: value must render to a known move with a numeric operand, and the widget must offer entry', () => {
     const b = goodBundle()
     b.items[1]!.answer = { type: 'op', value: 'subtract {b}' } as (typeof b.items)[number]['answer']

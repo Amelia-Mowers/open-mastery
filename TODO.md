@@ -54,9 +54,19 @@ non-readers) — scope it separately when its turn comes.
       per-step inputs; capstone stays raw final answer. Literature:
       worked-example effect + completion problems + backward/adaptive
       fading (Renkl & Atkinson; Kalyuga rapid-assessment fading beats
-      fixed). Big lift: schema (expect), player, engine, validator —
-      migrate one skill end-to-end first (two-step is the natural pilot:
-      its op-entry stages already exist).
+      fixed). PILOT SHIPPED 2026-08-27: schema `expect` on timeline steps
+      (op/expr/numeric + prompt/hint; validator expect_shape + template
+      checks), StepwisePlayer (pause-at-gate, hint on miss, reveal on 2nd
+      miss, tallies out), wired as the faded phase whenever the lead
+      explanation carries expects (answer box below = the skip), zoo
+      stepwise card; g7.ee.two-step balance+worked timelines authored.
+      REMAINING for the full ladder: rung selection in the engine
+      (prompted vs independent vs fluent driven by p), per-step BKT
+      evidence events (stepwise tallies currently only gate the pulse;
+      faded discount covers evidence), wrong-step → misconception
+      diagnosis surfacing, expects across the rest of the catalog
+      (author per slab batch), stepwise in the corrective ladder
+      (walkthrough → stepwise retry instead of plain re-serve).
 - [ ] proportional-graph widget (line through origin, read (0,0)/(1,r)) —
       unblocks g7 graph-interpret (rp-slab.md deferred table).
 - [ ] compare-rates "pick with work" upgrade: two offer cards each with a

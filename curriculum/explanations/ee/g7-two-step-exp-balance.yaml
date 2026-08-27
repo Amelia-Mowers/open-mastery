@@ -7,9 +7,23 @@ timeline:
   - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], left: "{a}{variable} + {b}", right: "{a*ans+b}", leftIn: false, rightIn: false }, caption: "TWO operations hide {variable}: a multiply and an add. Watch." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{a}{variable} + {b} sits on the left pan." }
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{a*ans+b} on the right — balanced." }
-  - { t: 12, patch: { eqHighlight: ["1"], highlight: left, op: subtract, by: "{b}" }, caption: "Peel the OUTSIDE first: subtract {b} from both pans." }
+  - t: 12
+    patch: { eqHighlight: ["1"], highlight: left, op: subtract, by: "{b}" }
+    caption: "Peel the OUTSIDE first: subtract {b} from both pans."
+    expect:
+      type: op
+      value: "subtract {b}"
+      prompt: "Two operations hide {variable}. Which one do you undo FIRST?"
+      hint: "The + {b} was applied LAST, so it comes off first. Which move un-does adding {b}?"
   - { t: 16, patch: { left: "{a}{variable}", right: "{a*ans}", op: null, eqHighlight: ["0"], highlight: null }, caption: "Now it reads {a}{variable} = {a*ans} — a problem you already know." }
-  - { t: 20, patch: { op: divide, by: "{a}" }, caption: "Divide both pans by {a}." }
+  - t: 20
+    patch: { op: divide, by: "{a}" }
+    caption: "Divide both pans by {a}."
+    expect:
+      type: op
+      value: "divide {a}"
+      prompt: "One operation left. What frees {variable}?"
+      hint: "{a}{variable} means {variable} multiplied by {a} — which move un-does multiplying?"
   - { t: 23.5, patch: { left: "{variable}", right: "{ans}", op: null, eqHighlight: [] }, caption: "{variable} = {ans}." }
   - { t: 26, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
