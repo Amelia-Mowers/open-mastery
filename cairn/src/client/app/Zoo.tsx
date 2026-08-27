@@ -100,6 +100,51 @@ const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<str
       ],
     },
   },
+  {
+    title: 'balance-scale (pick the operation)',
+    type: 'balance-scale',
+    config: {
+      left: '4x', right: '28',
+      ops: [
+        { key: 'divide4', label: '÷ 4 both sides' },
+        { key: 'sub4', label: '− 4 both sides' },
+        { key: 'mul4', label: '× 4 both sides' },
+      ],
+    },
+  },
+  {
+    title: 'hanger-diagram (choose the move)',
+    type: 'hanger-diagram',
+    config: {
+      copies: 3, shapeLabel: 'x', weight: '21',
+      ops: [
+        { key: 'third', label: 'split 21 into 3 pieces' },
+        { key: 'sub3', label: 'take 3 off both sides' },
+      ],
+    },
+  },
+  {
+    title: 'worked-equation (choose the next line)',
+    type: 'worked-equation',
+    config: {
+      lines: ['3x + 5 = 17', '3x = 12'],
+      options: [
+        { key: 'div3', label: 'x = 12 ÷ 3' },
+        { key: 'sub3', label: 'x = 12 − 3' },
+        { key: 'mul3', label: 'x = 12 × 3' },
+      ],
+    },
+  },
+  {
+    title: 'envelope-model (share the counters)',
+    type: 'envelope-model',
+    config: { envelopes: 4, counters: 28 },
+  },
+  {
+    title: 'area-model (fill the missing piece of area)',
+    type: 'area-model',
+    config: { height: '3', parts: ['x', '2'], products: ['3x', '?'] },
+  },
   { title: 'numeric-input', type: 'numeric-input', config: { units: 'cm' } },
   { title: 'expression-input', type: 'equation-input', config: { variable: 'x' } },
 ]
@@ -159,7 +204,7 @@ export function Zoo({ api }: { api: CairnApi }) {
         demos.map((d) => (
           <div key={d.explanation.id}>
             <DemoCard demo={d} />
-            {(index[d.widget] ?? []).length > 1 && (
+            {(index[d.widget] ?? []).length > 0 && (
               <p className="muted zoo-index">
                 every {d.widget} timeline:{' '}
                 {(index[d.widget] ?? []).map((e) => (

@@ -2,13 +2,13 @@ import type { WidgetInstance } from './contract'
 import { createNumericInput, type NumericInputConfig } from './numeric-input'
 import { createExpressionInput, type ExpressionInputConfig } from './expression-input'
 import { createNumberLine, type NumberLineConfig } from './number-line'
-import { createBalanceScale } from '../viz/balance-scale'
-import { createEnvelopeModel } from '../viz/envelope-model'
+import { createBalanceScale, type BalanceScaleConfig } from '../viz/balance-scale'
+import { createEnvelopeModel, type EnvelopeModelConfig } from '../viz/envelope-model'
 import { createTapeDiagram, type TapeDiagramConfig } from '../viz/tape-diagram'
-import { createHangerDiagram } from '../viz/hanger-diagram'
-import { createAreaModel } from '../viz/area-model'
+import { createHangerDiagram, type HangerDiagramConfig } from '../viz/hanger-diagram'
+import { createAreaModel, type AreaModelConfig } from '../viz/area-model'
 import { createOppositeFlip, type OppositeFlipConfig } from '../viz/opposite-flip'
-import { createWorkedEquation } from '../viz/worked-equation'
+import { createWorkedEquation, type WorkedEquationConfig } from '../viz/worked-equation'
 import { createDoubleNumberLine, type DoubleNumberLineConfig } from '../viz/double-number-line'
 import { createRatioTable, type RatioTableConfig } from '../viz/ratio-table'
 import { createChoice, type ChoiceConfig } from './choice'
@@ -28,13 +28,13 @@ export const WIDGET_ROLES: Record<WidgetType, WidgetRoles> = {
   'expression-input': { lesson: false, input: true },
   'equation-input': { lesson: false, input: true },
   'number-line': { lesson: true, input: true },
-  'balance-scale': { lesson: true, input: false },
-  'envelope-model': { lesson: true, input: false },
+  'balance-scale': { lesson: true, input: true },
+  'envelope-model': { lesson: true, input: true },
   'tape-diagram': { lesson: true, input: true },
-  'hanger-diagram': { lesson: true, input: false },
-  'area-model': { lesson: true, input: false },
+  'hanger-diagram': { lesson: true, input: true },
+  'area-model': { lesson: true, input: true },
   'opposite-flip': { lesson: true, input: true },
-  'worked-equation': { lesson: true, input: false },
+  'worked-equation': { lesson: true, input: true },
   'double-number-line': { lesson: true, input: true },
   'ratio-table': { lesson: true, input: true },
   choice: { lesson: false, input: true },
@@ -83,19 +83,19 @@ export function createWidget(
     case 'number-line':
       return createNumberLine(config as NumberLineConfig) as never
     case 'balance-scale':
-      return createBalanceScale() as never
+      return createBalanceScale(config as BalanceScaleConfig) as never
     case 'envelope-model':
-      return createEnvelopeModel() as never
+      return createEnvelopeModel(config as EnvelopeModelConfig) as never
     case 'tape-diagram':
       return createTapeDiagram(config as TapeDiagramConfig) as never
     case 'hanger-diagram':
-      return createHangerDiagram() as never
+      return createHangerDiagram(config as HangerDiagramConfig) as never
     case 'area-model':
-      return createAreaModel() as never
+      return createAreaModel(config as AreaModelConfig) as never
     case 'opposite-flip':
       return createOppositeFlip(config as OppositeFlipConfig) as never
     case 'worked-equation':
-      return createWorkedEquation() as never
+      return createWorkedEquation(config as WorkedEquationConfig) as never
     case 'double-number-line':
       return createDoubleNumberLine(config as DoubleNumberLineConfig) as never
     case 'ratio-table':

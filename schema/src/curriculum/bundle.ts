@@ -336,7 +336,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     // it names a real option, and evaluate `verify` (the scenario invariant
     // that makes the keyed option genuinely correct) over the params alone
     if (it.answer.type === 'choice') {
-      const opts = (it.widget.config?.['options'] ?? null) as Array<{ key?: unknown }> | null
+      const opts = (it.widget.config?.['options'] ?? it.widget.config?.['ops'] ?? null) as Array<{ key?: unknown }> | null
       const keys = Array.isArray(opts) ? opts.map((o) => String(o?.key ?? '')) : []
       if (keys.length < 2)
         push('error', 'choice_options', it.id, 'choice items need ≥2 widget.config.options with keys')

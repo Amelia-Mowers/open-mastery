@@ -15,7 +15,13 @@ What every Cairn widget must satisfy. The §4.4 contract is one interface —
   returns `{ raw }` and/or `{ value }` that ItemCard can submit. If the
   input role is not yet built, `WIDGET_ROLES.input` is `false` AND the
   planned input semantic is documented in `CLAUDE.md` — display-only is a
-  stage, not a category.
+  stage, not a category, and **every audit must list planned-input
+  widgets as OPEN DEBT, never as conformant**. (Paid 2026-08-27:
+  balance = pick the operation, hanger = choose the move, worked =
+  choose the next line, envelope = distribute the counters, area = fill
+  the missing product — the shared `OpChoiceRow` carries the keyboard/
+  inertness contract. Remaining debt: cube-model needs a counting
+  interaction designed.)
 - **review**: inert — `disabled` + `aria-disabled`, no pointer or keyboard
   mutation, single tab stop removed (`tabIndex -1`).
 

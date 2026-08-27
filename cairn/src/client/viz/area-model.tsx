@@ -31,8 +31,17 @@ type AreaState = {
 const label = (p: AreaModelParams): string =>
   `Area model: a rectangle ${p.height} tall split into widths ${p.parts.join(' and ')}`
 
-export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaModelView> {
-  const store = new WidgetStore<AreaState>({ products: null, highlight: [], fillRows: null })
+export interface AreaModelConfig {
+  height?: string
+  parts?: string[]
+  /** problem mode: products with exactly one '?' — the input cell */
+  products?: Array<string | number>
+}
+
+export function createAreaModel(
+  config: AreaModelConfig = {},
+): WidgetInstance<AreaModelParams, { raw: string; value: number | null } | null, AreaModelView> {
+  const store = new WidgetStore<AreaState & { raw: string }>({ products: null, highlight: [], fillRows: null, raw: '' })
 
   /** small positive integer, or null — numeric dimensions get a unit grid
    * and proportional sizing so "6 rows of 6" LOOKS like 6 rows of 6 */
@@ -41,15 +50,20 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
     return Number.isInteger(n) && n > 0 && n <= 14 ? n : null
   }
 
-  function View({ params, mode: _mode }: { params: AreaModelParams; mode: WidgetMode }) {
+  function View({ params, mode }: { params: AreaModelParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
-    const cols = params.parts.length
-    const h = dim(params.height)
+    const interactive = mode !== 'lesson' && Array.isArray(config.products)
+    const effParams = interactive
+      ? { height: String(config.height ?? ''), parts: (config.parts ?? []).map(String) }
+      : params
+    const shownProducts = interactive ? config.products!.map(String) : state.products
+    const cols = effParams.parts.length
+    const h = dim(effParams.height)
     // TRUE-TO-SCALE geometry: every numeric dimension is w units wide and
     // the rectangle is exactly h units tall, so a unit grid shows the REAL
     // cell counts (6² is a 6×6 square, the "2" column is 2 columns wide).
     // Variable columns get a fixed symbolic width in units.
-    const widthUnits = params.parts.map((w) => dim(w) ?? (h ? Math.max(4, Math.round(h * 1.3)) : 5))
+    const widthUnits = effParams.parts.map((w) => dim(w) ?? (h ? Math.max(4, Math.round(h * 1.3)) : 5))
     const totalUnits = widthUnits.reduce((a, b) => a + b, 0)
     const unit = Math.min(
       34,
@@ -65,10 +79,10 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
       )
     }
     return (
-      <div role="img" aria-label={label(params)} style={{ width: boxW + 56, maxWidth: '100%', margin: '0 auto' }}>
+      <div role="img" aria-label={label(effParams)} style={{ width: boxW + 56, maxWidth: '100%', margin: '0 auto' }}>
         {/* width labels above the columns */}
         <div style={{ display: 'flex', marginLeft: 56 }}>
-          {params.parts.map((w, i) => (
+          {effParams.parts.map((w, i) => (
             <div
               key={i}
               data-width-label
@@ -97,7 +111,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
               color: '#5c5245',
             }}
           >
-            {params.height}
+            {effParams.height}
           </div>
           {/* the partitioned rectangle — exact unit dimensions */}
           <div
@@ -112,7 +126,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
               background: '#fffdf9',
             }}
           >
-            {params.parts.map((_, i) => {
+            {effParams.parts.map((_, i) => {
               const highlighted = state.highlight.includes(i + 1)
               return (
                 <div
@@ -128,7 +142,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
                     justifyContent: 'center',
                     borderRight: i < cols - 1 ? '2px dashed #8b6a4d' : 'none',
                     backgroundColor: highlighted ? '#f7e6d4' : 'transparent',
-                    backgroundImage: grid(params.parts[i]!),
+                    backgroundImage: grid(effParams.parts[i]!),
                     font: "600 clamp(16px, 4vw, 24px) 'Lora', Georgia, serif",
                     color: highlighted ? '#8a4d1d' : '#2e2822',
                     transition: 'background 0.3s ease, color 0.3s ease',
@@ -137,7 +151,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
                     padding: 6,
                   }}
                 >
-                  {h !== null && dim(params.parts[i]!) !== null && state.fillRows !== null && (
+                  {h !== null && dim(effParams.parts[i]!) !== null && state.fillRows !== null && (
                     <div
                       data-fill-rows
                       aria-hidden
@@ -152,16 +166,40 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
                       }}
                     />
                   )}
-                  <span
-                    data-product
-                    style={
-                      state.products?.[i]
-                        ? { background: 'rgba(255,253,249,0.88)', padding: '2px 10px', borderRadius: 8 }
-                        : undefined
-                    }
-                  >
-                    {state.products?.[i] ?? ''}
-                  </span>
+                  {interactive && shownProducts?.[i] === '?' ? (
+                    <input
+                      aria-label="Missing piece of area"
+                      aria-disabled={mode === 'review'}
+                      disabled={mode === 'review'}
+                      placeholder="?"
+                      value={state.raw}
+                      onChange={(e) => {
+                        store.record('input', { raw: e.target.value })
+                        store.setState({ raw: e.target.value })
+                      }}
+                      style={{
+                        width: 64,
+                        font: "600 18px 'Lora', Georgia, serif",
+                        textAlign: 'center',
+                        padding: '2px 2px',
+                        border: '2px dashed #b05f28',
+                        borderRadius: 8,
+                        background: '#fffdf9',
+                        color: '#8a4d1d',
+                      }}
+                    />
+                  ) : (
+                    <span
+                      data-product
+                      style={
+                        shownProducts?.[i]
+                          ? { background: 'rgba(255,253,249,0.88)', padding: '2px 10px', borderRadius: 8 }
+                          : undefined
+                      }
+                    >
+                      {shownProducts?.[i] ?? ''}
+                    </span>
+                  )}
                 </div>
               )
             })}
@@ -173,7 +211,12 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
 
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
-    extract: () => null,
+    extract: () => {
+      if (!Array.isArray(config.products)) return null
+      const raw = store.getState().raw
+      const n = Number(raw.trim())
+      return { raw, value: raw.trim() !== '' && Number.isFinite(n) ? n : null }
+    },
     trace: () => store.trace(),
     applyPatch: (patch) => {
       store.record('patch', patch)

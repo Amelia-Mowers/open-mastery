@@ -6,6 +6,7 @@
 import { useSyncExternalStore } from 'react'
 import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
+import { OpChoiceRow, type OpOption } from '../widgets/op-choice'
 
 export interface HangerDiagramParams {
   /** copies of the variable shape (the coefficient, as a count) */
@@ -34,13 +35,24 @@ type HangerState = {
   reveal: boolean
   shapesIn: boolean
   weightIn: boolean
+  selectedOp: string | null
 }
 
 const label = (p: HangerDiagramParams): string =>
   `Balanced hanger: ${p.copies} copies of ${p.shapeLabel} balancing ${p.weight}`
 
-export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null, HangerDiagramView> {
-  const store = new WidgetStore<HangerState>({ split: false, share: null, reveal: false, shapesIn: true, weightIn: true })
+export interface HangerDiagramConfig {
+  copies?: number
+  shapeLabel?: string
+  weight?: string
+  /** problem mode: which move keeps the hanger level? */
+  ops?: OpOption[]
+}
+
+export function createHangerDiagram(
+  config: HangerDiagramConfig = {},
+): WidgetInstance<HangerDiagramParams, { raw: string } | null, HangerDiagramView> {
+  const store = new WidgetStore<HangerState>({ split: false, share: null, reveal: false, shapesIn: true, weightIn: true, selectedOp: null })
 
   function Shape({ text, share, i, size }: { text: string; share: string | null; i: number; size: number }) {
     return (
@@ -92,13 +104,19 @@ export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null,
     )
   }
 
-  function View({ params, mode: _mode }: { params: HangerDiagramParams; mode: WidgetMode }) {
+  function View({ params, mode }: { params: HangerDiagramParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
-    const n = Math.max(1, Math.round(params.copies))
+    const p = {
+      copies: params.copies ?? config.copies ?? 1,
+      shapeLabel: params.shapeLabel ?? config.shapeLabel ?? '?',
+      weight: params.weight ?? config.weight ?? '',
+    }
+    const interactive = mode !== 'lesson' && (config.ops?.length ?? 0) > 0
+    const n = Math.max(1, Math.round(p.copies))
     // everything must hang UNDER the bar: shapes shrink as the count grows
     const size = n > 8 ? 26 : n > 5 ? 32 : 40
     return (
-      <div role="img" aria-label={label(params)} style={{ maxWidth: 560, margin: '0 auto' }}>
+      <div role="img" aria-label={label(p)} style={{ maxWidth: 560, margin: '0 auto' }}>
         {/* hook + crossbar spanning the full hanging area */}
         <svg viewBox="0 0 560 34" aria-hidden style={{ width: '100%', display: 'block' }}>
           <line x1="280" y1="0" x2="280" y2="14" stroke="#5c4a38" strokeWidth="3.5" />
@@ -111,7 +129,7 @@ export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null,
           <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', flexWrap: 'wrap', width: '47%', justifyContent: 'center' }}>
             {state.shapesIn &&
               Array.from({ length: n }, (_, i) => (
-                <Shape key={i} i={i} size={size} text={params.shapeLabel} share={state.reveal ? state.share : null} />
+                <Shape key={i} i={i} size={size} text={p.shapeLabel} share={state.reveal ? state.share : null} />
               ))}
           </div>
           {/* right: the weight, whole or split into n equal pieces */}
@@ -153,18 +171,34 @@ export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null,
                   animation: 'cairn-rise 0.3s ease both',
                 }}
               >
-                {params.weight}
+                {p.weight}
               </span>
             )}
           </div>
         </div>
+        {interactive && (
+          <OpChoiceRow
+            options={config.ops!}
+            selected={state.selectedOp}
+            disabled={mode === 'review'}
+            onSelect={(key) => {
+              store.record('select', { key })
+              store.setState({ selectedOp: key })
+            }}
+            ariaLabel="Which move keeps the hanger level?"
+          />
+        )}
       </div>
     )
   }
 
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
-    extract: () => null,
+    extract: () => {
+      if (!config.ops?.length) return null
+      const key = store.getState().selectedOp
+      return key === null ? { raw: '' } : { raw: key }
+    },
     trace: () => store.trace(),
     applyPatch: (patch) => {
       store.record('patch', patch)

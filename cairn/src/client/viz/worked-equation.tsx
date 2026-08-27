@@ -5,10 +5,18 @@
 import { useSyncExternalStore } from 'react'
 import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
+import { OpChoiceRow, type OpOption } from '../widgets/op-choice'
 
 export interface WorkedEquationParams {
   /** first line (the starting equation) */
   start: string
+}
+
+export interface WorkedEquationConfig {
+  /** problem mode: the lines already on the board */
+  lines?: string[]
+  /** problem mode: candidate NEXT lines — pick the right move */
+  options?: OpOption[]
 }
 
 export interface WorkedEquationView {
@@ -18,16 +26,21 @@ export interface WorkedEquationView {
   note?: string
 }
 
-type WorkedState = { lines: Array<{ text: string; note?: string }> }
+type WorkedState = { lines: Array<{ text: string; note?: string }>; selectedOp: string | null }
 
 const label = (p: WorkedEquationParams): string => `Worked solution starting from ${p.start}`
 
-export function createWorkedEquation(): WidgetInstance<WorkedEquationParams, null, WorkedEquationView> {
-  const store = new WidgetStore<WorkedState>({ lines: [] })
+export function createWorkedEquation(
+  config: WorkedEquationConfig = {},
+): WidgetInstance<WorkedEquationParams, { raw: string } | null, WorkedEquationView> {
+  const store = new WidgetStore<WorkedState>({ lines: [], selectedOp: null })
 
-  function View({ params, mode: _mode }: { params: WorkedEquationParams; mode: WidgetMode }) {
+  function View({ params, mode }: { params: WorkedEquationParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
-    const lines = [{ text: params.start }, ...state.lines]
+    const interactive = mode !== 'lesson' && (config.options?.length ?? 0) > 0
+    const lines: Array<{ text: string; note?: string }> = interactive
+      ? (config.lines ?? []).map((text) => ({ text }))
+      : [{ text: params.start }, ...state.lines]
     return (
       <div
         role="img"
@@ -75,13 +88,40 @@ export function createWorkedEquation(): WidgetInstance<WorkedEquationParams, nul
             </div>
           )
         })}
+        {interactive && (
+          <div data-next-line>
+            <div
+              style={{
+                font: "700 12.5px 'Nunito Sans', sans-serif",
+                color: '#b05f28',
+                margin: '12px 0 0',
+              }}
+            >
+              <span aria-hidden style={{ color: '#d8cdbb' }}>↓</span> what comes next?
+            </div>
+            <OpChoiceRow
+              options={config.options!}
+              selected={state.selectedOp}
+              disabled={mode === 'review'}
+              onSelect={(key) => {
+                store.record('select', { key })
+                store.setState({ selectedOp: key })
+              }}
+              ariaLabel="Pick the next line of the solution"
+            />
+          </div>
+        )}
       </div>
     )
   }
 
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
-    extract: () => null,
+    extract: () => {
+      if (!config.options?.length) return null
+      const key = store.getState().selectedOp
+      return key === null ? { raw: '' } : { raw: key }
+    },
     trace: () => store.trace(),
     applyPatch: (patch) => {
       store.record('patch', patch)

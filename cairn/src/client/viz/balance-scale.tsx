@@ -1,10 +1,19 @@
 import { useSyncExternalStore } from 'react'
 import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
+import { OpChoiceRow, type OpOption } from '../widgets/op-choice'
 
 export interface BalanceScaleParams {
   left: string
   right: string
+}
+
+export interface BalanceScaleConfig {
+  /** problem mode: the equation on the pans */
+  left?: string
+  right?: string
+  /** problem mode: which move keeps the balance AND frees the variable? */
+  ops?: OpOption[]
 }
 
 export interface BalanceScaleView {
@@ -26,6 +35,7 @@ type BalanceScaleState = {
   caption: string
   leftIn: boolean
   rightIn: boolean
+  selectedOp: string | null
 }
 
 const label = (params: BalanceScaleParams): string =>
@@ -35,7 +45,9 @@ const label = (params: BalanceScaleParams): string =>
  * matching percentages so text stays crisp and auto-sized. */
 const PAN_X = ['18%', '82%'] as const
 
-export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, BalanceScaleView> {
+export function createBalanceScale(
+  config: BalanceScaleConfig = {},
+): WidgetInstance<BalanceScaleParams, { raw: string } | null, BalanceScaleView> {
   const store = new WidgetStore<BalanceScaleState>({
     left: null,
     right: null,
@@ -44,6 +56,7 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
     caption: '',
     leftIn: true,
     rightIn: true,
+    selectedOp: null,
   })
 
   function Tile({ text, highlighted, side }: { text: string; highlighted: boolean; side: 'left' | 'right' }) {
@@ -97,10 +110,11 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
     )
   }
 
-  function View({ params, mode: _mode }: { params: BalanceScaleParams; mode: WidgetMode }) {
+  function View({ params, mode }: { params: BalanceScaleParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
-    const left = state.left ?? params.left
-    const right = state.right ?? params.right
+    const interactive = mode !== 'lesson' && (config.ops?.length ?? 0) > 0
+    const left = state.left ?? params.left ?? config.left ?? ''
+    const right = state.right ?? params.right ?? config.right ?? ''
     const hl = state.highlight
     return (
       <div role="img" aria-label={label(params)} style={{ maxWidth: 560, margin: '0 auto' }}>
@@ -136,6 +150,18 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
           {state.op && state.leftIn && <OpBadge side="left" op={state.op} />}
           {state.op && state.rightIn && <OpBadge side="right" op={state.op} />}
         </div>
+        {interactive && (
+          <OpChoiceRow
+            options={config.ops!}
+            selected={state.selectedOp}
+            disabled={mode === 'review'}
+            onSelect={(key) => {
+              store.record('select', { key })
+              store.setState({ selectedOp: key })
+            }}
+            ariaLabel="Which move keeps the scale balanced and frees the variable?"
+          />
+        )}
         <div
           data-caption
           style={{
@@ -154,7 +180,11 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
 
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
-    extract: () => null,
+    extract: () => {
+      if (!config.ops?.length) return null
+      const key = store.getState().selectedOp
+      return key === null ? { raw: '' } : { raw: key }
+    },
     trace: () => store.trace(),
     applyPatch: (patch) => {
       store.record('patch', patch)

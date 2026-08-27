@@ -67,10 +67,77 @@ function Envelope({ share, revealed, i }: { share: number; revealed: boolean; i:
   )
 }
 
-export function createEnvelopeModel(): WidgetInstance<EnvelopeModelParams, null, EnvelopeModelView> {
-  const store = new WidgetStore<EnvelopeModelState>({ partition: false, reveal: false, envelopesIn: true, countersIn: true })
+export interface EnvelopeModelConfig {
+  envelopes?: number
+  counters?: number
+}
 
-  function View({ params, mode: _mode }: { params: EnvelopeModelParams; mode: WidgetMode }) {
+export function createEnvelopeModel(
+  config: EnvelopeModelConfig = {},
+): WidgetInstance<EnvelopeModelParams, { raw: string; value: number | null } | null, EnvelopeModelView> {
+  const store = new WidgetStore<EnvelopeModelState & { perEnvelope: number }>({
+    partition: false,
+    reveal: false,
+    envelopesIn: true,
+    countersIn: true,
+    perEnvelope: 0,
+  })
+
+  function DistributeView({ mode }: { mode: WidgetMode }) {
+    const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
+    const n = Math.max(1, Math.round(config.envelopes ?? 1))
+    const total = Math.round(config.counters ?? 0)
+    const k = state.perEnvelope
+    const remaining = total - n * k
+    const disabled = mode === 'review'
+    const setK = (next: number): void => {
+      const capped = Math.max(0, Math.min(Math.ceil(total / n) + 3, next))
+      store.record('distribute', { perEnvelope: capped })
+      store.setState({ perEnvelope: capped })
+    }
+    return (
+      <div role="group" aria-label={`Share ${total} counters equally among ${n} envelopes`} style={{ maxWidth: 560, margin: '0 auto', textAlign: 'center' }}>
+        <div style={{ display: 'flex', gap: 10, justifyContent: 'center', flexWrap: 'wrap' }}>
+          {Array.from({ length: n }, (_, i) => (
+            <div
+              key={i}
+              data-env
+              style={{
+                minWidth: 54,
+                padding: '10px 8px',
+                border: '2.5px solid #b05f28',
+                borderRadius: 10,
+                background: '#fdf3e7',
+                font: "700 20px 'Lora', Georgia, serif",
+                color: '#8a4d1d',
+              }}
+            >
+              ✉ {k}
+            </div>
+          ))}
+        </div>
+        <p data-pool className="muted" style={{ margin: '10px 0 4px' }}>
+          {remaining === 0
+            ? 'every counter is shared out'
+            : remaining > 0
+              ? `${remaining} counters still to share`
+              : `${-remaining} counters too many — take some back`}
+        </p>
+        <div style={{ display: 'flex', gap: 12, justifyContent: 'center' }}>
+          <button type="button" className="btn" data-minus disabled={disabled || k === 0} onClick={() => setK(k - 1)}>
+            − one each
+          </button>
+          <button type="button" className="btn btn-primary" data-plus disabled={disabled} onClick={() => setK(k + 1)}>
+            + one each
+          </button>
+        </div>
+      </div>
+    )
+  }
+
+  function View({ params, mode }: { params: EnvelopeModelParams; mode: WidgetMode }) {
+    if (mode !== 'lesson' && config.envelopes !== undefined && config.counters !== undefined)
+      return <DistributeView mode={mode} />
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
     const n = Math.max(1, Math.round(params.envelopes))
     const total = Math.round(params.counters)
@@ -191,7 +258,11 @@ export function createEnvelopeModel(): WidgetInstance<EnvelopeModelParams, null,
 
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
-    extract: () => null,
+    extract: () => {
+      if (config.envelopes === undefined) return null
+      const k = store.getState().perEnvelope
+      return { raw: String(k), value: k }
+    },
     trace: () => store.trace(),
     applyPatch: (patch) => {
       store.record('patch', patch)

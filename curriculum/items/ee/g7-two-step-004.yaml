@@ -1,0 +1,23 @@
+id: g7.ee.two-step.004
+skills: [g7.ee.two-step]
+difficulty: 1
+representation: balance-scale
+params: { a: 3, b: 5, ans: 4, variable: x }
+generator: { a: { int: [2, 9] }, b: { int: [2, 20] }, ans: { int: [2, 12] } }
+widget:
+  type: balance-scale
+  config:
+    stem: "{a}{variable} + {b} = {a*ans+b}. Which move comes FIRST?"
+    left: "{a}{variable} + {b}"
+    right: "{a*ans+b}"
+    ops:
+      - { key: "sub", label: "− {b} both sides" }
+      - { key: "div", label: "÷ {a} both sides" }
+      - { key: "add", label: "+ {b} both sides" }
+answer: { type: choice, value: "sub" }
+hints:
+  - "Undo in REVERSE order — the + {b} was applied last, so it goes first."
+  - "Subtract {b} from both sides; the ÷ {a} comes after."
+source: { book: ccss-ee-progression, section: "7.EE.B.4a" }
+verify: "{a*ans + b - b == a*ans}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
