@@ -4,8 +4,10 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{b}" }, caption: "{a}{variable} = {b}: the tape holds {b} split into {a} equal parts." }
-  - { t: 4, patch: { highlight: ["1"] }, caption: "Every part is the same — find just one of them." }
-  - { t: 8, patch: { partLabel: "{b/a}", highlight: [] }, caption: "{b} ÷ {a} = {b/a}. Each part — each {variable} — is {b/a}." }
-  - { t: 10.5, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{b}", totalIn: false }, caption: "Here is the problem in symbols. Watch it become a tape." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], highlight: ["1"] }, caption: "{a}{variable} means {a} equal parts — each part is one {variable}." }
+  - { t: 8, patch: { eqHighlight: ["3"], totalIn: true, highlight: [] }, caption: "= {b}: all the parts together make {b}." }
+  - { t: 12, patch: { eqHighlight: [], highlight: ["1"] }, caption: "Every part is the same — find just one of them." }
+  - { t: 16, patch: { partLabel: "{b/a}", highlight: [] }, caption: "{b} ÷ {a} = {b/a}. Each part — each {variable} — is {b/a}." }
+  - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

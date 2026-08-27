@@ -4,9 +4,11 @@ representation: balance-scale
 widget: balance-scale
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], left: "{a}{variable}", right: "{b}" }, caption: "The scale is balanced: {a}{variable} equals {b}." }
-  - { t: 3, patch: { highlight: left.coef }, caption: "{variable} is multiplied by {a}. Undo multiplication by dividing." }
-  - { t: 6, patch: { op: divide, by: "{a}" }, caption: "Divide both sides by {a} — the scale stays balanced." }
-  - { t: 9, patch: { left: "{variable}", right: "{b/a}", op: null, highlight: null }, caption: "{variable} = {b/a}." }
-  - { t: 11, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], left: "{a}{variable}", right: "{b}", leftIn: false, rightIn: false }, caption: "Here is the problem in symbols. Watch each piece land on the scale." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{a}{variable} goes on the left pan." }
+  - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} goes on the right pan — and the scale balances." }
+  - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "{variable} is multiplied by {a}. Undo multiplication by dividing." }
+  - { t: 15.5, patch: { op: divide, by: "{a}", highlight: null }, caption: "Divide both sides by {a} — the scale stays balanced." }
+  - { t: 19, patch: { left: "{variable}", right: "{b/a}", op: null }, caption: "{variable} = {b/a}." }
+  - { t: 21, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

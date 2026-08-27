@@ -50,6 +50,16 @@ moving the dot on a number line; `min`/`max`/`step` config values may be
 cairn-expr templates evaluated per instance). Direct text entry is the
 fallback, not the default.
 
+## Decomposition steps pair the symbol with its region
+
+Lessons open on the raw symbolic equation (`equation` segments) and
+decompose it into the diagram. Each arrival step sets `eqHighlight` on
+the symbol part AND brings in the region it becomes (staged entrance
+flags: `leftIn`/`rightIn`, `shapesIn`/`weightIn`, `totalIn`,
+`envelopesIn`/`countersIn` — default true), highlighting that region
+where the widget supports it. The student's eye follows symbol → shape
+every time. Full standard: `../cairn/GOLDEN_WIDGET.md` §3.
+
 ## The faded phase is the visualization, not a separate system
 
 Faded examples are NOT separate items with worked-steps lists (the old
