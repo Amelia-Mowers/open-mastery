@@ -5,16 +5,17 @@ representation: ratio-table
 params: { k: 3, a: 2, c: 5, e: 8 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 7] }, e: { int: [8, 12] } }
 widget:
-  type: choice
+  type: ratio-table
   config:
-    stem: "x: {a} → y: {a*k}.   x: {c} → y: {c*k}.   x: {e} → y: {e*k}.   Is y proportional to x?"
-    options:
-      - { key: "yes", label: "Yes — y ÷ x is the same in every row" }
-      - { key: "no", label: "No — the rows don't share one multiplier" }
-answer: { type: choice, value: "yes" }
+    stem: "Is y proportional to x? Click the row that breaks the pattern — or 'All rows agree'."
+    select: true
+    noneLabel: "All rows agree"
+    cols: ["x", "y"]
+    rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]]
+answer: { type: expr, value: "0", integer: true }
 hints:
   - "Divide y by x in each row. Do you get the same number every time?"
-  - "{a*k} ÷ {a} = {k}, {c*k} ÷ {c} = {k}, {e*k} ÷ {e} = {k} — all the same."
+  - "{a*k} ÷ {a} = {k}, {c*k} ÷ {c} = {k}, {e*k} ÷ {e} = {k} — no row breaks it."
 source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
 verify: "{a*k * c == c*k * a}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

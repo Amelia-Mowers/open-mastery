@@ -88,6 +88,19 @@ finishes it in the ordinary answer input. Authoring rule this relies on:
 **an explanation's final content step must BE the resolution** (the reveal
 / "x = …" step), so truncating one step leaves a complete setup.
 
+## Difficulty ceilings are RAW (capstone rule)
+
+Widget answer spaces (tape, number lines, tables, flip, choice) scaffold
+the EASIER difficulty tiers of a skill. Every skill's hardest item(s)
+must take a raw text answer (numeric/expression/equation input) — checks
+pick hardest-first and mastery evidence tops out at the raw symbolic
+form. The validator warns ([capstone_raw]) when a skill's difficulty
+ceiling is widget-only. Choice answers additionally carry a guessing
+floor, so the engine discounts correct choice attempts (hint-level-1,
+like rubric items) and they are never check-eligible — prefer richer
+interactions (row-select on the table, fill-a-cell) over choice when the
+judgment can be expressed in the representation itself.
+
 ## Ground rules
 
 - Every record is `review: {status: draft}` until a human vets it; the
@@ -102,3 +115,6 @@ finishes it in the ordinary answer input. Authoring rule this relies on:
   answer whenever instances must have whole-number solutions; CI checks
   both across authored params and generator seeds.
 - `npm run validate` (authoring) must pass with 0 errors before committing.
+
+- **Future work is tracked centrally in `../TODO.md`** — don't scatter
+  queued-work notes across docs; leave context, move the task.
