@@ -360,7 +360,11 @@ export function recordAttempt(
   const correct = verdict.verdict === 'correct'
   // rubric-graded practice updates p at the hint-level-1 discount (§5)
   const isRubric = item.rubric != null
-  const hintLevel = isRubric ? Math.max(1, submission.hintLevel) : submission.hintLevel
+  // choice answers carry a guessing floor (~1/2 for two options) far above
+  // the per-skill G — like rubric grading, a correct one updates p at the
+  // hint-level-1 discount (G_eff ≈ 0.6). Choice items are never checks (§5).
+  const discounted = isRubric || item.widget.type === 'choice'
+  const hintLevel = discounted ? Math.max(1, submission.hintLevel) : submission.hintLevel
   const assisted = hintLevel > 0 || student.assisted.has(instanceKey(action.instance.itemId, action.instance.paramHash))
 
   const events: CairnEvent[] = []

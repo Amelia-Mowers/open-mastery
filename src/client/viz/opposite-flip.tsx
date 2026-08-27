@@ -84,7 +84,18 @@ export function createOppositeFlip(
           }}
           style={{ maxWidth: 560, margin: '0 auto', minWidth: 300, flex: '1 1 300px', outlineColor: '#b05f28' }}
         >
-          <svg viewBox="0 0 560 120" style={{ width: '100%', display: 'block' }} aria-hidden>
+          <svg
+            viewBox="0 0 560 120"
+            style={{ width: '100%', display: 'block', cursor: disabled ? 'default' : 'pointer' }}
+            aria-hidden
+            onClick={(e) => {
+              if (disabled) return
+              const r = e.currentTarget.getBoundingClientRect()
+              const fx = ((e.clientX - r.left) / r.width) * 560
+              const nearest = ticks.reduce((best, t) => (Math.abs(x(t) - fx) < Math.abs(x(best) - fx) ? t : best))
+              select(nearest)
+            }}
+          >
             <line x1="20" y1="60" x2="540" y2="60" stroke="#8b8070" strokeWidth="3" strokeLinecap="round" />
             <path d="M540 60 l-9 -5 v10 Z" fill="#8b8070" />
             <path d="M20 60 l9 -5 v10 Z" fill="#8b8070" />

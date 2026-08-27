@@ -2,7 +2,7 @@
  * don't cover: keyboard-only operation, review-mode inertness, staged
  * decomposition entrances, and semantic (not merely numeric) scaffold fit. */
 import { describe, it, expect, vi, afterEach } from 'vitest'
-import { render, cleanup, act } from '@testing-library/react'
+import { render, cleanup, act, fireEvent } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { itemSchema } from '@openmastery/schema'
 import { createOppositeFlip } from '../../src/client/viz/opposite-flip'
@@ -28,6 +28,22 @@ describe('keyboard-only operation (§4)', () => {
     await user.keyboard('{End}')
     expect(w.extract()).toEqual({ value: 4 })
     expect(slider.getAttribute('aria-valuenow')).toBe('4')
+  })
+})
+
+describe('clicking the line itself (not only the tick buttons)', () => {
+  it('opposite-flip: a click on the number line snaps to the nearest tick', () => {
+    const w = createOppositeFlip({ value: 2 })
+    const { container } = render(<>{w.render({ value: 2 }, 'problem')}</>)
+    const svg = container.querySelector('svg')!
+    // jsdom has no layout: give the svg a real box, then click at 3/4 width
+    svg.getBoundingClientRect = () =>
+      ({ left: 0, top: 0, width: 560, height: 120, right: 560, bottom: 120, x: 0, y: 0, toJSON: () => ({}) }) as DOMRect
+    // ticks map to x = 280 + 50·v here (unit 2, m 4.8): x(2) = 380, x(-4) = 80
+    fireEvent.click(svg, { clientX: 370, clientY: 60 })
+    expect(w.extract()).toEqual({ value: 2 })
+    fireEvent.click(svg, { clientX: 90, clientY: 60 })
+    expect(w.extract()).toEqual({ value: -4 })
   })
 })
 

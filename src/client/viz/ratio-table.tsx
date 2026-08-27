@@ -16,6 +16,10 @@ export interface RatioTableConfig {
   cols?: (string | number)[]
   /** problem mode: exactly one cell is '?' — the input */
   rows?: (string | number)[][]
+  /** row-select input: the answer is a clicked 1-based row (0 = the
+   * none-option, e.g. "All rows agree") instead of a filled cell */
+  select?: boolean
+  noneLabel?: string
 }
 
 export interface RatioTableView {
@@ -37,6 +41,7 @@ type RtState = {
   highlight: number | null
   factor: { from: number; to: number; text: string } | null
   raw: string
+  selectedRow: number | null
 }
 
 const label = (p: RatioTableParams): string =>
@@ -47,7 +52,7 @@ const ROW_H = 44
 export function createRatioTable(
   config: RatioTableConfig = {},
 ): WidgetInstance<RatioTableParams, RatioTableAnswer, RatioTableView> {
-  const store = new WidgetStore<RtState>({ reveal: null, highlight: null, factor: null, raw: '' })
+  const store = new WidgetStore<RtState>({ reveal: null, highlight: null, factor: null, raw: '', selectedRow: null })
 
   function Cell({ v, input, disabled }: { v: string | number; input: boolean; disabled: boolean }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
@@ -79,10 +84,16 @@ export function createRatioTable(
     return <>{String(v)}</>
   }
 
+  const selectRow = (row: number): void => {
+    store.record('select', { row })
+    store.setState({ selectedRow: row })
+  }
+
   function View({ params, mode }: { params: RatioTableParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
     const lesson = mode === 'lesson'
     const disabled = mode === 'review'
+    const selecting = !lesson && config.select === true
     const cols = lesson ? params.cols : (config.cols ?? [])
     const rows = lesson ? params.rows : (config.rows ?? [])
     const shown = lesson && state.reveal !== null ? state.reveal : rows.length
@@ -129,9 +140,24 @@ export function createRatioTable(
                 <tr
                   key={r}
                   data-row
+                  data-select-row={selecting ? r + 1 : undefined}
+                  data-selected={(selecting && state.selectedRow === r + 1) || undefined}
+                  aria-checked={selecting ? state.selectedRow === r + 1 : undefined}
+                  role={selecting ? 'radio' : undefined}
                   data-highlighted={state.highlight === r + 1 || undefined}
+                  onClick={() => {
+                    if (selecting && !disabled) selectRow(r + 1)
+                  }}
                   style={{
-                    background: state.highlight === r + 1 ? '#f7e6d4' : 'transparent',
+                    background:
+                      selecting && state.selectedRow === r + 1
+                        ? '#f7e6d4'
+                        : state.highlight === r + 1
+                          ? '#f7e6d4'
+                          : 'transparent',
+                    outline: selecting && state.selectedRow === r + 1 ? '2.5px solid #b05f28' : 'none',
+                    outlineOffset: -2,
+                    cursor: selecting && !disabled ? 'pointer' : 'default',
                     opacity: hidden ? 0 : 1,
                     transition: 'opacity 0.35s ease, background 0.3s ease',
                     animation: hidden ? undefined : 'cairn-rise 0.3s ease both',
@@ -157,6 +183,32 @@ export function createRatioTable(
             })}
           </tbody>
         </table>
+        {selecting && (
+          <button
+            type="button"
+            data-select-none
+            data-selected={state.selectedRow === 0 || undefined}
+            aria-checked={state.selectedRow === 0}
+            role="radio"
+            disabled={disabled}
+            onClick={() => {
+              if (!disabled) selectRow(0)
+            }}
+            style={{
+              marginTop: 10,
+              font: "600 15px 'Nunito Sans', sans-serif",
+              color: state.selectedRow === 0 ? '#8a4d1d' : '#5c5245',
+              background: state.selectedRow === 0 ? '#f7e6d4' : '#fffdf9',
+              border: `2.5px solid ${state.selectedRow === 0 ? '#b05f28' : '#d8cdbb'}`,
+              borderRadius: 11,
+              padding: '9px 16px',
+              cursor: disabled ? 'default' : 'pointer',
+              transition: 'border-color 0.2s ease, background 0.2s ease',
+            }}
+          >
+            {String(config.noneLabel ?? 'None of the rows')}
+          </button>
+        )}
         {f && f.from >= 1 && f.to >= 1 && f.from !== f.to && (
           <div
             data-factor
@@ -208,6 +260,10 @@ export function createRatioTable(
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
     extract: () => {
+      if (config.select === true) {
+        const row = store.getState().selectedRow
+        return row === null ? { raw: '', value: null } : { raw: String(row), value: row }
+      }
       const raw = store.getState().raw
       const n = Number(raw.trim())
       return { raw, value: raw.trim() !== '' && Number.isFinite(n) ? n : null }

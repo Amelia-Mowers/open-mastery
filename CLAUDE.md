@@ -40,3 +40,5 @@
   the server pattern kills the invoking shell — run it in its own command
   and expect exit 144), start with nohup+disown, then verify served
   content via `/api/explain` curl BEFORE screenshotting.
+- **Future work is tracked centrally in `../TODO.md`** (flow gaps,
+  planned inputs, build steps) — leave context in docs, move the task.

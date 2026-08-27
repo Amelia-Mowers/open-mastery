@@ -78,6 +78,27 @@ describe('ratio-table', () => {
     expect(r.container.querySelector('input')!.disabled).toBe(true)
   })
 
+  it('row-select: click the breaking row (or the none chip); review inert', async () => {
+    const user = userEvent.setup()
+    const w = createRatioTable({
+      select: true,
+      noneLabel: 'All rows agree',
+      cols: ['x', 'y'],
+      rows: [[2, 6], [5, 17], [8, 24]],
+    })
+    const { container } = render(<>{w.render({} as never, 'problem')}</>)
+    expect(w.extract()).toEqual({ raw: '', value: null })
+    await user.click(container.querySelector('[data-select-row="2"]')!)
+    expect(w.extract()).toEqual({ raw: '2', value: 2 })
+    await user.click(container.querySelector('[data-select-none]')!)
+    expect(w.extract()).toEqual({ raw: '0', value: 0 })
+    cleanup()
+    const w2 = createRatioTable({ select: true, cols: ['x', 'y'], rows: [[2, 6], [5, 15]] })
+    const r = render(<>{w2.render({} as never, 'review')}</>)
+    await user.click(r.container.querySelector('[data-select-row="1"]')!)
+    expect(w2.extract()).toEqual({ raw: '', value: null })
+  })
+
   it('extremes: 6 rows renders every row; long values stay in their cells', () => {
     const w = createRatioTable()
     const rows = Array.from({ length: 6 }, (_, i) => [String((i + 1) * 123), String((i + 1) * 45678)])

@@ -15,7 +15,7 @@ import {
   type EngineCtx,
   type NextAction,
 } from '../../src/core/engine'
-import type { BktParams } from '../../src/core/bkt'
+import { bktUpdate, type BktParams } from '../../src/core/bkt'
 import { makeStamper } from './fixtures'
 import { runLoop, runSession, alwaysCorrect, type StudentModel } from './students'
 
@@ -108,6 +108,48 @@ describe('blocked acquisition, interleaved consolidation', () => {
     const full = miniCtx(5)
     const { student } = runSession(full.ctx, alwaysCorrect, 400)
     for (let i = 1; i <= 5; i++) expect(student.skills[`t.sched.s${i}`]?.phase).toBe('mastered')
+  })
+})
+
+describe('choice answers carry a guessing floor', () => {
+  it('a correct choice attempt updates p at the hint-level-1 discount', () => {
+    const { ctx } = miniCtx(1)
+    const choiceItem = itemSchema.parse({
+      id: 't.sched.s1.choice',
+      skills: ['t.sched.s1'],
+      difficulty: 1,
+      params: { a: 4, b: 7 },
+      widget: {
+        type: 'choice',
+        config: {
+          stem: 'Which is bigger?',
+          options: [
+            { key: 'a', label: '{a}' },
+            { key: 'b', label: '{b}' },
+          ],
+        },
+      },
+      answer: { type: 'choice', value: 'b' },
+      review,
+    })
+    ctx.cur.items.set(choiceItem.id, choiceItem)
+    const student = initialStudentState()
+    const session = freshSession()
+    const action = {
+      kind: 'serve_item',
+      itemKind: 'practice',
+      skillId: 't.sched.s1',
+      forSkillId: 't.sched.s1',
+      instance: { itemId: choiceItem.id, params: { a: 4, b: 7 }, paramHash: 'h1' },
+      scaffolded: false,
+    } as Extract<NextAction, { kind: 'serve_item' }>
+    const r = recordAttempt(student, session, ctx, action, { raw: 'b', hintLevel: 0, latencyMs: 3000 })
+    expect(r.correct).toBe(true)
+    const attempt = r.events.find((e) => e.kind === 'attempt')
+    expect(attempt && 'hintLevel' in attempt ? attempt.hintLevel : -1).toBe(1)
+    // exactly the discounted update — not the full-credit one
+    expect(student.skills['t.sched.s1']!.p).toBeCloseTo(bktUpdate(BKT.L0, true, 1, BKT), 12)
+    expect(student.skills['t.sched.s1']!.p).toBeLessThan(bktUpdate(BKT.L0, true, 0, BKT))
   })
 })
 
