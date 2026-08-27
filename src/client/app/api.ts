@@ -46,7 +46,7 @@ export interface ZooDemoView {
 }
 
 export interface BundleView {
-  skills: Array<{ id: string; name: string; prereqs: string[] }>
+  skills: Array<{ id: string; name: string; prereqs: string[]; standards: string[] }>
 }
 
 export interface StateView {

@@ -249,7 +249,7 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
 
     if (req.method === 'GET' && url.pathname === '/api/bundle') {
       return json(res, 200, {
-        skills: bundle.skills.map((s) => ({ id: s.id, name: s.name, prereqs: s.prereqs })),
+        skills: bundle.skills.map((s) => ({ id: s.id, name: s.name, prereqs: s.prereqs, standards: s.standards })),
         items: bundle.items.length,
         explanations: bundle.explanations.length,
       })

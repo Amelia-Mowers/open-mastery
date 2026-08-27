@@ -117,7 +117,11 @@ export function Dashboard({ api }: { api: SiteApi }) {
                 <div
                   key={s.id}
                   className="stone"
-                  title={s.name}
+                  title={
+                    s.standards.length > 0
+                      ? `${s.name}\n${s.standards.map((c) => c.replace('CCSS.MATH.CONTENT.', '')).join(', ')}`
+                      : s.name
+                  }
                   style={{
                     width: Math.max(56, 148 - i * 22),
                     background: STONES[i % STONES.length],
@@ -201,7 +205,11 @@ export function Dashboard({ api }: { api: SiteApi }) {
                   key={s.id}
                   className="skill-node"
                   data-phase={phase}
-                  title={s.name}
+                  title={
+                    s.standards.length > 0
+                      ? `${s.name}\n${s.standards.map((c) => c.replace('CCSS.MATH.CONTENT.', '')).join(', ')}`
+                      : s.name
+                  }
                   style={{
                     left: `${p.x}%`,
                     top: p.y,
