@@ -25,6 +25,8 @@ export interface ServerNext {
 export interface ExplainResult {
   explanation: Explanation | null
   params: Record<string, number | string>
+  /** the walkthrough renders with the pending problem's own numbers */
+  sameNumbers?: boolean
   skillName: string
   totalReps: number
 }
@@ -86,6 +88,7 @@ export interface CairnApi {
   ): Promise<ExplainResult>
   explained(explanationId: string, skillId: string): Promise<void>
   demos(): Promise<{ demos: ZooDemoView[] }>
+  demoFor(explanationId: string): Promise<ZooDemoView>
   bundle(): Promise<BundleView>
   guide(): Promise<GuideView>
   seedClass(): Promise<void>
@@ -162,6 +165,11 @@ export class SiteApi implements CairnApi {
   async demos(): Promise<{ demos: ZooDemoView[] }> {
     const r = await fetch(`${this.base}/api/demos`)
     return (await r.json()) as { demos: ZooDemoView[] }
+  }
+
+  async demoFor(explanationId: string): Promise<ZooDemoView> {
+    const r = await fetch(`${this.base}/api/demo?exp=${encodeURIComponent(explanationId)}`)
+    return (await r.json()) as ZooDemoView
   }
 
   async bundle(): Promise<BundleView> {

@@ -120,6 +120,10 @@ export class DemoApi implements CairnApi {
     return Promise.resolve(this.unwrap(this.core.demosView()))
   }
 
+  demoFor(explanationId: string): Promise<ZooDemoView> {
+    return Promise.resolve(this.unwrap(this.core.explanationDemo(explanationId)))
+  }
+
   bundle(): Promise<BundleView> {
     return Promise.resolve(this.unwrap(this.core.bundleView()))
   }

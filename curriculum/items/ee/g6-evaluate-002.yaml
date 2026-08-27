@@ -2,13 +2,13 @@ id: g6.ee.evaluate.002
 skills: [g6.ee.evaluate]
 difficulty: 2
 representation: worked-equation
-params: { a: 4, b: 3, c: 5, variable: y }
-generator: { a: { int: [2, 9] }, b: { int: [1, 5] }, c: { int: [3, 9] } }
-widget: { type: numeric-input, config: { stem: "Evaluate {a}{variable} − {b} when {variable} = {c}." } }
-answer: { type: expr, value: "{a*c-b}", integer: true }
+params: { p: 4, q: 3, r: 5, variable: y }
+generator: { p: { int: [2, 9] }, q: { int: [1, 5] }, r: { int: [3, 9] } }
+widget: { type: numeric-input, config: { stem: "Evaluate {p}{variable} − {q} when {variable} = {r}." } }
+answer: { type: expr, value: "{p*r-q}", integer: true }
 hints:
-  - "Substitute: replace {variable} with {c}."
-  - "{a} × {c} − {b} = {a*c} − {b} = {a*c-b}."
+  - "Substitute: replace {variable} with {r}."
+  - "{p} × {r} − {q} = {p*r} − {q} = {p*r-q}."
 source: { book: ccss-ee-progression, section: "6.EE.A.2c" }
-verify: "{answer + b == a*c}"
+verify: "{answer + q == p*r}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

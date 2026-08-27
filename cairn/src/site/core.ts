@@ -255,6 +255,16 @@ export class SiteCore {
     return ok({ demos })
   }
 
+  /** one explanation as a playable demo (family params) — review tooling */
+  explanationDemo(id: string): SiteResult {
+    const e = this.cur.explanations.get(id)
+    if (!e) return err(404, `unknown explanation '${id}'`)
+    const skill = this.cur.skills.get(e.skill)
+    const family = practiceItems(e.skill, this.cur)[0]?.params ?? {}
+    const params = feedableParams(e, [family]) ?? family
+    return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e })
+  }
+
   next(studentId: string, focusSkill?: string | null): SiteResult {
     const st = this.slot(studentId)
     const ctx = this.ctxFor(studentId)
@@ -380,6 +390,9 @@ export class SiteCore {
     return ok({
       explanation: chosen?.e ?? null,
       params: chosen?.params ?? familyParams,
+      // honest labeling: only claim "same numbers" when the walkthrough
+      // really renders with the pending instance's params
+      sameNumbers: chosen !== null && instanceParams !== null && chosen.params === instanceParams,
       skillName: skill.name,
       totalReps: new Set(all.map((e) => e.representation)).size,
     })

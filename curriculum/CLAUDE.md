@@ -64,7 +64,9 @@ that silently falls back to another family's numbers is a bug, not a
 feature.
 
 **Every skill carries at least THREE distinct representations, and one
-of them is the whiteboard (`worked-equation`)** — two concrete models
+of them is the whiteboard (`worked-equation`) — but the whiteboard NEVER
+leads instruction** (instruction[0] must be a concrete model; worked is
+what the models fade toward; validator warns [worked_primary]) — two concrete models
 plus the symbolic form the concrete ones fade toward. The validator
 warns ([representation_count], [worked_missing]) below the floor.
 Prefer worked-equation over caption-only timelines, always.

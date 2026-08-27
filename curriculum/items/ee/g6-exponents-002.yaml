@@ -1,14 +1,14 @@
-id: g6.ee.exponents.002
+id: g6.ee.exponents.002b
 skills: [g6.ee.exponents]
 difficulty: 2
 representation: worked-equation
-params: { c: 4 }
-generator: { c: { int: [2, 9] } }
-widget: { type: numeric-input, config: { stem: "Evaluate: {c}³." } }
-answer: { type: expr, value: "{c*c*c}", integer: true }
+params: { c: 9 }
+generator: { c: { int: [7, 14] } }
+widget: { type: numeric-input, config: { stem: "Evaluate: {c}²." } }
+answer: { type: expr, value: "{c*c}", integer: true }
 hints:
-  - "{c}³ means {c} used as a factor three times."
-  - "{c} × {c} × {c} = {c*c*c}."
+  - "{c}² means {c} used as a factor twice."
+  - "{c} × {c} = {c*c}."
 source: { book: ccss-ee-progression, section: "6.EE.A.1" }
-verify: "{answer / c / c == c}"
+verify: "{answer / c == c}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

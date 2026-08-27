@@ -2,13 +2,13 @@ id: g6.rp.percent-of.002
 skills: [g6.rp.percent-of]
 difficulty: 2
 representation: worked-equation
-params: { f: 9, g: 4 }
-generator: { f: { int: [2, 19] }, g: { int: [2, 5] } }
-widget: { type: numeric-input, config: { stem: "What is {5*f}% of {40*g}?" } }
-answer: { type: expr, value: "{2*f*g}", integer: true }
+params: { m: 9, h: 4 }
+generator: { m: { int: [2, 19] }, h: { int: [2, 5] } }
+widget: { type: numeric-input, config: { stem: "What is {5*m}% of {40*h}?" } }
+answer: { type: expr, value: "{2*m*h}", integer: true }
 hints:
-  - "5% of {40*g} is {40*g} ÷ 20 = {2*g}."
-  - "{5*f}% is {f} fives: {f} × {2*g} = {2*f*g}."
+  - "5% of {40*h} is {40*h} ÷ 20 = {2*h}."
+  - "{5*m}% is {m} fives: {m} × {2*h} = {2*m*h}."
 source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
-verify: "{answer * 100 == 5*f * 40*g}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{answer * 100 == 5*m * 40*h}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

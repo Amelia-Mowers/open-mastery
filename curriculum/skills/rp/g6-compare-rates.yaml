@@ -10,6 +10,6 @@ bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 fluency: false
 prereqs: [g6.rp.unit-rate]
 instruction:
-  - g6.rp.compare-rates.exp-worked
-  - g6.rp.compare-rates.exp-table
   - g6.rp.compare-rates.exp-numberline
+  - g6.rp.compare-rates.exp-table
+  - g6.rp.compare-rates.exp-worked

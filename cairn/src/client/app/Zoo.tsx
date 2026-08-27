@@ -99,8 +99,28 @@ const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<str
 ]
 
 export function Zoo({ api }: { api: CairnApi }) {
+  const only = (() => {
+    try {
+      return new URLSearchParams(window.location.search).get('exp')
+    } catch {
+      return null
+    }
+  })()
   const [demos, setDemos] = useState<ZooDemo[] | null>(null)
   useEffect(() => {
+    if (only) {
+      void api.demoFor(only).then((d) =>
+        setDemos([
+          {
+            title: `${d.widget} — ${d.skillName}`,
+            widget: d.widget,
+            params: d.params as Params,
+            explanation: d.explanation,
+          },
+        ]),
+      )
+      return
+    }
     void api.demos().then(({ demos: fromCurriculum }) => {
       const covered = new Set(fromCurriculum.map((d) => d.widget))
       setDemos([
@@ -113,7 +133,7 @@ export function Zoo({ api }: { api: CairnApi }) {
         ...FALLBACK_DEMOS.filter((f) => !covered.has(f.widget)),
       ])
     })
-  }, [api])
+  }, [api, only])
 
   return (
     <div>
@@ -130,7 +150,7 @@ export function Zoo({ api }: { api: CairnApi }) {
       ) : (
         demos.map((d) => <DemoCard key={d.explanation.id} demo={d} />)
       )}
-      {INPUT_SAMPLES.map((c) => (
+      {!only && INPUT_SAMPLES.map((c) => (
         <InputCard key={c.title} title={c.title} type={c.type} config={c.config} />
       ))}
     </div>

@@ -149,6 +149,14 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           s.id,
           `skills need ≥3 distinct representations (has ${reps.size})`,
         )
+      const primary = (explBySkill.get(s.id) ?? []).find((e) => e.id === s.instruction[0])
+      if (primary?.widget === 'worked-equation')
+        push(
+          'warning',
+          'worked_primary',
+          s.id,
+          'the whiteboard must never LEAD instruction — a concrete representation goes first, worked-equation is what they fade toward',
+        )
       const widgets = new Set((explBySkill.get(s.id) ?? []).map((e) => e.widget))
       if (!widgets.has('worked-equation'))
         push(
@@ -447,6 +455,63 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
       }
     }
     checkInstance(it.params as Env, `${it.id} (authored params)`)
+
+    // ---- RESOLUTION-ANSWER consistency (fail loudly) ----
+    // If this item's params can FEED an explanation of its skill, that
+    // explanation's resolution (final content step) rendered under THIS
+    // item's params must state this item's answer. Otherwise "show me how"
+    // can teach a different problem (the 4³ → "4² = 16" class: identifier
+    // overlap across forms). Closed integer answers only.
+    {
+      const ansR = answerValue(it.params as Env)
+      // selection answers (row-select etc.) are positional indices, not
+      // values a resolution would state
+      const isSelection = it.widget.config?.['select'] === true
+      if (ansR !== null && ansR.d === 1n && !isSelection) {
+        const ansStr = ansR.n.toString()
+        const ansRe = new RegExp(`(?<![\\d-])${ansStr.replace('-', '\\-')}(?!\\d)`)
+        const stringsOf = (v: unknown): string[] => {
+          if (typeof v === 'string') return [v]
+          if (Array.isArray(v)) return v.flatMap(stringsOf)
+          if (v !== null && typeof v === 'object') return Object.values(v).flatMap(stringsOf)
+          return []
+        }
+        for (const skillId of it.skills) {
+          for (const e of explBySkill.get(skillId) ?? []) {
+            const needed = new Set<string>()
+            for (const step of e.timeline)
+              for (const src of [step.caption, step.handoff?.prompt, ...stringsOf(step.patch ?? {})]) {
+                if (typeof src !== 'string' || !src.includes('{')) continue
+                const pt = parseTemplate(src)
+                if (pt.ok) for (const id of templateIdentifiers(pt.value)) needed.add(id)
+              }
+            // a template-free timeline shows no numbers — nothing to contradict
+            if (needed.size === 0) continue
+            const feeds = [...needed].every((id) => id in it.params)
+            if (!feeds) continue
+            const final = [...e.timeline].reverse().find((st) => st.caption !== undefined || st.patch !== undefined)
+            if (!final) continue
+            let rendered = ''
+            let renderable = true
+            for (const src of [final.caption ?? '', ...stringsOf(final.patch ?? {})]) {
+              const r = renderTemplate(src, it.params as Env, { numberStyle: 'fraction' })
+              if (!r.ok) {
+                renderable = false
+                break
+              }
+              rendered += ` ${r.value}`
+            }
+            if (renderable && !ansRe.test(rendered))
+              push(
+                'error',
+                'resolution_answer',
+                `${it.id} ↔ ${e.id}`,
+                `this item's params feed the explanation, but its resolution ('${rendered.trim().slice(0, 90)}') never states the item's answer ${ansStr} — wrong-problem walkthrough`,
+              )
+          }
+        }
+      }
+    }
     if (it.generator != null) {
       const spec = it.generator as GeneratorSpec
       const fixed: Record<string, number | string> = {}

@@ -10,6 +10,6 @@ bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 fluency: false
 prereqs: [g7.rp.constant-k]
 instruction:
-  - g7.rp.equation.exp-worked
   - g7.rp.equation.exp-table
   - g7.rp.equation.exp-dnl
+  - g7.rp.equation.exp-worked

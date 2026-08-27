@@ -185,11 +185,11 @@ describe('local site server loop (build step 3)', () => {
 
   it.skipIf(!hasCurriculum)('the real curriculum runs the full loop: EVERY skill mastered', async () => {
     const bundle = loadCurriculum()
-    expect(bundle.skills.length).toBeGreaterThanOrEqual(14) // lineq + the RP slab
+    expect(bundle.skills.length).toBeGreaterThanOrEqual(26) // lineq + RP + EE slabs
     const site = createDevSite(bundle)
     const base = await listen(site)
     try {
-      await play(base, 'learner', bundle, { answerFor: correctRaw, maxSteps: 800 })
+      await play(base, 'learner', bundle, { answerFor: correctRaw, maxSteps: 1600 })
       const state = await getJson<{ skills: Record<string, { phase: string }> }>(base, '/api/state', 'learner')
       for (const s of bundle.skills) {
         expect(state.skills[s.id]?.phase, s.id).toBe('mastered')

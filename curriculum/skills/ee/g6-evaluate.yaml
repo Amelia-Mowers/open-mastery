@@ -11,6 +11,6 @@ bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 fluency: false
 prereqs: []
 instruction:
-  - g6.ee.evaluate.exp-worked
-  - g6.ee.evaluate.exp-table
   - g6.ee.evaluate.exp-numberline
+  - g6.ee.evaluate.exp-table
+  - g6.ee.evaluate.exp-worked

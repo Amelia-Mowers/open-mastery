@@ -2,13 +2,13 @@ id: g6.rp.find-whole.002
 skills: [g6.rp.find-whole]
 difficulty: 2
 representation: worked-equation
-params: { f: 6, k: 5 }
-generator: { f: { int: [2, 9] }, k: { int: [3, 9] } }
-widget: { type: numeric-input, config: { stem: "{10*f}% of a number is {f*k}. What is the number?" } }
-answer: { type: expr, value: "{10*k}", integer: true }
+params: { m: 6, h: 5 }
+generator: { m: { int: [2, 9] }, h: { int: [3, 9] } }
+widget: { type: numeric-input, config: { stem: "{10*m}% of a number is {m*h}. What is the number?" } }
+answer: { type: expr, value: "{10*h}", integer: true }
 hints:
-  - "{10*f}% is {f} tens, so 10% of the number is {f*k} ÷ {f} = {k}."
-  - "10% is {k}, and 100% is ten tens: {k} × 10 = {10*k}."
+  - "{10*m}% is {m} tens, so 10% of the number is {m*h} ÷ {m} = {h}."
+  - "10% is {h}, and 100% is ten tens: {h} × 10 = {10*h}."
 source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
-verify: "{10*f * answer == f*k * 100}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{10*m * answer == m*h * 100}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

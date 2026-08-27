@@ -39,6 +39,7 @@ interface InlinePlay {
   params: Params
   seenReps: string[]
   totalReps: number
+  sameNumbers?: boolean
 }
 
 /** widget types whose answer space is a text field — these sit inline with
@@ -79,6 +80,8 @@ export function ItemCard({
   /** faded phase: the skill's explanation, THIS instance's numbers, played
    * up to just before the resolution — the student finishes it below */
   const [fadedLead, setFadedLead] = useState<InlinePlay | null>(null)
+  /** the lead finished playing — only NOW guide the eye to the answer box */
+  const [leadDone, setLeadDone] = useState(false)
   const startedAt = useMemo(() => performance.now(), [action.instance.paramHash])
 
   const widget = useMemo(() => {
@@ -152,13 +155,17 @@ export function ItemCard({
   /** answers lock the moment the verdict lands — review mode is inert */
   const answerMode = outcome !== null ? 'review' : action.itemKind === 'faded' ? 'faded' : 'problem'
 
-  // guide the eye: focus the answer box when a fresh problem arrives
+  // guide the eye: focus the answer box when a fresh problem arrives — for
+  // faded items, only once the walkthrough reaches its final step (pulsing
+  // mid-playback points at the wrong thing)
+  const guideReady = action.itemKind !== 'faded' || leadDone
   useEffect(() => {
+    if (!guideReady) return
     const el = document.querySelector<HTMLElement>(
       '.answer-row input, .viz-answer input, .viz-answer [role="slider"], .viz-answer [role="radiogroup"]',
     )
     el?.focus()
-  }, [action.instance.paramHash])
+  }, [action.instance.paramHash, guideReady])
 
   const submit = async () => {
     if (busy || outcome) return
@@ -177,6 +184,7 @@ export function ItemCard({
 
   useEffect(() => {
     if (action.itemKind !== 'faded') return
+    setLeadDone(false)
     let cancelled = false
     void fetchExplanation([], true).then((r) => {
       if (cancelled || !r?.explanation) return
@@ -192,6 +200,7 @@ export function ItemCard({
         params: r.params as Params,
         seenReps: [r.explanation.representation],
         totalReps: r.totalReps,
+        sameNumbers: r.sameNumbers,
       })
       // the lead is served instruction, not requested help: log the view,
       // no assistance marking
@@ -211,6 +220,7 @@ export function ItemCard({
       params: r.params as Params,
       seenReps: [...excludeReps, r.explanation.representation],
       totalReps: r.totalReps,
+      sameNumbers: r.sameNumbers,
     })
   }
 
@@ -264,8 +274,10 @@ export function ItemCard({
           explanation={fadedLead.explanation}
           params={fadedLead.params}
           kind="walkthrough"
+          sameNumbers={fadedLead.sameNumbers}
           embedded
           tail="none"
+          onReachedEnd={() => setLeadDone(true)}
           onDone={() => {}}
         />
       )}
@@ -274,6 +286,7 @@ export function ItemCard({
           key={inline.explanation.id}
           explanation={inline.explanation}
           params={inline.params}
+          sameNumbers={inline.sameNumbers}
           kind="walkthrough"
           embedded
           onDone={finishWalkthrough}
@@ -293,6 +306,7 @@ export function ItemCard({
               full row of their own; only the text inputs sit inline with the
               buttons. A <form> so Enter submits from any text field. */}
           <form
+            className={guideReady && outcome === null ? 'awaiting-answer' : undefined}
             onSubmit={(e) => {
               e.preventDefault()
               void submit()

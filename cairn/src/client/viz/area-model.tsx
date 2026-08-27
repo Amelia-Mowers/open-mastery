@@ -18,18 +18,21 @@ export interface AreaModelView {
   products?: string[]
   /** 1-based column indices to highlight */
   highlight?: number[]
+  /** unit-grid build-up: tint the first n rows of numeric cells (null = none) */
+  fillRows?: number | null
 }
 
 type AreaState = {
   products: string[] | null
   highlight: number[]
+  fillRows: number | null
 }
 
 const label = (p: AreaModelParams): string =>
   `Area model: a rectangle ${p.height} tall split into widths ${p.parts.join(' and ')}`
 
 export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaModelView> {
-  const store = new WidgetStore<AreaState>({ products: null, highlight: [] })
+  const store = new WidgetStore<AreaState>({ products: null, highlight: [], fillRows: null })
 
   /** small positive integer, or null — numeric dimensions get a unit grid
    * and proportional sizing so "6 rows of 6" LOOKS like 6 rows of 6 */
@@ -42,12 +45,18 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
     const cols = params.parts.length
     const h = dim(params.height)
-    // px per unit: fit the height into 72..240
-    const unit = h ? Math.min(34, Math.max(16, Math.floor(240 / h))) : 0
+    // TRUE-TO-SCALE geometry: every numeric dimension is w units wide and
+    // the rectangle is exactly h units tall, so a unit grid shows the REAL
+    // cell counts (6² is a 6×6 square, the "2" column is 2 columns wide).
+    // Variable columns get a fixed symbolic width in units.
+    const widthUnits = params.parts.map((w) => dim(w) ?? (h ? Math.max(4, Math.round(h * 1.3)) : 5))
+    const totalUnits = widthUnits.reduce((a, b) => a + b, 0)
+    const unit = Math.min(
+      34,
+      Math.max(14, Math.floor(Math.min(h ? 220 / h : 34, 460 / Math.max(1, totalUnits)))),
+    )
     const boxH = h ? h * unit : 110
-    // proportional column weights: numeric widths to scale; variables read
-    // a little wider than the height (the unknown side)
-    const weights = params.parts.map((w) => dim(w) ?? (h ? h * 1.4 : 6))
+    const boxW = totalUnits * unit
     const grid = (w: string): string | undefined => {
       if (!h || dim(w) === null) return undefined
       return (
@@ -56,7 +65,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
       )
     }
     return (
-      <div role="img" aria-label={label(params)} style={{ maxWidth: 520, margin: '0 auto' }}>
+      <div role="img" aria-label={label(params)} style={{ width: boxW + 56, maxWidth: '100%', margin: '0 auto' }}>
         {/* width labels above the columns */}
         <div style={{ display: 'flex', marginLeft: 56 }}>
           {params.parts.map((w, i) => (
@@ -64,7 +73,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
               key={i}
               data-width-label
               style={{
-                flex: `${weights[i]!} 1 0`,
+                width: widthUnits[i]! * unit,
                 textAlign: 'center',
                 font: "600 19px 'Lora', Georgia, serif",
                 color: '#5c5245',
@@ -90,10 +99,11 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
           >
             {params.height}
           </div>
-          {/* the partitioned rectangle */}
+          {/* the partitioned rectangle — exact unit dimensions */}
           <div
             style={{
-              flex: 1,
+              width: boxW,
+              flex: 'none',
               display: 'flex',
               border: '2.5px solid #5c4a38',
               borderRadius: 8,
@@ -110,7 +120,9 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
                   data-cell
                   data-highlighted={highlighted || undefined}
                   style={{
-                    flex: `${weights[i]!} 1 0`,
+                    position: 'relative',
+                    width: widthUnits[i]! * unit,
+                    flex: 'none',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
@@ -125,6 +137,21 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
                     padding: 6,
                   }}
                 >
+                  {h !== null && dim(params.parts[i]!) !== null && state.fillRows !== null && (
+                    <div
+                      data-fill-rows
+                      aria-hidden
+                      style={{
+                        position: 'absolute',
+                        left: 0,
+                        right: 0,
+                        top: 0,
+                        height: Math.min(state.fillRows, h) * unit,
+                        background: 'rgba(176, 95, 40, 0.16)',
+                        transition: 'height 0.6s ease',
+                      }}
+                    />
+                  )}
                   <span
                     data-product
                     style={
@@ -153,6 +180,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
       const next: Partial<AreaState> = {}
       if (patch.products !== undefined) next.products = patch.products ?? null
       if (patch.highlight !== undefined) next.highlight = patch.highlight ?? []
+      if (patch.fillRows !== undefined) next.fillRows = patch.fillRows
       store.setState(next)
     },
     a11y: { role: 'img', label },

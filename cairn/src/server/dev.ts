@@ -98,6 +98,8 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       return send(res, { status: 200, body: { seeded: seedDemoClass(core) } })
     }
     if (req.method === 'GET' && url.pathname === '/api/demos') return send(res, core.demosView())
+    if (req.method === 'GET' && url.pathname === '/api/demo')
+      return send(res, core.explanationDemo(url.searchParams.get('exp') ?? ''))
 
     if (studentId === '')
       return send(res, { status: 400, body: { error: 'student query param required' } })

@@ -1,0 +1,12 @@
+id: g6.ee.cube.exp-worked
+skill: g6.ee.cube
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "{n}³" }, caption: "The small 3 counts factors: three of them." }
+  - { t: 4, patch: { line: "{n}³ = {n} × {n} × {n}", note: "three factors of {n}" }, caption: "{n} used as a factor three times." }
+  - { t: 8, patch: { line: "= {n*n} × {n}", note: "the square first" }, caption: "Two of the factors make {n}² = {n*n}." }
+  - { t: 12, patch: { line: "= {n*n*n}", note: "one more factor" }, caption: "{n}³ = {n*n*n}." }
+  - { t: 14.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

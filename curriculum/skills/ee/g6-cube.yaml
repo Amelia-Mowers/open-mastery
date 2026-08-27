@@ -1,0 +1,15 @@
+id: g6.ee.cube
+name: Evaluate cubes
+preamble:
+  plain: "4³ means 4 used as a factor three times: 4 × 4 × 4 — a square, taken 4 times. You'll build cubes from the squares you already know."
+  vocab:
+    - { term: cube, meaning: "a number raised to the third power — three equal factors" }
+standards: [CCSS.MATH.CONTENT.6.EE.A.1]
+source: { book: ccss-ee-progression, section: "6.EE.A.1" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.ee.exponents]
+instruction:
+  - g6.ee.cube.exp-numberline
+  - g6.ee.cube.exp-tape
+  - g6.ee.cube.exp-worked

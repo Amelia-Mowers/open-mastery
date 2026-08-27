@@ -2,8 +2,8 @@ id: g7.rp.test-proportional.002
 skills: [g7.rp.test-proportional]
 difficulty: 2
 representation: ratio-table
-params: { k: 3, a: 2, c: 5, e: 10, d: 2 }
-generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 7] }, e: { int: [8, 12] }, d: { int: [1, 5] } }
+params: { q: 3, r: 2, s: 5, t: 10, u: 2 }
+generator: { q: { int: [2, 9] }, r: { int: [2, 4] }, s: { int: [5, 7] }, t: { int: [8, 12] }, u: { int: [1, 5] } }
 widget:
   type: ratio-table
   config:
@@ -11,11 +11,11 @@ widget:
     select: true
     noneLabel: "All rows agree"
     cols: ["x", "y"]
-    rows: [["{a}", "{a*k}"], ["{c}", "{c*k+d}"], ["{e}", "{e*k}"]]
+    rows: [["{r}", "{r*q}"], ["{s}", "{s*q+u}"], ["{t}", "{t*q}"]]
 answer: { type: expr, value: "2", integer: true }
 hints:
   - "Divide y by x in each row. Which quotient is different?"
-  - "{a*k} ÷ {a} = {k} and {e*k} ÷ {e} = {k}, but {c*k+d} ÷ {c} is NOT {k} — row 2 breaks it."
+  - "{r*q} ÷ {r} = {q} and {t*q} ÷ {t} = {q}, but {s*q+u} ÷ {s} is NOT {q} — row 2 breaks it."
 source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
-verify: "{(c*k+d) * a != a*k * c}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{(s*q+u) * r != r*q * s}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

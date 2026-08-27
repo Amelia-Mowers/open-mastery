@@ -58,3 +58,9 @@
   that make the state unrepresentable; where that's not mechanical, add
   a validator check that at least WARNS (see [form_mismatch]). Never let
   a fallback silently produce content that could teach the wrong thing.
+- **Visual review pass**: after ANY widget or timeline change, run
+  `scripts/shoot-widgets.sh <out>` (screenshots every explanation's final
+  state via ?view=zoo&exp=<id>, tiles contact sheets) and actually REVIEW
+  the sheets. The harness needs --run-all-compositor-stages-before-draw
+  (already set) — without it, virtual-time screenshots can capture stale
+  frames and report phantom bugs.

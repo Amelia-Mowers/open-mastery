@@ -51,6 +51,12 @@ export interface LessonPlayerProps {
   /** 'none' hides the handoff row — used when the player leads INTO an
    * answer that sits below it (the faded phase) */
   tail?: 'handoff' | 'none'
+  /** fires when playback first reaches the final content step (independent
+   * of the handoff button — the faded phase uses it to cue the answer box) */
+  onReachedEnd?: () => void
+  /** false when a walkthrough fell back to the family's example numbers —
+   * the kicker must not claim "same numbers" */
+  sameNumbers?: boolean
 }
 
 const TICK_MS = 100
@@ -61,6 +67,7 @@ const KICKER: Record<LessonPlayerProps['kind'], string> = {
   alt_explanation: "LET'S LOOK AT IT DIFFERENTLY",
   walkthrough: 'WALK-THROUGH · SAME NUMBERS',
 }
+const KICKER_EXAMPLE = 'WALK-THROUGH · EXAMPLE NUMBERS'
 
 interface LessonWidget {
   element: ReactElement
@@ -315,7 +322,9 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
     return {
       element: w.render(setup, 'lesson'),
       apply: (patch) => {
-        const view: { products?: string[]; highlight?: number[] } = {}
+        const view: { products?: string[]; highlight?: number[]; fillRows?: number | null } = {}
+        if ('fillRows' in patch)
+          view.fillRows = patch['fillRows'] === null ? null : evalNumber(patch['fillRows'], params)
         if ('products' in patch && Array.isArray(patch['products']))
           view.products = (patch['products'] as unknown[]).map((v) => renderText(String(v), params))
         if ('highlight' in patch) {
@@ -380,6 +389,8 @@ export function LessonPlayer({
   intro,
   embedded,
   onDone,
+  onReachedEnd,
+  sameNumbers,
   onAnotherWay,
   onCancel,
   tail = 'handoff',
@@ -398,6 +409,7 @@ export function LessonPlayer({
   const [speedIdx, setSpeedIdx] = useState(0)
   /** the handoff row stays once the end has been reached, even when scrubbing back */
   const [reachedEnd, setReachedEnd] = useState(false)
+  const endNotified = useRef(false)
   /** bumped to rebuild the widget for backward seeks (patches only merge) */
   const [epoch, setEpoch] = useState(0)
   const appliedRef = useRef(-1)
@@ -415,7 +427,13 @@ export function LessonPlayer({
   for (let i = 0; i < steps.length; i++) if (steps[i]!.t <= time + 1e-9) stepIdx = i
 
   useEffect(() => {
-    if (time >= lastContentT - 1e-9) setReachedEnd(true)
+    if (time >= lastContentT - 1e-9) {
+      setReachedEnd(true)
+      if (!endNotified.current) {
+        endNotified.current = true
+        onReachedEnd?.()
+      }
+    }
   }, [time, lastContentT])
 
   // reset per explanation (the another-way chain swaps explanations in place)
@@ -533,7 +551,7 @@ export function LessonPlayer({
   const body = (
     <>
       <div className="card-kicker">
-        <span className={kind === 'lesson' ? 'kicker' : 'kicker kicker-alt'}>{KICKER[kind]}</span>
+        <span className={kind === 'lesson' ? 'kicker' : 'kicker kicker-alt'}>{kind === 'walkthrough' && sameNumbers === false ? KICKER_EXAMPLE : KICKER[kind]}</span>
         {onCancel && (
           <button className="btn btn-quiet player-close" aria-label="Back to the problem" onClick={onCancel}>
             ✕
@@ -609,7 +627,7 @@ export function LessonPlayer({
 
   if (embedded) return <div className="embedded-player">{body}</div>
   return (
-    <section className="card" aria-label={KICKER[kind]}>
+    <section className="card" aria-label={kind === 'walkthrough' && sameNumbers === false ? KICKER_EXAMPLE : KICKER[kind]}>
       {body}
     </section>
   )
