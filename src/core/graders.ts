@@ -11,6 +11,7 @@
  */
 import {
   parseExpr,
+  parseExprLoose,
   evaluate,
   parseTemplate,
   renderTemplate,
@@ -80,7 +81,7 @@ function resolveClosed(value: string | number, params: Env): Rational | null {
 
 /** Parse + evaluate a plain expression string with no free variables. */
 function evalClosed(src: string): Rational | null {
-  const p = parseExpr(src.trim())
+  const p = parseExprLoose(src.trim())
   if (!p.ok) return null
   const v = evaluate(p.value, {})
   if (!v.ok || v.value.t !== 'num') return null
@@ -158,8 +159,8 @@ function freeVars(e: Expr, bound: ReadonlySet<string>): Set<string> {
  * either side is undefined (division by zero) are skipped; fewer than
  * MIN_VALID_TRIALS valid points grades not-equivalent (conservative). */
 export function exprEquivalent(aSrc: string, bSrc: string): boolean {
-  const pa = parseExpr(aSrc)
-  const pb = parseExpr(bSrc)
+  const pa = parseExprLoose(aSrc)
+  const pb = parseExprLoose(bSrc)
   if (!pa.ok || !pb.ok) return false
   const vars = [...new Set([...freeVars(pa.value, new Set()), ...freeVars(pb.value, new Set())])].sort()
   let valid = 0
@@ -191,6 +192,17 @@ function splitEquation(s: string): string[] | null {
 
 function gradeExpr(spec: AnswerSpec, params: Env, raw: string): Verdict {
   if (typeof spec.value !== 'string') return incorrect('answer key is not an expression')
+  // syntactic form guards: symbolic equivalence would accept an echo of the
+  // stem ("3(x+2)" ≡ "3x+6"), so expansion/combination items constrain shape
+  if (spec.form === 'expanded' && /[()]/.test(raw))
+    return incorrect('give the expanded form — no parentheses')
+  if (spec.form === 'combined') {
+    const v = typeof params['variable'] === 'string' ? params['variable'] : null
+    if (v !== null) {
+      const count = raw.split(v).length - 1
+      if (count > 1) return incorrect(`combine the ${v}-terms — ${v} should appear once`)
+    }
+  }
   const rendered = renderTemplate(spec.value, params, { numberStyle: 'fraction' })
   if (!rendered.ok) return incorrect('answer key does not evaluate')
   const expectedParts = splitEquation(rendered.value)
@@ -212,7 +224,7 @@ function gradeExpr(spec: AnswerSpec, params: Env, raw: string): Verdict {
   const [eLhs, eRhs] = expectedParts as [string, string]
   if (studentParts.length === 1) {
     // bare value accepted when the key isolates a single variable: "x = 3" ⇐ "3"
-    const lhsExpr = parseExpr(eLhs)
+    const lhsExpr = parseExprLoose(eLhs)
     const isBareVar = lhsExpr.ok && lhsExpr.value.k === 'var'
     if (!isBareVar) return incorrect('answer must be an equation')
     return exprEquivalent(studentParts[0]!, eRhs) ? correct : incorrect()

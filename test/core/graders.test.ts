@@ -87,6 +87,34 @@ describe('set / ordered / choice graders', () => {
   })
 })
 
+describe('form guards (echo-proofing symbolic equivalence)', () => {
+  const item = (form?: 'expanded' | 'combined') => ({
+    answer: { type: 'expr' as const, value: '{a}{variable} + {a*b}', equivalence: 'symbolic' as const, ...(form ? { form } : {}) },
+    rubric: null,
+  })
+  const params = { a: 3, b: 2, variable: 'x' }
+
+  it("'expanded' rejects the parenthesized echo but accepts the expansion", () => {
+    expect(gradeItem(item('expanded') as never, params, '3(x+2)').verdict).toBe('incorrect')
+    expect(gradeItem(item('expanded') as never, params, '3x + 6').verdict).toBe('correct')
+    // without the guard, the echo would pass on pure equivalence
+    expect(gradeItem(item() as never, params, '3(x+2)').verdict).toBe('correct')
+  })
+
+  it("'combined' rejects answers where the variable appears twice", () => {
+    const combined = {
+      answer: { type: 'expr' as const, value: '{a}{variable} + {b}', equivalence: 'symbolic' as const, form: 'combined' as const },
+      rubric: null,
+    }
+    expect(gradeItem(combined as never, params, '2x + x + 2').verdict).toBe('incorrect')
+    expect(gradeItem(combined as never, params, '3x + 2').verdict).toBe('correct')
+  })
+
+  it('implicit multiplication in student input parses ("3x", "3(x+2)")', () => {
+    expect(gradeItem(item() as never, params, '6 + 3x').verdict).toBe('correct')
+  })
+})
+
 describe('rubric routing', () => {
   it('rubric items route to the LLM and never grade locally', () => {
     const item = {

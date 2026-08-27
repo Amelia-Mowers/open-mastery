@@ -11,7 +11,7 @@ export interface BalanceScaleView {
   left?: string
   right?: string
   highlight?: 'left.coef' | 'left' | 'right' | null
-  op?: { op: 'divide' | 'multiply'; by: string } | null
+  op?: { op: 'divide' | 'multiply' | 'add' | 'subtract'; by: string } | null
   caption?: string
   /** staged decomposition: bring each pan in as its symbol is explained */
   leftIn?: boolean
@@ -92,7 +92,7 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
           animation: 'cairn-pop 0.3s ease',
         }}
       >
-        {op.op === 'divide' ? '÷' : '×'} {op.by}
+        {op.op === 'divide' ? '÷' : op.op === 'multiply' ? '×' : op.op === 'add' ? '+' : '−'} {op.by}
       </span>
     )
   }

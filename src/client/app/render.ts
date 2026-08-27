@@ -79,7 +79,7 @@ export function adaptBalancePatch(
     out.op =
       op === null || op === undefined
         ? null
-        : op === 'divide' || op === 'multiply'
+        : op === 'divide' || op === 'multiply' || op === 'add' || op === 'subtract'
           ? { op, by: str(patch['by'] ?? '') }
           : null
   }
