@@ -13,9 +13,10 @@ widget:
   type: equation-input
   config:
     stem: "Solve: {c1}{variable} + {c2}{variable} - {c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}."
-answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic }
+answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
 hints:
   - "Combine the like terms on each side first."
   - "The left side becomes {c1+c2-c3}{variable}."
 source: { book: openstax-prealgebra-2e, section: "8.2" }
+verify: "{c1*answer + c2*answer - c3*answer == d1 + ((c1+c2-c3)*ans - d1)}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

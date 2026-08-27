@@ -12,9 +12,10 @@ widget:
   type: equation-input
   config:
     stem: "Solve: -{a}({variable} - {b}) - {c} = {-a*(ans-b)-c}."
-answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic }
+answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
 hints:
   - "Distribute -{a} first."
   - "-{a}({variable} - {b}) = {-a}{variable} + {a*b}."
 source: { book: openstax-prealgebra-2e, section: "8.2" }
+verify: "{-a*(answer - b) - c == -a*(ans-b) - c}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

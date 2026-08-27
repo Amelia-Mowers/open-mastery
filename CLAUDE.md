@@ -57,4 +57,10 @@ fallback, not the default.
 - Explanations are authored against a param FAMILY (usually the skill's
   first practice item). Items of other families must either share those
   identifiers or declare `representation: null`.
+- **Every item carries `verify:`** — an independent boolean relation with
+  `answer` bound to the computed answer value ("{a * answer == b}"),
+  substituting the solution back into the ORIGINAL equation (never the
+  answer template — that would be circular). Add `integer: true` on the
+  answer whenever instances must have whole-number solutions; CI checks
+  both across authored params and generator seeds.
 - `npm run validate` (authoring) must pass with 0 errors before committing.

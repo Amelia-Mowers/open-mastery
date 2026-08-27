@@ -8,9 +8,10 @@ generator:
   p: { int: [2, 9], coprime: q, distinct: q }
   b: { mult_of: p, range: [10, 60] }
 widget: { type: equation-input, config: { stem: "Solve: {p}/{q} {variable} = {b}." } }
-answer: { type: expr, value: "{variable} = {q*b/p}", equivalence: symbolic }
+answer: { type: expr, value: "{variable} = {q*b/p}", equivalence: symbolic, integer: true }
 hints:
   - "Multiply both sides by {q} first — that clears the fraction: {p}{variable} = {q*b}."
   - "Now divide both sides by {p}. (Shortcut: multiplying by the reciprocal {q}/{p} does both at once.)"
 source: { book: openstax-prealgebra-2e, section: "8.2" }
+verify: "{p * answer / q == b}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
