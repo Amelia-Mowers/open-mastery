@@ -1,0 +1,11 @@
+id: prealg.lineq.divide.exp-tape
+skill: prealg.lineq.divide
+representation: tape-diagram
+widget: tape-diagram
+params_from: item
+timeline:
+  - { t: 0, patch: { parts: "{a}", partLabel: "?", total: "{b}" }, caption: "{a}{variable} = {b}: the tape holds {b} split into {a} equal parts." }
+  - { t: 4, patch: { highlight: ["1"] }, caption: "Every part is the same — find just one of them." }
+  - { t: 8, patch: { partLabel: "{b/a}", highlight: [] }, caption: "{b} ÷ {a} = {b/a}. Each part — each {variable} — is {b/a}." }
+  - { t: 10.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

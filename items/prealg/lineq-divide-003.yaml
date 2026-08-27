@@ -1,0 +1,20 @@
+id: prealg.lineq.divide.003
+skills: [prealg.lineq.divide]
+difficulty: 1
+representation: tape-diagram
+params: { a: 6, b: 42, variable: x }
+generator: { a: { int: [2, 9] }, b: { mult_of: a, range: [12, 72] } }
+widget:
+  type: tape-diagram
+  config:
+    stem: "{a}{variable} = {b}: the tape holds {b} split into {a} equal parts. Fill in one part."
+    parts: "{a}"
+    total: "{b}"
+    fill: part
+answer: { type: expr, value: "{variable} = {b/a}", equivalence: symbolic, integer: true }
+hints:
+  - "All {a} parts are equal and together they make {b}."
+  - "{b} ÷ {a} = {b/a}."
+verify: "{a * answer == b}"
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
