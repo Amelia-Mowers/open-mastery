@@ -63,6 +63,13 @@ programmatic: they render from the actual instance variables, and a lesson
 that silently falls back to another family's numbers is a bug, not a
 feature.
 
+**Identifier discipline:** item families within a skill may share
+identifier names ONLY when they share the exact answer formula (same
+form). Different-form families must use DISJOINT names so they can never
+feed each other's timelines — enforced by [resolution_answer] (ERROR:
+any explanation an item's params can feed must state that item's answer
+in its resolution) and [form_mismatch].
+
 **Every skill carries at least THREE distinct representations, and one
 of them is the whiteboard (`worked-equation`) — but the whiteboard NEVER
 leads instruction** (instruction[0] must be a concrete model; worked is
