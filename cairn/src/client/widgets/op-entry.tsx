@@ -36,11 +36,14 @@ export function OpEntry({
   disabled,
   onChange,
   ariaLabel,
+  nudge,
 }: {
   move: OpMove
   disabled: boolean
   onChange: (move: OpMove) => void
   ariaLabel: string
+  /** pulse incomplete parts after an attempted submit; seq replays it */
+  nudge?: { seq: number; parts: ReadonlyArray<'op' | 'by'> }
 }) {
   const cycle = (delta: number): void => {
     const idx = move.op === null ? -delta : OP_KEYS.indexOf(move.op)
@@ -59,6 +62,8 @@ export function OpEntry({
       }}
     >
       <div
+        key={`op-${nudge?.seq ?? 0}`}
+        className={nudge?.parts.includes('op') ? 'sw-nudge' : undefined}
         role="radiogroup"
         aria-label={ariaLabel}
         aria-disabled={disabled}
@@ -109,6 +114,8 @@ export function OpEntry({
         })}
       </div>
       <input
+        key={`by-${nudge?.seq ?? 0}`}
+        className={nudge?.parts.includes('by') ? 'sw-nudge' : undefined}
         data-op-by
         aria-label="Amount for the move"
         inputMode="decimal"

@@ -314,7 +314,13 @@ body {
   margin: 8px 0 2px;
   animation: cairn-rise 0.3s ease both;
 }
-.stepwise-skip, .stepwise-done { text-align: center; margin: 6px 0 2px; font-size: 13.5px; }
+.stepwise-done { text-align: center; margin: 6px 0 2px; font-size: 13.5px; }
+@keyframes sw-nudge {
+  0%, 100% { transform: none; box-shadow: none; }
+  40% { transform: scale(1.05); box-shadow: 0 0 0 4px rgba(176, 95, 40, 0.28); }
+}
+.sw-nudge { animation: sw-nudge 0.55s ease; border-radius: 12px; }
+.btn-primary[aria-disabled="true"] { opacity: 0.45; }
 @keyframes sw-fade { from { opacity: 0; } to { opacity: 1; } }
 .stepwise-gate-content { animation: sw-fade 0.35s ease both; }
 

@@ -81,6 +81,12 @@ describe('stepwise player', () => {
     await waitFor(() => expect(screen.getByText('Which move comes FIRST?')).toBeInTheDocument())
     expect(container.querySelector('[data-op-badge="left"]')).toBeNull()
 
+    // an INCOMPLETE entry never counts as a miss — the missing parts pulse
+    expect(screen.getByTestId('stepwise-check').getAttribute('aria-disabled')).toBe('true')
+    await user.click(screen.getByTestId('stepwise-check'))
+    expect(container.querySelectorAll('.sw-nudge').length).toBeGreaterThanOrEqual(2)
+    expect(screen.queryByTestId('stepwise-feedback')).toBeNull()
+
     // wrong move → hint, gate stays
     await user.click(container.querySelector('[data-op-sym="divide"]')!)
     await user.type(container.querySelector('[data-op-by]')!, '3')

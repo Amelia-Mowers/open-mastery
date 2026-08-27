@@ -82,6 +82,11 @@ export function StepwisePlayer({
   const [move, setMove] = useState<OpMove>({ op: null, by: '' })
   const [typed, setTyped] = useState('')
   const [picked, setPicked] = useState<ReadonlySet<number>>(new Set())
+  /** pulse whichever gate inputs are missing after an attempted submit */
+  const [nudge, setNudge] = useState<{ seq: number; parts: ReadonlyArray<'op' | 'by'> }>({
+    seq: 0,
+    parts: [],
+  })
   /** reviewing an earlier step (index into steps), or null = live frontier */
   const [scrub, setScrub] = useState<number | null>(null)
   const tallies = useRef<StepwiseResult>({ misses: 0, reveals: 0 })
@@ -161,7 +166,13 @@ export function StepwisePlayer({
     setMove({ op: null, by: '' })
     setTyped('')
     setPicked(new Set())
+    setNudge({ seq: 0, parts: [] })
     setUnlocked((u) => new Set([...u, applied]))
+  }
+
+  /** an incomplete entry is never a miss — pulse what's missing instead */
+  const nudgeParts = (parts: ReadonlyArray<'op' | 'by'>) => {
+    setNudge((n) => ({ seq: n.seq + 1, parts }))
   }
 
   const reveal = (lead: string) => {
@@ -336,12 +347,35 @@ export function StepwisePlayer({
             <form
               onSubmit={(e) => {
                 e.preventDefault()
-                submitStep(move.op !== null && move.by.trim() !== '' ? `${move.op} ${move.by.trim()}` : '')
+                if (move.op === null || move.by.trim() === '') {
+                  nudgeParts([
+                    ...(move.op === null ? (['op'] as const) : []),
+                    ...(move.by.trim() === '' ? (['by'] as const) : []),
+                  ])
+                  return
+                }
+                submitStep(`${move.op} ${move.by.trim()}`)
               }}
             >
-              <OpEntry move={move} disabled={false} onChange={setMove} ariaLabel="Operation to apply to both sides" />
+              <OpEntry
+                move={move}
+                disabled={false}
+                onChange={setMove}
+                ariaLabel="Operation to apply to both sides"
+                nudge={nudge}
+              />
               <div className="answer-row" style={{ justifyContent: 'center' }}>
-                <button type="submit" className="btn btn-primary" data-testid="stepwise-check">
+                <button
+                  type="submit"
+                  className="btn btn-primary"
+                  data-testid="stepwise-check"
+                  aria-disabled={move.op === null || move.by.trim() === ''}
+                  title={
+                    move.op === null || move.by.trim() === ''
+                      ? 'Pick the operation AND the amount first'
+                      : undefined
+                  }
+                >
                   That's my move
                 </button>
               </div>
@@ -352,17 +386,28 @@ export function StepwisePlayer({
               style={{ justifyContent: 'center' }}
               onSubmit={(e) => {
                 e.preventDefault()
+                if (typed.trim() === '') {
+                  nudgeParts(['by'])
+                  return
+                }
                 submitStep(typed.trim())
               }}
             >
               <input
-                className="answer-input"
+                key={`typed-${nudge.seq}`}
+                className={nudge.parts.includes('by') ? 'answer-input sw-nudge' : 'answer-input'}
                 aria-label="Your next step"
                 value={typed}
                 autoFocus
                 onChange={(e) => setTyped(e.target.value)}
               />
-              <button type="submit" className="btn btn-primary" data-testid="stepwise-check">
+              <button
+                type="submit"
+                className="btn btn-primary"
+                data-testid="stepwise-check"
+                aria-disabled={typed.trim() === ''}
+                title={typed.trim() === '' ? 'Write the step first' : undefined}
+              >
                 That's my move
               </button>
             </form>
@@ -398,9 +443,6 @@ export function StepwisePlayer({
         <p className="muted stepwise-done" data-testid="stepwise-done">
           One step left — put the answer in the box below.
         </p>
-      )}
-      {applied > 0 && pending !== null && waitingOn === null && scrub === null && (
-        <p className="muted stepwise-skip">Know the answer already? Type it below anytime.</p>
       )}
       </SmoothHeight>
     </div>
