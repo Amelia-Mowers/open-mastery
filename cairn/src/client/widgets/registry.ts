@@ -12,6 +12,7 @@ import { createWorkedEquation } from '../viz/worked-equation'
 import { createDoubleNumberLine, type DoubleNumberLineConfig } from '../viz/double-number-line'
 import { createRatioTable, type RatioTableConfig } from '../viz/ratio-table'
 import { createChoice, type ChoiceConfig } from './choice'
+import { createCubeModel } from '../viz/cube-model'
 
 /** The widget trinity (§4.4): one contract, three roles. `lesson` = drives a
  * patch-based explanation timeline; `input` = interactive in problem mode
@@ -37,6 +38,7 @@ export const WIDGET_ROLES: Record<WidgetType, WidgetRoles> = {
   'double-number-line': { lesson: true, input: true },
   'ratio-table': { lesson: true, input: true },
   choice: { lesson: false, input: true },
+  'cube-model': { lesson: true, input: false },
 }
 
 export class UnknownWidgetError extends Error {
@@ -61,6 +63,7 @@ export type WidgetType =
   | 'double-number-line'
   | 'ratio-table'
   | 'choice'
+  | 'cube-model'
 
 /**
  * Create a widget instance by curriculum widget type.
@@ -99,6 +102,8 @@ export function createWidget(
       return createRatioTable(config as RatioTableConfig) as never
     case 'choice':
       return createChoice(config as ChoiceConfig) as never
+    case 'cube-model':
+      return createCubeModel() as never
     default:
       throw new UnknownWidgetError(type)
   }

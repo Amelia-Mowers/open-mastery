@@ -10,6 +10,7 @@ bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 fluency: false
 prereqs: [g6.ee.exponents]
 instruction:
-  - g6.ee.cube.exp-numberline
+  - g6.ee.cube.exp-cube
   - g6.ee.cube.exp-tape
+  - g6.ee.cube.exp-numberline
   - g6.ee.cube.exp-worked

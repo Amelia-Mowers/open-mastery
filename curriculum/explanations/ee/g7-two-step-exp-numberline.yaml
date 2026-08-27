@@ -4,9 +4,9 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { min: "{b}", max: "{a*ans+b}", step: "{ans}" }, caption: "{a}{variable} + {b} = {a*ans+b}: start at {b}, and {a} equal jumps must land on {a*ans+b}." }
-  - { t: 4, patch: { marker: "{b}", highlight: ["{b}"] }, caption: "The + {b} is the starting point." }
-  - { t: 8, patch: { marker: "{ans+b}", highlight: ["{b}", "{ans+b}"] }, caption: "The distance left is {a*ans+b} − {b} = {a*ans}, shared by {a} jumps — each jump is {ans}." }
-  - { t: 12, patch: { marker: "{a*ans+b}", highlight: [] }, caption: "{a} jumps of {ans} from {b} reach {a*ans+b}. So {variable} = {ans}." }
+  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], min: "{b}", max: "{a*ans+b}", step: "{ans}" }, caption: "Here is the problem in symbols. Watch it become a start and some jumps." }
+  - { t: 4, patch: { eqHighlight: ["1"], marker: "{b}", highlight: ["{b}"] }, caption: "The + {b} is the starting point." }
+  - { t: 8, patch: { eqHighlight: ["0", "3"], marker: "{ans+b}", highlight: ["{b}", "{ans+b}"] }, caption: "{a}{variable} must cover the rest: {a*ans+b} − {b} = {a*ans}, shared by {a} jumps — each is {ans}." }
+  - { t: 12, patch: { eqHighlight: [], marker: "{a*ans+b}", highlight: [] }, caption: "{a} jumps of {ans} from {b} reach {a*ans+b}. So {variable} = {ans}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

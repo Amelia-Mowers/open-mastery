@@ -4,9 +4,9 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { min: "{b}", max: "{a*c+b}", step: "{c}" }, caption: "{a}{variable} + {b} at {variable} = {c}: start at {b}, then take {a} jumps of {c}." }
-  - { t: 4, patch: { marker: "{b}", highlight: ["{b}"] }, caption: "The + {b} is the starting point." }
-  - { t: 8, patch: { marker: "{b+c}", highlight: ["{b}", "{b+c}"] }, caption: "Each jump is one {variable}: {c}." }
-  - { t: 12, patch: { marker: "{a*c+b}", highlight: [] }, caption: "{a} jumps later: {a}·{c} + {b} = {a*c+b}." }
+  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}"], min: "{b}", max: "{a*c+b}", step: "{c}" }, caption: "An expression and a value for its letter — watch it walk the line." }
+  - { t: 4, patch: { eqHighlight: ["1"], marker: "{b}", highlight: ["{b}"] }, caption: "The + {b} is the starting point." }
+  - { t: 8, patch: { eqHighlight: ["0", "2"], marker: "{b+c}", highlight: ["{b}", "{b+c}"] }, caption: "{a}{variable} at {variable} = {c}: each jump is {c}." }
+  - { t: 12, patch: { eqHighlight: [], marker: "{a*c+b}", highlight: [] }, caption: "{a} jumps later: {a}·{c} + {b} = {a*c+b}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

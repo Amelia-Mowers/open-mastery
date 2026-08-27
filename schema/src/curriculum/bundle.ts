@@ -149,6 +149,20 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           s.id,
           `skills need ≥3 distinct representations (has ${reps.size})`,
         )
+      // decomposition rule (GOLDEN_WIDGET §3): every lesson opens on the raw
+      // symbolic problem via the equation banner — worked-equation timelines
+      // are exempt (their `start` line IS the symbols)
+      for (const e of explBySkill.get(s.id) ?? []) {
+        if (e.widget === 'worked-equation') continue
+        const hasBanner = e.timeline.some((st) => Array.isArray(st.patch?.['equation']))
+        if (!hasBanner)
+          push(
+            'warning',
+            'missing_banner',
+            e.id,
+            'lesson never shows the raw problem — open with an `equation` banner and pair eqHighlight with each region arriving',
+          )
+      }
       const primary = (explBySkill.get(s.id) ?? []).find((e) => e.id === s.instruction[0])
       if (primary?.widget === 'worked-equation')
         push(

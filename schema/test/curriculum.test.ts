@@ -134,7 +134,7 @@ function goodBundle(): Bundle {
 
 describe('bundle validation (release gates)', () => {
   it('a consistent bundle has no issues', () => {
-    const advisory = new Set(['representation_count', 'worked_missing'])
+    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner'])
     expect(validateBundle(goodBundle()).filter((i) => !advisory.has(i.code))).toEqual([])
   })
 

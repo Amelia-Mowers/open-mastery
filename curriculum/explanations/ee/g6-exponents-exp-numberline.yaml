@@ -4,8 +4,8 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { min: 0, max: "{c*c}", step: "{c}" }, caption: "{c}² means {c} jumps, each of size {c} — skip-counting by {c}." }
-  - { t: 4, patch: { marker: "{c}", highlight: ["{c}"] }, caption: "One jump of {c} lands on {c}." }
-  - { t: 8, patch: { marker: "{c*c}", highlight: [] }, caption: "{c} jumps of {c} land on {c*c}. {c}² = {c*c}." }
+  - { t: 0, patch: { equation: ["{c}", "²"], min: 0, max: "{c*c}", step: "{c}" }, caption: "{c}² means {c} jumps, each of size {c} — skip-counting by {c}." }
+  - { t: 4, patch: { eqHighlight: ["0"], marker: "{c}", highlight: ["{c}"] }, caption: "The base {c} is the jump size: one jump lands on {c}." }
+  - { t: 8, patch: { eqHighlight: ["1"], marker: "{c*c}", highlight: [] }, caption: "The small 2 says take {c} jumps: they land on {c*c}. {c}² = {c*c}." }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

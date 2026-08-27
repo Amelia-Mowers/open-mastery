@@ -4,8 +4,9 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { min: 0, max: "{q*b/p}", step: "{b/p}" }, caption: "{p}/{q} {variable} = {b}: {p} of the {q} equal parts of {variable} total {b}." }
-  - { t: 3.5, patch: { highlight: ["{b/p}"], marker: "{b/p}" }, caption: "One part is {b} ÷ {p} = {b/p}." }
-  - { t: 7, patch: { marker: "{q*b/p}" }, caption: "{variable} has {q} parts: {q} × {b/p} = {q*b/p}." }
-  - { t: 9, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+  - { t: 0, patch: { equation: ["{p}/{q}", "{variable}", " = ", "{b}"], min: 0, max: "{q*b/p}", step: "{b/p}" }, caption: "Here is the problem in symbols. Watch it live on a line." }
+  - { t: 3.5, patch: { eqHighlight: ["0", "1"], marker: "{b}", highlight: ["{b}"] }, caption: "{p}/{q} of {variable} is {b} — that is {p} of {variable}'s {q} equal parts." }
+  - { t: 7.5, patch: { eqHighlight: [], highlight: ["{b/p}"], marker: "{b/p}" }, caption: "So ONE part is {b} ÷ {p} = {b/p}." }
+  - { t: 11.5, patch: { marker: "{q*b/p}", highlight: ["{q*b/p}"] }, caption: "{variable} has {q} parts: {q} × {b/p} = {q*b/p}. {variable} = {q*b/p}." }
+  - { t: 14, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -4,8 +4,9 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, caption: "First tidy each side: {c1}{variable} + {c2}{variable} - {c3}{variable} is {c1+c2-c3} jumps of the same size." }
-  - { t: 4, patch: { min: 0, max: "{(c1+c2-c3)*ans}", step: "{ans}" }, caption: "{c1+c2-c3} equal jumps land on {(c1+c2-c3)*ans}." }
-  - { t: 7.5, patch: { highlight: ["{ans}"], marker: "{ans}" }, caption: "So each jump — and {variable} — is {ans}." }
-  - { t: 9.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+  - { t: 0, patch: { equation: ["{c1}{variable} + {c2}{variable} - {c3}{variable}", " = ", "{(c1+c2-c3)*ans}"], min: 0, max: "{(c1+c2-c3)*ans}", step: "{ans}" }, caption: "Here is the messy problem. Combine first — then it is jumps on a line." }
+  - { t: 4, patch: { eqHighlight: ["0"] }, caption: "The {variable}-terms combine: {c1} + {c2} − {c3} = {c1+c2-c3} jumps." }
+  - { t: 8, patch: { eqHighlight: ["2"], marker: "{(c1+c2-c3)*ans}" }, caption: "{c1+c2-c3} equal jumps land on {(c1+c2-c3)*ans}." }
+  - { t: 12, patch: { eqHighlight: [], highlight: ["{ans}"], marker: "{ans}" }, caption: "The first jump lands on {ans} — {variable} = {ans}." }
+  - { t: 14.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

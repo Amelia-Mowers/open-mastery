@@ -19,6 +19,7 @@ import { createWorkedEquation } from '../viz/worked-equation'
 import { createNumberLine } from '../widgets/number-line'
 import { createDoubleNumberLine } from '../viz/double-number-line'
 import { createRatioTable } from '../viz/ratio-table'
+import { createCubeModel } from '../viz/cube-model'
 import {
   adaptBalancePatch,
   adaptNumberLinePatch,
@@ -311,6 +312,29 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
               ? { from, to, text: renderText(String(f.text ?? ''), params) }
               : null
         }
+        w.applyPatch(view as Record<string, unknown>)
+      },
+    }
+  }
+  if (explanation.widget === 'cube-model') {
+    let n: number | null = null
+    for (const step of explanation.timeline) {
+      const p = step.patch
+      if (p && 'n' in p) {
+        n = evalNumber(p['n'], params)
+        break
+      }
+    }
+    if (n === null || n < 2 || n > 8) return null
+    const w = createCubeModel()
+    return {
+      element: w.render({ n }, 'lesson'),
+      apply: (patch) => {
+        const view: { slices?: number | null; count?: string | null } = {}
+        if ('slices' in patch)
+          view.slices = patch['slices'] === null ? null : evalNumber(patch['slices'], params)
+        if ('count' in patch)
+          view.count = patch['count'] === null ? null : renderText(String(patch['count']), params)
         w.applyPatch(view as Record<string, unknown>)
       },
     }

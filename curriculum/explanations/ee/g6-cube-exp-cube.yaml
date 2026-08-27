@@ -1,0 +1,13 @@
+id: g6.ee.cube.exp-cube
+skill: g6.ee.cube
+representation: cube-model
+widget: cube-model
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["{n}", "³"], n: "{n}", slices: 1 }, caption: "{n}³ means three equal factors. Start with what you know: the square." }
+  - { t: 4, patch: { eqHighlight: ["0"], count: "{n*n}" }, caption: "An {n} × {n} square: {n*n} small squares." }
+  - { t: 8, patch: { eqHighlight: ["1"], slices: 2, count: "2 × {n*n}" }, caption: "The small 3 says: take that WHOLE square again — a second slice behind it." }
+  - { t: 12, patch: { slices: "{n}", count: null }, caption: "Keep stacking until there are {n} slices — a cube, {n} deep." }
+  - { t: 16, patch: { count: "{n*n*n}" }, caption: "{n} slices of {n*n}: {n}³ = {n*n} × {n} = {n*n*n}." }
+  - { t: 18.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
