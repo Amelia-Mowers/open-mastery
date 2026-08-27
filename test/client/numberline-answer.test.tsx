@@ -39,6 +39,49 @@ const action = {
   scaffolded: false,
 } as Extract<NextAction, { kind: 'serve_item' }>
 
+const flipItem = itemSchema.parse({
+  ...JSON.parse(JSON.stringify(item)),
+  id: 'prealg.lineq.negate.099',
+  widget: {
+    type: 'opposite-flip',
+    config: { stem: 'Solve: -{variable} = {b}.  Move the dot to {variable}.', value: '{b}' },
+  },
+})
+
+describe('opposite-flip as the answer input (the widget trinity)', () => {
+  it('the lesson widget doubles as the answer space: click where x lives', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue({
+      verdict: { verdict: 'correct' },
+      correct: true,
+      emitted: [],
+      points: 5,
+      mastery: 0.7,
+    })
+    const { container } = render(
+      <ItemCard
+        action={{ ...action, instance: { ...action.instance, itemId: flipItem.id } }}
+        item={flipItem}
+        pointsBefore={0}
+        mastery={0.3}
+        onSubmit={onSubmit}
+        onContinue={() => {}}
+        onStartCheck={() => {}}
+        fetchExplanation={vi.fn()}
+        onExplained={() => {}}
+        showInlineCheckOffer={false}
+      />,
+    )
+    // config.value template evaluated → ticks at ±2b, ±b, 0
+    for (const t of [-4, -2, 0, 2, 4])
+      expect(container.querySelector(`[data-tick="${t}"]`)).not.toBeNull()
+    await user.click(container.querySelector('[data-tick="-2"]')!)
+    expect(container.querySelector('[data-selected-dot]')).not.toBeNull()
+    await user.click(screen.getByRole('button', { name: 'Check answer' }))
+    expect(onSubmit).toHaveBeenCalledWith('-2', 0, expect.any(Number))
+  })
+})
+
 describe('number-line as the answer input', () => {
   it('evaluates templated bounds and submits the picked tick as the answer', async () => {
     const user = userEvent.setup()

@@ -83,15 +83,13 @@ export function ItemCard({
     if (item.widget.type === 'numeric-input' && config['placeholder'] === undefined) {
       config['placeholder'] = '?'
     }
-    // number-line answer inputs take templated bounds ("{-2*b}" …) evaluated
-    // against this instance's params
-    if (item.widget.type === 'number-line') {
-      for (const key of ['min', 'max', 'step']) {
-        const v = config[key]
-        if (typeof v === 'string') {
-          const n = evalNumber(v, params)
-          if (n !== null) config[key] = n
-        }
+    // widget config values may be cairn-expr templates ("{-2*abs(b)}" …)
+    // evaluated against this instance's params (number-line bounds,
+    // opposite-flip value, …)
+    for (const [key, v] of Object.entries(config)) {
+      if (typeof v === 'string' && v.includes('{')) {
+        const n = evalNumber(v, params)
+        if (n !== null) config[key] = n
       }
     }
     return createWidget(item.widget.type, config)

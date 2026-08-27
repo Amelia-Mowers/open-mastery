@@ -3,8 +3,14 @@
  * button replays it. */
 import { useState } from 'react'
 import { LessonPlayer } from './LessonPlayer'
-import { createWidget } from '../widgets/registry'
+import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry'
 import { ZOO_DEMOS, type ZooDemo } from './zoo-demos'
+
+function roleBadge(widget: string): string {
+  const r = WIDGET_ROLES[widget as WidgetType]
+  if (!r) return ''
+  return r.input ? 'roles: lesson · input' : 'roles: lesson (input planned)'
+}
 
 function DemoCard({ demo }: { demo: ZooDemo }) {
   const [replay, setReplay] = useState(0)
@@ -12,6 +18,7 @@ function DemoCard({ demo }: { demo: ZooDemo }) {
     <section className="card zoo-card">
       <div className="card-kicker">
         <span className="kicker">{demo.title.toUpperCase()}</span>
+        <span className="mono-chip">{roleBadge(demo.widget)}</span>
         <span className="mono-chip">{JSON.stringify(demo.params)}</span>
       </div>
       <LessonPlayer
@@ -46,6 +53,14 @@ function InputCard({ title, type, config }: { title: string; type: string; confi
   )
 }
 
+/** every input-capable widget appears here with a sample config */
+const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<string, unknown> }> = [
+  { title: 'number-line (answer input)', type: 'number-line', config: { min: -4, max: 4, step: 2 } },
+  { title: 'opposite-flip (answer input)', type: 'opposite-flip', config: { value: 2 } },
+  { title: 'numeric-input', type: 'numeric-input', config: { units: 'cm' } },
+  { title: 'expression-input', type: 'equation-input', config: { variable: 'x' } },
+]
+
 export function Zoo() {
   return (
     <div>
@@ -59,13 +74,9 @@ export function Zoo() {
       {ZOO_DEMOS.map((d) => (
         <DemoCard key={d.explanation.id} demo={d} />
       ))}
-      <InputCard
-        title="number-line (answer input)"
-        type="number-line"
-        config={{ min: -4, max: 4, step: 2 }}
-      />
-      <InputCard title="numeric-input" type="numeric-input" config={{ units: 'cm' }} />
-      <InputCard title="expression-input" type="equation-input" config={{ variable: 'x' }} />
+      {INPUT_SAMPLES.map((c) => (
+        <InputCard key={c.title} title={c.title} type={c.type} config={c.config} />
+      ))}
     </div>
   )
 }

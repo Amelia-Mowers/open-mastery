@@ -11,6 +11,17 @@
   Existing viz widgets: balance-scale, envelope-model, tape-diagram,
   hanger-diagram, area-model; lesson timelines drive them via patches
   (see `src/client/app/LessonPlayer.tsx` setup functions).
+- **The widget trinity (§4.4): one widget = display + input + lesson.**
+  The single contract (render(params, mode), extract(), applyPatch())
+  covers all three roles: 'lesson' mode is patch-driven animation,
+  'problem' mode is the interactive answer space (extract() returns the
+  answer), 'review' is disabled display. WIDGET_ROLES in the registry is
+  the live matrix; the zoo shows both roles. When a representation IS the
+  answer space, the same widget teaches AND asks (opposite-flip does
+  both for negate). Planned input semantics for the display-only widgets:
+  balance-scale = pick the operation for both sides; tape-diagram = fill
+  a part; envelope-model = distribute counters; hanger = choose the move;
+  area-model = fill the products; worked-equation = choose the next line.
 - **Widget standard: programmatic + tested at extremes.** Widgets render
   from actual instance variables (never another family's numbers), and
   every widget gets edge-case tests at the generator's extremes: max/min
