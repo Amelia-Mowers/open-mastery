@@ -50,6 +50,16 @@ moving the dot on a number line; `min`/`max`/`step` config values may be
 cairn-expr templates evaluated per instance). Direct text entry is the
 fallback, not the default.
 
+## The faded phase is the visualization, not a separate system
+
+Faded examples are NOT separate items with worked-steps lists (the old
+`faded.steps` mechanism is retired). The engine serves a normal instance
+marked `faded`; the client plays the skill's explanation with THAT
+instance's numbers up to just before the resolution, and the student
+finishes it in the ordinary answer input. Authoring rule this relies on:
+**an explanation's final content step must BE the resolution** (the reveal
+/ "x = …" step), so truncating one step leaves a complete setup.
+
 ## Ground rules
 
 - Every record is `review: {status: draft}` until a human vets it; the

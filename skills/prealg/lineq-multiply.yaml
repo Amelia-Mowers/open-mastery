@@ -13,4 +13,3 @@ instruction:
   - prealg.lineq.multiply.exp-balance
   - prealg.lineq.multiply.exp-numberline
   - prealg.lineq.multiply.exp-worked
-faded_examples: [prealg.lineq.multiply.f01]

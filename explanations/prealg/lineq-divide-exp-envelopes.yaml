@@ -4,8 +4,10 @@ representation: envelopes-counters
 widget: envelope-model
 params_from: item
 timeline:
-  - { t: 0, patch: { envelopes: "{a}", counters: "{b}" }, caption: "{a} envelopes hold the same total as {b} counters — that is {a}{variable} = {b}." }
-  - { t: 4, patch: { partition: true }, caption: "Share the {b} counters into {a} equal groups — one group for each envelope." }
-  - { t: 8, patch: { reveal: true }, caption: "Every envelope holds {b/a} counters. So {variable} = {b/a}." }
-  - { t: 10.5, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], envelopes: "{a}", counters: "{b}", envelopesIn: false, countersIn: false }, caption: "Here is the problem in symbols. Watch what each piece MEANS." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], envelopesIn: true }, caption: "{a}{variable} means {a} envelopes — each hiding the same amount, {variable}." }
+  - { t: 8.5, patch: { eqHighlight: ["3"], countersIn: true }, caption: "= {b} means: all together, they hold {b} counters." }
+  - { t: 13, patch: { eqHighlight: [], partition: true }, caption: "Share the {b} counters into {a} equal groups — one per envelope." }
+  - { t: 17, patch: { reveal: true }, caption: "Every envelope holds {b/a}. So {variable} = {b/a}." }
+  - { t: 19.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

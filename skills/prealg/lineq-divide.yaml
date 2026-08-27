@@ -16,4 +16,3 @@ instruction:
   - prealg.lineq.divide.exp-numberline
   - prealg.lineq.divide.exp-tape
   - prealg.lineq.divide.exp-worked
-faded_examples: [prealg.lineq.divide.f01]

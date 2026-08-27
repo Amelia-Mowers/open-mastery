@@ -4,7 +4,7 @@ representation: opposite-flip
 widget: opposite-flip
 params_from: item
 timeline:
-  - { t: 0, patch: { value: "{b}" }, caption: "-{variable} = {b} says: the OPPOSITE of {variable} sits at {b}." }
+  - { t: 0, patch: { equation: ["-", "{variable}", " = ", "{b}"], value: "{b}" }, caption: "-{variable} = {b} says: the OPPOSITE of {variable} sits at {b}." }
   - { t: 4, patch: { flip: true }, caption: "Opposites are mirror twins — same distance from 0, other side." }
   - { t: 8, patch: { resolve: true }, caption: "So {variable} lands at {-b}. {variable} = {-b}." }
   - { t: 10.5, handoff: { prompt: "Now you try." } }

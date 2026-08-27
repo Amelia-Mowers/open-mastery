@@ -4,7 +4,7 @@ representation: balance-scale
 widget: balance-scale
 params_from: item
 timeline:
-  - { t: 0, patch: { left: "{a}{variable}", right: "{b}" }, caption: "The scale is balanced: {a}{variable} equals {b}." }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], left: "{a}{variable}", right: "{b}" }, caption: "The scale is balanced: {a}{variable} equals {b}." }
   - { t: 3, patch: { highlight: left.coef }, caption: "{variable} is multiplied by {a}. Undo multiplication by dividing." }
   - { t: 6, patch: { op: divide, by: "{a}" }, caption: "Divide both sides by {a} — the scale stays balanced." }
   - { t: 9, patch: { left: "{variable}", right: "{b/a}", op: null, highlight: null }, caption: "{variable} = {b/a}." }
