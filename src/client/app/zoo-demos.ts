@@ -32,7 +32,7 @@ export const ZOO_DEMOS: ZooDemo[] = [
     widget: 'balance-scale',
     params: { a: 4, b: 28, variable: 'x' },
     explanation: exp('balance', 'balance-scale', [
-      { t: 0, patch: { left: '{a}{variable}', right: '{b}' }, caption: 'The scale is balanced: {a}{variable} equals {b}.' },
+      { t: 0, patch: { equation: ['{a}', '{variable}', ' = ', '{b}'], left: '{a}{variable}', right: '{b}' }, caption: 'The scale is balanced: {a}{variable} equals {b}.' },
       { t: 3, patch: { highlight: 'left.coef' }, caption: '{variable} is multiplied by {a}.' },
       { t: 6, patch: { op: 'divide', by: '{a}' }, caption: 'Divide both sides by {a}.' },
       { t: 9, patch: { left: '{variable}', right: '{b/a}', op: null, highlight: null }, caption: '{variable} = {b/a}.' },
@@ -40,14 +40,16 @@ export const ZOO_DEMOS: ZooDemo[] = [
     ]),
   },
   {
-    title: 'envelope-model — share b counters into a envelopes',
+    title: 'envelope-model — symbols decompose into the diagram',
     widget: 'envelope-model',
     params: { a: 4, b: 28, variable: 'x' },
     explanation: exp('envelopes', 'envelope-model', [
-      { t: 0, patch: { envelopes: '{a}', counters: '{b}' }, caption: '{a} envelopes hold the same total as {b} counters.' },
-      { t: 4, patch: { partition: true }, caption: 'Share the {b} counters into {a} equal groups.' },
-      { t: 8, patch: { reveal: true }, caption: 'Each envelope holds {b/a}.' },
-      { t: 10, handoff: { prompt: 'Replay' } },
+      { t: 0, patch: { equation: ['{a}', '{variable}', ' = ', '{b}'], envelopes: '{a}', counters: '{b}', envelopesIn: false, countersIn: false }, caption: 'Here is the problem in symbols.' },
+      { t: 3.5, patch: { eqHighlight: ['0', '1'], envelopesIn: true }, caption: '{a}{variable} means {a} envelopes, each hiding {variable}.' },
+      { t: 7, patch: { eqHighlight: ['3'], countersIn: true }, caption: '= {b} means they hold {b} counters together.' },
+      { t: 10.5, patch: { eqHighlight: [], partition: true }, caption: 'Share into {a} equal groups.' },
+      { t: 14, patch: { reveal: true }, caption: 'Each envelope holds {b/a}.' },
+      { t: 16, handoff: { prompt: 'Replay' } },
     ]),
   },
   {
@@ -55,7 +57,7 @@ export const ZOO_DEMOS: ZooDemo[] = [
     widget: 'tape-diagram',
     params: { a: 7, b: 6, variable: 'n' },
     explanation: exp('tape', 'tape-diagram', [
-      { t: 0, patch: { parts: '{a}', partLabel: '?', total: '{variable}' }, caption: '{variable} as {a} equal parts.' },
+      { t: 0, patch: { equation: ['{variable}', '/{a}', ' = ', '{b}'], parts: '{a}', partLabel: '?', total: '{variable}' }, caption: '{variable} as {a} equal parts.' },
       { t: 4, patch: { partLabel: '{b}', highlight: ['1'] }, caption: 'One part is {b}.' },
       { t: 8, patch: { total: '{variable} = {a*b}', highlight: [] }, caption: '{a} parts of {b}: {variable} = {a*b}.' },
       { t: 10, handoff: { prompt: 'Replay' } },
@@ -88,7 +90,7 @@ export const ZOO_DEMOS: ZooDemo[] = [
     widget: 'opposite-flip',
     params: { b: 2, variable: 'r' },
     explanation: exp('flip', 'opposite-flip', [
-      { t: 0, patch: { value: '{b}' }, caption: 'The OPPOSITE of {variable} sits at {b}.' },
+      { t: 0, patch: { equation: ['-', '{variable}', ' = ', '{b}'], value: '{b}' }, caption: 'The OPPOSITE of {variable} sits at {b}.' },
       { t: 4, patch: { flip: true }, caption: 'Opposites are mirror twins across 0.' },
       { t: 8, patch: { resolve: true }, caption: '{variable} = {-b}.' },
       { t: 10, handoff: { prompt: 'Replay' } },
