@@ -111,6 +111,27 @@ describe('blocked acquisition, interleaved consolidation', () => {
   })
 })
 
+describe('the faded phase poses a DIFFERENT problem than the lesson', () => {
+  it('the first faded serve never uses the authored (lesson-example) params', () => {
+    const { ctx } = miniCtx(1)
+    const student = initialStudentState()
+    const session = freshSession()
+    // lesson → faded
+    const lesson = nextAction(student, session, ctx)
+    if (lesson.kind !== 'lesson') throw new Error('expected lesson')
+    recordExplanationViewed(student, session, ctx, {
+      skillId: lesson.skillId,
+      explanationId: lesson.explanationId,
+      completed: true,
+    })
+    const faded = nextAction(student, session, ctx)
+    if (faded.kind !== 'serve_item') throw new Error('expected faded serve')
+    expect(faded.itemKind).toBe('faded')
+    const authored = ctx.cur.items.get(faded.instance.itemId)!.params
+    expect(faded.instance.params).not.toEqual(authored)
+  })
+})
+
 describe('choice answers carry a guessing floor', () => {
   it('a correct choice attempt updates p at the hint-level-1 discount', () => {
     const { ctx } = miniCtx(1)

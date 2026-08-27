@@ -107,6 +107,7 @@ export function Zoo({ api }: { api: CairnApi }) {
     }
   })()
   const [demos, setDemos] = useState<ZooDemo[] | null>(null)
+  const [index, setIndex] = useState<Record<string, Array<{ id: string; skillName: string }>>>({})
   useEffect(() => {
     if (only) {
       void api.demoFor(only).then((d) =>
@@ -121,7 +122,8 @@ export function Zoo({ api }: { api: CairnApi }) {
       )
       return
     }
-    void api.demos().then(({ demos: fromCurriculum }) => {
+    void api.demos().then(({ demos: fromCurriculum, index: byWidget }) => {
+      setIndex(byWidget ?? {})
       const covered = new Set(fromCurriculum.map((d) => d.widget))
       setDemos([
         ...fromCurriculum.map((d) => ({
@@ -148,7 +150,21 @@ export function Zoo({ api }: { api: CairnApi }) {
       {demos === null ? (
         <p className="muted loading">Loading…</p>
       ) : (
-        demos.map((d) => <DemoCard key={d.explanation.id} demo={d} />)
+        demos.map((d) => (
+          <div key={d.explanation.id}>
+            <DemoCard demo={d} />
+            {(index[d.widget] ?? []).length > 1 && (
+              <p className="muted zoo-index">
+                every {d.widget} timeline:{' '}
+                {(index[d.widget] ?? []).map((e) => (
+                  <a key={e.id} href={`?view=zoo&exp=${encodeURIComponent(e.id)}`} title={e.skillName}>
+                    {e.id.replace(/^.*\.(exp-)/, '$1')}·{e.skillName.slice(0, 22)}
+                  </a>
+                ))}
+              </p>
+            )}
+          </div>
+        ))
       )}
       {!only && INPUT_SAMPLES.map((c) => (
         <InputCard key={c.title} title={c.title} type={c.type} config={c.config} />

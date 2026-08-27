@@ -219,6 +219,7 @@ export class SiteCore {
         name: s.name,
         prereqs: s.prereqs,
         standards: s.standards,
+        preamble: s.preamble,
       })),
       items: this.bundle.items.length,
       explanations: this.bundle.explanations.length,
@@ -252,7 +253,16 @@ export class SiteCore {
         demos.push({ widget: e.widget, skillName: skill.name, params, explanation: e })
       }
     }
-    return ok({ demos })
+    // full index: every timeline, grouped by widget — the zoo links each
+    // one to its single-card view (?view=zoo&exp=<id>)
+    const index: Record<string, Array<{ id: string; skillName: string }>> = {}
+    for (const skillId of this.cur.skillOrder) {
+      const skill = this.cur.skills.get(skillId)!
+      for (const e of this.cur.explanationsBySkill.get(skillId) ?? []) {
+        ;(index[e.widget] ??= []).push({ id: e.id, skillName: skill.name })
+      }
+    }
+    return ok({ demos, index })
   }
 
   /** one explanation as a playable demo (family params) — review tooling */

@@ -4,7 +4,7 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{c}²" }, caption: "The small 2 counts FACTORS, not an addition." }
+  - { t: 0, patch: { start: "{c}²" }, caption: "The small 2 counts FACTORS: {c} multiplied by itself." }
   - { t: 4, patch: { line: "{c}² = {c} × {c}", note: "two factors of {c}" }, caption: "{c} used as a factor twice." }
   - { t: 8, patch: { line: "= {c*c}", note: "multiply" }, caption: "{c}² = {c*c}." }
   - { t: 10.5, handoff: { prompt: "Now you try." } }

@@ -344,3 +344,11 @@ body {
 
 .join-guide-link { margin-top: 18px; }
 .join-guide-link .btn { padding: 4px 8px; }
+
+.zoo-index { margin: -8px 4px 18px; font-size: 12px; }
+.zoo-index a { color: #8a5320; margin-right: 10px; text-decoration: none; border-bottom: 1px dotted #c4a37f; }
+
+.skill-peek { animation: cairn-pop 0.25s ease; }
+.peek-plain { font: 600 15.5px 'Nunito Sans', sans-serif; color: #5c5245; }
+.peek-vocab { font-size: 13.5px; color: #7a6f61; margin: 6px 0; }
+.peek-term { display: inline-block; padding: 2px 9px; margin-right: 8px; font-size: 12.5px; }

@@ -107,7 +107,10 @@ export function Dashboard({
     return { blocks, pos, height: Math.max(0, yOffset - gapBetween) + 12, skillById }
   }, [bundle])
 
+  const [picked, setPicked] = useState<string | null>(null)
+
   if (!bundle || !state || !layout) return <p className="muted loading">Loading…</p>
+  const pickedSkill = picked !== null ? bundle.skills.find((s) => s.id === picked) : undefined
 
   const masteredIds = bundle.skills.filter((s) => state.skills[s.id]?.phase === 'mastered')
   const flaggedIds = new Set(state.openFlags.map((f) => f.skillId).filter(Boolean))
@@ -150,6 +153,28 @@ export function Dashboard({
         </div>
       </section>
 
+      {pickedSkill && (
+        <section className="card skill-peek" aria-label={`About ${pickedSkill.name}`}>
+          <h2 className="dash-h">{pickedSkill.name}</h2>
+          {pickedSkill.preamble && <p className="peek-plain">{pickedSkill.preamble.plain}</p>}
+          {pickedSkill.preamble?.vocab.map((v) => (
+            <p key={v.term} className="peek-vocab">
+              <span className="hint peek-term">{v.term}</span> {v.meaning}
+            </p>
+          ))}
+          <div className="answer-row">
+            <button className="btn btn-primary" onClick={() => onPick?.(pickedSkill.id)}>
+              {state.skills[pickedSkill.id]?.phase === undefined ||
+              state.skills[pickedSkill.id]?.phase === 'unseen'
+                ? 'Start this skill'
+                : 'Keep working on this'}
+            </button>
+            <button className="btn btn-quiet" onClick={() => setPicked(null)}>
+              Back to the map
+            </button>
+          </div>
+        </section>
+      )}
       <section className="card">
         <h2 className="dash-h">Your path</h2>
         <div className="skill-map-scroll">
@@ -208,7 +233,7 @@ export function Dashboard({
                     : PHASE_STYLE['unseen']!
                   : (PHASE_STYLE[phase] ?? PHASE_STYLE['unseen']!)
               const p = layout.pos.get(s.id)!
-              const pickable = onPick !== undefined && unlocked && phase !== 'mastered'
+              const pickable = unlocked && phase !== 'mastered'
               return (
                 <div
                   key={s.id}
@@ -216,13 +241,13 @@ export function Dashboard({
                   data-phase={phase}
                   role={pickable ? 'button' : undefined}
                   tabIndex={pickable ? 0 : undefined}
-                  onClick={pickable ? () => onPick(s.id) : undefined}
+                  onClick={pickable ? () => setPicked(s.id) : undefined}
                   onKeyDown={
                     pickable
                       ? (e) => {
                           if (e.key === 'Enter' || e.key === ' ') {
                             e.preventDefault()
-                            onPick(s.id)
+                            setPicked(s.id)
                           }
                         }
                       : undefined

@@ -4,7 +4,7 @@ representation: area-model
 widget: area-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{c}", "²"], height: "{c}", parts: ["{c}"] }, caption: "{c}² is NOT {c} × 2. Watch the square build itself." }
+  - { t: 0, patch: { equation: ["{c}", "²"], height: "{c}", parts: ["{c}"] }, caption: "{c}² means a SQUARE: {c} rows of {c}. Watch it build itself." }
   - { t: 4, patch: { eqHighlight: ["0"], fillRows: "1" }, caption: "One row: {c} little squares." }
   - { t: 8, patch: { fillRows: "2" }, caption: "Two rows: {c} + {c} = {2*c}." }
   - { t: 12, patch: { eqHighlight: ["1"], fillRows: "{c}" }, caption: "All {c} rows fill in — {c} of them, {c} squares each." }

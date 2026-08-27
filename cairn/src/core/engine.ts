@@ -7,7 +7,7 @@
  * events applied by the SAME reducer the server replays with — the engine
  * never mutates mastery state directly.
  */
-import type { Env, Item } from '@openmastery/schema'
+import { paramHash, type Env, type Item } from '@openmastery/schema'
 import { applyEvent, type StudentState } from './fold.ts'
 import type { BktParams } from './bkt.ts'
 import { instanceKey, type CairnEvent, type EventBody } from './events.ts'
@@ -225,7 +225,10 @@ export function nextAction(
   }
 
   const pool = practiceItems(skillId, ctx.cur)
-  const inst = instantiateFor(pool, student, session, pol, skillId)
+  const wantFresh = phase === 'faded'
+  const inst =
+    (wantFresh ? instantiateFor(pool, student, session, pol, skillId, true) : null) ??
+    instantiateFor(pool, student, session, pol, skillId)
   if (!inst) return { kind: 'session_done' } // out of items (bundle bug)
   // the faded phase is a normal instance served as 'faded': the client plays
   // the skill's explanation up to just before the resolution with THIS
@@ -294,8 +297,13 @@ function instantiateFor(
   pol: PolicyV1,
   /** when set, ramp difficulty toward this skill's current p */
   rampSkillId?: string,
+  /** block each item's AUTHORED params — the faded phase must pose a
+   * DIFFERENT problem than the lesson's example (which used the family's
+   * authored numbers) */
+  avoidAuthored = false,
 ): ItemInstance | null {
-  const blocked = blockedSet(student, session)
+  const blocked = new Set(blockedSet(student, session))
+  if (avoidAuthored) for (const item of pool) blocked.add(instanceKey(item.id, paramHash(item.params)))
   // difficulty ramps with the mastery estimate; within a difficulty, rotate
   // item families least-served-first (variety — e.g. alternating sign
   // families)

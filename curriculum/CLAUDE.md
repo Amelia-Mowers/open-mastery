@@ -104,6 +104,13 @@ finishes it in the ordinary answer input. Authoring rule this relies on:
 **an explanation's final content step must BE the resolution** (the reveal
 / "x = …" step), so truncating one step leaves a complete setup.
 
+## Lead with what it IS
+
+Opening captions teach the concept AFFIRMATIVELY ("6² means a square:
+6 rows of 6"), never by negation ("6² is NOT 6 × 2"). These timelines
+are the primary learning path, not reminder notes — a misconception
+contrast may FOLLOW the positive statement, but never lead it.
+
 ## Difficulty ceilings are RAW (capstone rule)
 
 Widget answer spaces (tape, number lines, tables, flip, choice) scaffold

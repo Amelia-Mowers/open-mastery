@@ -64,7 +64,13 @@ export interface GuideView {
 }
 
 export interface BundleView {
-  skills: Array<{ id: string; name: string; prereqs: string[]; standards: string[] }>
+  skills: Array<{
+    id: string
+    name: string
+    prereqs: string[]
+    standards: string[]
+    preamble?: { plain: string; vocab: Array<{ term: string; meaning: string }> }
+  }>
 }
 
 export interface StateView {
@@ -87,7 +93,7 @@ export interface CairnApi {
     sameAsLesson?: boolean,
   ): Promise<ExplainResult>
   explained(explanationId: string, skillId: string): Promise<void>
-  demos(): Promise<{ demos: ZooDemoView[] }>
+  demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string }>> }>
   demoFor(explanationId: string): Promise<ZooDemoView>
   bundle(): Promise<BundleView>
   guide(): Promise<GuideView>
@@ -162,9 +168,9 @@ export class SiteApi implements CairnApi {
     await this.post('/api/explained', { explanationId, skillId })
   }
 
-  async demos(): Promise<{ demos: ZooDemoView[] }> {
+  async demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string }>> }> {
     const r = await fetch(`${this.base}/api/demos`)
-    return (await r.json()) as { demos: ZooDemoView[] }
+    return (await r.json()) as { demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string }>> }
   }
 
   async demoFor(explanationId: string): Promise<ZooDemoView> {
