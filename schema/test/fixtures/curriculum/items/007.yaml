@@ -1,0 +1,15 @@
+id: alg1.linear.solve-one-step.007
+skills: [alg1.linear.solve-one-step]
+difficulty: 2
+params: { a: 7, b: 21, variable: x }
+generator: { a: {int: [2,12]}, b: {mult_of: a, range: [10,60]} }
+widget: { type: equation-input, config: { allow_fraction: true } }
+answer: { type: expr, value: "{variable} = {b/a}", equivalence: symbolic }
+rubric: null
+viz: { template: balance-scale, bind: { left: "{a}{variable}", right: "{b}" } }
+hints:
+  - "What operation undoes multiplying by {a}?"
+  - "Divide both sides by {a}."
+faded: null
+source: { book: openstax-prealgebra, section: "3.3", exercise: 41 }
+review: { status: vetted, by: "@handle", date: 2026-08-24 }

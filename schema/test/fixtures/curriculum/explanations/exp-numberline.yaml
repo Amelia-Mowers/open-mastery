@@ -1,0 +1,10 @@
+id: alg1.linear.solve-one-step.exp-numberline
+skill: alg1.linear.solve-one-step
+representation: number-line
+widget: number-line
+params_from: item
+timeline:
+  - { t: 0, caption: "Here is {b} on a number line." }
+  - { t: 3, caption: "{a} equal jumps land exactly on {b}." }
+  - { t: 6, handoff: { prompt: "Now you try." } }
+review: { status: vetted }
