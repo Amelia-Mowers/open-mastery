@@ -5,8 +5,8 @@ widget: area-model
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}", "({variable} + {b})"], height: "{a}", parts: ["{variable}", "{b}"] }, caption: "{a}({variable} + {b}): a rectangle, {a} tall and {variable} + {b} wide." }
-  - { t: 4, patch: { eqHighlight: ["0"] }, caption: "The height is {a}." }
-  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1", "2"] }, caption: "The width splits into {variable} and {b}." }
+  - { t: 4, patch: { eqHighlight: ["0"] }, caption: "The height is {a}.", expect: { type: pick, value: ["0"] } }
+  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1", "2"] }, caption: "The width splits into {variable} and {b}.", expect: { type: pick, value: ["1"] } }
   - { t: 12, patch: { eqHighlight: [], products: ["{a}{variable}", "{a*b}"], highlight: [] }, caption: "Two pieces of area: {a}({variable} + {b}) = {a}{variable} + {a*b}." }
   - { t: 15, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

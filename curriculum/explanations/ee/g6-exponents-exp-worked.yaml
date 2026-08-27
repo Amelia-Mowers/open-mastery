@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{c}²" }, caption: "The small 2 counts FACTORS: {c} multiplied by itself." }
   - { t: 4, patch: { line: "{c}² = {c} × {c}", note: "two factors of {c}" }, caption: "{c} used as a factor twice." }
-  - { t: 8, patch: { line: "= {c*c}", note: "multiply" }, caption: "{c}² = {c*c}." }
+  - { t: 8, patch: { line: "= {c*c}", note: "multiply" }, caption: "{c}² = {c*c}.", expect: { type: numeric, value: "{c*c}", prompt: "What number finishes this line?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -5,7 +5,7 @@ widget: number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{n}", "³"], min: 0, max: "{n*n*n}", step: "{n*n}" }, caption: "{n}³ is a SQUARE taken {n} times: {n} jumps, each of size {n}²." }
-  - { t: 4, patch: { eqHighlight: ["0"], marker: "{n*n}", highlight: ["{n*n}"] }, caption: "One jump is a whole square: {n}² = {n*n}." }
-  - { t: 8, patch: { eqHighlight: ["1"], marker: "{n*n*n}", highlight: [] }, caption: "The small 3 says {n} of them: they land on {n*n*n}. {n}³ = {n*n*n}." }
+  - { t: 4, patch: { eqHighlight: ["0"], marker: "{n*n}", highlight: ["{n*n}"] }, caption: "One jump is a whole square: {n}² = {n*n}.", expect: { type: numeric, value: "{n*n}", prompt: "Where on the line? Type the number." } }
+  - { t: 8, patch: { eqHighlight: ["1"], marker: "{n*n*n}", highlight: [] }, caption: "The small 3 says {n} of them: they land on {n*n*n}. {n}³ = {n*n*n}.", expect: { type: numeric, value: "{n*n*n}", prompt: "Where on the line? Type the number." } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

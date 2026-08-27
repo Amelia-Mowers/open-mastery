@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{a} pounds cost ${b}" }, caption: "On the board: the whole cost, all {a} pounds at once." }
   - { t: 4, patch: { line: "1 pound costs ${b} ÷ {a}", note: "share equally" }, caption: "One pound is an equal share — divide by {a}." }
-  - { t: 8, patch: { line: "unit rate = ${b/a} per pound", note: "{b} ÷ {a} = {b/a}" }, caption: "${b/a} for one pound — the unit rate." }
+  - { t: 8, patch: { line: "unit rate = ${b/a} per pound", note: "{b} ÷ {a} = {b/a}" }, caption: "${b/a} for one pound — the unit rate.", expect: { type: numeric, value: "{b/a}", prompt: "What number finishes this line?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

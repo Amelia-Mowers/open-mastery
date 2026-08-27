@@ -68,20 +68,24 @@ non-readers) — scope it separately when its turn comes.
       every gate has "Show me" (the widget solves the step); `pick`
       expects make decomposition steps interactive (click the equation
       piece); completed steps scrub via dots.
-      CATALOG MIGRATION 2026-08-27 round 3: 39/80 timelines gated (77
-      gates — mechanical passes: op patches → op gates, decomposition
-      entrances → pick gates, worked lines → expr gates [first=last
-      segment, ascii-normalized], hanger share + tape partLabel →
-      numeric gates); passive timelines are DEPRECATED — validator
-      warns [no_expects] (41 remaining = the backlog: ratio-table
-      reveals, number-line landings, area fills, cube counts,
-      opposite-flip, envelope shares — each needs a hand-designed gate
-      semantic, likely new expect types like click-the-tick or
-      click-the-row); stepwise-coverage test drives EVERY gate with its
-      own key (unpassable gate = red build).
-      REMAINING for the full ladder: gate the 41 passive timelines,
-      per-step BKT evidence events (tallies currently collapse into
-      hintLevel), prompted rung (proactive hints at gates for lowest p),
+      CATALOG MIGRATION COMPLETE 2026-08-27: 80/80 timelines gated
+      (~180 gates; 76 play after faded truncation, all self-passable
+      per stepwise-coverage). Mechanical passes: op patches → op gates;
+      eqHighlight steps → pick gates; worked lines → expr gates
+      (first=last segment, ascii-normalized); value-label lines,
+      table-row reveals (rows[k-1] last cell, k≥2), number-line
+      markers, cube counts, area fills/products, flip resolve, hanger
+      share, tape partLabel → numeric gates; 4 wordy worked timelines
+      hand-gated. [no_expects] validator warning = the standing
+      invariant against regressing to passive timelines.
+      REMAINING for the full ladder: HUMAN VETTING PASS over the ~180
+      mechanically-derived gate prompts/values (zoo per-timeline view is
+      the tracker; machine checks prove self-passability, not
+      pedagogy), gate-fatigue tuning (some timelines now carry 4-6
+      gates — consider max-gates-per-serve or rung-based gate
+      sampling), per-step BKT evidence events (tallies currently
+      collapse into hintLevel), prompted rung (proactive hints at gates
+      for lowest p),
       wrong-step → misconception diagnosis surfacing, stepwise in the
       corrective ladder (missed practice → stepwise retry of the SAME
       instance), scrub for LessonPlayer parity.

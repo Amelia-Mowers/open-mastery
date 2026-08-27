@@ -5,7 +5,7 @@ widget: tape-diagram
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{n}", "³"], parts: "{n}", partLabel: "{n}²", total: "{n*n*n}", totalIn: false }, caption: "{n}³: a bar of {n} equal pieces — each piece a whole square." }
-  - { t: 4, patch: { eqHighlight: ["0"], highlight: ["1"] }, caption: "Each piece is {n}² = {n*n}." }
+  - { t: 4, patch: { eqHighlight: ["0"], highlight: ["1"] }, caption: "Each piece is {n}² = {n*n}.", expect: { type: pick, value: ["0"] } }
   - { t: 8, patch: { eqHighlight: ["1"], partLabel: "{n*n}", highlight: [] }, caption: "{n} pieces of {n*n}.", expect: { type: numeric, value: "{n*n}", prompt: "How big is each part?" } }
   - { t: 12, patch: { eqHighlight: [], totalIn: true }, caption: "All together: {n} × {n*n} = {n*n*n}. {n}³ = {n*n*n}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }

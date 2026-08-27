@@ -7,6 +7,6 @@ timeline:
   - { t: 0, patch: { equation: ["{a} lb", " → ", "${b}", ", so {c} lb", " → ?" ], topLabel: "pounds", bottomLabel: "dollars", top: ["0", "1", "{a}", "{c}"], bottom: ["0", "{b/a}", "{b}", "{c*b/a}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "We know {a} pounds costs ${b}. We want {c} pounds. Watch." }
   - { t: 4, patch: { eqHighlight: ["0", "2"], topIn: true, bottomIn: true, reveal: ["0", "2"] }, caption: "The pair we know: {a} pounds above ${b}.", expect: { type: pick, value: ["0", "2"] } }
   - { t: 8.5, patch: { eqHighlight: [], highlight: "1", reveal: ["0", "1", "2"] }, caption: "First find ONE pound: {b} ÷ {a} = ${b/a}." }
-  - { t: 13, patch: { eqHighlight: ["3", "4"], highlight: "3", reveal: ["0", "1", "2", "3"] }, caption: "Now × {c}: {c} pounds lines up with ${c*b/a}." }
+  - { t: 13, patch: { eqHighlight: ["3", "4"], highlight: "3", reveal: ["0", "1", "2", "3"] }, caption: "Now × {c}: {c} pounds lines up with ${c*b/a}.", expect: { type: pick, value: ["3", "4"] } }
   - { t: 16.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

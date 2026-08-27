@@ -5,7 +5,7 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{p}/{q} mi", " in ", "1/{r} hr"], cols: ["miles", "hours"], rows: [["{p}/{q}", "1/{r}"], ["{p*r/q}", "1"]], reveal: "0" }, caption: "Fraction rows scale exactly like whole-number rows." }
-  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "The pair we know: {p}/{q} mile in 1/{r} hour." }
+  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "The pair we know: {p}/{q} mile in 1/{r} hour.", expect: { type: pick, value: ["0", "2"] } }
   - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "×{r}" } }, caption: "× {r} stretches to a WHOLE hour: {p*r/q} miles per hour." }
   - { t: 12, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

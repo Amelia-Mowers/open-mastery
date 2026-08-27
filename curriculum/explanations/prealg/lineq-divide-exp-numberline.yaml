@@ -5,8 +5,8 @@ widget: number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], min: 0, max: "{b}", step: "{b/a}" }, caption: "Here is the problem in symbols. Watch it become jumps on a line." }
-  - { t: 3.5, patch: { eqHighlight: ["0", "1"] }, caption: "{a}{variable} means {a} equal jumps." }
-  - { t: 7, patch: { eqHighlight: ["3"], marker: "{b}" }, caption: "= {b}: the jumps must land exactly on {b}." }
-  - { t: 10.5, patch: { eqHighlight: [], highlight: ["{b/a}"], marker: "{b/a}" }, caption: "The first jump lands on {b/a} — that is the size of every jump. {variable} = {b/a}." }
+  - { t: 3.5, patch: { eqHighlight: ["0", "1"] }, caption: "{a}{variable} means {a} equal jumps.", expect: { type: pick, value: ["0", "1"] } }
+  - { t: 7, patch: { eqHighlight: ["3"], marker: "{b}" }, caption: "= {b}: the jumps must land exactly on {b}.", expect: { type: numeric, value: "{b}", prompt: "Where on the line? Type the number." } }
+  - { t: 10.5, patch: { eqHighlight: [], highlight: ["{b/a}"], marker: "{b/a}" }, caption: "The first jump lands on {b/a} — that is the size of every jump. {variable} = {b/a}.", expect: { type: numeric, value: "{b/a}", prompt: "Where on the line? Type the number." } }
   - { t: 13, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

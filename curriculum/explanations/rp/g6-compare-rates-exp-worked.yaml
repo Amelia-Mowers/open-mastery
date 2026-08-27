@@ -5,8 +5,8 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "A: {a1} for ${u*a1}    B: {a2} for ${(u+d)*a2}" }, caption: "Different pack sizes — you can't compare them directly." }
-  - { t: 4, patch: { line: "A: ${u*a1} ÷ {a1} = ${u} each", note: "unit price" }, caption: "Pack A: one pencil costs ${u}." }
-  - { t: 8.5, patch: { line: "B: ${(u+d)*a2} ÷ {a2} = ${u+d} each", note: "unit price" }, caption: "Pack B: one pencil costs ${u+d}." }
+  - { t: 4, patch: { line: "A: ${u*a1} ÷ {a1} = ${u} each", note: "unit price" }, caption: "Pack A: one pencil costs ${u}.", expect: { type: numeric, value: "{u}", prompt: "What number finishes this line?" } }
+  - { t: 8.5, patch: { line: "B: ${(u+d)*a2} ÷ {a2} = ${u+d} each", note: "unit price" }, caption: "Pack B: one pencil costs ${u+d}.", expect: { type: numeric, value: "{u+d}", prompt: "What number finishes this line?" } }
   - { t: 13, patch: { line: "${u} < ${u+d} — A is the better buy", note: "compare ONE to ONE" }, caption: "Now they're the same one thing: ${u} beats ${u+d}. Pack A wins." }
   - { t: 16, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

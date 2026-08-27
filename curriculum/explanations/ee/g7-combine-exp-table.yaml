@@ -5,8 +5,8 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}{variable} + {b} − {c}{variable} + {d}", " = ", "{a-c}{variable} + {b+d}"], cols: ["{variable}", "value"], rows: [["1", "{a-c+b+d}"], ["2", "{2*a-2*c+b+d}"], ["3", "{3*a-3*c+b+d}"]], reveal: "0" }, caption: "Two forms, one machine. Watch them agree." }
-  - { t: 4.5, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "Feed {variable} = 1 to the LONG form: {a-c+b+d}." }
-  - { t: 9, patch: { reveal: "2", highlight: "2" }, caption: "{variable} = 2: {2*a-2*c+b+d}. The short form {a-c}{variable} + {b+d} gives the same." }
-  - { t: 13.5, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Same output for EVERY {variable} — that is what equivalent means: {a-c}{variable} + {b+d}." }
+  - { t: 4.5, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "Feed {variable} = 1 to the LONG form: {a-c+b+d}.", expect: { type: pick, value: ["0"] } }
+  - { t: 9, patch: { reveal: "2", highlight: "2" }, caption: "{variable} = 2: {2*a-2*c+b+d}. The short form {a-c}{variable} + {b+d} gives the same.", expect: { type: numeric, value: "{2*a-2*c+b+d}", prompt: "What goes in the next row?" } }
+  - { t: 13.5, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Same output for EVERY {variable} — that is what equivalent means: {a-c}{variable} + {b+d}.", expect: { type: numeric, value: "{3*a-3*c+b+d}", prompt: "What goes in the next row?" } }
   - { t: 16.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
