@@ -73,3 +73,26 @@ CCSS covers most states; Texas (TEKS), Virginia (SOL), Florida (BEST)
 and a few others diverged. Build the graph on CCSS node IDs and keep a
 mapping layer to state codes — several divergent states publish their own
 crosswalks to CCSS to start from. Never fork the graph per state.
+
+## Audit: what is standards-derived vs grandfathered
+
+- **rp/ (11 skills)** — derived FROM the standards layer: nodes decompose
+  6.RP.A/7.RP.A per the Progression, edges follow the Coherence Map
+  (`rp-slab.md`). Nothing textbook-shaped.
+- **prealg/lineq (5 skills)** — the SHAPE is grandfathered from OpenStax
+  §8.2 (pre-dates this policy). Its standards TAGS are audited and
+  correct (including the 6.EE.B.7 nonnegative-only fixes), and the
+  decomposition itself holds up — but reading 6.EE.B.7 through the
+  standards lens exposes coverage gaps the textbook slicing hid:
+  1. **`x + p = q` (the addition form) has no skill.** 6.EE.B.7 names
+     two forms; we implement only `px = q` variants. The old plan filed
+     this as "convert OpenStax §8.1" — reframe it as closing 6.EE.B.7,
+     whatever source supplies the representations.
+  2. 6.EE.B.7 asks students to solve problems **by writing** equations
+     from context; every lineq item hands the equation over. A
+     write-the-equation node (shared concern with g7.rp.equation's
+     deferred expr-answer work) is uncovered.
+  New content must never inherit a textbook's slicing; existing
+  grandfathered clusters keep their ids (ids are immutable; the graph
+  cares about tags + edges, both audited) and their gaps get closed as
+  standards-framed work, tracked here.
