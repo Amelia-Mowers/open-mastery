@@ -26,7 +26,7 @@ standard sub-clauses → 15 mastery nodes → 13 implemented + widgets).
 |---|------|-----------|--------|
 | 10 | 6–7 ratios & proportions | 6–7.RP | **DONE (pilot)** — 13 skills live |
 | 11 | 6–8 the number system | 6–8.NS | fraction division, signed arithmetic, irrationals |
-| 12 | 6–7 expressions & equations | 6–7.EE | lineq's 5 skills live here (grandfathered shape, audited tags); the x + p = q and write-the-equation gaps close in this slab |
+| 12 | 6–7 expressions & equations | 6–7.EE | **DONE** (ee-slab.md): 8 new skills join lineq's 5; x + p = q closed; ZERO new widgets (saturation confirmed) |
 | 13 | 8th linear algebra & functions | 8.EE, 8.F | slope, systems, function concept |
 | 14 | 6–8 statistics & probability | 6–8.SP | distributions, sampling, probability |
 | 15 | 7–8 geometry | 7–8.G | scale drawings, angles, Pythagorean theorem |

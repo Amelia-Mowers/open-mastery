@@ -1,0 +1,14 @@
+id: g7.ee.distribute-solve
+name: Solve equations like p(x + q) = r
+preamble:
+  plain: "p(x + q) = r wraps x in parentheses. Two good openings: divide both sides by p first, or expand with the distributive property — you'll see both."
+  vocab:
+    - { term: expand, meaning: "rewrite p(x + q) as px + pq using the distributive property" }
+standards: [CCSS.MATH.CONTENT.7.EE.B.4.A]
+source: { book: ccss-ee-progression, section: "7.EE.B.4a" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.ee.equivalent, g7.ee.two-step]
+instruction:
+  - g7.ee.distribute-solve.exp-area
+  - g7.ee.distribute-solve.exp-worked

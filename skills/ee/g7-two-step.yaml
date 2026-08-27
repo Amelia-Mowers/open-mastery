@@ -1,0 +1,14 @@
+id: g7.ee.two-step
+name: Solve two-step equations px + q = r
+preamble:
+  plain: "Two operations hide x: a multiply AND an add. Peel them off in reverse — undo the add first, then the multiply — and the scale stays balanced the whole way."
+  vocab:
+    - { term: two-step equation, meaning: "an equation needing two undo moves, like 3x + 5 = 20" }
+standards: [CCSS.MATH.CONTENT.7.EE.B.4.A]
+source: { book: ccss-ee-progression, section: "7.EE.B.4a" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.ee.add-solve, prealg.lineq.divide]
+instruction:
+  - g7.ee.two-step.exp-balance
+  - g7.ee.two-step.exp-worked

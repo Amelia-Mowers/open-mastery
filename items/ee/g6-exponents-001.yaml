@@ -1,0 +1,14 @@
+id: g6.ee.exponents.001
+skills: [g6.ee.exponents]
+difficulty: 1
+representation: area-model
+params: { c: 6 }
+generator: { c: { int: [2, 12] } }
+widget: { type: numeric-input, config: { stem: "Evaluate: {c}²." } }
+answer: { type: expr, value: "{c*c}", integer: true }
+hints:
+  - "{c}² means {c} used as a factor twice."
+  - "{c} × {c} = {c*c}."
+source: { book: ccss-ee-progression, section: "6.EE.A.1" }
+verify: "{answer / c == c}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

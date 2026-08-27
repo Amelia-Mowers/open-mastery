@@ -1,0 +1,14 @@
+id: g7.ee.combine.002
+skills: [g7.ee.combine]
+difficulty: 2
+representation: worked-equation
+params: { a: 9, b: 8, c: 3, d: 2, variable: y }
+generator: { a: { int: [6, 12] }, b: { int: [6, 12] }, c: { int: [2, 5] }, d: { int: [1, 5] } }
+widget: { type: expression-input, config: { stem: "Simplify: {a}{variable} − {b} − {c}{variable} − {d}." } }
+answer: { type: expr, value: "{a-c}{variable} - {b+d}", equivalence: symbolic, form: combined }
+hints:
+  - "Gather the {variable}-terms; the numbers are BOTH subtracted."
+  - "{a}{variable} − {c}{variable} = {a-c}{variable}, and −{b} − {d} = −{b+d}."
+source: { book: ccss-ee-progression, section: "7.EE.A.1" }
+verify: "({a} - {c})*{variable} - {b} - {d}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

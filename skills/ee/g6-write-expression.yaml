@@ -1,0 +1,14 @@
+id: g6.ee.write-expression
+name: Write an expression from words
+preamble:
+  plain: "\"5 more than 3 times a number\" becomes 3n + 5. You'll learn to turn word phrases into expressions — the same phrase works for EVERY number at once."
+  vocab:
+    - { term: expression, meaning: "numbers, letters, and operations — a phrase in math symbols (no equals sign)" }
+standards: [CCSS.MATH.CONTENT.6.EE.A.2.A]
+source: { book: ccss-ee-progression, section: "6.EE.A.2a" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.ee.evaluate]
+instruction:
+  - g6.ee.write-expression.exp-worked
+  - g6.ee.write-expression.exp-table

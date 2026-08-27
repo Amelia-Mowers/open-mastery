@@ -1,0 +1,15 @@
+id: g6.ee.equivalent
+name: Make equivalent expressions with the distributive property
+preamble:
+  plain: "3(x + 2) and 3x + 6 look different but are the SAME for every x. You'll learn to expand with the distributive property — area pictures make it visible."
+  vocab:
+    - { term: distributive property, meaning: "a(b + c) = ab + ac — multiply each part inside" }
+    - { term: equivalent expressions, meaning: "expressions that give the same value for every number you plug in" }
+standards: [CCSS.MATH.CONTENT.6.EE.A.3, CCSS.MATH.CONTENT.6.EE.A.4]
+source: { book: ccss-ee-progression, section: "6.EE.A.3" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.ee.evaluate]
+instruction:
+  - g6.ee.equivalent.exp-area
+  - g6.ee.equivalent.exp-worked

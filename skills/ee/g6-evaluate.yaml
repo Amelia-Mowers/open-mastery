@@ -1,0 +1,15 @@
+id: g6.ee.evaluate
+name: Evaluate an expression at a value
+preamble:
+  plain: "An expression like 3x + 5 is a machine: feed it a number for x and it gives a number back. You'll learn to substitute and compute."
+  vocab:
+    - { term: substitute, meaning: "replace the variable with a number" }
+    - { term: variable, meaning: "a letter standing in for a number" }
+standards: [CCSS.MATH.CONTENT.6.EE.A.2.C]
+source: { book: ccss-ee-progression, section: "6.EE.A.2c" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: []
+instruction:
+  - g6.ee.evaluate.exp-worked
+  - g6.ee.evaluate.exp-table

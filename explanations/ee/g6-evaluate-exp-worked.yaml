@@ -1,0 +1,11 @@
+id: g6.ee.evaluate.exp-worked
+skill: g6.ee.evaluate
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "{a}{variable} + {b},   {variable} = {c}" }, caption: "An expression plus a value for its letter." }
+  - { t: 4, patch: { line: "= {a} · {c} + {b}", note: "substitute {variable} = {c}" }, caption: "Replace {variable} with {c} everywhere it appears." }
+  - { t: 8.5, patch: { line: "= {a*c} + {b} = {a*c+b}", note: "multiply first, then add" }, caption: "The expression outputs {a*c+b}." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -1,0 +1,11 @@
+id: g6.ee.exponents.exp-area
+skill: g6.ee.exponents
+representation: area-model
+widget: area-model
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["{c}", "²"], height: "{c}", parts: ["{c}"] }, caption: "{c}² is NOT {c} × 2. Watch it become a square." }
+  - { t: 4, patch: { eqHighlight: ["0"], highlight: ["1"] }, caption: "One side of the square is {c}." }
+  - { t: 8, patch: { eqHighlight: ["1"], products: ["{c*c}"], highlight: [] }, caption: "{c} rows of {c}: {c}² = {c} × {c} = {c*c}." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

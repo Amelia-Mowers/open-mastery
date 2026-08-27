@@ -1,0 +1,14 @@
+id: g7.ee.combine
+name: Combine like terms to simplify an expression
+preamble:
+  plain: "5x + 3 − 2x + 4 carries the same letter twice. You'll learn to gather the x-terms and the plain numbers separately into one short expression."
+  vocab:
+    - { term: like terms, meaning: "terms with the same letter part — they can be added together" }
+standards: [CCSS.MATH.CONTENT.7.EE.A.1]
+source: { book: ccss-ee-progression, section: "7.EE.A.1" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.ee.equivalent]
+instruction:
+  - g7.ee.combine.exp-worked
+  - g7.ee.combine.exp-table

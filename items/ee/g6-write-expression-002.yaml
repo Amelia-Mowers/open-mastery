@@ -1,0 +1,14 @@
+id: g6.ee.write-expression.002
+skills: [g6.ee.write-expression]
+difficulty: 2
+representation: worked-equation
+params: { a: 4, p: 7, variable: n }
+generator: { a: { int: [2, 9] }, p: { int: [1, 12] } }
+widget: { type: expression-input, config: { stem: "Write an expression: {p} less than {a} times a number {variable}." } }
+answer: { type: expr, value: "{a}{variable} - {p}", equivalence: symbolic }
+hints:
+  - "{a} times the number is {a}{variable}."
+  - "{p} LESS than that means subtract: {a}{variable} − {p}."
+source: { book: ccss-ee-progression, section: "6.EE.A.2a" }
+verify: "-{p} + {a}*{variable}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

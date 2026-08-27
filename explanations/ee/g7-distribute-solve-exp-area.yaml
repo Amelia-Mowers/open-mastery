@@ -1,0 +1,12 @@
+id: g7.ee.distribute-solve.exp-area
+skill: g7.ee.distribute-solve
+representation: area-model
+widget: area-model
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["{a}", "({variable} + {b})", " = ", "{a*(ans+b)}"], height: "{a}", parts: ["{variable}", "{b}"] }, caption: "{a} copies of ({variable} + {b}) make {a*(ans+b)} in total." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], highlight: ["1", "2"] }, caption: "The rectangle: {a} tall, {variable} + {b} wide — total area {a*(ans+b)}." }
+  - { t: 8.5, patch: { eqHighlight: [], products: ["{a}{variable}", "{a*b}"], highlight: [] }, caption: "Distribute: {a}{variable} + {a*b} = {a*(ans+b)}." }
+  - { t: 13, patch: { highlight: ["1"] }, caption: "So {a}{variable} = {a*(ans+b)} − {a*b} = {a*ans}, and {variable} = {ans}." }
+  - { t: 16, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
