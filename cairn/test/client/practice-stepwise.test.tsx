@@ -58,7 +58,7 @@ const explain: ExplainResult = {
   params: P,
   totalReps: 1,
   sameNumbers: true,
-} as ExplainResult
+} as unknown as ExplainResult
 
 const renderCard = (scaffolded: boolean, onSubmit: ReturnType<typeof vi.fn>) =>
   render(

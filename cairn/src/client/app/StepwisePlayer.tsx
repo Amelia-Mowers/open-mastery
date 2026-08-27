@@ -18,6 +18,7 @@ import { gradeAnswer, type AnswerSpec } from '../../core/graders'
 import { createLessonWidget } from './LessonPlayer'
 import { renderText, type Params } from './render'
 import { OpEntry, type OpMove } from '../widgets/op-entry'
+import { SmoothHeight } from './SmoothHeight'
 
 export interface StepwiseResult {
   /** wrong tries across all expects */
@@ -232,6 +233,7 @@ export function StepwisePlayer({
       >
         {view.caption}
       </p>
+      <SmoothHeight>
       {/* scrub through what has played so far; the frontier stays put */}
       {applied > 1 && (
         <div className="stepwise-track" role="group" aria-label="Steps so far">
@@ -358,6 +360,7 @@ export function StepwisePlayer({
       {applied > 0 && pending !== null && waitingOn === null && scrub === null && (
         <p className="muted stepwise-skip">Know the answer already? Type it below anytime.</p>
       )}
+      </SmoothHeight>
     </div>
   )
 }
