@@ -226,6 +226,46 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
       const v = evaluate(parsed.value, {})
       return v.ok && v.value.t === 'num' ? v.value.v : null
     }
+    // choice answers: the value is an option KEY, not an expression — check
+    // it names a real option, and evaluate `verify` (the scenario invariant
+    // that makes the keyed option genuinely correct) over the params alone
+    if (it.answer.type === 'choice') {
+      const opts = (it.widget.config?.['options'] ?? null) as Array<{ key?: unknown }> | null
+      const keys = Array.isArray(opts) ? opts.map((o) => String(o?.key ?? '')) : []
+      if (keys.length < 2)
+        push('error', 'choice_options', it.id, 'choice items need ≥2 widget.config.options with keys')
+      else if (new Set(keys).size !== keys.length)
+        push('error', 'choice_options', it.id, 'choice option keys must be unique')
+      else if (!keys.includes(String(it.answer.value)))
+        push('error', 'choice_options', it.id, `answer value '${String(it.answer.value)}' is not an option key`)
+      const checkChoice = (env: Env, where: string) => {
+        if (it.verify === undefined) return
+        const parsed = parseTemplate(it.verify)
+        if (!parsed.ok) return // reported by the template checks
+        const seg = parsed.value.find((x) => x.kind === 'expr')
+        if (!seg || seg.kind !== 'expr') {
+          push('error', 'verify_failed', `${it.id}.verify`, 'verify must contain an expression')
+          return
+        }
+        const result = evaluate(seg.expr, env)
+        if (!result.ok)
+          push('error', 'verify_failed', where, `verify errored: ${result.error.message}`)
+        else if (result.value.t !== 'bool' || !result.value.v)
+          push('error', 'verify_failed', where, `scenario does not satisfy '${it.verify}'`)
+      }
+      checkChoice(it.params as Env, `${it.id} (authored params)`)
+      if (it.generator != null) {
+        const spec = it.generator as GeneratorSpec
+        const fixed: Record<string, number | string> = {}
+        for (const [k, v] of Object.entries(it.params)) if (!(k in spec)) fixed[k] = v
+        for (const seed of seeds) {
+          const g = generateParams(spec, fixed, seed)
+          if (g.ok) checkChoice(g.value as Env, `${it.id} (seed ${seed})`)
+        }
+      }
+      continue
+    }
+
     const checkInstance = (env: Env, where: string) => {
       if (!answerTpl) return
       const r = renderTemplate(answerTpl, env)
