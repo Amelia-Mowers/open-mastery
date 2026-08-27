@@ -92,6 +92,9 @@ export function ItemCard({
     if (item.widget.type === 'numeric-input' && config['placeholder'] === undefined) {
       config['placeholder'] = '?'
     }
+    if (item.widget.type === 'choice' && config['seed'] === undefined) {
+      config['seed'] = action.instance.paramHash // per-instance option shuffle
+    }
     // widget config values may be cairn-expr templates ("{-2*abs(b)}" …)
     // evaluated against this instance's params (number-line bounds,
     // opposite-flip value, ratio-table rows, …) — recursively, so nested
@@ -102,6 +105,8 @@ export function ItemCard({
         return n !== null ? n : renderText(v, params)
       }
       if (Array.isArray(v)) return v.map(evalDeep)
+      if (v !== null && typeof v === 'object')
+        return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, evalDeep(x)]))
       return v
     }
     for (const [key, v] of Object.entries(config)) config[key] = evalDeep(v)

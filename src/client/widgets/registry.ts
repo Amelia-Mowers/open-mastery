@@ -11,6 +11,7 @@ import { createOppositeFlip, type OppositeFlipConfig } from '../viz/opposite-fli
 import { createWorkedEquation } from '../viz/worked-equation'
 import { createDoubleNumberLine, type DoubleNumberLineConfig } from '../viz/double-number-line'
 import { createRatioTable, type RatioTableConfig } from '../viz/ratio-table'
+import { createChoice, type ChoiceConfig } from './choice'
 
 /** The widget trinity (§4.4): one contract, three roles. `lesson` = drives a
  * patch-based explanation timeline; `input` = interactive in problem mode
@@ -35,6 +36,7 @@ export const WIDGET_ROLES: Record<WidgetType, WidgetRoles> = {
   'worked-equation': { lesson: true, input: false },
   'double-number-line': { lesson: true, input: true },
   'ratio-table': { lesson: true, input: true },
+  choice: { lesson: false, input: true },
 }
 
 export class UnknownWidgetError extends Error {
@@ -58,6 +60,7 @@ export type WidgetType =
   | 'worked-equation'
   | 'double-number-line'
   | 'ratio-table'
+  | 'choice'
 
 /**
  * Create a widget instance by curriculum widget type.
@@ -94,6 +97,8 @@ export function createWidget(
       return createDoubleNumberLine(config as DoubleNumberLineConfig) as never
     case 'ratio-table':
       return createRatioTable(config as RatioTableConfig) as never
+    case 'choice':
+      return createChoice(config as ChoiceConfig) as never
     default:
       throw new UnknownWidgetError(type)
   }

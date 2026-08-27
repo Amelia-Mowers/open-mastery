@@ -73,6 +73,17 @@ const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<str
     type: 'ratio-table',
     config: { cols: ['cups', 'muffins'], rows: [[2, 12], [5, '?']] },
   },
+  {
+    title: 'choice (pick one — order shuffles per instance)',
+    type: 'choice',
+    config: {
+      seed: 'zoo',
+      options: [
+        { key: 'a', label: '4 pencils for $2 — 50¢ each' },
+        { key: 'b', label: '7 pencils for $4.20 — 60¢ each' },
+      ],
+    },
+  },
   { title: 'numeric-input', type: 'numeric-input', config: { units: 'cm' } },
   { title: 'expression-input', type: 'equation-input', config: { variable: 'x' } },
 ]
