@@ -1,0 +1,15 @@
+id: g7.rp.constant-k
+name: Find the constant of proportionality
+preamble:
+  plain: "In a proportional table, y divided by x gives the SAME number in every row. That number is k — it's the unit rate wearing its grown-up name."
+  vocab:
+    - { term: proportional, meaning: "two quantities where one is always the same multiple of the other" }
+    - { term: constant of proportionality, meaning: "the number k that every x is multiplied by to get y" }
+standards: [CCSS.MATH.CONTENT.7.RP.A.2.B]
+source: { book: ccss-rp-progression, section: "7.RP.A.2b" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.rp.unit-rate]
+instruction:
+  - g7.rp.constant-k.exp-table
+  - g7.rp.constant-k.exp-worked

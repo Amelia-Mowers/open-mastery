@@ -1,0 +1,14 @@
+id: g6.rp.percent-of.002
+skills: [g6.rp.percent-of]
+difficulty: 2
+representation: worked-equation
+params: { f: 9, g: 4 }
+generator: { f: { int: [2, 19] }, g: { int: [2, 5] } }
+widget: { type: numeric-input, config: { stem: "What is {5*f}% of {40*g}?" } }
+answer: { type: expr, value: "{2*f*g}", integer: true }
+hints:
+  - "5% of {40*g} is {40*g} ÷ 20 = {2*g}."
+  - "{5*f}% is {f} fives: {f} × {2*g} = {2*f*g}."
+source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
+verify: "{answer * 100 == 5*f * 40*g}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

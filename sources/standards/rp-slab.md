@@ -1,0 +1,63 @@
+# Pilot slab: G6–7 Ratios & Proportional Relationships
+
+The first standards-first derivation (per `SOURCES.md`): CCSS 6.RP.A +
+7.RP.A decomposed into mastery-sized skills, prereq edges from the
+Coherence Map plus the RP Progression's narrative, representations per
+node from the Progression ("double number lines to tables to equations"
+is an explicit representation sequence — and our widget backlog).
+
+## Standards covered
+
+- 6.RP.A.1 ratio language · 6.RP.A.2 unit rate language ·
+  6.RP.A.3 solve problems (a tables · b unit rate · c percent · d units)
+- 7.RP.A.1 unit rates with fractions · 7.RP.A.2 recognize/represent
+  proportional relationships (a test · b constant k · c equation
+  y = kx · d graph) · 7.RP.A.3 multistep percent problems
+
+Coherence Map backbone: 6.RP.A.1 → 6.RP.A.2 → 6.RP.A.3;
+6.RP.A.3 → 7.RP.A.1 → 7.RP.A.2 → 7.RP.A.3. External prerequisites
+(outside the slab, already-assumed): multiplication/division fluency
+(3.OA), fraction division 6.NS.A.1 (feeds `g7.rp.unit-rate-frac`).
+
+## Implemented nodes (skills/rp/, items/rp/, explanations/rp/)
+
+| skill | standard | primary rep | second rep | answer shape |
+|---|---|---|---|---|
+| g6.rp.equiv-table | 6.RP.A.3a | ratio-table (fill cell) | double-number-line | integer |
+| g6.rp.unit-rate | 6.RP.A.2, 3b | double-number-line (to 1) | ratio-table | integer |
+| g6.rp.missing-value | 6.RP.A.3b | double-number-line (fill) | worked-equation | integer |
+| g6.rp.percent-of | 6.RP.A.3c | double-number-line (0–100%) | worked-equation | integer |
+| g6.rp.find-whole | 6.RP.A.3c | double-number-line | worked-equation | integer |
+| g7.rp.unit-rate-frac | 7.RP.A.1 | worked-equation | double-number-line | integer |
+| g7.rp.constant-k | 7.RP.A.2b | ratio-table (÷ arrow) | worked-equation | integer |
+| g7.rp.equation | 7.RP.A.2c | worked-equation | ratio-table | expr `y = kx` |
+| g7.rp.percent-multistep | 7.RP.A.3 | worked-equation | double-number-line | integer |
+
+Edges (all within-slab; roots have only external prereqs):
+equiv-table → unit-rate → {missing-value, percent-of, unit-rate-frac,
+constant-k}; equiv-table → missing-value; percent-of → {find-whole,
+percent-multistep}; constant-k → equation.
+
+Progression notes honored: unit rate is DERIVED from equivalent-ratio
+reasoning (tables/DNL), so equiv-table precedes it; percent is a rate
+per 100 (DNL with a 0–100% bottom line, not the p/100 × q formula first);
+k in 7.RP is the unit rate wearing its grown-up name (constant-k's
+lesson says so).
+
+## Deferred nodes (real gaps the pilot surfaced — the point of piloting)
+
+| node | standard | blocked on |
+|---|---|---|
+| ratio-language ("3:2, 3 to 2") | 6.RP.A.1 | a ratio-pair answer shape + grader (a:b with equivalence policy) |
+| compare-rates (better buy) | 6.RP.A.3b | choice widget/grader in the client |
+| test-proportional (is it?) | 7.RP.A.2a | choice widget/grader |
+| graph-interpret ((0,0), (1,r)) | 7.RP.A.2d | proportional-graph widget (line through origin, read points) |
+| unit-convert | 6.RP.A.3d | nothing hard — cut for slab size; next batch |
+| percent-error/markup chains | 7.RP.A.3 | multi-step answer UX; single-step tax/tip/discount IS implemented |
+
+## New widgets this slab demanded (the measured "widget load")
+
+2 new widget types for 9 skills: `double-number-line`,
+`ratio-table` — both trinity (lesson + fill-a-cell input + review),
+per GOLDEN_WIDGET.md. Existing tape-diagram/worked-equation reused.
+Deferred nodes would add 2 more (choice, proportional-graph).

@@ -1,0 +1,11 @@
+id: g7.rp.unit-rate-frac.exp-worked
+skill: g7.rp.unit-rate-frac
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "{p}/{q} mile in 1/{r} hour" }, caption: "A rate with fractions — same plan: find ONE whole hour." }
+  - { t: 4, patch: { line: "1 hour = {r} chunks of 1/{r} hour", note: "× {r}" }, caption: "One hour holds {r} of those chunks." }
+  - { t: 8.5, patch: { line: "{r} × {p}/{q} = {p*r/q} miles per hour", note: "distance × {r} too" }, caption: "Walk that distance {r} times: {p*r/q} miles per hour." }
+  - { t: 11.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

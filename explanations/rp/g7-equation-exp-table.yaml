@@ -1,0 +1,12 @@
+id: g7.rp.equation.exp-table
+skill: g7.rp.equation
+representation: ratio-table
+widget: ratio-table
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["y", " = ", "{k}", "x"], cols: ["x", "y"], rows: [["1", "{k}"], ["{a}", "{a*k}"], ["{c}", "{c*k}"]], reveal: "1" }, caption: "The rule y = {k}x, one row at a time." }
+  - { t: 4, patch: { eqHighlight: ["2"], highlight: "1" }, caption: "x = 1 gives y = {k} — that is k itself." }
+  - { t: 8, patch: { reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "×{a}" } }, caption: "x = {a}: multiply BOTH sides of the table by {a}." }
+  - { t: 12.5, patch: { eqHighlight: [], reveal: "3", highlight: "3", factor: { from: "1", to: "3", text: "×{c}" } }, caption: "x = {c} gives y = {k*c}. Every row obeys y = {k}x." }
+  - { t: 16, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

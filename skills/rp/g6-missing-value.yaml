@@ -1,0 +1,14 @@
+id: g6.rp.missing-value
+name: Solve a ratio problem — find the missing value
+preamble:
+  plain: "3 pounds cost $12 — so what do 7 pounds cost? Step down to ONE pound first, then multiply up. Two small steps solve any problem like this."
+  vocab:
+    - { term: scale up, meaning: "multiply both quantities of a ratio by the same number" }
+standards: [CCSS.MATH.CONTENT.6.RP.A.3.B]
+source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.rp.equiv-table, g6.rp.unit-rate]
+instruction:
+  - g6.rp.missing-value.exp-dnl
+  - g6.rp.missing-value.exp-worked

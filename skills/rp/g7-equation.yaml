@@ -1,0 +1,14 @@
+id: g7.rp.equation
+name: Use the equation y = kx of a proportional relationship
+preamble:
+  plain: "Once you know k, one short rule — y = kx — answers EVERY question about the relationship. Find k from one pair, then use the rule for any x."
+  vocab:
+    - { term: equation of a proportional relationship, meaning: "y = kx — multiply any x by k to get its y" }
+standards: [CCSS.MATH.CONTENT.7.RP.A.2.C]
+source: { book: ccss-rp-progression, section: "7.RP.A.2c" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g7.rp.constant-k]
+instruction:
+  - g7.rp.equation.exp-worked
+  - g7.rp.equation.exp-table

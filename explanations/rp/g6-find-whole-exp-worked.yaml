@@ -1,0 +1,11 @@
+id: g6.rp.find-whole.exp-worked
+skill: g6.rp.find-whole
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "{5*f}% of ? = {f*k}" }, caption: "Work backwards from the part to the whole." }
+  - { t: 4, patch: { line: "5% = {f*k} ÷ {f} = {k}", note: "÷ {f}" }, caption: "{5*f}% is {f} fives, so one five is {k}." }
+  - { t: 8.5, patch: { line: "100% = 20 × {k} = {20*k}", note: "× 20" }, caption: "Build back up: the whole is {20*k}." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

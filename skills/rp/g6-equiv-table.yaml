@@ -1,0 +1,15 @@
+id: g6.rp.equiv-table
+name: Make equivalent ratios by scaling both quantities
+preamble:
+  plain: "A ratio like 2 cups for 12 muffins stays fair when you multiply BOTH numbers by the same amount. You'll learn to grow a ratio without changing what it means."
+  vocab:
+    - { term: ratio, meaning: "a pair of numbers that go together, like 2 cups for every 12 muffins" }
+    - { term: equivalent ratios, meaning: "two ratios that describe the same relationship" }
+standards: [CCSS.MATH.CONTENT.6.RP.A.3.A]
+source: { book: ccss-rp-progression, section: "6.RP.A.3a" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: []
+instruction:
+  - g6.rp.equiv-table.exp-table
+  - g6.rp.equiv-table.exp-dnl

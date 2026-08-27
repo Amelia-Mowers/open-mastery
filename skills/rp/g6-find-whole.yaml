@@ -1,0 +1,14 @@
+id: g6.rp.find-whole
+name: Find the whole when a part and its percent are known
+preamble:
+  plain: "20% of some number is 24 — what's the number? Work backwards: if you know what a small percent is worth, you can build up to 100%."
+  vocab:
+    - { term: the whole, meaning: "the full amount — what 100% stands for" }
+standards: [CCSS.MATH.CONTENT.6.RP.A.3.C]
+source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.rp.percent-of]
+instruction:
+  - g6.rp.find-whole.exp-dnl
+  - g6.rp.find-whole.exp-worked
