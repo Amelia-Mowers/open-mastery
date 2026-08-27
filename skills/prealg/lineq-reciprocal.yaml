@@ -6,7 +6,7 @@ preamble:
     - { term: reciprocal, meaning: "a fraction flipped upside down: the reciprocal of 2/3 is 3/2" }
     - { term: coefficient, meaning: "the number multiplying x" }
 prereqs: [prealg.lineq.multiply, prealg.lineq.divide]
-standards: [CCSS.MATH.CONTENT.7.EE.B.4.A]
+standards: [CCSS.MATH.CONTENT.6.EE.B.7]  # px = q with NONNEGATIVE rationals — fraction coefficients included
 source: { book: openstax-prealgebra-2e, section: "8.2" }
 bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 fluency: false

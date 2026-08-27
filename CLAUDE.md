@@ -1,5 +1,23 @@
 # Curriculum authoring notes
 
+## The skill graph derives from STANDARDS, not textbooks
+
+Textbooks implement the standards; deriving our graph from a textbook
+inherits its editorial slicing and its license churn (both OpenStax and
+IM drifted to NC terms in recent editions). Derive from the source:
+CCSS-M standard IDs are the node vocabulary, the Coherence Map
+(achievethecore.org) is the default prerequisite backbone, and the
+Progressions documents (mathematicalmusings.org, 2023 compiled PDF) are
+the design rationale AND the widget backlog — they name the expected
+representations and their ordering per standard. A standard is too
+coarse to be a mastery node: decompose it into skills (the decomposition
+is OURS — LLM-assisted, human-reviewed), tag every skill with
+`standards: [<CCSS ids>]`, and read the standard's actual text before
+tagging (6.EE.B.7 is NONNEGATIVE-only — that's why negate is 6.NS.C.6a +
+7.EE.B.4a, and why fraction-coefficient reciprocal IS 6.EE.B.7).
+Licensing, links, pipeline, and the state-crosswalk caveat:
+`sources/standards/SOURCES.md`.
+
 ## Representation sourcing: mine Illustrative Mathematics FIRST
 
 OpenStax Prealgebra teaches through worked symbolic steps and has few

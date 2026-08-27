@@ -5,7 +5,7 @@ preamble:
   vocab:
     - { term: opposite, meaning: "the same number on the other side of zero: the opposite of 2 is -2" }
 prereqs: [prealg.lineq.multiply]
-standards: [CCSS.MATH.CONTENT.6.EE.B.7]
+standards: [CCSS.MATH.CONTENT.6.NS.C.6.A, CCSS.MATH.CONTENT.7.EE.B.4.A]  # 6.EE.B.7 is nonnegative-only; -x = b is opposites (6.NS.C.6a) + rational-coefficient solving
 source: { book: openstax-prealgebra-2e, section: "8.2" }
 bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 fluency: false
