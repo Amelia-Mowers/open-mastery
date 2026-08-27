@@ -5,7 +5,7 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a} lb", " → ", "${b}"], cols: ["pounds", "dollars"], rows: [["{a}", "{b}"], ["1", "{b/a}"], ["{c}", "{c*b/a}"]], reveal: "0" }, caption: "One known pair unlocks every other row." }
-  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "The pair we know: {a} pounds costs ${b}.", expect: { type: pick, value: ["0", "2"] } }
+  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "The pair we know: {a} pounds costs ${b}." }
   - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{a}" } }, caption: "Step down to ONE pound: ${b} ÷ {a} = ${b/a}.", expect: { type: numeric, value: "{b/a}", prompt: "What goes in the next row?" } }
   - { t: 13, patch: { reveal: "3", highlight: "3", factor: { from: "2", to: "3", text: "×{c}" } }, caption: "Now × {c}: {c} pounds costs ${c*b/a}.", expect: { type: numeric, value: "{c*b/a}", prompt: "What goes in the next row?" } }
   - { t: 16, handoff: { prompt: "Now you try." } }

@@ -5,9 +5,9 @@ widget: tape-diagram
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{variable}", " + {p}", " = ", "{p+d}"], cells: ["{variable}", "{p}"], total: "{p+d}", totalIn: false }, caption: "A bar in two pieces: the unknown piece and the {p} piece." }
-  - { t: 4, patch: { eqHighlight: ["0"], highlight: ["1"] }, caption: "This piece is {variable} — the part we want.", expect: { type: pick, value: ["0"] } }
-  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["2"] }, caption: "This piece is {p}.", expect: { type: pick, value: ["1"] } }
-  - { t: 12, patch: { eqHighlight: ["3"], totalIn: true, highlight: [] }, caption: "Together they make {p+d}.", expect: { type: pick, value: ["3"] } }
+  - { t: 4, patch: { eqHighlight: ["0"], highlight: ["1"] }, caption: "This piece is {variable} — the part we want." }
+  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["2"] }, caption: "This piece is {p}." }
+  - { t: 12, patch: { eqHighlight: ["3"], totalIn: true, highlight: [] }, caption: "Together they make {p+d}.", expect: { type: pick, value: ["3"], prompt: "Which piece is the WHOLE amount the tape makes?" } }
   - { t: 16, patch: { eqHighlight: [], highlight: ["1"] }, caption: "Take the {p} piece away from the whole: {variable} = {p+d} − {p} = {d}." }
   - { t: 19, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

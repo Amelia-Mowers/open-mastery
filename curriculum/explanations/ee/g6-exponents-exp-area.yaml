@@ -5,9 +5,9 @@ widget: area-model
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{c}", "²"], height: "{c}", parts: ["{c}"] }, caption: "{c}² means a SQUARE: {c} rows of {c}. Watch it build itself." }
-  - { t: 4, patch: { eqHighlight: ["0"], fillRows: "1" }, caption: "One row: {c} little squares.", expect: { type: pick, value: ["0"] } }
+  - { t: 4, patch: { eqHighlight: ["0"], fillRows: "1" }, caption: "One row: {c} little squares." }
   - { t: 8, patch: { fillRows: "2" }, caption: "Two rows: {c} + {c} = {2*c}.", expect: { type: numeric, value: "{2*c}", prompt: "How many little squares filled in so far?" } }
-  - { t: 12, patch: { eqHighlight: ["1"], fillRows: "{c}" }, caption: "All {c} rows fill in — {c} of them, {c} squares each.", expect: { type: pick, value: ["1"] } }
+  - { t: 12, patch: { eqHighlight: ["1"], fillRows: "{c}" }, caption: "All {c} rows fill in — {c} of them, {c} squares each." }
   - { t: 16, patch: { products: ["{c*c}"] }, caption: "{c} rows of {c}: {c}² = {c} × {c} = {c*c}.", expect: { type: numeric, value: "{c*c}", prompt: "What is the total?" } }
   - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

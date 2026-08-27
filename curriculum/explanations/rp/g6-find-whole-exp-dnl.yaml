@@ -5,8 +5,8 @@ widget: double-number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{5*f}%", " of ? = ", "{f*k}"], topLabel: "percent", bottomLabel: "amount", top: ["0%", "5%", "{5*f}%", "100%"], bottom: ["0", "{k}", "{f*k}", "{20*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "This time we know the part — the whole is hidden at 100%." }
-  - { t: 4.5, patch: { eqHighlight: ["0", "2"], topIn: true, bottomIn: true, reveal: ["0", "2"] }, caption: "{5*f}% lines up with {f*k}.", expect: { type: pick, value: ["0", "2"] } }
+  - { t: 4.5, patch: { eqHighlight: ["0", "2"], topIn: true, bottomIn: true, reveal: ["0", "2"] }, caption: "{5*f}% lines up with {f*k}.", expect: { type: pick, value: ["0", "2"], prompt: "Which piece — or pieces — of the ratio pair up across the two lines?" } }
   - { t: 9, patch: { eqHighlight: [], highlight: "1", reveal: ["0", "1", "2"] }, caption: "Step down to 5%: {f*k} ÷ {f} = {k}." }
-  - { t: 13.5, patch: { eqHighlight: ["1"], highlight: "3", reveal: ["0", "1", "2", "3"] }, caption: "100% is 20 fives: {k} × 20 = {20*k}. The number is {20*k}.", expect: { type: pick, value: ["1"] } }
+  - { t: 13.5, patch: { eqHighlight: ["1"], highlight: "3", reveal: ["0", "1", "2", "3"] }, caption: "100% is 20 fives: {k} × 20 = {20*k}. The number is {20*k}." }
   - { t: 17, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

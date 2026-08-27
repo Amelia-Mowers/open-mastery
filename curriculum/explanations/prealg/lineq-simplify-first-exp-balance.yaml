@@ -5,8 +5,8 @@ widget: balance-scale
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{c1}{variable} + {c2}{variable} - {c3}{variable}", " = ", "{d1} + {(c1+c2-c3)*ans - d1}"], left: "{c1+c2-c3}{variable}", right: "{(c1+c2-c3)*ans}", leftIn: false, rightIn: false }, caption: "Both sides need simplifying before we can solve. Watch each side collapse onto the scale." }
-  - { t: 4.5, patch: { eqHighlight: ["0"], leftIn: true, highlight: left }, caption: "Combine the {variable}-terms: {c1} + {c2} - {c3} = {c1+c2-c3}. The whole left side lands as {c1+c2-c3}{variable}.", expect: { type: pick, value: ["0"] } }
-  - { t: 10, patch: { eqHighlight: ["2"], rightIn: true, highlight: right }, caption: "Combine the numbers: {d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans}.", expect: { type: pick, value: ["2"] } }
+  - { t: 4.5, patch: { eqHighlight: ["0"], leftIn: true, highlight: left }, caption: "Combine the {variable}-terms: {c1} + {c2} - {c3} = {c1+c2-c3}. The whole left side lands as {c1+c2-c3}{variable}.", expect: { type: pick, value: ["0"], prompt: "Which piece of the equation goes on the LEFT pan?" } }
+  - { t: 10, patch: { eqHighlight: ["2"], rightIn: true, highlight: right }, caption: "Combine the numbers: {d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans}.", expect: { type: pick, value: ["2"], prompt: "Which piece of the equation goes on the RIGHT pan?" } }
   - { t: 15, patch: { eqHighlight: [], highlight: null }, caption: "Now it is a one-step equation." }
   - { t: 18, patch: { op: divide, by: "{c1+c2-c3}" }, caption: "Divide both sides by {c1+c2-c3}: {variable} = {ans}.", expect: { type: op, value: "divide {c1+c2-c3}" } }
   - { t: 20.5, handoff: { prompt: "Now you try." } }

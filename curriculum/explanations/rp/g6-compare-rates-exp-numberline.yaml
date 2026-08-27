@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["A: {a1} for ${u*a1}", "  vs  ", "B: {a2} for ${(u+d)*a2}"], min: 0, max: "{u+d+1}", step: 1 }, caption: "Two offers. Put both UNIT prices on one line — then the comparison is just position." }
   - { t: 4, patch: { eqHighlight: ["0"], marker: "{u}", highlight: ["{u}"] }, caption: "Pack A: ${u*a1} ÷ {a1} = ${u} each.", expect: { type: numeric, value: "{u}", prompt: "Where on the line? Type the number." } }
-  - { t: 8.5, patch: { eqHighlight: ["2"], highlight: ["{u}", "{u+d}"] }, caption: "Pack B: ${(u+d)*a2} ÷ {a2} = ${u+d} each.", expect: { type: pick, value: ["2"] } }
+  - { t: 8.5, patch: { eqHighlight: ["2"], highlight: ["{u}", "{u+d}"] }, caption: "Pack B: ${(u+d)*a2} ÷ {a2} = ${u+d} each." }
   - { t: 13, patch: { eqHighlight: [], marker: "{u}" }, caption: "${u} sits LEFT of ${u+d} — cheaper per pencil. Pack A is the better buy.", expect: { type: numeric, value: "{u}", prompt: "Where on the line? Type the number." } }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

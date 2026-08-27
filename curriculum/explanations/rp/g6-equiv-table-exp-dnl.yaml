@@ -5,8 +5,8 @@ widget: double-number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a} cups", " : ", "{b} muffins"], topLabel: "cups", bottomLabel: "muffins", top: ["0", "{a}", "{a*m}"], bottom: ["0", "{b}", "{b*m}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Two quantities that travel together. Watch each get its own line." }
-  - { t: 4, patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }, caption: "{a} cups sits on the top line.", expect: { type: pick, value: ["0"] } }
-  - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "{b} muffins sits right below it — one ratio, one aligned pair.", expect: { type: pick, value: ["2"] } }
+  - { t: 4, patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }, caption: "{a} cups sits on the top line.", expect: { type: pick, value: ["0"], prompt: "Which piece belongs on the TOP line?" } }
+  - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "{b} muffins sits right below it — one ratio, one aligned pair.", expect: { type: pick, value: ["2"], prompt: "Which piece belongs on the BOTTOM line?" } }
   - { t: 12, patch: { eqHighlight: [], reveal: ["0", "1", "2"], highlight: "2" }, caption: "Slide right ×{m}: {a*m} cups lines up with {b*m} muffins." }
   - { t: 15, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

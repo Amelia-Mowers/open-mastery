@@ -243,9 +243,7 @@ export function StepwisePlayer({
       : e.type === 'op'
         ? 'Your move — what do we do to both sides?'
         : e.type === 'pick'
-          ? (Array.isArray(e.value) && e.value.length > 1
-              ? 'Click the pieces of the equation this step is about — more than one belongs.'
-              : 'Click the piece of the equation this step is about.')
+          ? 'Click the piece — or pieces — of the equation this step uses.'
           : 'Your move — write the next step.'
 
   return (
