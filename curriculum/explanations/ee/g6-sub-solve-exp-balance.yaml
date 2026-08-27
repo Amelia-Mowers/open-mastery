@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], left: "{variable} − {p}", right: "{d}", leftIn: false, rightIn: false }, caption: "Here is the problem in symbols. Watch each side land on the scale." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{variable} − {p} goes on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{d} on the right — balanced.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
-  - { t: 12, patch: { eqHighlight: ["1"], highlight: left }, caption: "{variable} had {p} TAKEN AWAY. Undo subtracting by ADDING." }
+  - { t: 12, patch: { eqHighlight: ["1"], highlight: left }, caption: "{variable} had {p} TAKEN AWAY. Which move puts it back?" }
   - { t: 15.5, patch: { op: add, by: "{p}", highlight: null, eqHighlight: [] }, caption: "Add {p} to BOTH pans — the scale stays balanced.", expect: { type: op, value: "add {p}" } }
   - { t: 19, patch: { left: "{variable}", right: "{p+d}", op: null }, caption: "{variable} = {p+d}." }
   - { t: 21, handoff: { prompt: "Now you try." } }

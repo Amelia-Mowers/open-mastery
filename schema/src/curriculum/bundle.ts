@@ -149,6 +149,48 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           s.id,
           `skills need ≥3 distinct representations (has ${reps.size})`,
         )
+      // gate telegraphs: the caption shown WHILE a gate is open (the nearest
+      // caption before it) must not contain the gate's answer — captions
+      // written for passive playback often did ("Undo adding by
+      // SUBTRACTING" right before the subtract gate)
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const opStem: Record<string, RegExp> = {
+          add: /\badd/i,
+          subtract: /\bsubtract/i,
+          multiply: /\bmultipl/i,
+          divide: /\bdivi[ds]/i,
+        }
+        const bannerSegs = new Set(
+          e.timeline.flatMap((st) =>
+            Array.isArray(st.patch?.['equation']) ? (st.patch['equation'] as unknown[]).map(String) : [],
+          ),
+        )
+        e.timeline.forEach((st, i) => {
+          if (st.expect === undefined) return
+          const prior = [...e.timeline.slice(0, i)].reverse().find((p) => p.caption !== undefined)
+          if (!prior?.caption) return
+          if (st.expect.type === 'op') {
+            const word = String(st.expect.value).split(/\s/)[0] ?? ''
+            if (opStem[word]?.test(prior.caption))
+              push(
+                'warning',
+                'gate_telegraph',
+                `${e.id}.timeline[${i}]`,
+                `the caption on screen ('${prior.caption.slice(0, 60)}…') names the move this gate asks for — ask a question instead`,
+              )
+          } else if (st.expect.type === 'numeric') {
+            const v = String(st.expect.value)
+            // values readable off the equation banner are fair game
+            if (prior.caption.includes(v) && ![...bannerSegs].some((seg) => seg.includes(v)))
+              push(
+                'warning',
+                'gate_telegraph',
+                `${e.id}.timeline[${i}]`,
+                `the caption on screen states this gate's answer ('${v}') — drop it or ask a question`,
+              )
+          }
+        })
+      }
       // stepwise migration (2026-08-27): passive timelines are DEPRECATED —
       // every explanation should gate its move steps with `expect`
       for (const e of explBySkill.get(s.id) ?? []) {
