@@ -9,6 +9,8 @@ import { createHangerDiagram } from '../viz/hanger-diagram'
 import { createAreaModel } from '../viz/area-model'
 import { createOppositeFlip, type OppositeFlipConfig } from '../viz/opposite-flip'
 import { createWorkedEquation } from '../viz/worked-equation'
+import { createDoubleNumberLine, type DoubleNumberLineConfig } from '../viz/double-number-line'
+import { createRatioTable, type RatioTableConfig } from '../viz/ratio-table'
 
 /** The widget trinity (§4.4): one contract, three roles. `lesson` = drives a
  * patch-based explanation timeline; `input` = interactive in problem mode
@@ -31,6 +33,8 @@ export const WIDGET_ROLES: Record<WidgetType, WidgetRoles> = {
   'area-model': { lesson: true, input: false },
   'opposite-flip': { lesson: true, input: true },
   'worked-equation': { lesson: true, input: false },
+  'double-number-line': { lesson: true, input: true },
+  'ratio-table': { lesson: true, input: true },
 }
 
 export class UnknownWidgetError extends Error {
@@ -52,6 +56,8 @@ export type WidgetType =
   | 'area-model'
   | 'opposite-flip'
   | 'worked-equation'
+  | 'double-number-line'
+  | 'ratio-table'
 
 /**
  * Create a widget instance by curriculum widget type.
@@ -84,6 +90,10 @@ export function createWidget(
       return createOppositeFlip(config as OppositeFlipConfig) as never
     case 'worked-equation':
       return createWorkedEquation() as never
+    case 'double-number-line':
+      return createDoubleNumberLine(config as DoubleNumberLineConfig) as never
+    case 'ratio-table':
+      return createRatioTable(config as RatioTableConfig) as never
     default:
       throw new UnknownWidgetError(type)
   }

@@ -63,6 +63,16 @@ const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<str
   { title: 'opposite-flip (answer input)', type: 'opposite-flip', config: { value: 2 } },
   { title: 'tape-diagram (fill a part)', type: 'tape-diagram', config: { parts: 4, total: 28, fill: 'part' } },
   { title: 'tape-diagram (fill the total)', type: 'tape-diagram', config: { parts: 7, partLabel: 6, fill: 'total' } },
+  {
+    title: 'double-number-line (fill the missing value)',
+    type: 'double-number-line',
+    config: { topLabel: 'pounds', bottomLabel: 'dollars', top: [0, 3, 7], bottom: [0, 12, '?'] },
+  },
+  {
+    title: 'ratio-table (fill the missing cell)',
+    type: 'ratio-table',
+    config: { cols: ['cups', 'muffins'], rows: [[2, 12], [5, '?']] },
+  },
   { title: 'numeric-input', type: 'numeric-input', config: { units: 'cm' } },
   { title: 'expression-input', type: 'equation-input', config: { variable: 'x' } },
 ]

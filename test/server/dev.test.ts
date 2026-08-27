@@ -183,25 +183,19 @@ describe('local site server loop (build step 3)', () => {
     }
   })
 
-  it.skipIf(!hasCurriculum)('the real Prealgebra §8.2 curriculum runs the full loop: all four skills mastered', async () => {
+  it.skipIf(!hasCurriculum)('the real curriculum runs the full loop: EVERY skill mastered', async () => {
     const bundle = loadCurriculum()
-    expect(bundle.skills).toHaveLength(5)
+    expect(bundle.skills.length).toBeGreaterThanOrEqual(14) // lineq + the RP slab
     const site = createDevSite(bundle)
     const base = await listen(site)
     try {
-      await play(base, 'learner', bundle, { answerFor: correctRaw })
+      await play(base, 'learner', bundle, { answerFor: correctRaw, maxSteps: 800 })
       const state = await getJson<{ skills: Record<string, { phase: string }> }>(base, '/api/state', 'learner')
-      for (const id of [
-        'prealg.lineq.divide',
-        'prealg.lineq.multiply',
-        'prealg.lineq.negate',
-        'prealg.lineq.reciprocal',
-        'prealg.lineq.simplify-first',
-      ]) {
-        expect(state.skills[id]?.phase, id).toBe('mastered')
+      for (const s of bundle.skills) {
+        expect(state.skills[s.id]?.phase, s.id).toBe('mastered')
       }
       const { events } = await getJson<{ events: Array<{ kind: string; skillId?: string }> }>(base, '/api/events', 'learner')
-      expect(events.filter((e) => e.kind === 'mastery_granted')).toHaveLength(5)
+      expect(events.filter((e) => e.kind === 'mastery_granted')).toHaveLength(bundle.skills.length)
     } finally {
       await site.stop()
     }

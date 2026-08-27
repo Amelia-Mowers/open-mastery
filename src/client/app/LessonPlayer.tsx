@@ -17,6 +17,8 @@ import { createAreaModel } from '../viz/area-model'
 import { createOppositeFlip } from '../viz/opposite-flip'
 import { createWorkedEquation } from '../viz/worked-equation'
 import { createNumberLine } from '../widgets/number-line'
+import { createDoubleNumberLine } from '../viz/double-number-line'
+import { createRatioTable } from '../viz/ratio-table'
 import {
   adaptBalancePatch,
   adaptNumberLinePatch,
@@ -117,6 +119,46 @@ function hangerSetup(
   return null
 }
 
+function dnlSetup(
+  timeline: ReadonlyArray<{ patch?: Record<string, unknown> | undefined }>,
+  params: Params,
+): { topLabel: string; bottomLabel: string; top: string[]; bottom: string[] } | null {
+  for (const s of timeline) {
+    const p = s.patch
+    if (!p || !('top' in p) || !('bottom' in p) || !Array.isArray(p['top']) || !Array.isArray(p['bottom']))
+      continue
+    const top = (p['top'] as unknown[]).map((v) => renderText(String(v), params))
+    const bottom = (p['bottom'] as unknown[]).map((v) => renderText(String(v), params))
+    if (top.length !== bottom.length || top.length < 2 || top.length > 8) return null
+    return {
+      topLabel: renderText(String(p['topLabel'] ?? ''), params),
+      bottomLabel: renderText(String(p['bottomLabel'] ?? ''), params),
+      top,
+      bottom,
+    }
+  }
+  return null
+}
+
+function ratioTableSetup(
+  timeline: ReadonlyArray<{ patch?: Record<string, unknown> | undefined }>,
+  params: Params,
+): { cols: string[]; rows: string[][] } | null {
+  for (const s of timeline) {
+    const p = s.patch
+    if (!p || !('cols' in p) || !('rows' in p) || !Array.isArray(p['cols']) || !Array.isArray(p['rows']))
+      continue
+    const cols = (p['cols'] as unknown[]).map((v) => renderText(String(v), params))
+    const rows = (p['rows'] as unknown[]).map((r) =>
+      Array.isArray(r) ? r.map((v) => renderText(String(v), params)) : [],
+    )
+    if (cols.length !== 2 || rows.length < 1 || rows.length > 6) return null
+    if (rows.some((r) => r.length !== 2)) return null
+    return { cols, rows }
+  }
+  return null
+}
+
 function areaSetup(
   timeline: ReadonlyArray<{ patch?: Record<string, unknown> | undefined }>,
   params: Params,
@@ -200,6 +242,56 @@ function createLessonWidget(explanation: Explanation, params: Params): LessonWid
         if ('shapesIn' in patch) view.shapesIn = patch['shapesIn'] === true
         if ('weightIn' in patch) view.weightIn = patch['weightIn'] === true
         w.applyPatch(view)
+      },
+    }
+  }
+  if (explanation.widget === 'double-number-line') {
+    const setup = dnlSetup(explanation.timeline, params)
+    if (!setup) return null
+    const w = createDoubleNumberLine()
+    return {
+      element: w.render(setup, 'lesson'),
+      apply: (patch) => {
+        const view: { reveal?: number[] | null; highlight?: number | null; topIn?: boolean; bottomIn?: boolean } = {}
+        if ('reveal' in patch) {
+          const raw = patch['reveal']
+          view.reveal = Array.isArray(raw)
+            ? raw.map((v) => evalNumber(v, params)).filter((x): x is number => x !== null)
+            : null
+        }
+        if ('highlight' in patch)
+          view.highlight = patch['highlight'] === null ? null : evalNumber(patch['highlight'], params)
+        if ('topIn' in patch) view.topIn = patch['topIn'] === true
+        if ('bottomIn' in patch) view.bottomIn = patch['bottomIn'] === true
+        w.applyPatch(view as Record<string, unknown>)
+      },
+    }
+  }
+  if (explanation.widget === 'ratio-table') {
+    const setup = ratioTableSetup(explanation.timeline, params)
+    if (!setup) return null
+    const w = createRatioTable()
+    return {
+      element: w.render(setup, 'lesson'),
+      apply: (patch) => {
+        const view: {
+          reveal?: number | null
+          highlight?: number | null
+          factor?: { from: number; to: number; text: string } | null
+        } = {}
+        if ('reveal' in patch) view.reveal = evalNumber(patch['reveal'], params)
+        if ('highlight' in patch)
+          view.highlight = patch['highlight'] === null ? null : evalNumber(patch['highlight'], params)
+        if ('factor' in patch) {
+          const f = patch['factor'] as { from?: unknown; to?: unknown; text?: unknown } | null
+          const from = f ? evalNumber(f.from, params) : null
+          const to = f ? evalNumber(f.to, params) : null
+          view.factor =
+            f && from !== null && to !== null
+              ? { from, to, text: renderText(String(f.text ?? ''), params) }
+              : null
+        }
+        w.applyPatch(view as Record<string, unknown>)
       },
     }
   }

@@ -89,13 +89,17 @@ export function ItemCard({
     }
     // widget config values may be cairn-expr templates ("{-2*abs(b)}" …)
     // evaluated against this instance's params (number-line bounds,
-    // opposite-flip value, …)
-    for (const [key, v] of Object.entries(config)) {
+    // opposite-flip value, ratio-table rows, …) — recursively, so nested
+    // arrays like rows: [["{a}","{b}"], …] work
+    const evalDeep = (v: unknown): unknown => {
       if (typeof v === 'string' && v.includes('{')) {
         const n = evalNumber(v, params)
-        config[key] = n !== null ? n : renderText(v, params)
+        return n !== null ? n : renderText(v, params)
       }
+      if (Array.isArray(v)) return v.map(evalDeep)
+      return v
     }
+    for (const [key, v] of Object.entries(config)) config[key] = evalDeep(v)
     return createWidget(item.widget.type, config)
   }, [item.id, action.instance.paramHash])
 
