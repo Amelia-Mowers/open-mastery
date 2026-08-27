@@ -55,7 +55,9 @@ describe('widget zoo', () => {
       // faded card: truncated lead (resolution dropped — only the first
       // caption survives) plus the item's answer space in faded mode
       expect(screen.getByText(/FINISH THIS ONE — FADED PHASE/)).toBeInTheDocument()
-      expect(screen.getByText(/ANSWER INPUT — EQUATION-INPUT/)).toBeInTheDocument()
+      expect(screen.getByText(/PRACTICE PROBLEM — EQUATION-INPUT/)).toBeInTheDocument()
+      // the input card is a real practice problem: the item's stem shows
+      expect(screen.getByText(/Solve: 7x = 21\./)).toBeInTheDocument()
       // the rep-matched item is equation-input: its faded + problem
       // renders are textboxes, and no answer key ships in the payload
       expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(2)

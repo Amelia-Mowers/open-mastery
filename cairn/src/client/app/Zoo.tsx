@@ -112,9 +112,12 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
       )}
       <section className="card zoo-card">
         <div className="card-kicker">
-          <span className="kicker">ANSWER INPUT — {item.widget.type.toUpperCase()}</span>
+          <span className="kicker">PRACTICE PROBLEM — {item.widget.type.toUpperCase()}</span>
           <span className="mono-chip">{item.id}</span>
         </div>
+        {typeof item.widget.config?.['stem'] === 'string' && (
+          <h2 className="stem">{renderText(item.widget.config['stem'] as string, item.params as Params)}</h2>
+        )}
         <div className="answer-row">
           {inputWidget.render({} as never, 'problem')}
           <button className="btn" onClick={() => setExtracted(JSON.stringify(inputWidget.extract()))}>

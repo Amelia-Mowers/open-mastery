@@ -33,20 +33,30 @@ non-readers) — scope it separately when its turn comes.
 - [x] Trinity inputs for display-only widgets (2026-08-27, reworked same
       day from op-pick MC to constructed op ENTRY per Mia: symbol + operand,
       mirrored on both sides; worked-equation = write the next line).
-- [ ] **STEPWISE PROBLEMS (major differentiator — Mia 2026-08-27)**: make
-      each stage of a lesson animation its own workable micro-problem. The
-      SAME timeline plays automatically (lesson), or pauses at each stage
-      for the student to construct that stage's move/value (worked mode),
-      with the faded phase as the midpoint. Design sketch: timeline steps
-      gain an optional `expect` (an op/value/expr the student must supply
-      to advance; the patch then plays as confirmation); LessonPlayer gets
-      a 'worked' mode driving per-step inputs through the widget's entry
-      affordances (OpEntry, fill-cells, next-line); engine grades per-step
-      (partial credit / per-step BKT evidence, discount by prompt depth);
-      capstone stays raw final answer. Balance example: stage 1 enter
-      "subtract 5", stage 2 enter "divide 3", stage 3 enter x = 4. The
-      op-entry widgets + 'op' answer type (shipped) are the atoms of this.
-      Big lift: schema (timeline expect), player, engine, validator.
+- [ ] **STEPWISE PROBLEMS — CONFIRMED DIRECTION (Mia 2026-08-27, "going
+      with this moving forward")**: ONE unified interactive timeline
+      replaces the lesson/faded/problem mode zoo. Guidance-fading ladder:
+      (1) full process shown (autoplay = today's lesson); (2) stepwise
+      WITH prompting/heavy hinting (each stage pauses, hint offered,
+      student constructs the move); (3) independent stepwise (same pauses,
+      no prompts); (4) fluent solving (answer box only). An ANSWER BOX is
+      always present so a student who can produce the final answer skips
+      the process — correct final answer = strong evidence at any rung;
+      wrong final answer drops them into the stepwise ladder (this is the
+      expertise-reversal guard: never force steps on someone who can
+      solve). Evidence model: per-step correctness = per-step BKT
+      evidence, discounted by prompt depth (rung), which also gives
+      wrong-answer DIAGNOSIS nearly free (the failed step names the
+      misconception). Design: timeline steps gain optional `expect` (op /
+      value / expr the student must supply; the patch then plays as
+      confirmation); LessonPlayer gains a mode param = rung; widget entry
+      affordances (OpEntry, fill-cells, next-line — shipped) are the
+      per-step inputs; capstone stays raw final answer. Literature:
+      worked-example effect + completion problems + backward/adaptive
+      fading (Renkl & Atkinson; Kalyuga rapid-assessment fading beats
+      fixed). Big lift: schema (expect), player, engine, validator —
+      migrate one skill end-to-end first (two-step is the natural pilot:
+      its op-entry stages already exist).
 - [ ] proportional-graph widget (line through origin, read (0,0)/(1,r)) —
       unblocks g7 graph-interpret (rp-slab.md deferred table).
 - [ ] compare-rates "pick with work" upgrade: two offer cards each with a
