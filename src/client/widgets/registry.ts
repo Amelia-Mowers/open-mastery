@@ -4,7 +4,7 @@ import { createExpressionInput, type ExpressionInputConfig } from './expression-
 import { createNumberLine, type NumberLineConfig } from './number-line'
 import { createBalanceScale } from '../viz/balance-scale'
 import { createEnvelopeModel } from '../viz/envelope-model'
-import { createTapeDiagram } from '../viz/tape-diagram'
+import { createTapeDiagram, type TapeDiagramConfig } from '../viz/tape-diagram'
 import { createHangerDiagram } from '../viz/hanger-diagram'
 import { createAreaModel } from '../viz/area-model'
 import { createOppositeFlip, type OppositeFlipConfig } from '../viz/opposite-flip'
@@ -26,7 +26,7 @@ export const WIDGET_ROLES: Record<WidgetType, WidgetRoles> = {
   'number-line': { lesson: true, input: true },
   'balance-scale': { lesson: true, input: false },
   'envelope-model': { lesson: true, input: false },
-  'tape-diagram': { lesson: true, input: false },
+  'tape-diagram': { lesson: true, input: true },
   'hanger-diagram': { lesson: true, input: false },
   'area-model': { lesson: true, input: false },
   'opposite-flip': { lesson: true, input: true },
@@ -75,7 +75,7 @@ export function createWidget(
     case 'envelope-model':
       return createEnvelopeModel() as never
     case 'tape-diagram':
-      return createTapeDiagram() as never
+      return createTapeDiagram(config as TapeDiagramConfig) as never
     case 'hanger-diagram':
       return createHangerDiagram() as never
     case 'area-model':

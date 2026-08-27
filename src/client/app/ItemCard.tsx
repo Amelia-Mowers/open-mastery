@@ -89,7 +89,7 @@ export function ItemCard({
     for (const [key, v] of Object.entries(config)) {
       if (typeof v === 'string' && v.includes('{')) {
         const n = evalNumber(v, params)
-        if (n !== null) config[key] = n
+        config[key] = n !== null ? n : renderText(v, params)
       }
     }
     return createWidget(item.widget.type, config)

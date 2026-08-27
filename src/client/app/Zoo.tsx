@@ -57,6 +57,8 @@ function InputCard({ title, type, config }: { title: string; type: string; confi
 const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<string, unknown> }> = [
   { title: 'number-line (answer input)', type: 'number-line', config: { min: -4, max: 4, step: 2 } },
   { title: 'opposite-flip (answer input)', type: 'opposite-flip', config: { value: 2 } },
+  { title: 'tape-diagram (fill a part)', type: 'tape-diagram', config: { parts: 4, total: 28, fill: 'part' } },
+  { title: 'tape-diagram (fill the total)', type: 'tape-diagram', config: { parts: 7, partLabel: 6, fill: 'total' } },
   { title: 'numeric-input', type: 'numeric-input', config: { units: 'cm' } },
   { title: 'expression-input', type: 'equation-input', config: { variable: 'x' } },
 ]

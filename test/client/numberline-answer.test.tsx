@@ -82,6 +82,67 @@ describe('opposite-flip as the answer input (the widget trinity)', () => {
   })
 })
 
+const tapeItem = itemSchema.parse({
+  id: 'prealg.lineq.divide.099',
+  skills: ['prealg.lineq.divide'],
+  difficulty: 1,
+  representation: 'tape-diagram',
+  params: { a: 4, b: 28, variable: 'x' },
+  generator: { a: { int: [2, 9] }, b: { mult_of: 'a', range: [12, 72] } },
+  widget: {
+    type: 'tape-diagram',
+    config: { stem: '{a}{variable} = {b}. Fill in one part.', parts: '{a}', total: '{b}', fill: 'part' },
+  },
+  answer: { type: 'expr', value: '{variable} = {b/a}', equivalence: 'symbolic', integer: true },
+  verify: '{a * answer == b}',
+  review: { status: 'draft' },
+})
+
+describe('tape-diagram fill-a-part as the answer input', () => {
+  it('typing into one part mirrors across the equal parts and submits the value', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue({
+      verdict: { verdict: 'correct' },
+      correct: true,
+      emitted: [],
+      points: 5,
+      mastery: 0.7,
+    })
+    const { container } = render(
+      <ItemCard
+        action={{
+          ...action,
+          skillId: 'prealg.lineq.divide',
+          forSkillId: 'prealg.lineq.divide',
+          instance: { itemId: tapeItem.id, params: { a: 4, b: 28, variable: 'x' }, paramHash: 'tapehash' },
+        }}
+        item={tapeItem}
+        pointsBefore={0}
+        mastery={0.3}
+        onSubmit={onSubmit}
+        onContinue={() => {}}
+        onStartCheck={() => {}}
+        fetchExplanation={vi.fn()}
+        onExplained={() => {}}
+        showInlineCheckOffer={false}
+      />,
+    )
+    // templated config evaluated: 4 parts, total 28
+    expect(container.querySelectorAll('[data-part]')).toHaveLength(4)
+    expect(container.querySelector('[data-total]')).toHaveTextContent('28')
+    // three mirror cells start as '?'
+    const mirrors = container.querySelectorAll('[data-mirror]')
+    expect(mirrors).toHaveLength(3)
+    expect(mirrors[0]).toHaveTextContent('?')
+    // fill one part — the equal parts mirror it live
+    await user.type(screen.getByRole('textbox', { name: 'Value of one part' }), '7')
+    expect(mirrors[0]).toHaveTextContent('7')
+    expect(mirrors[2]).toHaveTextContent('7')
+    await user.click(screen.getByRole('button', { name: 'Check answer' }))
+    expect(onSubmit).toHaveBeenCalledWith('7', 0, expect.any(Number))
+  })
+})
+
 describe('number-line as the answer input', () => {
   it('evaluates templated bounds and submits the picked tick as the answer', async () => {
     const user = userEvent.setup()
