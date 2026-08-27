@@ -1,0 +1,14 @@
+id: g6.rp.compare-rates
+name: Compare rates to find the better deal
+preamble:
+  plain: "Two stores sell pencils in different packs — which is the better buy? You can't compare packs of different sizes directly, but you CAN compare the price of ONE."
+  vocab:
+    - { term: better buy, meaning: "the choice that costs less for the same one thing" }
+standards: [CCSS.MATH.CONTENT.6.RP.A.3.B]
+source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.rp.unit-rate]
+instruction:
+  - g6.rp.compare-rates.exp-worked
+  - g6.rp.compare-rates.exp-table

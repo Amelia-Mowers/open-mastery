@@ -1,0 +1,13 @@
+id: g7.rp.test-proportional.exp-table
+skill: g7.rp.test-proportional
+representation: ratio-table
+widget: ratio-table
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["y", " ÷ ", "x", " = same?" ], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]], reveal: "0" }, caption: "Is this table proportional? There is ONE test." }
+  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "3" }, caption: "Divide y by x in every row." }
+  - { t: 8, patch: { eqHighlight: [], highlight: "1" }, caption: "{a*k} ÷ {a} = {k}." }
+  - { t: 12, patch: { highlight: "2" }, caption: "{c*k} ÷ {c} = {k} — same so far." }
+  - { t: 16, patch: { highlight: "3" }, caption: "{e*k} ÷ {e} = {k}. Same in EVERY row → proportional, with k = {k}." }
+  - { t: 19.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

@@ -1,0 +1,13 @@
+id: g6.rp.compare-rates.exp-table
+skill: g6.rp.compare-rates
+representation: ratio-table
+widget: ratio-table
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["A: {a1} for ${u*a1}", "  vs  ", "B: {a2} for ${(u+d)*a2}"], cols: ["how many", "cost"], rows: [["A: {a1}", "${u*a1}"], ["A: 1", "${u}"], ["B: {a2}", "${(u+d)*a2}"], ["B: 1", "${u+d}"]], reveal: "0" }, caption: "Two offers. Step each one down to ONE pencil." }
+  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "Pack A: {a1} pencils, ${u*a1}." }
+  - { t: 8, patch: { reveal: "2", highlight: "2" }, caption: "Divide by {a1}: one pencil is ${u}." }
+  - { t: 12, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Pack B: {a2} pencils, ${(u+d)*a2}." }
+  - { t: 16, patch: { eqHighlight: [], reveal: "4", highlight: "4" }, caption: "Divide by {a2}: one pencil is ${u+d}. ${u} beats ${u+d} — A is the better buy." }
+  - { t: 19.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

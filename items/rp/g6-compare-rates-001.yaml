@@ -1,0 +1,20 @@
+id: g6.rp.compare-rates.001
+skills: [g6.rp.compare-rates]
+difficulty: 1
+representation: worked-equation
+params: { u: 2, d: 1, a1: 4, a2: 7 }
+generator: { u: { int: [2, 6] }, d: { int: [1, 4] }, a1: { int: [3, 9] }, a2: { int: [3, 9], distinct: a1 } }
+widget:
+  type: choice
+  config:
+    stem: "Which is the better buy?"
+    options:
+      - { key: a, label: "Pack A: {a1} pencils for ${u*a1}" }
+      - { key: b, label: "Pack B: {a2} pencils for ${(u+d)*a2}" }
+answer: { type: choice, value: a }
+hints:
+  - "Find the price of ONE pencil in each pack."
+  - "Pack A: ${u*a1} ÷ {a1} = ${u} each. Pack B: ${(u+d)*a2} ÷ {a2} = ${u+d} each."
+source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
+verify: "{(u*a1) * a2 < ((u+d)*a2) * a1}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

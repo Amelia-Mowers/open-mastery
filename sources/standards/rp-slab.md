@@ -32,11 +32,14 @@ Coherence Map backbone: 6.RP.A.1 → 6.RP.A.2 → 6.RP.A.3;
 | g7.rp.constant-k | 7.RP.A.2b | ratio-table (÷ arrow) | worked-equation | integer |
 | g7.rp.equation | 7.RP.A.2c | worked-equation | ratio-table | expr `y = kx` |
 | g7.rp.percent-multistep | 7.RP.A.3 | worked-equation | double-number-line | integer |
+| g6.rp.compare-rates | 6.RP.A.3b | worked-equation | ratio-table | choice + integer checks |
+| g7.rp.test-proportional | 7.RP.A.2a | ratio-table | worked-equation | choice + integer checks |
 
 Edges (all within-slab; roots have only external prereqs):
 equiv-table → unit-rate → {missing-value, percent-of, unit-rate-frac,
 constant-k}; equiv-table → missing-value; percent-of → {find-whole,
-percent-multistep}; constant-k → equation.
+percent-multistep}; constant-k → {equation, test-proportional};
+unit-rate → compare-rates.
 
 Progression notes honored: unit rate is DERIVED from equivalent-ratio
 reasoning (tables/DNL), so equiv-table precedes it; percent is a rate
@@ -49,11 +52,19 @@ lesson says so).
 | node | standard | blocked on |
 |---|---|---|
 | ratio-language ("3:2, 3 to 2") | 6.RP.A.1 | a ratio-pair answer shape + grader (a:b with equivalence policy) |
-| compare-rates (better buy) | 6.RP.A.3b | choice widget/grader in the client |
-| test-proportional (is it?) | 7.RP.A.2a | choice widget/grader |
 | graph-interpret ((0,0), (1,r)) | 7.RP.A.2d | proportional-graph widget (line through origin, read points) |
 | unit-convert | 6.RP.A.3d | nothing hard — cut for slab size; next batch |
 | percent-error/markup chains | 7.RP.A.3 | multi-step answer UX; single-step tax/tip/discount IS implemented |
+
+UNBLOCKED by the choice widget (now implemented): **g6.rp.compare-rates**
+(6.RP.A.3b, better buy — choice items with per-instance option shuffle
+plus numeric "what does ONE cost in the better pack" check items, since
+§5 requires checks to be non-choice) and **g7.rp.test-proportional**
+(7.RP.A.2a, yes/no on the y÷x test, with "what must y be to keep it
+proportional" numeric checks). Choice answer keys are semantic and
+FIXED per item family; the client shuffles display order per paramHash,
+and `verify:` asserts the scenario invariant (the cross-product
+inequality that makes the keyed option genuinely correct).
 
 ## Granularity watchlist (candidate splits — decide on mastery DATA)
 
@@ -83,7 +94,8 @@ now and let BKT arbitrate.
 
 ## New widgets this slab demanded (the measured "widget load")
 
-2 new widget types for 9 skills: `double-number-line`,
-`ratio-table` — both trinity (lesson + fill-a-cell input + review),
-per GOLDEN_WIDGET.md. Existing tape-diagram/worked-equation reused.
-Deferred nodes would add 2 more (choice, proportional-graph).
+3 new widget types for 11 skills: `double-number-line`, `ratio-table`
+(both trinity: lesson + fill-a-cell input + review) and `choice`
+(input-only, like numeric-input; deterministic per-instance option
+shuffle), per GOLDEN_WIDGET.md. Existing tape-diagram/worked-equation
+reused. The remaining deferred nodes need 1 more (proportional-graph).

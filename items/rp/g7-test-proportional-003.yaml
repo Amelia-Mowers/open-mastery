@@ -1,0 +1,14 @@
+id: g7.rp.test-proportional.003
+skills: [g7.rp.test-proportional]
+difficulty: 2
+representation: ratio-table
+params: { k: 4, a: 3, c: 7 }
+generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 9] } }
+widget: { type: numeric-input, config: { stem: "x: {a} → y: {a*k}.   x: {c} → y: ?.   What must y be for the table to be proportional?" } }
+answer: { type: expr, value: "{c*k}", integer: true }
+hints:
+  - "Proportional means y ÷ x is the same in every row. The first row gives {a*k} ÷ {a} = {k}."
+  - "So y = {k} × {c} = {c*k}."
+source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
+verify: "{answer * a == a*k * c}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
