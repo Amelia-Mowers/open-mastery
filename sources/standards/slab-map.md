@@ -52,8 +52,14 @@ similarity/trig; circles & coordinates) · 23 HS statistics & probability.
   Pilot measured 3 new types per slab early; expect ~35–50 total widget
   types for K–12, heavily front-loaded — after ~6 slabs, most slabs
   should reuse the fleet.
-- Explanations: ≥2 per node → ~700–900 vetted timelines for K–8. Review
-  hours per timeline is the §8 tracked metric that decides pace.
+- Explanations: ≥2 per node → ~700–900 vetted timelines for K–8. These
+  are PARAMETERIZED TEMPLATES — one timeline covers every generated
+  isomorph (and serves lesson + faded + walkthrough), so the count is
+  authored artifacts, not instances. Structural variation lands in the
+  NODE count instead (forms get their own skill — the -r = 2 rule), and
+  vetting means approving a template across its whole generator range,
+  so review hours per timeline is the §8 tracked metric that decides
+  pace — expect it above static-example review.
 
 ## Suggested order (Coherence Map arrows + market)
 
