@@ -5,8 +5,8 @@ widget: envelope-model
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], envelopes: "{a}", counters: "{b}", envelopesIn: false, countersIn: false }, caption: "Here is the problem in symbols. Watch what each piece MEANS." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], envelopesIn: true }, caption: "{a}{variable} means {a} envelopes — each hiding the same amount, {variable}." }
-  - { t: 8.5, patch: { eqHighlight: ["3"], countersIn: true }, caption: "= {b} means: all together, they hold {b} counters." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], envelopesIn: true }, caption: "{a}{variable} means {a} envelopes — each hiding the same amount, {variable}.", expect: { type: pick, value: ["0", "1"] } }
+  - { t: 8.5, patch: { eqHighlight: ["3"], countersIn: true }, caption: "= {b} means: all together, they hold {b} counters.", expect: { type: pick, value: ["3"] } }
   - { t: 13, patch: { eqHighlight: [], partition: true }, caption: "Share the {b} counters into {a} equal groups — one per envelope." }
   - { t: 17, patch: { reveal: true }, caption: "Every envelope holds {b/a}. So {variable} = {b/a}." }
   - { t: 19.5, handoff: { prompt: "Now you try." } }

@@ -1,5 +1,21 @@
 # Curriculum authoring notes
 
+
+## Stepwise gates (2026-08-27)
+
+Passive timelines are DEPRECATED — the validator warns `[no_expects]`
+on any explanation with no `expect` gates. Author gates on the steps
+that ARE moves: decomposition entrances = `pick` (value = the
+eqHighlight indices), both-sides operations = `op` ("<word> <operand>"),
+worked lines = `expr` (the clean resulting equation: first `=` segment
++ last), value reveals = `numeric`. Every gate must accept its own
+rendered key — cairn's test/client/stepwise-coverage.test.tsx drives
+each one and fails the build otherwise; the validator statically
+rejects unparseable expr/numeric values and malformed op/pick shapes
+([expect_shape]). Remaining passive timelines (table reveals,
+number-line landings, area fills, cube counts, flip) need hand-authored
+gate semantics — the no_expects warning list is the backlog.
+
 ## The skill graph derives from STANDARDS, not textbooks
 
 Textbooks implement the standards; deriving our graph from a textbook

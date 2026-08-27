@@ -5,9 +5,9 @@ widget: hanger-diagram
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], copies: "{a}", shapeLabel: "{variable}", weight: "{b}", shapesIn: false, weightIn: false }, caption: "Here is the problem in symbols. Watch it become a hanger." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], shapesIn: true }, caption: "{a}{variable} means {a} shapes hanging — each one is {variable}." }
-  - { t: 8, patch: { eqHighlight: ["3"], weightIn: true }, caption: "= {b}: the other side holds a weight of {b}. It balances." }
-  - { t: 12, patch: { eqHighlight: [], split: true, share: "{b/a}" }, caption: "Share {b} into {a} equal pieces — the hanger stays balanced." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], shapesIn: true }, caption: "{a}{variable} means {a} shapes hanging — each one is {variable}.", expect: { type: pick, value: ["0", "1"] } }
+  - { t: 8, patch: { eqHighlight: ["3"], weightIn: true }, caption: "= {b}: the other side holds a weight of {b}. It balances.", expect: { type: pick, value: ["3"] } }
+  - { t: 12, patch: { eqHighlight: [], split: true, share: "{b/a}" }, caption: "Share {b} into {a} equal pieces — the hanger stays balanced.", expect: { type: numeric, value: "{b/a}", prompt: "Share it out — how big is EACH piece?" } }
   - { t: 16, patch: { reveal: true }, caption: "Each {variable} balances one piece: {variable} = {b/a}." }
   - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

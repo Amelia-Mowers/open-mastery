@@ -11,8 +11,8 @@ timeline:
     expect:
       type: pick
       value: ["0", "1"]
-      prompt: "Click the piece of the equation that goes on the LEFT pan."
-      hint: "The left pan holds the side with {variable} in it."
+      prompt: "Click the piece or pieces that go on the LEFT pan."
+      hint: "The whole {variable} side — every piece of it — sits on the left pan."
   - t: 8
     patch: { eqHighlight: ["3"], rightIn: true, highlight: right }
     caption: "{a*ans+b} on the right — balanced."

@@ -13,7 +13,7 @@ describe('bundle loading from a curriculum directory', () => {
     expect(bundle.skills).toHaveLength(1)
     expect(bundle.items).toHaveLength(2)
     expect(bundle.explanations).toHaveLength(2)
-    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner'])
+    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects'])
     expect(validateBundle(bundle, { profile: 'release' }).filter((i) => !advisory.has(i.code))).toEqual([])
   })
 

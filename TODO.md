@@ -68,14 +68,23 @@ non-readers) — scope it separately when its turn comes.
       every gate has "Show me" (the widget solves the step); `pick`
       expects make decomposition steps interactive (click the equation
       piece); completed steps scrub via dots.
-      REMAINING for the full ladder: per-step BKT evidence events
-      (tallies currently collapse into hintLevel), prompted rung
-      (proactive hints at gates for lowest p, vs current hint-on-miss),
-      wrong-step → misconception diagnosis surfacing, expects across
-      the rest of the catalog (author per slab batch), stepwise in the
+      CATALOG MIGRATION 2026-08-27 round 3: 39/80 timelines gated (77
+      gates — mechanical passes: op patches → op gates, decomposition
+      entrances → pick gates, worked lines → expr gates [first=last
+      segment, ascii-normalized], hanger share + tape partLabel →
+      numeric gates); passive timelines are DEPRECATED — validator
+      warns [no_expects] (41 remaining = the backlog: ratio-table
+      reveals, number-line landings, area fills, cube counts,
+      opposite-flip, envelope shares — each needs a hand-designed gate
+      semantic, likely new expect types like click-the-tick or
+      click-the-row); stepwise-coverage test drives EVERY gate with its
+      own key (unpassable gate = red build).
+      REMAINING for the full ladder: gate the 41 passive timelines,
+      per-step BKT evidence events (tallies currently collapse into
+      hintLevel), prompted rung (proactive hints at gates for lowest p),
+      wrong-step → misconception diagnosis surfacing, stepwise in the
       corrective ladder (missed practice → stepwise retry of the SAME
-      instance instead of plain re-serve), scrub for LessonPlayer parity
-      (dots exist only in stepwise).
+      instance), scrub for LessonPlayer parity.
 - [ ] proportional-graph widget (line through origin, read (0,0)/(1,r)) —
       unblocks g7 graph-interpret (rp-slab.md deferred table).
 - [ ] compare-rates "pick with work" upgrade: two offer cards each with a

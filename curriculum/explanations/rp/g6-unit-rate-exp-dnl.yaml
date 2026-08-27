@@ -5,8 +5,8 @@ widget: double-number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a} pounds", " → ", "${b}"], topLabel: "pounds", bottomLabel: "dollars", top: ["0", "1", "{a}"], bottom: ["0", "{b/a}", "{b}"], topIn: false, bottomIn: false, reveal: ["0", "2"] }, caption: "{a} pounds cost ${b}. Watch the lines find the price of ONE." }
-  - { t: 4, patch: { eqHighlight: ["0"], topIn: true }, caption: "Pounds on top — 0, 1, and {a}." }
-  - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "Dollars below: ${b} lines up under {a} pounds." }
+  - { t: 4, patch: { eqHighlight: ["0"], topIn: true }, caption: "Pounds on top — 0, 1, and {a}.", expect: { type: pick, value: ["0"] } }
+  - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "Dollars below: ${b} lines up under {a} pounds.", expect: { type: pick, value: ["2"] } }
   - { t: 12, patch: { eqHighlight: [], highlight: "1", reveal: ["0", "1", "2"] }, caption: "Share ${b} across {a} pounds: 1 pound lines up with ${b/a}. That is the unit rate." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

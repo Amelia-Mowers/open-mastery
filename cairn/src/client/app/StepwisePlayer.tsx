@@ -214,7 +214,17 @@ export function StepwisePlayer({
       return
     }
     tallies.current.misses += 1
-    const missLead = waitingOn.type === 'pick' ? 'Not that piece.' : 'Not quite.'
+    let missLead = 'Not quite.'
+    if (waitingOn.type === 'pick') {
+      const want = new Set((waitingOn.value as unknown[]).map(Number))
+      const allInside = [...picked].every((i) => want.has(i))
+      missLead =
+        allInside && picked.size < want.size
+          ? 'Almost — more than one piece goes together. Pick ALL of them.'
+          : picked.size > 1
+            ? 'Not those pieces.'
+            : 'Not that piece.'
+    }
     if (tries === 0) {
       setTries(1)
       setFeedback(
@@ -233,7 +243,9 @@ export function StepwisePlayer({
       : e.type === 'op'
         ? 'Your move — what do we do to both sides?'
         : e.type === 'pick'
-          ? 'Click the piece of the equation this step is about.'
+          ? (Array.isArray(e.value) && e.value.length > 1
+              ? 'Click the pieces of the equation this step is about — more than one belongs.'
+              : 'Click the piece of the equation this step is about.')
           : 'Your move — write the next step.'
 
   return (

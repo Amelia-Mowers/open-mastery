@@ -149,6 +149,17 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           s.id,
           `skills need ≥3 distinct representations (has ${reps.size})`,
         )
+      // stepwise migration (2026-08-27): passive timelines are DEPRECATED —
+      // every explanation should gate its move steps with `expect`
+      for (const e of explBySkill.get(s.id) ?? []) {
+        if (!e.timeline.some((st) => st.expect !== undefined))
+          push(
+            'warning',
+            'no_expects',
+            e.id,
+            'passive timeline (deprecated): add expect gates to the move steps so it plays stepwise',
+          )
+      }
       // decomposition rule (GOLDEN_WIDGET §3): every lesson opens on the raw
       // symbolic problem via the equation banner — worked-equation timelines
       // are exempt (their `start` line IS the symbols)
@@ -310,6 +321,26 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             `${e.id}.timeline[${i}]`,
             `op expect value must be '<add|subtract|multiply|divide> <operand>' (got '${String(step.expect.value)}')`,
           )
+        if (step.expect.type === 'expr' || step.expect.type === 'numeric') {
+          // an unparseable expect grades every student wrong forever — check
+          // the value parses with each template segment stood in by a number
+          const tpl = parseTemplate(String(step.expect.value))
+          if (tpl.ok) {
+            const probe = tpl.value.map((seg) => (seg.kind === 'text' ? seg.text : '7')).join('')
+            const parts = probe.split('=').map((x) => x.trim())
+            const bad =
+              parts.length > 2 ||
+              parts.some((x) => x === '' || !parseExprLoose(x).ok) ||
+              (step.expect.type === 'numeric' && parts.length !== 1)
+            if (bad)
+              push(
+                'error',
+                'expect_shape',
+                `${e.id}.timeline[${i}]`,
+                `${step.expect.type} expect value '${String(step.expect.value)}' does not parse as gradable math`,
+              )
+          }
+        }
         if (step.expect.type === 'pick') {
           // pick gates click equation-banner segments: indices must be
           // integers within a banner some EARLIER step established
