@@ -43,9 +43,9 @@ non-readers) — scope it separately when its turn comes.
       "keep practicing"; parked-vs-done framing on session_done;
       offered-hint auto-reveal lacks framing copy.
 
-- [ ] Publish the browser demo: create the GitHub remote (open_mastery
-      monorepo layout), enable Pages → GitHub Actions; the workflow
-      (.github/workflows/demo-pages.yml) and `npm run build:demo` exist.
+- [x] Browser demo LIVE: https://amelia-mowers.github.io/open-mastery/
+      (monorepo github.com/Amelia-Mowers/open-mastery; every push to main
+      redeploys via .github/workflows/demo-pages.yml).
 
 ## Engine / server
 

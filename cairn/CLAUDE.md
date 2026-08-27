@@ -49,3 +49,7 @@
   normal build never references the demo entry. GH Pages workflow:
   `../.github/workflows/demo-pages.yml` (expects an open_mastery monorepo
   remote).
+- **MONOREPO (2026-08-27)**: this directory is part of the single git repo
+  at the workspace root (github.com/Amelia-Mowers/open-mastery). Commit at
+  the ROOT — the old per-directory repos are archived as .git-local-archive
+  and must not be used. Every push to main redeploys the Pages demo.
