@@ -23,19 +23,24 @@ export interface HangerDiagramView {
   share?: string
   /** pair each shape with its share */
   reveal?: boolean
+  /** staged decomposition: bring each side in as its symbol is explained */
+  shapesIn?: boolean
+  weightIn?: boolean
 }
 
 type HangerState = {
   split: boolean
   share: string | null
   reveal: boolean
+  shapesIn: boolean
+  weightIn: boolean
 }
 
 const label = (p: HangerDiagramParams): string =>
   `Balanced hanger: ${p.copies} copies of ${p.shapeLabel} balancing ${p.weight}`
 
 export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null, HangerDiagramView> {
-  const store = new WidgetStore<HangerState>({ split: false, share: null, reveal: false })
+  const store = new WidgetStore<HangerState>({ split: false, share: null, reveal: false, shapesIn: true, weightIn: true })
 
   function Shape({ text, share, i, size }: { text: string; share: string | null; i: number; size: number }) {
     return (
@@ -104,14 +109,15 @@ export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null,
         <div style={{ display: 'flex', justifyContent: 'space-between', padding: '0 2.5%' }}>
           {/* left: n copies of the shape, centered under the left half */}
           <div style={{ display: 'flex', gap: 6, alignItems: 'flex-start', flexWrap: 'wrap', width: '47%', justifyContent: 'center' }}>
-            {Array.from({ length: n }, (_, i) => (
-              <Shape key={i} i={i} size={size} text={params.shapeLabel} share={state.reveal ? state.share : null} />
-            ))}
+            {state.shapesIn &&
+              Array.from({ length: n }, (_, i) => (
+                <Shape key={i} i={i} size={size} text={params.shapeLabel} share={state.reveal ? state.share : null} />
+              ))}
           </div>
           {/* right: the weight, whole or split into n equal pieces */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: '47%' }}>
             <span aria-hidden style={{ width: 2, height: 14, background: '#8b8070', display: 'block' }} />
-            {state.split ? (
+            {!state.weightIn ? null : state.split ? (
               <div data-weight-split style={{ display: 'flex', gap: 4, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {Array.from({ length: n }, (_, i) => (
                   <span
@@ -166,6 +172,8 @@ export function createHangerDiagram(): WidgetInstance<HangerDiagramParams, null,
       if (patch.split !== undefined) next.split = patch.split === true
       if (patch.share !== undefined) next.share = patch.share ?? null
       if (patch.reveal !== undefined) next.reveal = patch.reveal === true
+      if (patch.shapesIn !== undefined) next.shapesIn = patch.shapesIn === true
+      if (patch.weightIn !== undefined) next.weightIn = patch.weightIn === true
       store.setState(next)
     },
     a11y: { role: 'img', label },

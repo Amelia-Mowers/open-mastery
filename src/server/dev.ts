@@ -369,6 +369,8 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       const exclude = (url.searchParams.get('exclude') ?? '').split(',').filter(Boolean)
       // the problem's own metaphor, when it declares one
       const prefer = url.searchParams.get('prefer')
+      // faded lead: the SAME representation the student's initial lesson used
+      const viewedFirst = url.searchParams.get('viewedFirst') === '1'
       const skill = cur.skills.get(skillId)
       if (!skill) return json(res, 404, { error: `unknown skill '${skillId}'` })
       const all = cur.explanationsBySkill.get(skillId) ?? []
@@ -388,7 +390,9 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         .filter((e) => !exclude.includes(e.representation))
         .map((e) => ({ e, params: feedableParams(e, [instanceParams, familyParams]) }))
         .filter((x): x is { e: Explanation; params: Record<string, number | string> } => x.params !== null)
+      const firstRep = viewedFirst ? (st.student.representationsViewed[skillId]?.[0] ?? null) : null
       const chosen =
+        (firstRep ? eligible.find((x) => x.e.representation === firstRep) : undefined) ??
         (prefer ? eligible.find((x) => x.e.representation === prefer) : undefined) ??
         eligible[0] ??
         null

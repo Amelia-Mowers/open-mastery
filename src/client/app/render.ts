@@ -83,5 +83,7 @@ export function adaptBalancePatch(
           ? { op, by: str(patch['by'] ?? '') }
           : null
   }
+  if ('leftIn' in patch) out.leftIn = patch['leftIn'] === true
+  if ('rightIn' in patch) out.rightIn = patch['rightIn'] === true
   return out
 }

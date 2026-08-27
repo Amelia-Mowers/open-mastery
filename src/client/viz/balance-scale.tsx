@@ -13,6 +13,9 @@ export interface BalanceScaleView {
   highlight?: 'left.coef' | 'left' | 'right' | null
   op?: { op: 'divide' | 'multiply'; by: string } | null
   caption?: string
+  /** staged decomposition: bring each pan in as its symbol is explained */
+  leftIn?: boolean
+  rightIn?: boolean
 }
 
 type BalanceScaleState = {
@@ -21,6 +24,8 @@ type BalanceScaleState = {
   highlight: BalanceScaleView['highlight'] | null
   op: BalanceScaleView['op'] | null
   caption: string
+  leftIn: boolean
+  rightIn: boolean
 }
 
 const label = (params: BalanceScaleParams): string =>
@@ -37,6 +42,8 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
     highlight: null,
     op: null,
     caption: '',
+    leftIn: true,
+    rightIn: true,
   })
 
   function Tile({ text, highlighted, side }: { text: string; highlighted: boolean; side: 'left' | 'right' }) {
@@ -124,10 +131,10 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
             <circle cx="100" cy="49" r="5" fill="#5c4a38" />
             <circle cx="459" cy="49" r="5" fill="#5c4a38" />
           </svg>
-          <Tile text={left} highlighted={hl === 'left' || hl === 'left.coef'} side="left" />
-          <Tile text={right} highlighted={hl === 'right'} side="right" />
-          {state.op && <OpBadge side="left" op={state.op} />}
-          {state.op && <OpBadge side="right" op={state.op} />}
+          {state.leftIn && <Tile text={left} highlighted={hl === 'left' || hl === 'left.coef'} side="left" />}
+          {state.rightIn && <Tile text={right} highlighted={hl === 'right'} side="right" />}
+          {state.op && state.leftIn && <OpBadge side="left" op={state.op} />}
+          {state.op && state.rightIn && <OpBadge side="right" op={state.op} />}
         </div>
         <div
           data-caption
@@ -157,6 +164,8 @@ export function createBalanceScale(): WidgetInstance<BalanceScaleParams, null, B
       if (patch.highlight !== undefined) next.highlight = patch.highlight
       if (patch.op !== undefined) next.op = patch.op
       if (patch.caption !== undefined) next.caption = patch.caption ?? ''
+      if (patch.leftIn !== undefined) next.leftIn = patch.leftIn === true
+      if (patch.rightIn !== undefined) next.rightIn = patch.rightIn === true
       store.setState(next)
     },
     a11y: { role: 'img', label },

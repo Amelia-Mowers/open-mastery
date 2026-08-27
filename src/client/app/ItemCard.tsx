@@ -25,8 +25,9 @@ export interface ItemCardProps {
   onContinue: (focus?: string | null) => void
   onStartCheck: (skillId: string) => void
   /** fetch an explanation for this problem's skill (server supplies the
-   * pending instance's params; the item's representation is preferred) */
-  fetchExplanation: (excludeReps: string[]) => Promise<ExplainResult>
+   * pending instance's params; the item's representation is preferred, or
+   * with sameAsLesson the representation the initial lesson used) */
+  fetchExplanation: (excludeReps: string[], sameAsLesson?: boolean) => Promise<ExplainResult>
   /** report a completed walk-through so it lands in the event log */
   onExplained: (explanationId: string) => void
   /** the check is unlocked but the student chose more practice first */
@@ -105,7 +106,11 @@ export function ItemCard({
     if (!action.scaffolded || item.viz?.template !== 'balance-scale') return null
     const a = params['a']
     const b = params['b']
+    // envelopes depict exactly "a groups of x total b" — only rotate to them
+    // when the item's OWN binding is the ax = b shape (never by numeric fit:
+    // a=5,b=6 also fits n/5 = 6, where 5 envelopes would teach the wrong idea)
     const envelopeFits =
+      item.viz.bind['left'] === '{a}{variable}' && item.viz.bind['right'] === '{b}' &&
       typeof a === 'number' && Number.isInteger(a) && a >= 2 && a <= 14 &&
       typeof b === 'number' && Number.isInteger(b) && b > 0 && b <= 80
     const rotate = envelopeFits && parseInt(action.instance.paramHash.slice(0, 2), 16) % 2 === 1
@@ -148,7 +153,7 @@ export function ItemCard({
   useEffect(() => {
     if (action.itemKind !== 'faded') return
     let cancelled = false
-    void fetchExplanation([]).then((r) => {
+    void fetchExplanation([], true).then((r) => {
       if (cancelled || !r?.explanation) return
       // drop the resolution (final content step) and the handoff — the
       // answer input below IS the resolution

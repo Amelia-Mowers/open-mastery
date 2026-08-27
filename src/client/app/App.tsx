@@ -330,7 +330,9 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
           refresh()
         }}
         onStartCheck={startCheck}
-        fetchExplanation={(exclude) => api.explain(skillId, exclude, itemRep ?? undefined)}
+        fetchExplanation={(exclude, sameAsLesson) =>
+          api.explain(skillId, exclude, itemRep ?? undefined, sameAsLesson)
+        }
         onExplained={(explanationId) => {
           void api.explained(explanationId, skillId)
         }}

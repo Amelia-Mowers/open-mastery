@@ -31,6 +31,8 @@ export interface TapeDiagramView {
   total?: string
   /** 1-based part indices to highlight */
   highlight?: number[]
+  /** staged decomposition: show the brace total once its symbol is explained */
+  totalIn?: boolean
 }
 
 export interface TapeDiagramAnswer {
@@ -43,6 +45,7 @@ type TapeState = {
   total: string | null
   highlight: number[]
   raw: string
+  totalIn: boolean
 }
 
 const label = (p: TapeDiagramParams): string =>
@@ -66,7 +69,7 @@ const cellStyle = (highlighted: boolean, last: boolean): CSSProperties => ({
 export function createTapeDiagram(
   config: TapeDiagramConfig = {},
 ): WidgetInstance<TapeDiagramParams, TapeDiagramAnswer, TapeDiagramView> {
-  const store = new WidgetStore<TapeState>({ partLabel: null, total: null, highlight: [], raw: '' })
+  const store = new WidgetStore<TapeState>({ partLabel: null, total: null, highlight: [], raw: '', totalIn: true })
 
   function Brace() {
     return (
@@ -207,7 +210,7 @@ export function createTapeDiagram(
             transition: 'color 0.3s ease',
           }}
         >
-          {total}
+          {state.totalIn ? total : ''}
         </div>
       </div>
     )
@@ -228,6 +231,7 @@ export function createTapeDiagram(
       if (patch.partLabel !== undefined) next.partLabel = patch.partLabel ?? null
       if (patch.total !== undefined) next.total = patch.total ?? null
       if (patch.highlight !== undefined) next.highlight = patch.highlight ?? []
+      if (patch.totalIn !== undefined) next.totalIn = patch.totalIn === true
       store.setState(next)
     },
     a11y: { role: 'img', label },

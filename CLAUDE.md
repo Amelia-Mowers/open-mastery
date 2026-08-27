@@ -22,6 +22,11 @@
   balance-scale = pick the operation for both sides; tape-diagram = fill
   a part; envelope-model = distribute counters; hanger = choose the move;
   area-model = fill the products; worked-equation = choose the next line.
+- **`GOLDEN_WIDGET.md` is the widget standard** — trinity roles, staged
+  decomposition entrances paired with `eqHighlight`, semantic (never
+  numeric) widget fit, review-mode inertness, keyboard operation, motion,
+  and the add-a-widget checklist. Conformance tests:
+  `test/client/golden-widget.test.tsx`. The bullets below are summaries.
 - **Widget standard: programmatic + tested at extremes.** Widgets render
   from actual instance variables (never another family's numbers), and
   every widget gets edge-case tests at the generator's extremes: max/min

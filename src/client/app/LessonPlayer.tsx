@@ -172,9 +172,10 @@ function createLessonWidget(explanation: Explanation, params: Params): LessonWid
     return {
       element: w.render(setup, 'lesson'),
       apply: (patch) => {
-        const view: { partLabel?: string; total?: string; highlight?: number[] } = {}
+        const view: { partLabel?: string; total?: string; highlight?: number[]; totalIn?: boolean } = {}
         if ('partLabel' in patch) view.partLabel = renderText(String(patch['partLabel']), params)
         if ('total' in patch) view.total = renderText(String(patch['total']), params)
+        if ('totalIn' in patch) view.totalIn = patch['totalIn'] === true
         if ('highlight' in patch) {
           const raw = patch['highlight']
           view.highlight = Array.isArray(raw)
@@ -192,10 +193,12 @@ function createLessonWidget(explanation: Explanation, params: Params): LessonWid
     return {
       element: w.render(setup, 'lesson'),
       apply: (patch) => {
-        const view: { split?: boolean; share?: string; reveal?: boolean } = {}
+        const view: { split?: boolean; share?: string; reveal?: boolean; shapesIn?: boolean; weightIn?: boolean } = {}
         if ('split' in patch) view.split = patch['split'] === true
         if ('reveal' in patch) view.reveal = patch['reveal'] === true
         if ('share' in patch) view.share = renderText(String(patch['share']), params)
+        if ('shapesIn' in patch) view.shapesIn = patch['shapesIn'] === true
+        if ('weightIn' in patch) view.weightIn = patch['weightIn'] === true
         w.applyPatch(view)
       },
     }

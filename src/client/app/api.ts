@@ -95,10 +95,16 @@ export class SiteApi {
   /** on-demand explanation for a skill; same variables as the pending item.
    * `prefer` asks for the problem's own metaphor; when every representation
    * has been seen, the chain loops (everything but the current one). */
-  async explain(skillId: string, excludeReps: string[] = [], prefer?: string): Promise<ExplainResult> {
+  async explain(
+    skillId: string,
+    excludeReps: string[] = [],
+    prefer?: string,
+    sameAsLesson?: boolean,
+  ): Promise<ExplainResult> {
     const extra: Record<string, string> = { skill: skillId }
     if (excludeReps.length > 0) extra['exclude'] = excludeReps.join(',')
     if (prefer) extra['prefer'] = prefer
+    if (sameAsLesson) extra['viewedFirst'] = '1'
     const r = await fetch(this.url('/api/explain', extra))
     const result = (await r.json()) as ExplainResult
     if (result.explanation === null && excludeReps.length > 0) {

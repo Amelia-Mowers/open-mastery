@@ -108,6 +108,38 @@ describe('explanation params match the timeline family', () => {
   })
 })
 
+describe('the faded lead replays the representation the initial lesson used', () => {
+  it('viewedFirst=1 prefers the first-viewed representation over instruction order', async () => {
+    const site = createDevSite(fixtureBundle())
+    const base = await listen(site)
+    try {
+      const q = async (extra: string) => {
+        const r = await fetch(
+          `${base}/api/explain?student=faded-lead-test&skill=alg1.arith.inverse-ops${extra}`,
+        )
+        return (await r.json()) as { explanation: { representation: string } | null }
+      }
+      // instruction order puts number-line first — the default choice
+      expect((await q('')).explanation?.representation).toBe('number-line')
+      expect((await q('&viewedFirst=1')).explanation?.representation).toBe('number-line')
+      // but this student's initial lesson was the area model
+      await fetch(`${base}/api/explained?student=faded-lead-test`, {
+        method: 'POST',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({
+          explanationId: 'alg1.arith.inverse-ops.exp-area',
+          skillId: 'alg1.arith.inverse-ops',
+        }),
+      })
+      expect((await q('&viewedFirst=1')).explanation?.representation).toBe('area-model')
+      // on-demand "show me how" is unaffected
+      expect((await q('')).explanation?.representation).toBe('number-line')
+    } finally {
+      await site.stop()
+    }
+  })
+})
+
 describe('local site server loop (build step 3)', () => {
   it('a correct student masters the fixture bundle end to end over HTTP', async () => {
     const bundle = fixtureBundle()
