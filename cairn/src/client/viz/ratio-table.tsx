@@ -98,11 +98,45 @@ export function createRatioTable(
     const rows = lesson ? params.rows : (config.rows ?? [])
     const shown = lesson && state.reveal !== null ? state.reveal : rows.length
     const f = lesson ? state.factor : null
+    // keyboard order for row-select: rows top to bottom, then the none-chip
+    const cycle = (delta: number): void => {
+      const order = [...rows.map((_, i) => i + 1), 0]
+      const idx = order.indexOf(state.selectedRow ?? -1)
+      const next = order[(idx + delta + order.length) % order.length]
+      if (next !== undefined) selectRow(next)
+    }
     return (
       <div
-        role={lesson ? 'img' : 'group'}
-        aria-label={lesson ? label(params) : `Ratio table: fill in the missing value`}
-        style={{ maxWidth: 400, minWidth: 260, margin: '0 auto', position: 'relative', paddingRight: 64 }}
+        role={lesson ? 'img' : selecting ? 'radiogroup' : 'group'}
+        aria-label={
+          lesson
+            ? label(params)
+            : selecting
+              ? `Which row? Pick one, or "${String(config.noneLabel ?? 'None of the rows')}"`
+              : 'Ratio table: fill in the missing value'
+        }
+        tabIndex={selecting && !disabled ? 0 : undefined}
+        onKeyDown={
+          selecting && !disabled
+            ? (e) => {
+                if (e.key === 'ArrowDown' || e.key === 'ArrowRight') {
+                  e.preventDefault()
+                  cycle(1)
+                } else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
+                  e.preventDefault()
+                  cycle(-1)
+                }
+              }
+            : undefined
+        }
+        style={{
+          maxWidth: 400,
+          minWidth: 260,
+          margin: '0 auto',
+          position: 'relative',
+          paddingRight: 64,
+          outlineColor: '#b05f28',
+        }}
       >
         <table
           style={{

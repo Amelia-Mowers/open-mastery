@@ -74,6 +74,16 @@ const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<str
     config: { cols: ['cups', 'muffins'], rows: [[2, 12], [5, '?']] },
   },
   {
+    title: 'ratio-table (click the row that breaks the pattern)',
+    type: 'ratio-table',
+    config: {
+      select: true,
+      noneLabel: 'All rows agree',
+      cols: ['x', 'y'],
+      rows: [[2, 6], [5, 17], [8, 24]],
+    },
+  },
+  {
     title: 'choice (pick one — order shuffles per instance)',
     type: 'choice',
     config: {

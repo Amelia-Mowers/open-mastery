@@ -51,16 +51,29 @@ export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: Ap
   const [student, setStudent] = useState(
     initialStudent ?? urlParam('student') ?? readStoredStudent(),
   )
+  /** the guide view stands alone — no student join needed (?view=guide,
+   * or the link on the join card) */
+  const [guideMode, setGuideMode] = useState(urlParam('view') === 'guide')
   const banner = demoBanner === true && (
     <p className="muted demo-banner">
       Demo — runs entirely in your browser. Progress stays on this device.
     </p>
   )
+  if (guideMode)
+    return (
+      <>
+        {banner}
+        <GuidePage
+          api={apiFactory ? apiFactory(apiBase, 'guide-viewer') : new SiteApi(apiBase, 'guide-viewer')}
+          onBack={() => setGuideMode(false)}
+        />
+      </>
+    )
   if (student === '')
     return (
       <>
         {banner}
-        <JoinCard onJoin={setStudent} />
+        <JoinCard onJoin={setStudent} onGuide={() => setGuideMode(true)} />
       </>
     )
   return (
@@ -77,7 +90,26 @@ export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: Ap
   )
 }
 
-function JoinCard({ onJoin }: { onJoin: (id: string) => void }) {
+function GuidePage({ api, onBack }: { api: CairnApi; onBack: () => void }) {
+  return (
+    <main className="shell">
+      <header className="topbar">
+        <span className="cairn-mark" aria-hidden>
+          <i /> <i /> <i />
+        </span>
+        <span className="brand">Cairn</span>
+        <span className="mono-chip">guide view</span>
+        <span className="spacer" />
+        <button className="btn btn-quiet" onClick={onBack}>
+          Student view
+        </button>
+      </header>
+      <Guide api={api} />
+    </main>
+  )
+}
+
+function JoinCard({ onJoin, onGuide }: { onJoin: (id: string) => void; onGuide?: () => void }) {
   const [name, setName] = useState('')
   const join = () => {
     const id = name.trim().toLowerCase()
@@ -109,6 +141,14 @@ function JoinCard({ onJoin }: { onJoin: (id: string) => void }) {
             Start
           </button>
         </div>
+        {onGuide && (
+          <p className="muted join-guide-link">
+            Running the room?{' '}
+            <button className="btn btn-quiet" onClick={onGuide}>
+              Open the guide view →
+            </button>
+          </p>
+        )}
       </section>
     </main>
   )

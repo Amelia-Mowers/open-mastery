@@ -71,6 +71,32 @@ describe('widgets at extremes', () => {
     }
   })
 
+  it('balance: long expressions stay inside their tiles (nowrap + clip)', async () => {
+    const { createBalanceScale } = await import('../../src/client/viz/balance-scale')
+    const w = createBalanceScale()
+    const { container } = render(
+      <>{w.render({ left: '12x + 345 + 6789', right: '99999' }, 'lesson')}</>,
+    )
+    const tile = container.querySelector('[data-pan="left"]')! as HTMLElement
+    expect(tile.textContent).toBe('12x + 345 + 6789')
+    expect(tile.style.whiteSpace).toBe('nowrap')
+    expect(tile.style.maxWidth).toBe('32%')
+  })
+
+  it('choice: five long options all render and stay selectable', async () => {
+    const user = (await import('@testing-library/user-event')).default.setup()
+    const { createChoice } = await import('../../src/client/widgets/choice')
+    const opts = Array.from({ length: 5 }, (_, i) => ({
+      key: `k${i}`,
+      label: `Option ${i}: ${'a very long label '.repeat(6)}`,
+    }))
+    const w = createChoice({ options: opts, seed: 'extreme' })
+    const { container } = render(<>{w.render({}, 'problem')}</>)
+    expect(container.querySelectorAll('[data-choice]')).toHaveLength(5)
+    await user.click(container.querySelector('[data-choice="k3"]')!)
+    expect(w.extract()).toEqual({ raw: 'k3' })
+  })
+
   it('worked equation: a long solution keeps every line', () => {
     const w = createWorkedEquation()
     const { container } = render(w.render({ start: 'a = b' }, 'lesson'))

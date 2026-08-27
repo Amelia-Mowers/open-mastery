@@ -35,7 +35,7 @@ describe('widget zoo', () => {
     })
     // demo + input cards all present
     expect(container.querySelectorAll('.zoo-card')).toHaveLength(
-      distinctWidgets.size + fallbacks.length + 9,
+      distinctWidgets.size + fallbacks.length + 10,
     )
     // fallback entries are labeled as not yet adopted
     for (const f of fallbacks) expect(screen.getByText(new RegExp(f.widget.toUpperCase()))).toBeInTheDocument()

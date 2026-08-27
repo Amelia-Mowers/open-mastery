@@ -99,6 +99,26 @@ describe('ratio-table', () => {
     expect(w2.extract()).toEqual({ raw: '', value: null })
   })
 
+  it('row-select: arrows walk rows then the none-chip from a single tab stop', async () => {
+    const user = userEvent.setup()
+    const w = createRatioTable({
+      select: true,
+      noneLabel: 'All rows agree',
+      cols: ['x', 'y'],
+      rows: [[2, 6], [5, 17]],
+    })
+    const { container } = render(<>{w.render({} as never, 'problem')}</>)
+    const group = container.querySelector('[role="radiogroup"]')! as HTMLElement
+    expect(group.getAttribute('aria-label')).toContain('All rows agree')
+    group.focus()
+    await user.keyboard('{ArrowDown}')
+    expect(w.extract()).toEqual({ raw: '1', value: 1 })
+    await user.keyboard('{ArrowDown}{ArrowDown}')
+    expect(w.extract()).toEqual({ raw: '0', value: 0 }) // the none-chip
+    await user.keyboard('{ArrowDown}')
+    expect(w.extract()).toEqual({ raw: '1', value: 1 }) // wraps
+  })
+
   it('extremes: 6 rows renders every row; long values stay in their cells', () => {
     const w = createRatioTable()
     const rows = Array.from({ length: 6 }, (_, i) => [String((i + 1) * 123), String((i + 1) * 45678)])

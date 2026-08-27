@@ -62,6 +62,25 @@ describe('review-mode inertness (§1)', () => {
     expect(w.extract()).toEqual({ value: null })
   })
 
+  it('numeric, expression, and number-line inputs are all inert in review', async () => {
+    const user = userEvent.setup()
+    const { createNumericInput } = await import('../../src/client/widgets/numeric-input')
+    const { createExpressionInput } = await import('../../src/client/widgets/expression-input')
+    const { createNumberLine } = await import('../../src/client/widgets/number-line')
+    for (const w of [createNumericInput({}), createExpressionInput({})]) {
+      const r = render(<>{w.render({} as never, 'review')}</>)
+      const input = r.container.querySelector('input')!
+      expect(input.disabled).toBe(true)
+      cleanup()
+    }
+    const nl = createNumberLine({ min: -4, max: 4, step: 2 })
+    const r = render(<>{nl.render({}, 'review')}</>)
+    const slider = r.container.querySelector('[role="slider"]')! as HTMLElement
+    expect(slider.getAttribute('tabindex')).toBe('-1')
+    await user.click(r.container.querySelector('button')!)
+    expect((nl.extract() as { value: number | null }).value).toBeNull()
+  })
+
   it('tape-diagram: the fill boxes are disabled', () => {
     const w = createTapeDiagram({ parts: 4, total: 28, fill: 'part' })
     const { container } = render(<>{w.render({ parts: 4, partLabel: '?', total: '28' }, 'review')}</>)

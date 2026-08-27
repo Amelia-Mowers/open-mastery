@@ -341,3 +341,6 @@ body {
 .guide-chip-bar span { display: block; height: 100%; background: #b05f28; border-radius: 3px; }
 .focus-chip { color: #8a5320; background: #f3e4d4; border-radius: 14px; }
 .reset-confirm { color: #96453a; font-weight: 800; }
+
+.join-guide-link { margin-top: 18px; }
+.join-guide-link .btn { padding: 4px 8px; }
