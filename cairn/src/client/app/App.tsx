@@ -263,6 +263,8 @@ function Session({
   const [points, setPoints] = useState<number | null>(null)
   /** skill the student explicitly chose to keep working (soft-park opt-in) */
   const focusSkill = useRef<string | null>(null)
+  /** the map popup already showed this skill's preamble — don't repeat it */
+  const skipIntroFor = useRef<string | null>(null)
   /** display mirror of focusSkill (the header chip) */
   const [focusedOn, setFocusedOn] = useState(false)
   /** skills whose check-unlocked interstitial was dismissed for now */
@@ -344,6 +346,7 @@ function Session({
         testMode={testMode}
         onPick={(skillId) => {
           focusSkill.current = skillId
+          skipIntroFor.current = skillId // the popup just showed the preamble
           setFocusedOn(true)
           setView('work')
           refresh()
@@ -395,8 +398,10 @@ function Session({
     const rep = next.explanation!.representation
     // the preamble belongs to the NEW-SKILL entry only, never to alternative
     // explanations or chained representations
+    const introSkipped = skipIntroFor.current === skillId
+    if (introSkipped) skipIntroFor.current = null
     const intro =
-      next.action.kind === 'lesson' && urlParam('autostart') !== '1'
+      next.action.kind === 'lesson' && urlParam('autostart') !== '1' && !introSkipped
         ? {
             title: next.skillName ?? skillId,
             ...(next.preamble ? { plain: next.preamble.plain, vocab: next.preamble.vocab } : {}),

@@ -124,6 +124,15 @@ export function Dashboard({
   }, [bundle])
 
   const [picked, setPicked] = useState<string | null>(null)
+  // modal: Escape closes from anywhere
+  useEffect(() => {
+    if (picked === null) return
+    const onKey = (e: KeyboardEvent): void => {
+      if (e.key === 'Escape') setPicked(null)
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [picked])
 
   if (!bundle || !state || !layout) return <p className="muted loading">Loading…</p>
   const pickedSkill = picked !== null ? bundle.skills.find((s) => s.id === picked) : undefined
@@ -170,26 +179,44 @@ export function Dashboard({
       </section>
 
       {pickedSkill && (
-        <section className="card skill-peek" aria-label={`About ${pickedSkill.name}`}>
-          <h2 className="dash-h">{pickedSkill.name}</h2>
-          {pickedSkill.preamble && <p className="peek-plain">{pickedSkill.preamble.plain}</p>}
-          {pickedSkill.preamble?.vocab.map((v) => (
-            <p key={v.term} className="peek-vocab">
-              <span className="hint peek-term">{v.term}</span> {v.meaning}
-            </p>
-          ))}
-          <div className="answer-row">
-            <button className="btn btn-primary" onClick={() => onPick?.(pickedSkill.id)}>
-              {state.skills[pickedSkill.id]?.phase === undefined ||
-              state.skills[pickedSkill.id]?.phase === 'unseen'
-                ? 'Start this skill'
-                : 'Keep working on this'}
-            </button>
-            <button className="btn btn-quiet" onClick={() => setPicked(null)}>
-              Back to the map
-            </button>
-          </div>
-        </section>
+        <div
+          className="peek-overlay"
+          role="presentation"
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setPicked(null)
+          }}
+        >
+          <section
+            className="card skill-peek"
+            role="dialog"
+            aria-modal="true"
+            aria-label={`About ${pickedSkill.name}`}
+          >
+            <h2 className="dash-h">{pickedSkill.name}</h2>
+            {pickedSkill.preamble && <p className="peek-plain">{pickedSkill.preamble.plain}</p>}
+            {pickedSkill.preamble?.vocab.map((v) => (
+              <p key={v.term} className="peek-vocab">
+                <span className="hint peek-term">{v.term}</span> {v.meaning}
+              </p>
+            ))}
+            <div className="answer-row">
+              <button
+                className="btn btn-primary"
+                // eslint-disable-next-line jsx-a11y/no-autofocus
+                autoFocus
+                onClick={() => onPick?.(pickedSkill.id)}
+              >
+                {state.skills[pickedSkill.id]?.phase === undefined ||
+                state.skills[pickedSkill.id]?.phase === 'unseen'
+                  ? 'Start this skill'
+                  : 'Keep working on this'}
+              </button>
+              <button className="btn btn-quiet" onClick={() => setPicked(null)}>
+                Back to the map
+              </button>
+            </div>
+          </section>
+        </div>
       )}
       <section className="card">
         <h2 className="dash-h">Your path</h2>

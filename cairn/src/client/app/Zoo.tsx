@@ -171,7 +171,7 @@ export function Zoo({ api }: { api: CairnApi }) {
                     <span aria-hidden className={e.vetted ? 'vet-ok' : 'vet-draft'}>
                       {e.vetted ? '✓' : '◌'}
                     </span>{' '}
-                    {e.id.replace(/^.*\.(exp-)/, '$1')}·{e.skillName.slice(0, 22)}
+                    {e.id.replace(/^.*\.(exp-)/, '$1')} · {e.skillName}
                   </a>
                 ))}
               </p>
