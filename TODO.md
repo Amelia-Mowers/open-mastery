@@ -11,8 +11,11 @@ Not K–12 — the middle-school band plus the manager's view (~2–3 months):
       ~200 timelines at the measured pace; vet in fresh-eyes batches, and
       recruit pilot-center tutors as external reviewers.
 - [ ] Build step 5: real site server (SQLite SiteStore, auth/enrollment).
-- [ ] Build step 6: guide dashboard — THE demo feature (flags, parked
-      skills, mastery movement across a roster).
+- [x] Build step 6 v1: guide dashboard SHIPPED (?view=guide; Needs-
+      attention + roster; ?seed=1 seeds a synthetic class in-browser).
+      v2: per-student drill-in (their skill map + event timeline),
+      intervention actions (clear a flag, assign focus), real auth
+      (arrives with step 5).
 - [ ] Flow-gap polish list (below) closed.
 - [ ] Deployment + pricing story: per-seat HOSTED plans (~$12/seat is
       2–4% of a center's per-student revenue — "one retained student pays
@@ -68,7 +71,7 @@ non-readers) — scope it separately when its turn comes.
 
 - [ ] Build step 5: Bun site server + SQLite SiteStore, auth/enrollment,
       outbox (dev server is the reference wiring).
-- [ ] Build step 6: guide dashboard (flags exist in the event log).
+
 - [ ] Build step 7: LLM rubric grading + help queue (needs_llm verdicts
       currently no-op).
 - [ ] FSRS: carry pre-lapse stability into re-grants (v1 re-inits fresh —
