@@ -4,10 +4,13 @@ representation: balance-scale
 widget: balance-scale
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{c1}{variable} + {c2}{variable} - {c3}{variable}", " = ", "{d1} + {(c1+c2-c3)*ans - d1}"], left: "{c1+c2-c3}{variable}", right: "{(c1+c2-c3)*ans}", leftIn: false, rightIn: false }, caption: "Both sides need simplifying before we can solve. Watch each side collapse onto the scale." }
-  - { t: 4.5, patch: { eqHighlight: ["0"], leftIn: true, highlight: left }, caption: "Combine the {variable}-terms: {c1} + {c2} - {c3} = {c1+c2-c3}. The whole left side lands as {c1+c2-c3}{variable}.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
-  - { t: 10, patch: { eqHighlight: ["2"], rightIn: true, highlight: right }, caption: "Combine the numbers: {d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans}.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
-  - { t: 15, patch: { eqHighlight: [], highlight: null }, caption: "Now it is a one-step equation." }
-  - { t: 18, patch: { op: divide, by: "{c1+c2-c3}" }, caption: "Divide both sides by {c1+c2-c3}: {variable} = {ans}.", expect: { type: op, value: "divide {c1+c2-c3}" } }
-  - { t: 20.5, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { equation: ["{c1}{variable}", " + {c2}{variable}", " − {c3}{variable}", " = ", "{d1}", " + {(c1+c2-c3)*ans - d1}"], left: "{c1+c2-c3}{variable}", right: "{(c1+c2-c3)*ans}", leftIn: false, rightIn: false }, caption: "Both sides need simplifying before we can solve." }
+  - { t: 4, patch: { eqHighlight: ["0", "1", "2"], highlight: left }, caption: "All three {variable}-terms belong together on the left pan.", expect: { type: pick, value: ["0", "1", "2"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
+  - { t: 9, patch: { leftIn: true }, caption: "{c1} + {c2} − {c3} = {c1+c2-c3}: the left side collapses to {c1+c2-c3}{variable}.", expect: { type: numeric, value: "{c1+c2-c3}", prompt: "Combine the {variable}-terms: {c1} + {c2} − {c3} makes how many {variable}?" } }
+  - { t: 14, patch: { eqHighlight: ["4", "5"], highlight: right }, caption: "The plain numbers belong together on the right pan.", expect: { type: pick, value: ["4", "5"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
+  - { t: 19, patch: { rightIn: true }, caption: "{d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans} lands on the right pan.", expect: { type: numeric, value: "{(c1+c2-c3)*ans}", prompt: "Combine the numbers: {d1} + {(c1+c2-c3)*ans - d1} makes what?" } }
+  - { t: 24, patch: { eqHighlight: [], highlight: null }, caption: "Now it is a one-step equation." }
+  - { t: 28, patch: { op: divide, by: "{c1+c2-c3}" }, caption: "Divide both pans by {c1+c2-c3}.", expect: { type: op, value: "divide {c1+c2-c3}" } }
+  - { t: 31, patch: { left: "{variable}", right: "{ans}", op: null }, caption: "{variable} = {ans}." }
+  - { t: 33, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
