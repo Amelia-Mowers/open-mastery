@@ -12,3 +12,4 @@ prereqs: [g6.ee.equivalent, g7.ee.two-step]
 instruction:
   - g7.ee.distribute-solve.exp-area
   - g7.ee.distribute-solve.exp-worked
+  - g7.ee.distribute-solve.exp-balance

@@ -12,3 +12,4 @@ prereqs: [g6.rp.equiv-table]
 instruction:
   - g6.rp.unit-rate.exp-dnl
   - g6.rp.unit-rate.exp-worked
+  - g6.rp.unit-rate.exp-tape

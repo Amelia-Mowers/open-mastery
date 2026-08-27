@@ -12,3 +12,4 @@ prereqs: [g6.rp.unit-rate]
 instruction:
   - g6.rp.percent-of.exp-dnl
   - g6.rp.percent-of.exp-worked
+  - g6.rp.percent-of.exp-table

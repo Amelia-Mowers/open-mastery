@@ -13,3 +13,4 @@ prereqs: []
 instruction:
   - g6.ee.evaluate.exp-worked
   - g6.ee.evaluate.exp-table
+  - g6.ee.evaluate.exp-numberline

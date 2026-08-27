@@ -1,0 +1,11 @@
+id: g6.ee.exponents.exp-numberline
+skill: g6.ee.exponents
+representation: number-line
+widget: number-line
+params_from: item
+timeline:
+  - { t: 0, patch: { min: 0, max: "{c*c}", step: "{c}" }, caption: "{c}² as skip-counting: {c} jumps, each of size {c}." }
+  - { t: 4, patch: { marker: "{c}", highlight: ["{c}"] }, caption: "One jump of {c} lands on {c}." }
+  - { t: 8, patch: { marker: "{c*c}", highlight: [] }, caption: "{c} jumps of {c} land on {c*c}. {c}² = {c*c}." }
+  - { t: 10.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

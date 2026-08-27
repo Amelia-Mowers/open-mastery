@@ -12,3 +12,4 @@ prereqs: [g6.rp.unit-rate]
 instruction:
   - g7.rp.unit-rate-frac.exp-worked
   - g7.rp.unit-rate-frac.exp-dnl
+  - g7.rp.unit-rate-frac.exp-table

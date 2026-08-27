@@ -86,10 +86,22 @@ function envelopeSetup(
 function tapeSetup(
   timeline: ReadonlyArray<{ patch?: Record<string, unknown> | undefined }>,
   params: Params,
-): { parts: number; partLabel: string; total: string } | null {
+): { parts: number; partLabel: string; total: string; cells?: string[] } | null {
   for (const s of timeline) {
     const p = s.patch
-    if (!p || !('parts' in p) || !('partLabel' in p) || !('total' in p)) continue
+    if (!p) continue
+    // bar-model form: unequal labeled cells
+    if ('cells' in p && Array.isArray(p['cells']) && 'total' in p) {
+      const cells = (p['cells'] as unknown[]).map((v) => renderText(String(v), params))
+      if (cells.length < 1 || cells.length > 10) return null
+      return {
+        parts: cells.length,
+        partLabel: '',
+        total: renderText(String(p['total']), params),
+        cells,
+      }
+    }
+    if (!('parts' in p) || !('partLabel' in p) || !('total' in p)) continue
     const parts = evalNumber(p['parts'], params)
     if (parts === null || parts < 1 || parts > 14) return null
     return {
@@ -173,7 +185,8 @@ function areaSetup(
   return null
 }
 
-function createLessonWidget(explanation: Explanation, params: Params): LessonWidget | null {
+/** exported for the no-silent-fallback conformance test */
+export function createLessonWidget(explanation: Explanation, params: Params): LessonWidget | null {
   if (explanation.widget === 'balance-scale') {
     const w = createBalanceScale()
     return {

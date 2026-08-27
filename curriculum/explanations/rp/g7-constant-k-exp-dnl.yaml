@@ -1,0 +1,12 @@
+id: g7.rp.constant-k.exp-dnl
+skill: g7.rp.constant-k
+representation: double-number-line
+widget: double-number-line
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["y", " = k · ", "x"], topLabel: "x", bottomLabel: "y", top: ["0", "1", "{a}", "{c}"], bottom: ["0", "{k}", "{a*k}", "{c*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "A proportional pair of lines — k is hiding at x = 1." }
+  - { t: 4, patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "2", "3"] }, caption: "The x line carries {a} and {c}." }
+  - { t: 8, patch: { eqHighlight: ["0"], bottomIn: true }, caption: "Each y sits below its x: {a*k} under {a}, {c*k} under {c}." }
+  - { t: 12, patch: { eqHighlight: ["1"], highlight: "1", reveal: ["0", "1", "2", "3"] }, caption: "Read x = 1: y = {k}. THAT is the constant of proportionality." }
+  - { t: 15.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

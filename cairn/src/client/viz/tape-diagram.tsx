@@ -24,6 +24,9 @@ export interface TapeDiagramParams {
   parts: number
   partLabel: string
   total: string
+  /** bar-model mode: UNEQUAL labeled cells (e.g. ["x", "8"] braced by 21)
+   * instead of `parts` equal cells — the part-part-whole picture */
+  cells?: string[]
 }
 
 export interface TapeDiagramView {
@@ -170,7 +173,8 @@ export function createTapeDiagram(
 
   function LessonView({ params }: { params: TapeDiagramParams }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
-    const n = Math.max(1, Math.round(params.parts))
+    const cells = params.cells
+    const n = cells ? cells.length : Math.max(1, Math.round(params.parts))
     const partLabel = state.partLabel ?? params.partLabel
     const total = state.total ?? params.total
     return (
@@ -195,7 +199,7 @@ export function createTapeDiagram(
                 animationDelay: `${i * 0.05}s`,
               }}
             >
-              {partLabel}
+              {cells ? cells[i] : partLabel}
             </div>
           ))}
         </div>

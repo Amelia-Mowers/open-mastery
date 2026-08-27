@@ -12,3 +12,4 @@ fluency: false
 instruction:
   - prealg.lineq.negate.exp-flip
   - prealg.lineq.negate.exp-worked
+  - prealg.lineq.negate.exp-balance

@@ -12,3 +12,4 @@ prereqs: [g6.ee.add-solve, prealg.lineq.divide]
 instruction:
   - g7.ee.two-step.exp-balance
   - g7.ee.two-step.exp-worked
+  - g7.ee.two-step.exp-numberline

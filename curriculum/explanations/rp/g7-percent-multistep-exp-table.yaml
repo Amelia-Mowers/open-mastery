@@ -1,0 +1,12 @@
+id: g7.rp.percent-multistep.exp-table
+skill: g7.rp.percent-multistep
+representation: ratio-table
+widget: ratio-table
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["${20*g}", " at ", "{5*f}% off"], cols: ["percent", "dollars"], rows: [["100%", "{20*g}"], ["{5*f}%", "{f*g}"], ["{100-5*f}%", "{20*g - f*g}"]], reveal: "0" }, caption: "Price, discount, and what you pay — three rows of one table." }
+  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "100% is the full price: ${20*g}." }
+  - { t: 8.5, patch: { eqHighlight: ["2"], reveal: "2", highlight: "2" }, caption: "The discount row: {5*f}% is ${f*g}." }
+  - { t: 13, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "You pay the REST: {100-5*f}% = ${20*g - f*g}." }
+  - { t: 16, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -12,3 +12,4 @@ prereqs: [g6.rp.percent-of]
 instruction:
   - g6.rp.find-whole.exp-dnl
   - g6.rp.find-whole.exp-worked
+  - g6.rp.find-whole.exp-table

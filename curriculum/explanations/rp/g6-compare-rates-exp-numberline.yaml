@@ -1,0 +1,12 @@
+id: g6.rp.compare-rates.exp-numberline
+skill: g6.rp.compare-rates
+representation: number-line
+widget: number-line
+params_from: item
+timeline:
+  - { t: 0, patch: { min: 0, max: "{u+d+1}", step: 1 }, caption: "Put both UNIT prices on one line — then the comparison is just position." }
+  - { t: 4, patch: { marker: "{u}", highlight: ["{u}"] }, caption: "Pack A: ${u*a1} ÷ {a1} = ${u} each." }
+  - { t: 8.5, patch: { highlight: ["{u}", "{u+d}"] }, caption: "Pack B: ${(u+d)*a2} ÷ {a2} = ${u+d} each." }
+  - { t: 13, patch: { marker: "{u}" }, caption: "${u} sits LEFT of ${u+d} — cheaper per pencil. Pack A is the better buy." }
+  - { t: 15.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

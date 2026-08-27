@@ -12,3 +12,4 @@ prereqs: [g6.rp.equiv-table, g6.rp.unit-rate]
 instruction:
   - g6.rp.missing-value.exp-dnl
   - g6.rp.missing-value.exp-worked
+  - g6.rp.missing-value.exp-table

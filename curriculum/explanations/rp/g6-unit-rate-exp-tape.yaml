@@ -1,0 +1,12 @@
+id: g6.rp.unit-rate.exp-tape
+skill: g6.rp.unit-rate
+representation: tape-diagram
+widget: tape-diagram
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["{a} pounds", " → ", "${b}"], parts: "{a}", partLabel: "?", total: "${b}", totalIn: false }, caption: "The whole cost, cut into one piece per pound." }
+  - { t: 4, patch: { eqHighlight: ["0"], highlight: ["1"] }, caption: "{a} pounds — {a} equal pieces, one pound each." }
+  - { t: 8, patch: { eqHighlight: ["2"], totalIn: true, highlight: [] }, caption: "All the pieces together cost ${b}." }
+  - { t: 12, patch: { eqHighlight: [], partLabel: "{b/a}", highlight: ["1"] }, caption: "${b} ÷ {a} = ${b/a} — one pound costs ${b/a}. That is the unit rate." }
+  - { t: 15, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

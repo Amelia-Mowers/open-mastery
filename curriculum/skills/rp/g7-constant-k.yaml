@@ -13,3 +13,4 @@ prereqs: [g6.rp.unit-rate]
 instruction:
   - g7.rp.constant-k.exp-table
   - g7.rp.constant-k.exp-worked
+  - g7.rp.constant-k.exp-dnl

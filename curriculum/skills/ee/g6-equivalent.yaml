@@ -13,3 +13,4 @@ prereqs: [g6.ee.evaluate]
 instruction:
   - g6.ee.equivalent.exp-area
   - g6.ee.equivalent.exp-worked
+  - g6.ee.equivalent.exp-table

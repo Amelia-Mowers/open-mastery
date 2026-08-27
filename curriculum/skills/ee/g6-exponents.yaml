@@ -12,3 +12,4 @@ prereqs: []
 instruction:
   - g6.ee.exponents.exp-area
   - g6.ee.exponents.exp-worked
+  - g6.ee.exponents.exp-numberline

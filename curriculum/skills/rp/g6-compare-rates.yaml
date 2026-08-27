@@ -12,3 +12,4 @@ prereqs: [g6.rp.unit-rate]
 instruction:
   - g6.rp.compare-rates.exp-worked
   - g6.rp.compare-rates.exp-table
+  - g6.rp.compare-rates.exp-numberline

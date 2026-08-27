@@ -13,3 +13,4 @@ prereqs: []
 instruction:
   - g6.rp.equiv-table.exp-table
   - g6.rp.equiv-table.exp-dnl
+  - g6.rp.equiv-table.exp-worked

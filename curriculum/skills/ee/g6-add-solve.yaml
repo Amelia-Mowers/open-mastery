@@ -12,3 +12,4 @@ prereqs: []
 instruction:
   - g6.ee.add-solve.exp-balance
   - g6.ee.add-solve.exp-worked
+  - g6.ee.add-solve.exp-tape

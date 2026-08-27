@@ -13,3 +13,4 @@ prereqs: [g6.rp.percent-of]
 instruction:
   - g7.rp.percent-multistep.exp-worked
   - g7.rp.percent-multistep.exp-dnl
+  - g7.rp.percent-multistep.exp-table

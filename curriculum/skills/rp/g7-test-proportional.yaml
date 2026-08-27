@@ -12,3 +12,4 @@ prereqs: [g7.rp.constant-k]
 instruction:
   - g7.rp.test-proportional.exp-table
   - g7.rp.test-proportional.exp-worked
+  - g7.rp.test-proportional.exp-dnl

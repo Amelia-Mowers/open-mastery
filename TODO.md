@@ -63,14 +63,15 @@ non-readers) — scope it separately when its turn comes.
       gallery?), themed word-problem skins per item family.
 - [ ] square-tiles widget (exponents deserve their own picture — the
       gridded area model is a stopgap; see GOLDEN_WIDGET §6b reuse rule).
+- [ ] algebra-tiles widget — unlocks the honest third rep for
+      write-expression, combine (and future factoring).
 - [ ] g7 two-step SUBTRACTION variant (ax − b = c) as its own skill with
       its own timelines (form_mismatch caught it riding the addition
       skill).
 
-- [ ] Representation-floor backfill: every skill to ≥3 distinct reps
-      incl. worked-equation (validator now warns; ~20 skills below the
-      floor — RP skills need worked variants, EE/negate need a third
-      concrete rep). Do alongside/before the NS slab.
+- [x] Representation-floor backfill DONE (19 new explanations; 22→2
+      warnings). Remaining 2 are intentional: write-expression and
+      combine await the algebra-tiles widget (their honest third rep).
 
 ## Engine / server
 

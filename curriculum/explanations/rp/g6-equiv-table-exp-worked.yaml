@@ -1,0 +1,11 @@
+id: g6.rp.equiv-table.exp-worked
+skill: g6.rp.equiv-table
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "{a} cups : {b} muffins" }, caption: "One batch, written as a ratio." }
+  - { t: 4, patch: { line: "× {m} on BOTH:  {a}·{m} : {b}·{m}", note: "same multiplier, both quantities" }, caption: "Scale both quantities by the same number and the ratio stays equivalent." }
+  - { t: 8.5, patch: { line: "{a*m} cups : {b*m} muffins", note: "{m} batches" }, caption: "{a*m} cups makes {b*m} muffins." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
