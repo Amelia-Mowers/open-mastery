@@ -207,6 +207,33 @@ describe('bundle validation (release gates)', () => {
     expect(issues.some((i) => i.code === 'generator_failed')).toBe(true)
   })
 
+  it('verify: the computed answer must satisfy the item relation (catches wrong answer templates)', () => {
+    const b = goodBundle()
+    b.items[0]!.verify = '{a * answer == b}' // a·x = b substituted back
+    expect(validateBundle(b).filter((i) => i.code === 'verify_failed')).toEqual([])
+    // now sabotage the answer template — every current check would pass, verify catches it
+    b.items[0]!.answer.value = '{variable} = {a*b}'
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'verify_failed')).toBe(true)
+  })
+
+  it('verify referencing unknown params is flagged; `answer` is in scope', () => {
+    const b = goodBundle()
+    b.items[0]!.verify = '{mystery * answer == b}'
+    expect(validateBundle(b).some((i) => i.code === 'unknown_param' && i.where.includes('verify'))).toBe(true)
+  })
+
+  it('answer.integer requires integer answers across every generated instance', () => {
+    const b = goodBundle()
+    b.items[0]!.answer.integer = true
+    expect(validateBundle(b).filter((i) => i.code === 'answer_not_integer')).toEqual([])
+    // break the divisibility guarantee: b no longer a multiple of a
+    b.items[0]!.generator = { a: { int: [2, 12] }, b: { int: [10, 60] } }
+    b.items[0]!.params = { a: 4, b: 27, variable: 'x' }
+    const issues = validateBundle(b)
+    expect(issues.some((i) => i.code === 'answer_not_integer')).toBe(true)
+  })
+
   it('flags duplicate ids across kinds', () => {
     const b = goodBundle()
     b.items[1] = itemSchema.parse({ ...docItem, id: b.items[0]!.id })

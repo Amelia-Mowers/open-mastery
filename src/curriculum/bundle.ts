@@ -2,6 +2,9 @@ import type { Skill } from './skill.ts'
 import type { Item } from './item.ts'
 import type { Explanation } from './explanation.ts'
 import { parseTemplate, templateIdentifiers, renderTemplate } from '../expr/render.ts'
+import { parseExpr } from '../expr/parse.ts'
+import { evaluate } from '../expr/eval.ts'
+import { isInt, type Rational } from '../expr/rational.ts'
 import { generateParams, type GeneratorSpec } from '../expr/generate.ts'
 import type { Env } from '../expr/eval.ts'
 
@@ -164,6 +167,15 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           push('error', 'unknown_param', where, `template references unknown param '${ident}'`)
     }
     if (typeof it.answer.value === 'string') checkTemplate(it.answer.value, `${it.id}.answer.value`)
+    if (it.verify !== undefined) {
+      const scopeWithAnswer = new Set([...scope, 'answer'])
+      const pv = parseTemplate(it.verify)
+      if (!pv.ok) push('error', 'bad_template', `${it.id}.verify`, pv.error.message)
+      else
+        for (const ident of templateIdentifiers(pv.value))
+          if (!scopeWithAnswer.has(ident))
+            push('error', 'unknown_param', `${it.id}.verify`, `template references unknown param '${ident}'`)
+    }
     it.hints.forEach((h, i) => checkTemplate(h, `${it.id}.hints[${i}]`))
     if (it.viz)
       for (const [key, tpl] of Object.entries(it.viz.bind))
@@ -197,16 +209,55 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     })
   }
 
-  // ---- generator smoke test: sampling always succeeds and the templated
-  //      answer evaluates under every sample (and under authored params) ----
+  // ---- generator smoke + SOLUTION VERIFICATION: sampling always succeeds,
+  //      the templated answer evaluates under every instance, integer
+  //      requirements hold, and the computed answer actually satisfies the
+  //      item's verify relation ----
   for (const it of bundle.items) {
     const answerTpl = typeof it.answer.value === 'string' ? it.answer.value : null
-    const evalAnswer = (env: Env, where: string) => {
+    /** evaluate the answer VALUE (the RHS when the template is an equation) */
+    const answerValue = (env: Env): Rational | null => {
+      if (!answerTpl) return null
+      const rendered = renderTemplate(answerTpl, env, { numberStyle: 'fraction' })
+      if (!rendered.ok) return null
+      const last = rendered.value.split('=').pop()?.trim() ?? ''
+      const parsed = parseExpr(last)
+      if (!parsed.ok) return null
+      const v = evaluate(parsed.value, {})
+      return v.ok && v.value.t === 'num' ? v.value.v : null
+    }
+    const checkInstance = (env: Env, where: string) => {
       if (!answerTpl) return
       const r = renderTemplate(answerTpl, env)
-      if (!r.ok) push('error', 'answer_eval', where, r.error.message)
+      if (!r.ok) {
+        push('error', 'answer_eval', where, r.error.message)
+        return
+      }
+      const ans = answerValue(env)
+      if (it.answer.integer === true) {
+        if (ans === null || !isInt(ans))
+          push('error', 'answer_not_integer', where, `answer value is not an integer`)
+      }
+      if (it.verify !== undefined) {
+        if (ans === null) {
+          push('error', 'verify_failed', where, 'answer value could not be computed for verification')
+          return
+        }
+        const parsed = parseTemplate(it.verify)
+        if (!parsed.ok) return // reported by the template checks
+        const seg = parsed.value.find((x) => x.kind === 'expr')
+        if (!seg || seg.kind !== 'expr') {
+          push('error', 'verify_failed', `${it.id}.verify`, 'verify must contain an expression')
+          return
+        }
+        const result = evaluate(seg.expr, { ...env, answer: ans })
+        if (!result.ok)
+          push('error', 'verify_failed', where, `verify errored: ${result.error.message}`)
+        else if (result.value.t !== 'bool' || !result.value.v)
+          push('error', 'verify_failed', where, `answer does not satisfy '${it.verify}'`)
+      }
     }
-    evalAnswer(it.params as Env, `${it.id}.answer.value (authored params)`)
+    checkInstance(it.params as Env, `${it.id} (authored params)`)
     if (it.generator != null) {
       const spec = it.generator as GeneratorSpec
       const fixed: Record<string, number | string> = {}
@@ -217,7 +268,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           push('error', 'generator_failed', `${it.id}.generator`, `seed ${seed}: ${g.error.message}`)
           break
         }
-        evalAnswer(g.value as Env, `${it.id}.answer.value (seed ${seed})`)
+        checkInstance(g.value as Env, `${it.id} (seed ${seed})`)
       }
     }
   }

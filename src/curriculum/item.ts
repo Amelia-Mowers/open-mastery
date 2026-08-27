@@ -36,6 +36,9 @@ export const answerSchema = z
     units: z.string().optional(),
     /** per-item display flag for non-integer rationals (§4.3a) */
     display: z.enum(['fraction', 'decimal']).optional(),
+    /** require the answer value to be an integer for EVERY generated
+     * instance (checked by bundle validation across seeds) */
+    integer: z.boolean().optional(),
   })
   .strict()
 
@@ -87,6 +90,11 @@ export const itemSchema = z
     faded: fadedSpecSchema.nullish().default(null),
     source: sourceRefSchema.optional(),
     review: reviewSchema,
+    /** independent solution check: a boolean cairn-expr template evaluated
+     * with the item params PLUS `answer` bound to the computed answer value —
+     * substitute back into the original relation, e.g. "{a * answer == b}".
+     * Never reference the answer template itself (that would be circular). */
+    verify: z.string().optional(),
     /** ids are immutable and never reused; a moved/renamed item is a new id
      * pointing at its predecessor */
     supersedes: itemIdSchema.optional(),
