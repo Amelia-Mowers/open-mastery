@@ -92,6 +92,11 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
     }
 
     if (req.method === 'GET' && url.pathname === '/api/bundle') return send(res, core.bundleView())
+    if (req.method === 'GET' && url.pathname === '/api/guide') return send(res, core.guideView())
+    if (req.method === 'POST' && url.pathname === '/api/seed-class') {
+      const { seedDemoClass } = await import('../site/simulate.ts')
+      return send(res, { status: 200, body: { seeded: seedDemoClass(core) } })
+    }
     if (req.method === 'GET' && url.pathname === '/api/demos') return send(res, core.demosView())
 
     if (studentId === '')

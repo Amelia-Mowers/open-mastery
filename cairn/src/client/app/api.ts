@@ -47,6 +47,20 @@ export interface ZooDemoView {
   explanation: Explanation
 }
 
+export interface GuideStudent {
+  id: string
+  points: number
+  mastered: number
+  working: Array<{ skillId: string; name: string; phase: string; masteryPct: number; lapsed: boolean }>
+  flags: Array<{ reason: string; skillId: string | null; skillName: string | null; t: number }>
+  lastActive: number
+}
+
+export interface GuideView {
+  students: GuideStudent[]
+  totalSkills: number
+}
+
 export interface BundleView {
   skills: Array<{ id: string; name: string; prereqs: string[]; standards: string[] }>
 }
@@ -73,6 +87,8 @@ export interface CairnApi {
   explained(explanationId: string, skillId: string): Promise<void>
   demos(): Promise<{ demos: ZooDemoView[] }>
   bundle(): Promise<BundleView>
+  guide(): Promise<GuideView>
+  seedClass(): Promise<void>
   state(): Promise<StateView>
   reset(): Promise<void>
 }
@@ -151,6 +167,15 @@ export class SiteApi implements CairnApi {
   async bundle(): Promise<BundleView> {
     const r = await fetch(`${this.base}/api/bundle`)
     return (await r.json()) as BundleView
+  }
+
+  async guide(): Promise<GuideView> {
+    const r = await fetch(`${this.base}/api/guide`)
+    return (await r.json()) as GuideView
+  }
+
+  async seedClass(): Promise<void> {
+    await fetch(`${this.base}/api/seed-class`, { method: 'POST' })
   }
 
   async state(): Promise<StateView> {

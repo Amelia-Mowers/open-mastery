@@ -401,6 +401,46 @@ export class SiteCore {
     return ok({ ok: true, points: this.pointsFor(studentId) })
   }
 
+  /** Guide roster (build step 6, v1): every student's phases, mastery bars,
+   * and open flags — for guides, never shown to students (invariant 3 bans
+   * student-visible comparisons; the real server gates this behind guide
+   * auth in step 5's successor). */
+  guideView(): SiteResult {
+    const skillName = (id: string): string => this.cur.skills.get(id)?.name ?? id
+    const lastActive = new Map<string, number>()
+    for (const e of this.log) lastActive.set(e.studentId, e.t)
+    const students = [...this.slots.entries()]
+      // a slot with no activity (e.g. the viewer's own fresh session) isn't
+      // a roster row yet
+      .filter(([id, slot]) => Object.keys(slot.student.skills).length > 0 || slot.student.openFlags.length > 0 || lastActive.has(id))
+      .map(([id, slot]) => {
+        const skills = Object.entries(slot.student.skills)
+          .filter(([, st]) => st.phase !== 'unseen')
+          .map(([sid, st]) => ({
+            skillId: sid,
+            name: skillName(sid),
+            phase: st.phase,
+            masteryPct: this.masteryOf(id, sid),
+            lapsed: st.lapsed === true,
+          }))
+        return {
+          id,
+          points: this.pointsFor(id),
+          mastered: skills.filter((k) => k.phase === 'mastered').length,
+          working: skills.filter((k) => k.phase !== 'mastered'),
+          flags: slot.student.openFlags.map((f) => ({
+            reason: f.reason,
+            skillId: f.skillId ?? null,
+            skillName: f.skillId ? skillName(f.skillId) : null,
+            t: f.t,
+          })),
+          lastActive: lastActive.get(id) ?? 0,
+        }
+      })
+      .sort((a, b) => b.flags.length - a.flags.length || a.id.localeCompare(b.id))
+    return ok({ students, totalSkills: this.bundle.skills.length })
+  }
+
   reset(studentId: string): SiteResult {
     this.slots.delete(studentId)
     for (let i = this.log.length - 1; i >= 0; i--)

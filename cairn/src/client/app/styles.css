@@ -317,3 +317,27 @@ body {
   to { opacity: 1; transform: none; background: transparent; }
 }
 .stem { animation: stem-in 0.5s ease; border-radius: 8px; }
+
+/* ---- guide dashboard ---- */
+.guide-flag {
+  background: #f5dfda; color: #96453a; border-radius: 9px;
+  padding: 10px 14px; margin: 6px 0; font-size: 14.5px;
+}
+.guide-table-scroll { overflow-x: auto; }
+.guide-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; }
+.guide-table th {
+  text-align: left; font: 700 11px ui-monospace, Menlo, monospace;
+  color: #8b8070; padding: 6px 10px; border-bottom: 2px solid #e6ddd0;
+}
+.guide-table td { padding: 9px 10px; border-bottom: 1px solid #efe8dc; vertical-align: top; }
+.guide-table tr[data-flagged] td { background: #fbf1ef; }
+.guide-name { font-weight: 700; }
+.guide-stones { color: #8a5320; letter-spacing: 1px; white-space: nowrap; }
+.guide-skill-chip { display: block; margin: 2px 0; white-space: nowrap; }
+.guide-chip-bar {
+  display: inline-block; width: 54px; height: 6px; margin-left: 7px;
+  background: #ece5d8; border-radius: 3px; overflow: hidden; vertical-align: middle;
+}
+.guide-chip-bar span { display: block; height: 100%; background: #b05f28; border-radius: 3px; }
+.focus-chip { color: #8a5320; background: #f3e4d4; border-radius: 14px; }
+.reset-confirm { color: #96453a; font-weight: 800; }

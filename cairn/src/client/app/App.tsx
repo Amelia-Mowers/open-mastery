@@ -6,6 +6,7 @@ import { LessonPlayer } from './LessonPlayer'
 import { ItemCard } from './ItemCard'
 import { Dashboard } from './Dashboard'
 import { Zoo } from './Zoo'
+import { Guide } from './Guide'
 import { SmoothHeight } from './SmoothHeight'
 import type { Params } from './render'
 
@@ -117,17 +118,22 @@ function Header({
   student,
   points,
   view,
+  focused,
+  onClearFocus,
   onToggleView,
   onLeave,
   onReset,
 }: {
   student?: string
   points: number | null
-  view?: 'work' | 'dashboard' | 'zoo'
+  view?: 'work' | 'dashboard' | 'zoo' | 'guide'
+  focused?: boolean
+  onClearFocus?: () => void
   onToggleView?: () => void
   onLeave?: () => void
   onReset?: () => void
 }) {
+  const [confirmReset, setConfirmReset] = useState(false)
   return (
     <header className="topbar">
       <span className="cairn-mark" aria-hidden>
@@ -139,15 +145,38 @@ function Header({
           ● {points}
         </span>
       )}
+      {focused === true && onClearFocus && (
+        <button className="btn btn-quiet focus-chip" onClick={onClearFocus} title="You chose to keep practicing one skill — click to go back to the normal mix">
+          ◎ focused · clear
+        </button>
+      )}
       <span className="spacer" />
       {onToggleView && (
         <button className="btn btn-quiet" onClick={onToggleView}>
           {view === 'dashboard' ? 'Back to work' : 'My cairn'}
         </button>
       )}
-      {onReset && (
-        <button className="btn btn-quiet" onClick={onReset} title="Start this student over (demo)">
+      {onReset && !confirmReset && (
+        <button
+          className="btn btn-quiet"
+          onClick={() => {
+            setConfirmReset(true)
+            setTimeout(() => setConfirmReset(false), 4000)
+          }}
+          title="Start this student over (demo)"
+        >
           Reset demo
+        </button>
+      )}
+      {onReset && confirmReset && (
+        <button
+          className="btn btn-quiet reset-confirm"
+          onClick={() => {
+            setConfirmReset(false)
+            onReset()
+          }}
+        >
+          Really erase progress?
         </button>
       )}
       {student && onLeave && (
@@ -179,12 +208,20 @@ function Session({
   /** a fetch is in flight — the previous card stays, dimmed, so the height
    * glides to the next one instead of flashing through a loading state */
   const [fetching, setFetching] = useState(false)
-  const [view, setView] = useState<'work' | 'dashboard' | 'zoo'>(
-    urlParam('view') === 'dashboard' ? 'dashboard' : urlParam('view') === 'zoo' ? 'zoo' : 'work',
+  const [view, setView] = useState<'work' | 'dashboard' | 'zoo' | 'guide'>(
+    urlParam('view') === 'dashboard'
+      ? 'dashboard'
+      : urlParam('view') === 'zoo'
+        ? 'zoo'
+        : urlParam('view') === 'guide'
+          ? 'guide'
+          : 'work',
   )
   const [points, setPoints] = useState<number | null>(null)
   /** skill the student explicitly chose to keep working (soft-park opt-in) */
   const focusSkill = useRef<string | null>(null)
+  /** display mirror of focusSkill (the header chip) */
+  const [focusedOn, setFocusedOn] = useState(false)
   /** skills whose check-unlocked interstitial was dismissed for now */
   const [checkDismissed, setCheckDismissed] = useState<ReadonlySet<string>>(new Set())
   /** the just-answered skill unlocked its check — offer before moving on */
@@ -221,6 +258,7 @@ function Session({
 
   const reset = () => {
     focusSkill.current = null
+    setFocusedOn(false)
     setCheckDismissed(new Set())
     setOverlay(null)
     void api.reset().then(refresh)
@@ -252,7 +290,9 @@ function Session({
   }, [api, overlay, refresh])
 
   let body
-  if (view === 'zoo') {
+  if (view === 'guide') {
+    body = <Guide api={api} />
+  } else if (view === 'zoo') {
     body = <Zoo api={api} />
   } else if (view === 'dashboard') {
     body = (
@@ -260,6 +300,7 @@ function Session({
         api={api}
         onPick={(skillId) => {
           focusSkill.current = skillId
+          setFocusedOn(true)
           setView('work')
           refresh()
         }}
@@ -390,7 +431,10 @@ function Session({
           return out
         }}
         onContinue={(focus) => {
-          if (focus !== undefined) focusSkill.current = focus
+          if (focus !== undefined) {
+            focusSkill.current = focus
+            setFocusedOn(focus !== null)
+          }
           refresh()
         }}
         onStartCheck={startCheck}
@@ -411,6 +455,12 @@ function Session({
         student={student}
         points={points}
         view={view}
+        focused={focusedOn}
+        onClearFocus={() => {
+          focusSkill.current = null
+          setFocusedOn(false)
+          refresh()
+        }}
         onToggleView={() => setView(view === 'dashboard' ? 'work' : 'dashboard')}
         onLeave={onLeave}
         onReset={reset}

@@ -8,11 +8,13 @@
 import type { Bundle } from '@openmastery/schema'
 import type { CairnEvent } from '../../core/index.ts'
 import { SiteCore } from '../../site/core.ts'
+import { seedDemoClass } from '../../site/simulate.ts'
 import type {
   AttemptOutcome,
   BundleView,
   CairnApi,
   ExplainResult,
+  GuideView,
   ServerNext,
   StateView,
   ZooDemoView,
@@ -128,6 +130,16 @@ export class DemoApi implements CairnApi {
 
   reset(): Promise<void> {
     this.core.reset(this.studentId)
+    this.persist()
+    return Promise.resolve()
+  }
+
+  guide(): Promise<GuideView> {
+    return Promise.resolve(this.unwrap(this.core.guideView()))
+  }
+
+  seedClass(): Promise<void> {
+    seedDemoClass(this.core)
     this.persist()
     return Promise.resolve()
   }
