@@ -51,6 +51,7 @@ body {
 .dot-on { background: #b05f28; }
 
 .answer-row { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-top: 6px; }
+.viz-answer { margin: 4px 0 16px; }
 .answer-row input {
   font: 600 22px 'Lora', Georgia, serif; text-align: center;
   padding: 10px; width: 170px;

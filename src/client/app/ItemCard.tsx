@@ -41,6 +41,10 @@ interface InlinePlay {
   totalReps: number
 }
 
+/** widget types whose answer space is a text field — these sit inline with
+ * the buttons; every other input widget gets a full-width row of its own */
+const TEXT_INPUTS = new Set(['numeric-input', 'expression-input', 'equation-input'])
+
 const KICKERS: Record<ServeAction['itemKind'], string> = {
   faded: 'FINISH THIS ONE',
   review: 'QUICK REVIEW',
@@ -269,8 +273,17 @@ export function ItemCard({
       ) : (
         <>
           {scaffold && action.itemKind !== 'faded' && <div className="viz">{scaffold.element}</div>}
+          {/* wide widget answer spaces (tape, number lines, tables …) take a
+              full row of their own; only the text inputs sit inline with the
+              buttons */}
+          {!TEXT_INPUTS.has(item.widget.type) && (
+            <div className="viz-answer">
+              {widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
+            </div>
+          )}
           <div className="answer-row">
-            {widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
+            {TEXT_INPUTS.has(item.widget.type) &&
+              widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
             <button className="btn btn-primary" onClick={() => void submit()} disabled={busy || outcome !== null}>
               Check answer
             </button>
