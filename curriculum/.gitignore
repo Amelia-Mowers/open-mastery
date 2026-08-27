@@ -1,0 +1,3 @@
+node_modules/
+# OpenStax source corpus is fetched, not committed (see sources/openstax/SOURCES.md)
+sources/openstax/osbooks-*/

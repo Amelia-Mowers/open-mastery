@@ -1,0 +1,14 @@
+id: g6.rp.percent-of
+name: Find a percent of a quantity
+preamble:
+  plain: "Percent means out of every 100. Finding 35% of 60 is a ratio problem: 100% is the whole thing, and you're finding the part that lines up with 35."
+  vocab:
+    - { term: percent, meaning: "out of every 100 — 35% means 35 out of every 100" }
+standards: [CCSS.MATH.CONTENT.6.RP.A.3.C]
+source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.rp.unit-rate]
+instruction:
+  - g6.rp.percent-of.exp-dnl
+  - g6.rp.percent-of.exp-worked

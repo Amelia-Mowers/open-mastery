@@ -1,0 +1,14 @@
+id: g6.ee.write-expression.001
+skills: [g6.ee.write-expression]
+difficulty: 1
+representation: worked-equation
+params: { a: 3, p: 5, variable: n }
+generator: { a: { int: [2, 9] }, p: { int: [1, 12] } }
+widget: { type: expression-input, config: { stem: "Write an expression: {p} more than {a} times a number {variable}." } }
+answer: { type: expr, value: "{a}{variable} + {p}", equivalence: symbolic }
+hints:
+  - "{a} times the number is {a}{variable}."
+  - "{p} more than that: {a}{variable} + {p}."
+source: { book: ccss-ee-progression, section: "6.EE.A.2a" }
+verify: "{p} + {a}*{variable}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

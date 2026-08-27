@@ -1,0 +1,11 @@
+id: g7.ee.distribute-solve.exp-worked
+skill: g7.ee.distribute-solve
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "{a}({variable} + {b}) = {a*(ans+b)}" }, caption: "A different opening: divide FIRST — the whole left side is {a} copies of one thing." }
+  - { t: 4, patch: { line: "{variable} + {b} = {a*(ans+b)} ÷ {a} = {ans+b}", note: "divide both sides by {a}" }, caption: "One copy: {variable} + {b} = {ans+b}." }
+  - { t: 8.5, patch: { line: "{variable} = {ans+b} − {b} = {ans}", note: "subtract {b}" }, caption: "{variable} = {ans}." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

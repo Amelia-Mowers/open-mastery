@@ -1,0 +1,18 @@
+id: prealg.lineq.negate.002
+skills: [prealg.lineq.negate]
+difficulty: 2
+representation: opposite-flip
+params: { b: -8, variable: k }
+generator: { b: { int: [-20, -2] } }
+widget:
+  type: opposite-flip
+  config:
+    stem: "Solve: -{variable} = {b}.  Move the dot to {variable}."
+    value: "{b}"
+answer: { type: expr, value: "{variable} = {-b}", equivalence: symbolic, integer: true }
+hints:
+  - "-{variable} means the opposite of {variable}."
+  - "The opposite of {b} is {-b}."
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+verify: "{-answer == b}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

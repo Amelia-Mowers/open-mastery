@@ -1,0 +1,14 @@
+id: g6.rp.missing-value.002
+skills: [g6.rp.missing-value]
+difficulty: 2
+representation: worked-equation
+params: { a: 3, b: 4, c: 8 }
+generator: { a: { int: [2, 4] }, b: { int: [2, 6] }, c: { mult_of: b, range: [8, 24] } }
+widget: { type: numeric-input, config: { stem: "A recipe uses {a} cups of rice to serve {b} people. How many cups serve {c} people?" } }
+answer: { type: expr, value: "{a*c/b}", integer: true }
+hints:
+  - "{c} people is {c} ÷ {b} = {c/b} times the recipe."
+  - "Scale the cups the same way: {a} × {c/b} = {a*c/b}."
+source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
+verify: "{answer * b == a * c}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

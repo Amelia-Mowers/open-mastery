@@ -1,0 +1,16 @@
+{
+  "name": "@openmastery/curriculum",
+  "version": "0.1.0",
+  "description": "OpenMastery curriculum: plain-file skills, items, and explanations derived from OER (OpenStax, Illustrative Mathematics)",
+  "license": "CC-BY-4.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "openmastery-validate skills items explanations --profile authoring",
+    "validate:release": "openmastery-validate skills items explanations --profile release",
+    "test": "npm run validate"
+  },
+  "devDependencies": {
+    "@openmastery/schema": "file:../schema"
+  }
+}

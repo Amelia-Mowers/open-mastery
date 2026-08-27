@@ -1,0 +1,19 @@
+id: g6.rp.equiv-table.001
+skills: [g6.rp.equiv-table]
+difficulty: 1
+representation: ratio-table
+params: { a: 2, b: 12, m: 3 }
+generator: { a: { int: [1, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
+widget:
+  type: ratio-table
+  config:
+    stem: "A recipe uses {a} cups of flour to make {b} muffins. Fill in the missing value."
+    cols: ["cups", "muffins"]
+    rows: [["{a}", "{b}"], ["{a*m}", "?"]]
+answer: { type: expr, value: "{b*m}", integer: true }
+hints:
+  - "Both quantities scale by the same number. {a} cups became {a*m} cups — what was it multiplied by?"
+  - "Multiply the muffins by {m} too: {b} × {m} = {b*m}."
+source: { book: ccss-rp-progression, section: "6.RP.A.3a" }
+verify: "{answer * a == b * (a*m)}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

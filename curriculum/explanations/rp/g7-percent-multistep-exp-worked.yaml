@@ -1,0 +1,11 @@
+id: g7.rp.percent-multistep.exp-worked
+skill: g7.rp.percent-multistep
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "${20*g} at {5*f}% off" }, caption: "Two steps: find the discount, then subtract it." }
+  - { t: 4, patch: { line: "discount = {5*f}% of {20*g} = {f*g}", note: "5% is {g}" }, caption: "{5*f}% of ${20*g} is ${f*g}." }
+  - { t: 8.5, patch: { line: "sale price = {20*g} − {f*g} = {20*g - f*g}", note: "subtract" }, caption: "You pay ${20*g - f*g}." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

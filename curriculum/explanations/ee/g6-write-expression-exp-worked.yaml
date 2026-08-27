@@ -1,0 +1,11 @@
+id: g6.ee.write-expression.exp-worked
+skill: g6.ee.write-expression
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "\"{p} more than {a} times a number\"" }, caption: "Words first. Symbols say it shorter — and for EVERY number at once." }
+  - { t: 4, patch: { line: "{a} times the number  →  {a}{variable}", note: "call the number {variable}" }, caption: "Give the unknown number a letter: {variable}." }
+  - { t: 8.5, patch: { line: "{p} more  →  {a}{variable} + {p}", note: "\"more than\" means add" }, caption: "The expression: {a}{variable} + {p}." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

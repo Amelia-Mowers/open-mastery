@@ -1,0 +1,14 @@
+id: g6.rp.unit-rate
+name: Find the unit rate — how much for exactly one
+preamble:
+  plain: "If 4 pounds cost $28, what does ONE pound cost? Sharing the total equally gives the unit rate — the price of one, the speed for one hour, the amount for one person."
+  vocab:
+    - { term: unit rate, meaning: "how much for exactly one — one pound, one hour, one item" }
+standards: [CCSS.MATH.CONTENT.6.RP.A.2, CCSS.MATH.CONTENT.6.RP.A.3.B]
+source: { book: ccss-rp-progression, section: "6.RP.A.2" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.rp.equiv-table]
+instruction:
+  - g6.rp.unit-rate.exp-dnl
+  - g6.rp.unit-rate.exp-worked

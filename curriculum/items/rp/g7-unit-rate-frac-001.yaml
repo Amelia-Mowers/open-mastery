@@ -1,0 +1,14 @@
+id: g7.rp.unit-rate-frac.001
+skills: [g7.rp.unit-rate-frac]
+difficulty: 1
+representation: worked-equation
+params: { p: 1, q: 2, r: 8 }
+generator: { q: { int: [2, 6] }, p: { int: [1, 5], coprime: q }, r: { mult_of: q, range: [7, 12] } }
+widget: { type: numeric-input, config: { stem: "You walk {p}/{q} of a mile in 1/{r} of an hour. How many miles per hour is that?" } }
+answer: { type: expr, value: "{p*r/q}", integer: true }
+hints:
+  - "One hour holds {r} chunks of 1/{r} hour."
+  - "Walk that distance {r} times: {p}/{q} × {r} = {p*r/q} miles."
+source: { book: ccss-rp-progression, section: "7.RP.A.1" }
+verify: "{answer * q == p * r}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

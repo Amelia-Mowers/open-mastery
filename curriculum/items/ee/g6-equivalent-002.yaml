@@ -1,0 +1,14 @@
+id: g6.ee.equivalent.002
+skills: [g6.ee.equivalent]
+difficulty: 2
+representation: area-model
+params: { a: 3, b: 2, c: 5, variable: x }
+generator: { a: { int: [2, 6] }, b: { int: [2, 6] }, c: { int: [1, 9] } }
+widget: { type: expression-input, config: { stem: "Expand: {a}({b}{variable} + {c})." } }
+answer: { type: expr, value: "{a*b}{variable} + {a*c}", equivalence: symbolic, form: expanded }
+hints:
+  - "Multiply {a} by EACH part: {a}·{b}{variable} and {a}·{c}."
+  - "{a*b}{variable} + {a*c}."
+source: { book: ccss-ee-progression, section: "6.EE.A.3" }
+verify: "{a}*{b}*{variable} + {a}*{c}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

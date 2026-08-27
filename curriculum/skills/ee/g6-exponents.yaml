@@ -1,0 +1,14 @@
+id: g6.ee.exponents
+name: Evaluate whole-number exponents
+preamble:
+  plain: "5² isn't 5 × 2 — it's 5 used as a factor twice: 5 × 5. You'll learn to read and evaluate powers."
+  vocab:
+    - { term: exponent, meaning: "the small raised number counting how many times the base is a factor" }
+standards: [CCSS.MATH.CONTENT.6.EE.A.1]
+source: { book: ccss-ee-progression, section: "6.EE.A.1" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: []
+instruction:
+  - g6.ee.exponents.exp-area
+  - g6.ee.exponents.exp-worked

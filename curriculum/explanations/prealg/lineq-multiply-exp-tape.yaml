@@ -1,0 +1,14 @@
+id: prealg.lineq.multiply.exp-tape
+skill: prealg.lineq.multiply
+representation: tape-diagram
+widget: tape-diagram
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["{variable}", "/{a}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{variable}", totalIn: false }, caption: "Here is the problem in symbols. Watch it become a tape." }
+  - { t: 4, patch: { eqHighlight: ["0"], totalIn: true }, caption: "{variable} is the WHOLE tape — the amount we want." }
+  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1"] }, caption: "/{a} cuts it into {a} equal parts." }
+  - { t: 12, patch: { eqHighlight: ["3"], partLabel: "{b}" }, caption: "= {b} says one part is {b}." }
+  - { t: 16, patch: { eqHighlight: [], highlight: [] }, caption: "So every part is {b} — there are {a} of them." }
+  - { t: 19.5, patch: { total: "{variable} = {a*b}" }, caption: "{a} parts of {b} make {a*b}. {variable} = {a*b}." }
+  - { t: 22, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

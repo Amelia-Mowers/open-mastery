@@ -1,0 +1,14 @@
+id: g7.rp.test-proportional
+name: Decide whether a table shows a proportional relationship
+preamble:
+  plain: "Not every table of numbers is proportional. The test: divide y by x in EVERY row. Same answer every time means proportional — one different row breaks it."
+  vocab:
+    - { term: proportional, meaning: "y divided by x gives the same number in every row" }
+standards: [CCSS.MATH.CONTENT.7.RP.A.2.A]
+source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g7.rp.constant-k]
+instruction:
+  - g7.rp.test-proportional.exp-table
+  - g7.rp.test-proportional.exp-worked

@@ -1,0 +1,13 @@
+id: g7.rp.constant-k.exp-table
+skill: g7.rp.constant-k
+representation: ratio-table
+widget: ratio-table
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["y", " = k · ", "x"], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["1", "{k}"]], reveal: "0" }, caption: "A proportional table hides one number: k. Let's find it." }
+  - { t: 4, patch: { eqHighlight: ["2", "0"], reveal: "2" }, caption: "Every row pairs an x with its y." }
+  - { t: 8, patch: { eqHighlight: ["1"], highlight: "1" }, caption: "Row 1: {a*k} ÷ {a} = {k}." }
+  - { t: 12, patch: { highlight: "2" }, caption: "Row 2: {c*k} ÷ {c} = {k} — the SAME in every row." }
+  - { t: 16, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "k = {k}: the y when x is 1 — the unit rate with its grown-up name." }
+  - { t: 19.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

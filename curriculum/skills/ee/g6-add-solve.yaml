@@ -1,0 +1,14 @@
+id: g6.ee.add-solve
+name: Solve x + p = q using the Subtraction Property of Equality
+preamble:
+  plain: "A number plus something gives a total. You'll learn to find the number by undoing the addition — subtracting the same amount from both sides."
+  vocab:
+    - { term: Subtraction Property of Equality, meaning: "subtract the same number from both sides of an equation and it stays true" }
+standards: [CCSS.MATH.CONTENT.6.EE.B.7]
+source: { book: ccss-ee-progression, section: "6.EE.B.7" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: []
+instruction:
+  - g6.ee.add-solve.exp-balance
+  - g6.ee.add-solve.exp-worked

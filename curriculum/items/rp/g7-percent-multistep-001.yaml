@@ -1,0 +1,14 @@
+id: g7.rp.percent-multistep.001
+skills: [g7.rp.percent-multistep]
+difficulty: 1
+representation: worked-equation
+params: { f: 5, g: 8 }
+generator: { f: { int: [2, 9] }, g: { int: [2, 9] } }
+widget: { type: numeric-input, config: { stem: "A ${20*g} game is on sale at {5*f}% off. What is the sale price?" } }
+answer: { type: expr, value: "{20*g - f*g}", integer: true }
+hints:
+  - "First find the discount: {5*f}% of ${20*g}. (5% is ${g}.)"
+  - "The discount is ${f*g}. Subtract: {20*g} − {f*g} = {20*g - f*g}."
+source: { book: ccss-rp-progression, section: "7.RP.A.3" }
+verify: "{(20*g - answer) * 100 == 5*f * 20*g}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

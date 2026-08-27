@@ -1,0 +1,21 @@
+id: g7.rp.test-proportional.001
+skills: [g7.rp.test-proportional]
+difficulty: 1
+representation: ratio-table
+params: { k: 3, a: 2, c: 5, e: 8 }
+generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 7] }, e: { int: [8, 12] } }
+widget:
+  type: ratio-table
+  config:
+    stem: "Is y proportional to x? Click the row that breaks the pattern — or 'All rows agree'."
+    select: true
+    noneLabel: "All rows agree"
+    cols: ["x", "y"]
+    rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]]
+answer: { type: expr, value: "0", integer: true }
+hints:
+  - "Divide y by x in each row. Do you get the same number every time?"
+  - "{a*k} ÷ {a} = {k}, {c*k} ÷ {c} = {k}, {e*k} ÷ {e} = {k} — no row breaks it."
+source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
+verify: "{a*k * c == c*k * a}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

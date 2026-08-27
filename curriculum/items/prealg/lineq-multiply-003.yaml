@@ -1,0 +1,14 @@
+id: prealg.lineq.multiply.003
+skills: [prealg.lineq.multiply]
+difficulty: 2
+representation: tape-diagram
+params: { a: 4, b: -9, variable: m }
+generator: { a: { int: [2, 9] }, b: { int: [-15, -2] } }
+widget: { type: equation-input, config: { stem: "Solve: {variable}/{a} = {b}." } }
+answer: { type: expr, value: "{variable} = {a*b}", equivalence: symbolic, integer: true }
+hints:
+  - "{variable} is divided by {a}. What operation undoes division?"
+  - "Multiply both sides by {a}."
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+verify: "{answer / a == b}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

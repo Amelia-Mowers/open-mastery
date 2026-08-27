@@ -1,0 +1,14 @@
+id: g7.rp.test-proportional.004
+skills: [g7.rp.test-proportional]
+difficulty: 3
+representation: ratio-table
+params: { k: 3, a: 2, c: 6, d: 4 }
+generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 9] }, d: { int: [1, 5] } }
+widget: { type: numeric-input, config: { stem: "x: {a} → y: {a*k}.   x: {c} → y: {c*k+d}.   The second row breaks the proportion. How much too BIG is its y?" } }
+answer: { type: expr, value: "{d}", integer: true }
+hints:
+  - "The first row's rule is y = {k}x. What SHOULD y be when x = {c}?"
+  - "It should be {k} × {c} = {c*k}; it is {c*k+d}. The excess is {c*k+d} − {c*k}."
+source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
+verify: "{(c*k+d) - answer == k*c}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

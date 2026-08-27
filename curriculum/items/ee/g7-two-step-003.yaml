@@ -1,0 +1,14 @@
+id: g7.ee.two-step.003
+skills: [g7.ee.two-step]
+difficulty: 3
+representation: null
+params: { a: 3, b: 10, ans: -4, variable: x }
+generator: { a: { int: [2, 9] }, b: { int: [2, 20] }, ans: { int: [-9, -2] } }
+widget: { type: equation-input, config: { stem: "Solve: {a}{variable} + {b} = {a*ans+b}." } }
+answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
+hints:
+  - "Same two moves — subtract {b}, then divide by {a} — even when the numbers go negative."
+  - "{a}{variable} = {a*ans}, so {variable} = {ans}."
+source: { book: ccss-ee-progression, section: "7.EE.B.4a" }
+verify: "{a*answer + b == a*ans + b}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

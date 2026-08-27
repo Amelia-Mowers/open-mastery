@@ -1,0 +1,19 @@
+id: g7.rp.constant-k.001
+skills: [g7.rp.constant-k]
+difficulty: 1
+representation: ratio-table
+params: { k: 3, a: 4, c: 7 }
+generator: { k: { int: [2, 9] }, a: { int: [2, 5] }, c: { int: [6, 12] } }
+widget:
+  type: ratio-table
+  config:
+    stem: "This table is proportional. Fill in y when x = 1 — that value is the constant of proportionality k."
+    cols: ["x", "y"]
+    rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["1", "?"]]
+answer: { type: expr, value: "{k}", integer: true }
+hints:
+  - "In every row, y ÷ x gives the same number."
+  - "{a*k} ÷ {a} = {k} — and that is y when x is 1."
+source: { book: ccss-rp-progression, section: "7.RP.A.2b" }
+verify: "{answer * c == c*k}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

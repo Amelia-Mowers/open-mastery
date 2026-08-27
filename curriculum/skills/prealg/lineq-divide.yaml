@@ -1,0 +1,18 @@
+id: prealg.lineq.divide
+name: Solve ax = b using the Division Property of Equality
+preamble:
+  plain: "A number times x gives you a total. You'll learn to find x by undoing the multiplication — dividing both sides by the same number."
+  vocab:
+    - { term: equation, meaning: "a math sentence saying two things are equal" }
+    - { term: Division Property of Equality, meaning: "divide both sides of an equation by the same number and it stays true" }
+standards: [CCSS.MATH.CONTENT.6.EE.B.7]
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+instruction:
+  - prealg.lineq.divide.exp-envelopes
+  - prealg.lineq.divide.exp-hanger
+  - prealg.lineq.divide.exp-balance
+  - prealg.lineq.divide.exp-numberline
+  - prealg.lineq.divide.exp-tape
+  - prealg.lineq.divide.exp-worked

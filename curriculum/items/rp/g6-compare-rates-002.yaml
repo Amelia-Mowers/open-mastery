@@ -1,0 +1,20 @@
+id: g6.rp.compare-rates.002
+skills: [g6.rp.compare-rates]
+difficulty: 2
+representation: worked-equation
+params: { r: 3, d: 2, t1: 4, t2: 6 }
+generator: { r: { int: [2, 6] }, d: { int: [1, 4] }, t1: { int: [3, 8] }, t2: { int: [3, 8], distinct: t1 } }
+widget:
+  type: choice
+  config:
+    stem: "Which printer is faster?"
+    options:
+      - { key: a, label: "Printer A: {r*t1} pages in {t1} minutes" }
+      - { key: b, label: "Printer B: {(r+d)*t2} pages in {t2} minutes" }
+answer: { type: choice, value: b }
+hints:
+  - "Find each printer's pages per ONE minute."
+  - "A: {r*t1} ÷ {t1} = {r} per minute. B: {(r+d)*t2} ÷ {t2} = {r+d} per minute."
+source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
+verify: "{((r+d)*t2) * t1 > (r*t1) * t2}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
