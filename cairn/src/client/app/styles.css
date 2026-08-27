@@ -352,3 +352,6 @@ body {
 .peek-plain { font: 600 15.5px 'Nunito Sans', sans-serif; color: #5c5245; }
 .peek-vocab { font-size: 13.5px; color: #7a6f61; margin: 6px 0; }
 .peek-term { display: inline-block; padding: 2px 9px; margin-right: 8px; font-size: 12.5px; }
+
+.vet-ok { color: #3f6a4d; }
+.vet-draft { color: #a8814f; }

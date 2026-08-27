@@ -255,11 +255,15 @@ export class SiteCore {
     }
     // full index: every timeline, grouped by widget — the zoo links each
     // one to its single-card view (?view=zoo&exp=<id>)
-    const index: Record<string, Array<{ id: string; skillName: string }>> = {}
+    const index: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> = {}
     for (const skillId of this.cur.skillOrder) {
       const skill = this.cur.skills.get(skillId)!
       for (const e of this.cur.explanationsBySkill.get(skillId) ?? []) {
-        ;(index[e.widget] ??= []).push({ id: e.id, skillName: skill.name })
+        ;(index[e.widget] ??= []).push({
+          id: e.id,
+          skillName: skill.name,
+          vetted: e.review.status === 'vetted',
+        })
       }
     }
     return ok({ demos, index })

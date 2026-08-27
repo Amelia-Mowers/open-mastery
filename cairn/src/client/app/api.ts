@@ -93,7 +93,7 @@ export interface CairnApi {
     sameAsLesson?: boolean,
   ): Promise<ExplainResult>
   explained(explanationId: string, skillId: string): Promise<void>
-  demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string }>> }>
+  demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> }>
   demoFor(explanationId: string): Promise<ZooDemoView>
   bundle(): Promise<BundleView>
   guide(): Promise<GuideView>
@@ -168,9 +168,9 @@ export class SiteApi implements CairnApi {
     await this.post('/api/explained', { explanationId, skillId })
   }
 
-  async demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string }>> }> {
+  async demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> }> {
     const r = await fetch(`${this.base}/api/demos`)
-    return (await r.json()) as { demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string }>> }
+    return (await r.json()) as { demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> }
   }
 
   async demoFor(explanationId: string): Promise<ZooDemoView> {

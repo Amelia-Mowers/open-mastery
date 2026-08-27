@@ -117,7 +117,7 @@ export class DemoApi implements CairnApi {
     return Promise.resolve()
   }
 
-  demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string }>> }> {
+  demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> }> {
     return Promise.resolve(this.unwrap(this.core.demosView()))
   }
 

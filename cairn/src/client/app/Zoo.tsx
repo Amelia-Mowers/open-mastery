@@ -24,6 +24,12 @@ function DemoCard({ demo }: { demo: ZooDemo }) {
         <span className="kicker">{demo.title.toUpperCase()}</span>
         <span className="mono-chip">{roleBadge(demo.widget)}</span>
         <span className="mono-chip">{JSON.stringify(demo.params)}</span>
+        <span
+          className={`mono-chip ${demo.explanation.review.status === 'vetted' ? 'vet-ok' : 'vet-draft'}`}
+          title={demo.explanation.review.status === 'vetted' ? 'human-vetted' : 'draft — not yet human-reviewed'}
+        >
+          {demo.explanation.review.status === 'vetted' ? '✓ vetted' : '◌ draft'}
+        </span>
       </div>
       <LessonPlayer
         key={replay}
@@ -107,7 +113,7 @@ export function Zoo({ api }: { api: CairnApi }) {
     }
   })()
   const [demos, setDemos] = useState<ZooDemo[] | null>(null)
-  const [index, setIndex] = useState<Record<string, Array<{ id: string; skillName: string }>>>({})
+  const [index, setIndex] = useState<Record<string, Array<{ id: string; skillName: string; vetted: boolean }>>>({})
   useEffect(() => {
     if (only) {
       void api.demoFor(only).then((d) =>
@@ -157,7 +163,14 @@ export function Zoo({ api }: { api: CairnApi }) {
               <p className="muted zoo-index">
                 every {d.widget} timeline:{' '}
                 {(index[d.widget] ?? []).map((e) => (
-                  <a key={e.id} href={`?view=zoo&exp=${encodeURIComponent(e.id)}`} title={e.skillName}>
+                  <a
+                    key={e.id}
+                    href={`?view=zoo&exp=${encodeURIComponent(e.id)}`}
+                    title={`${e.skillName} — ${e.vetted ? 'vetted' : 'draft, not yet human-reviewed'}`}
+                  >
+                    <span aria-hidden className={e.vetted ? 'vet-ok' : 'vet-draft'}>
+                      {e.vetted ? '✓' : '◌'}
+                    </span>{' '}
                     {e.id.replace(/^.*\.(exp-)/, '$1')}·{e.skillName.slice(0, 22)}
                   </a>
                 ))}
