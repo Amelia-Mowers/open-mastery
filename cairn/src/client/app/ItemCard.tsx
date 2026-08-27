@@ -156,10 +156,16 @@ export function ItemCard({
   /** answers lock the moment the verdict lands — review mode is inert */
   const answerMode = outcome !== null ? 'review' : action.itemKind === 'faded' ? 'faded' : 'problem'
 
-  // guide the eye: focus the answer box when a fresh problem arrives — for
-  // faded items, only once the walkthrough reaches its final step (pulsing
-  // mid-playback points at the wrong thing)
-  const guideReady = action.itemKind !== 'faded' || leadDone
+  // the assistance spectrum: faded serves always get a lead; scaffolded
+  // practice serves get one too WHEN the skill's lead is stepwise-capable
+  // (expects authored) — the discrete phases become presentation rungs
+  const wantsLead =
+    action.itemKind === 'faded' || (action.itemKind === 'practice' && action.scaffolded)
+
+  // guide the eye: focus the answer box when a fresh problem arrives — on
+  // serves with a lead (faded, or scaffolded practice), only once the lead
+  // reaches its final step (pulsing mid-playback points at the wrong thing)
+  const guideReady = !wantsLead || leadDone
   useEffect(() => {
     if (!guideReady) return
     const el = document.querySelector<HTMLElement>(
@@ -183,27 +189,34 @@ export function ItemCard({
     }
   }
 
-  // the assistance spectrum: faded serves always get a lead; scaffolded
-  // practice serves get one too WHEN the skill's lead is stepwise-capable
-  // (expects authored) — the discrete phases become presentation rungs
-  const wantsLead =
-    action.itemKind === 'faded' || (action.itemKind === 'practice' && action.scaffolded)
   useEffect(() => {
     if (!wantsLead) return
     setLeadDone(false)
     let cancelled = false
     void fetchExplanation([], true).then((r) => {
-      if (cancelled || !r?.explanation) return
+      if (cancelled) return
+      // any bail below means NO lead will play — release the answer-box
+      // pulse instead of holding it forever
+      if (!r?.explanation) {
+        setLeadDone(true)
+        return
+      }
       // drop the resolution (final content step) and the handoff — the
       // answer input below IS the resolution
       const content = r.explanation.timeline.filter(
         (st) => st.patch !== undefined || st.caption !== undefined,
       )
-      if (content.length < 2) return
+      if (content.length < 2) {
+        setLeadDone(true)
+        return
+      }
       const truncated = { ...r.explanation, timeline: content.slice(0, -1) }
       // practice rung: only an INTERACTIVE lead earns its place above a
       // problem; passive replays stay a faded-phase affordance
-      if (action.itemKind === 'practice' && !hasExpects(truncated.timeline)) return
+      if (action.itemKind === 'practice' && !hasExpects(truncated.timeline)) {
+        setLeadDone(true)
+        return
+      }
       setFadedLead({
         explanation: truncated,
         params: r.params as Params,

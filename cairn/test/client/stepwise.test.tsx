@@ -65,8 +65,7 @@ describe('stepwise player', () => {
 
     // decomposition gate: MULTI-select with explicit confirm — a wrong or
     // partial set is a miss, exact set advances (no more, no fewer)
-    await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
-    expect(screen.getByText('Click the LEFT-pan piece.')).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText('Click the LEFT-pan piece.')).toBeInTheDocument())
     await user.click(container.querySelector('[data-pick-seg="0"]')!)
     await user.click(container.querySelector('[data-pick-seg="2"]')!) // '=' selected too
     await user.click(screen.getByTestId('stepwise-check'))
@@ -97,8 +96,7 @@ describe('stepwise player', () => {
     await waitFor(() => expect(container.querySelector('[data-op-badge="left"]')).toBeInTheDocument())
 
     // gate 2 (default prompt), answer correctly → the run completes
-    await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
-    expect(screen.getByText(/what do we do to both sides/)).toBeInTheDocument()
+    await waitFor(() => expect(screen.getByText(/what do we do to both sides/)).toBeInTheDocument())
     await user.click(container.querySelector('[data-op-sym="divide"]')!)
     await user.type(container.querySelector('[data-op-by]')!, '3')
     await user.click(screen.getByTestId('stepwise-check'))
@@ -112,7 +110,7 @@ describe('stepwise player', () => {
     const { container } = render(
       <StepwisePlayer explanation={stepwiseExp()} params={P} stepDelayMs={10} onReachedEnd={done} />,
     )
-    await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
+    await waitFor(() => expect(container.querySelector('[data-pick-seg="0"]')).toBeInTheDocument())
     await user.click(container.querySelector('[data-pick-seg="0"]')!)
     await user.click(container.querySelector('[data-pick-seg="1"]')!)
     await user.click(screen.getByTestId('stepwise-check'))
@@ -127,8 +125,8 @@ describe('stepwise player', () => {
     // revealed: the move is named and its confirmation plays anyway
     expect(screen.getByTestId('stepwise-feedback').textContent).toContain('subtract 5')
     await waitFor(() => expect(container.querySelector('[data-op-badge="right"]')).toBeInTheDocument())
-    // finish gate 2 correctly
-    await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
+    // finish gate 2 correctly (wait for ITS inputs — the panel never unmounts)
+    await waitFor(() => expect(container.querySelector('[data-op-sym="divide"]')).toBeInTheDocument())
     await user.click(container.querySelector('[data-op-sym="divide"]')!)
     await user.type(container.querySelector('[data-op-by]')!, '3')
     await user.click(screen.getByTestId('stepwise-check'))
@@ -144,14 +142,14 @@ describe('stepwise assistance affordances', () => {
     const { container } = render(
       <StepwisePlayer explanation={stepwiseExp()} params={P} stepDelayMs={10} onReachedEnd={done} onEngaged={engaged} />,
     )
-    await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByTestId('stepwise-showme')).toBeInTheDocument())
     await user.click(screen.getByTestId('stepwise-showme')) // pick gate revealed
     expect(engaged).toHaveBeenCalledTimes(1)
     await waitFor(() => expect(container.querySelector('[data-op-sym="add"]')).toBeInTheDocument())
     await user.click(screen.getByTestId('stepwise-showme')) // op gate revealed
     expect(screen.getByTestId('stepwise-feedback').textContent).toContain('subtract 5')
     await waitFor(() => expect(container.querySelector('[data-op-badge="left"]')).toBeInTheDocument())
-    await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
+    await waitFor(() => expect(container.querySelector('[data-op-sym="divide"]')).toBeInTheDocument())
     await user.click(screen.getByTestId('stepwise-showme')) // divide gate revealed
     await waitFor(() => expect(done).toHaveBeenCalledWith({ misses: 0, reveals: 3 }))
     expect(engaged).toHaveBeenCalledTimes(1)
@@ -160,7 +158,7 @@ describe('stepwise assistance affordances', () => {
   it('completed steps scrub: dots rebuild the earlier view, Back to now returns to the frontier', async () => {
     const user = userEvent.setup()
     const { container } = render(<StepwisePlayer explanation={stepwiseExp()} params={P} stepDelayMs={10} />)
-    await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
+    await waitFor(() => expect(screen.getByTestId('stepwise-showme')).toBeInTheDocument())
     await user.click(screen.getByTestId('stepwise-showme')) // past pick gate
     await waitFor(() => expect(container.querySelector('[data-op-sym="add"]')).toBeInTheDocument())
     // two steps applied -> dots appear; scrub back to step 1

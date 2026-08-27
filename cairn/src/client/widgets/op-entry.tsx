@@ -117,13 +117,13 @@ export function OpEntry({
         placeholder="how much?"
         onChange={(e) => onChange({ ...move, by: e.target.value })}
         style={{
-          font: "600 19px 'Lora', Georgia, serif",
+          font: "600 18px 'Lora', Georgia, serif",
           color: '#2e2822',
           background: '#fffdf9',
           border: '2.5px solid #d8cdbb',
           borderRadius: 11,
           padding: '8px 12px',
-          width: 110,
+          width: 136,
         }}
       />
       <span

@@ -234,7 +234,7 @@ body {
 
 /* ---- smooth height + soft loading ---- */
 .smooth-height { transition: height 0.35s cubic-bezier(0.4, 0, 0.2, 1); overflow: hidden; }
-.smooth-inner { transition: opacity 0.18s ease; }
+.smooth-inner { transition: opacity 0.18s ease; display: flow-root; }
 .smooth-inner.dim { opacity: 0.55; pointer-events: none; }
 
 /* ---- micro-interactions ---- */
@@ -300,7 +300,6 @@ body {
   border-radius: 14px;
   padding: 12px 16px 14px;
   margin: 10px 0 4px;
-  animation: cairn-rise 0.35s ease both;
 }
 .stepwise-prompt {
   text-align: center;
@@ -316,6 +315,14 @@ body {
   animation: cairn-rise 0.3s ease both;
 }
 .stepwise-skip, .stepwise-done { text-align: center; margin: 6px 0 2px; font-size: 13.5px; }
+@keyframes sw-fade { from { opacity: 0; } to { opacity: 1; } }
+.stepwise-gate-content { animation: sw-fade 0.35s ease both; }
+.stepwise-wait {
+  text-align: center;
+  font: 600 14.5px 'Nunito Sans', sans-serif;
+  color: #8b8070;
+  margin: 4px 0;
+}
 .stepwise-track {
   display: flex;
   align-items: center;

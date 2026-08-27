@@ -91,6 +91,9 @@ export function StepwisePlayer({
   const pending = applied < steps.length ? steps[applied]! : null
   const waitingOn: StepExpect | null =
     pending?.expect !== undefined && !unlocked.has(applied) ? pending.expect : null
+  /** gates still to come (incl. the active one): the panel stays mounted and
+   * tweens between its contents instead of closing and reopening */
+  const gatesAhead = steps.slice(applied).some((st) => st.expect !== undefined)
 
   const engage = () => {
     if (engagedNotified.current) return
@@ -98,11 +101,12 @@ export function StepwisePlayer({
     onEngaged?.()
   }
 
-  // a reveal note lingers while its move plays; clear it when a NEW gate opens
+  // a reveal note lingers while its move plays; clear it once the NEXT
+  // gate's input is open (waitingOn non-null at a fresh frontier)
   useEffect(() => {
     if (waitingOn !== null) setFeedback(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [applied])
+  }, [waitingOn !== null ? applied : -1])
 
   // advance: apply non-gated steps on a cadence; gated steps wait for input
   useEffect(() => {
@@ -258,8 +262,20 @@ export function StepwisePlayer({
           )}
         </div>
       )}
-      {waitingOn !== null && scrub === null && (
+      {gatesAhead && scrub === null && (
         <div className="stepwise-gate" data-testid="stepwise-gate">
+          {waitingOn === null ? (
+            <div className="stepwise-gate-content" key={`wait-${applied}`}>
+              {feedback !== null ? (
+                <p className="stepwise-feedback" data-testid="stepwise-feedback">
+                  {feedback}
+                </p>
+              ) : (
+                <p className="stepwise-wait">Watch the move play…</p>
+              )}
+            </div>
+          ) : (
+          <div className="stepwise-gate-content" key={`gate-${applied}`}>
           <p className="stepwise-prompt">{gatePrompt(waitingOn)}</p>
           {waitingOn.type === 'pick' ? (
             <form
@@ -332,6 +348,11 @@ export function StepwisePlayer({
               </button>
             </form>
           )}
+          {feedback !== null && (
+            <p className="stepwise-feedback" data-testid="stepwise-feedback">
+              {feedback}
+            </p>
+          )}
           <div className="answer-row" style={{ justifyContent: 'center', marginTop: 6 }}>
             <button
               type="button"
@@ -345,9 +366,11 @@ export function StepwisePlayer({
               Show me
             </button>
           </div>
+          </div>
+          )}
         </div>
       )}
-      {feedback !== null && scrub === null && (
+      {!gatesAhead && feedback !== null && scrub === null && (
         <p className="stepwise-feedback" data-testid="stepwise-feedback">
           {feedback}
         </p>

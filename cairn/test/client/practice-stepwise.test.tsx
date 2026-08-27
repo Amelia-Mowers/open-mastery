@@ -83,7 +83,7 @@ describe('practice serves on the assistance spectrum', () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(ok)
     const { container } = renderCard(true, onSubmit)
-    await waitFor(() => expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument())
+    await waitFor(() => expect(container.querySelector('[data-op-sym="subtract"]')).toBeInTheDocument())
     // work the gate correctly — constructing steps is still assistance
     await user.click(container.querySelector('[data-op-sym="subtract"]')!)
     await user.type(container.querySelector('[data-op-by]')!, '5')
