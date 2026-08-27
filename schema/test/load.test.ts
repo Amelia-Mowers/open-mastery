@@ -13,7 +13,8 @@ describe('bundle loading from a curriculum directory', () => {
     expect(bundle.skills).toHaveLength(1)
     expect(bundle.items).toHaveLength(2)
     expect(bundle.explanations).toHaveLength(2)
-    expect(validateBundle(bundle, { profile: 'release' })).toEqual([])
+    const advisory = new Set(['representation_count', 'worked_missing'])
+    expect(validateBundle(bundle, { profile: 'release' }).filter((i) => !advisory.has(i.code))).toEqual([])
   })
 
   it('normalizes YAML quirks on the way in (bare dates, numeric exercise)', () => {

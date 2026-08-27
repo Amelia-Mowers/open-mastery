@@ -134,7 +134,8 @@ function goodBundle(): Bundle {
 
 describe('bundle validation (release gates)', () => {
   it('a consistent bundle has no issues', () => {
-    expect(validateBundle(goodBundle())).toEqual([])
+    const advisory = new Set(['representation_count', 'worked_missing'])
+    expect(validateBundle(goodBundle()).filter((i) => !advisory.has(i.code))).toEqual([])
   })
 
   it('flags dangling references and wrong-skill instruction', () => {

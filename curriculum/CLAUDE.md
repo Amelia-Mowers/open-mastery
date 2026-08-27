@@ -63,10 +63,11 @@ programmatic: they render from the actual instance variables, and a lesson
 that silently falls back to another family's numbers is a bug, not a
 feature.
 
-**`worked-equation` (whiteboard worked steps with movement) is the
-STANDARD representation shape: most skills should carry one** alongside
-their concrete model — it is the abstraction the concrete models fade
-toward. Prefer it over caption-only timelines, always.
+**Every skill carries at least THREE distinct representations, and one
+of them is the whiteboard (`worked-equation`)** — two concrete models
+plus the symbolic form the concrete ones fade toward. The validator
+warns ([representation_count], [worked_missing]) below the floor.
+Prefer worked-equation over caption-only timelines, always.
 
 **Inputs are widgets too.** Where the representation IS the answer space,
 let the student answer by manipulating it (e.g. negate items answer by

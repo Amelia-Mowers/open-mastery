@@ -137,6 +137,27 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           `no explanation of '${s.id}' uses representation '${it.representation}'`,
         )
     }
+    // representation floor: every skill carries ≥3 distinct representations,
+    // one of them the whiteboard (worked-equation) — the abstraction the
+    // concrete models fade toward
+    {
+      const reps = new Set((explBySkill.get(s.id) ?? []).map((e) => e.representation))
+      if (reps.size < 3)
+        push(
+          'warning',
+          'representation_count',
+          s.id,
+          `skills need ≥3 distinct representations (has ${reps.size})`,
+        )
+      const widgets = new Set((explBySkill.get(s.id) ?? []).map((e) => e.widget))
+      if (!widgets.has('worked-equation'))
+        push(
+          'warning',
+          'worked_missing',
+          s.id,
+          'every skill carries the whiteboard (worked-equation) representation',
+        )
+    }
     const checkEligible = bundle.items.filter(
       (it) =>
         it.skills.includes(s.id) &&

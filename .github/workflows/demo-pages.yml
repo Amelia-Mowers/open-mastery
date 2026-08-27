@@ -11,9 +11,12 @@ permissions:
   contents: read
   pages: write
   id-token: write
+# queue, don't cancel: a Pages deployment already in flight can't be
+# cancelled mid-API-call — cancelling the workflow strands it and 400s
+# the next run ("due to in progress deployment")
 concurrency:
   group: pages
-  cancel-in-progress: true
+  cancel-in-progress: false
 jobs:
   build:
     runs-on: ubuntu-latest

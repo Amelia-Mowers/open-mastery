@@ -67,6 +67,11 @@ non-readers) — scope it separately when its turn comes.
       its own timelines (form_mismatch caught it riding the addition
       skill).
 
+- [ ] Representation-floor backfill: every skill to ≥3 distinct reps
+      incl. worked-equation (validator now warns; ~20 skills below the
+      floor — RP skills need worked variants, EE/negate need a third
+      concrete rep). Do alongside/before the NS slab.
+
 ## Engine / server
 
 - [ ] Build step 5: Bun site server + SQLite SiteStore, auth/enrollment,
