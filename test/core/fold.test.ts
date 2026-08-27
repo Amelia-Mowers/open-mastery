@@ -83,6 +83,28 @@ describe('fold (§4.7): state = fold(core, events by siteSeq)', () => {
     expect(state.skills[SKILL_A]?.masteredAt).toBeDefined()
   })
 
+  it('a correct faded attempt earns less mastery: it replays at the hint-level-2 discount', () => {
+    const env = {
+      siteSeq: 1, deviceId: 'd', deviceSeq: 1, coreVersion: 'c', bundleVersion: 'b', studentId: 's', t: 1,
+    }
+    const attempt = (itemKind: 'faded' | 'practice', hintLevel: number): number => {
+      const state = initialStudentState()
+      applyEvent(
+        state,
+        {
+          ...env, kind: 'attempt', itemId: 'i.x', paramHash: 'h1', skillId: SKILL_A,
+          itemKind, answer: 'x = 7', correct: true, hintLevel, latencyMs: 3000, assisted: false,
+        },
+        bktFor(),
+      )
+      return state.skills[SKILL_A]!.p
+    }
+    // heavily assisted by construction — exactly the maximal-hint evidence,
+    // no matter how few hints were revealed on the answer step itself
+    expect(attempt('faded', 0)).toBeCloseTo(attempt('practice', 2), 10)
+    expect(attempt('faded', 0)).toBeLessThan(attempt('practice', 0) - 0.1)
+  })
+
   it('llm_help marks exactly (itemId, paramHash) assisted', () => {
     const state = initialStudentState()
     const env = {

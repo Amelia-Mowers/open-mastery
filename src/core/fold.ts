@@ -82,7 +82,12 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
     case 'attempt': {
       const s = skillState(state, ev.skillId, params)
       s.attempts += 1
-      s.p = bktUpdate(s.p, ev.correct, ev.correct ? ev.hintLevel : 0, params(ev.skillId))
+      // a faded completion is heavily assisted by construction — the
+      // walkthrough played every step but the last — so a correct one
+      // replays at the maximal-assistance discount (hint level 2). Like
+      // grantP and the 0.5 halving, a fold/model constant, not policy.
+      const k = ev.itemKind === 'faded' ? 2 : ev.hintLevel
+      s.p = bktUpdate(s.p, ev.correct, ev.correct ? k : 0, params(ev.skillId))
       if (ev.correct) s.lastCorrect = ev.t
       s.consecUnassistedCorrect = ev.correct && !ev.assisted ? s.consecUnassistedCorrect + 1 : 0
       if (ev.assisted) state.assisted.add(instanceKey(ev.itemId, ev.paramHash))
