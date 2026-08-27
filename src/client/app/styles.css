@@ -142,7 +142,10 @@ body {
   width: 200px; max-width: 42vw; padding: 9px 12px; border-radius: 11px;
   border: 2px solid transparent; text-align: center;
 }
-.skill-node-name { font: 700 12.5px 'Nunito Sans', sans-serif; line-height: 1.25; overflow-wrap: break-word; }
+.skill-node-name {
+  font: 700 12.5px 'Nunito Sans', sans-serif; line-height: 1.25; overflow-wrap: break-word;
+  display: -webkit-box; -webkit-line-clamp: 4; -webkit-box-orient: vertical; overflow: hidden;
+}
 .skill-node-phase { font: 600 10.5px ui-monospace, Menlo, monospace; margin-top: 3px; opacity: 0.85; }
 
 /* ---- explanation player ---- */

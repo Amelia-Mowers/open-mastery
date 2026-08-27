@@ -22,10 +22,14 @@ export function Dashboard({ api }: { api: SiteApi }) {
     void api.state().then(setState)
   }, [api])
 
+  /** One block per connected component of the prereq graph — unrelated
+   * curricula never share rows or cross edges. Within a block: layer = longest
+   * prereq chain, then barycenter sweeps (down by prereqs, up by children,
+   * down again) order each row to keep edges short and uncrossed. */
   const layout = useMemo(() => {
     if (!bundle) return null
-    const depth = new Map<string, number>()
     const skillById = new Map(bundle.skills.map((s) => [s.id, s]))
+    const depth = new Map<string, number>()
     const depthOf = (id: string, seen: string[] = []): number => {
       if (depth.has(id)) return depth.get(id)!
       if (seen.includes(id)) return 0
@@ -37,33 +41,63 @@ export function Dashboard({ api }: { api: SiteApi }) {
       return d
     }
     bundle.skills.forEach((s) => depthOf(s.id))
-    const layers: string[][] = []
-    for (const s of bundle.skills) {
-      const d = depth.get(s.id)!
-      ;(layers[d] ??= []).push(s.id)
+
+    // connected components (union-find over prereq edges)
+    const parent = new Map<string, string>(bundle.skills.map((s) => [s.id, s.id]))
+    const find = (x: string): string => {
+      let r = x
+      while (parent.get(r) !== r) r = parent.get(r)!
+      parent.set(x, r)
+      return r
     }
-    // node centers in percent, per layer; order each layer by the average x
-    // of its prereqs (barycentric) so edges don't cross
-    const pos = new Map<string, { x: number; y: number }>()
-    const rowH = 165
-    layers.forEach((layer, li) => {
-      if (li > 0) {
-        layer.sort((a, b) => {
-          const bary = (id: string): number => {
-            const xs = (skillById.get(id)?.prereqs ?? [])
-              .map((p) => pos.get(p)?.x)
-              .filter((x): x is number => x !== undefined)
-            return xs.length ? xs.reduce((s, x) => s + x, 0) / xs.length : 50
-          }
-          return bary(a) - bary(b)
-        })
+    for (const s of bundle.skills)
+      for (const p of s.prereqs) if (skillById.has(p)) parent.set(find(p), find(s.id))
+    const compIds = new Map<string, string[]>()
+    for (const s of bundle.skills) (compIds.get(find(s.id)) ?? compIds.set(find(s.id), []).get(find(s.id))!).push(s.id)
+
+    const children = new Map<string, string[]>()
+    for (const s of bundle.skills)
+      for (const p of s.prereqs) (children.get(p) ?? children.set(p, []).get(p)!).push(s.id)
+
+    const rowH = 150
+    const gapBetween = 46
+    let yOffset = 0
+    const pos = new Map<string, { x: number; y: number; rowLen: number }>()
+    const blocks = [...compIds.values()].map((ids) => {
+      const layers: string[][] = []
+      for (const id of ids) (layers[depth.get(id)!] ??= []).push(id)
+      const order = new Map<string, number>()
+      const setOrders = (layer: string[]) => layer.forEach((id, i) => order.set(id, i))
+      layers.forEach(setOrders)
+      const bary = (id: string, over: (id: string) => string[]): number => {
+        const xs = over(id).map((n) => order.get(n)).filter((x): x is number => x !== undefined)
+        return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : (order.get(id) ?? 0)
       }
-      layer.forEach((id, i) =>
-        pos.set(id, { x: ((i + 1) / (layer.length + 1)) * 100, y: li * rowH + 60 }),
+      const sweep = (down: boolean) => {
+        const idxs = down ? layers.keys() : [...layers.keys()].reverse()
+        for (const li of idxs) {
+          const over = down
+            ? (id: string) => skillById.get(id)?.prereqs ?? []
+            : (id: string) => children.get(id) ?? []
+          layers[li]!.sort((a, b) => bary(a, over) - bary(b, over))
+          setOrders(layers[li]!)
+        }
+      }
+      sweep(true)
+      sweep(false)
+      sweep(true)
+      layers.forEach((layer, li) =>
+        layer.forEach((id, i) =>
+          pos.set(id, { x: ((i + 1) / (layer.length + 1)) * 100, y: yOffset + li * rowH + 58, rowLen: layer.length }),
+        ),
       )
+      const height = layers.length * rowH
+      const top = yOffset
+      yOffset += height + gapBetween
+      const maxRow = Math.max(...layers.map((l) => l.length), 1)
+      return { ids, top, height, maxRow }
     })
-    const maxLayer = Math.max(...layers.map((l) => l.length), 1)
-    return { layers, pos, height: layers.length * rowH + 10, skillById, maxLayer }
+    return { blocks, pos, height: Math.max(0, yOffset - gapBetween) + 12, skillById }
   }, [bundle])
 
   if (!bundle || !state || !layout) return <p className="muted loading">Loading…</p>
@@ -114,60 +148,80 @@ export function Dashboard({ api }: { api: SiteApi }) {
             preserveAspectRatio="none"
             aria-hidden
           >
-            {bundle.skills.flatMap((s) =>
-              s.prereqs.map((p) => {
+            {bundle.skills.flatMap((s) => {
+              const unlocked = s.prereqs.every((pr) => state.skills[pr]?.phase === 'mastered')
+              return s.prereqs.map((p) => {
                 const a = layout.pos.get(p)
                 const b = layout.pos.get(s.id)
                 if (!a || !b) return null
+                const y1 = a.y + 46
+                const y2 = b.y - 46
+                const mid = (y1 + y2) / 2
                 return (
-                  <line
+                  <path
                     key={`${p}->${s.id}`}
-                    x1={a.x}
-                    y1={a.y + 56}
-                    x2={b.x}
-                    y2={b.y - 56}
-                    stroke="#d8cdbb"
-                    strokeWidth="0.6"
-                    strokeDasharray="1.4 1.4"
+                    d={`M ${a.x} ${y1} C ${a.x} ${mid}, ${b.x} ${mid}, ${b.x} ${y2}`}
+                    fill="none"
+                    stroke={unlocked ? '#c4a37f' : '#ddd3c2'}
+                    strokeWidth={unlocked ? 0.7 : 0.55}
+                    vectorEffect="non-scaling-stroke"
                   />
                 )
-              }),
-            )}
+              })
+            })}
           </svg>
-          {bundle.skills.map((s, idx) => {
-            const phase = state.skills[s.id]?.phase ?? 'unseen'
-            const unlocked = s.prereqs.every((pr) => state.skills[pr]?.phase === 'mastered')
-            const style =
-              phase === 'unseen'
-                ? unlocked
-                  ? { bg: '#f3e4d4', fg: '#8a5320', label: 'ready for you' }
-                  : PHASE_STYLE['unseen']!
-                : (PHASE_STYLE[phase] ?? PHASE_STYLE['unseen']!)
-            const p = layout.pos.get(s.id)!
-            return (
-              <div
-                key={s.id}
-                className="skill-node"
-                data-phase={phase}
-                style={{
-                  left: `${p.x}%`,
-                  top: p.y,
-                  // centers are 100/(n+1)% apart — width must fit that spacing
-                  width: `min(200px, ${Math.max(10, Math.floor(100 / (layout.maxLayer + 1)) - 2)}%)`,
-                  background: style.bg,
-                  color: style.fg,
-                  borderColor: flaggedIds.has(s.id) ? '#a8453a' : 'transparent',
-                  animationDelay: `${idx * 0.07}s`,
-                }}
-              >
-                <div className="skill-node-name">{s.name}</div>
-                <div className="skill-node-phase">{style.label}</div>
-                <div className="node-bar" aria-hidden>
-                  <span style={{ width: `${Math.round((state.skills[s.id]?.p ?? 0) * 100)}%` }} />
+          {/* dividers between unrelated paths */}
+          {layout.blocks.slice(1).map((b) => (
+            <div
+              key={`div-${b.top}`}
+              aria-hidden
+              style={{
+                position: 'absolute',
+                left: '6%',
+                right: '6%',
+                top: b.top - 24,
+                borderTop: '1.5px dashed #e0d7c7',
+              }}
+            />
+          ))}
+          {layout.blocks.flatMap((block) =>
+            block.ids.map((id, idx) => {
+              const s = layout.skillById.get(id)!
+              const phase = state.skills[s.id]?.phase ?? 'unseen'
+              const unlocked = s.prereqs.every((pr) => state.skills[pr]?.phase === 'mastered')
+              const style =
+                phase === 'unseen'
+                  ? unlocked
+                    ? { bg: '#f3e4d4', fg: '#8a5320', label: 'ready for you' }
+                    : PHASE_STYLE['unseen']!
+                  : (PHASE_STYLE[phase] ?? PHASE_STYLE['unseen']!)
+              const p = layout.pos.get(s.id)!
+              return (
+                <div
+                  key={s.id}
+                  className="skill-node"
+                  data-phase={phase}
+                  title={s.name}
+                  style={{
+                    left: `${p.x}%`,
+                    top: p.y,
+                    // centers are 100/(n+1)% apart within this node's own row
+                    width: `min(230px, ${Math.max(12, Math.floor(100 / (p.rowLen + 1)) - 2)}%)`,
+                    background: style.bg,
+                    color: style.fg,
+                    borderColor: flaggedIds.has(s.id) ? '#a8453a' : 'transparent',
+                    animationDelay: `${idx * 0.06}s`,
+                  }}
+                >
+                  <div className="skill-node-name">{s.name}</div>
+                  <div className="skill-node-phase">{style.label}</div>
+                  <div className="node-bar" aria-hidden>
+                    <span style={{ width: `${Math.round((state.skills[s.id]?.p ?? 0) * 100)}%` }} />
+                  </div>
                 </div>
-              </div>
-            )
-          })}
+              )
+            }),
+          )}
         </div>
       </section>
     </div>
