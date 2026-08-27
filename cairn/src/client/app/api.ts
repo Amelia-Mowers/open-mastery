@@ -47,6 +47,14 @@ export interface ZooDemoView {
   skillName: string
   params: Record<string, number | string>
   explanation: Explanation
+  /** single-timeline view: a representation-matched item's answer widget
+   * (key stripped) for the faded + input cards */
+  item?: {
+    id: string
+    params: Record<string, number | string>
+    widget: { type: string; config?: Record<string, unknown> }
+    fadedParams: Record<string, number | string>
+  } | null
 }
 
 export interface GuideStudent {

@@ -1,6 +1,7 @@
-/** The five formerly display-only widgets now hold their input role
- * (GOLDEN §1: display-only is a stage, not a category): select/extract,
- * keyboard via the shared OpChoiceRow, review inertness. */
+/** The formerly display-only widgets hold their input roles as CONSTRUCTED
+ * responses (GOLDEN §1) — the student enters the move's symbol AND operand
+ * (mirrored live on both sides of the model), or writes the next line;
+ * nothing is offered as a ready-made answer. */
 import { describe, it, expect, afterEach } from 'vitest'
 import { render, cleanup } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
@@ -12,35 +13,53 @@ import { createAreaModel } from '../../src/client/viz/area-model'
 
 afterEach(cleanup)
 
-const OPS = [
-  { key: 'divide', label: '÷ 4 both sides' },
-  { key: 'subtract', label: '− 4 both sides' },
-]
-
-describe('pick-the-operation inputs (balance, hanger, worked)', () => {
-  it('click and arrow keys select; extract returns the key; review inert', async () => {
+describe('op-entry inputs (balance, hanger)', () => {
+  it('symbol + operand build the move; both sides mirror it; extract is the grader shape', async () => {
     const user = userEvent.setup()
     for (const make of [
-      () => createBalanceScale({ left: '4x', right: '28', ops: OPS }),
-      () => createHangerDiagram({ copies: 4, shapeLabel: 'x', weight: '28', ops: OPS }),
-      () => createWorkedEquation({ lines: ['4x = 28'], options: OPS }),
+      () => createBalanceScale({ left: '4x + 5', right: '33', entry: true }),
+      () => createHangerDiagram({ copies: 4, shapeLabel: 'x', weight: '28', entry: true }),
     ]) {
       const w = make()
       const { container } = render(<>{w.render({} as never, 'problem')}</>)
       expect(w.extract()).toEqual({ raw: '' })
-      await user.click(container.querySelector('[data-op-option="subtract"]')!)
-      expect(w.extract()).toEqual({ raw: 'subtract' })
+      // half-entered moves stay incomplete
+      await user.click(container.querySelector('[data-op-sym="subtract"]')!)
+      expect(w.extract()).toEqual({ raw: '' })
+      expect(container.querySelector('[data-op-badge="left"]')).toBeNull()
+      await user.type(container.querySelector('[data-op-by]')!, '5')
+      expect(w.extract()).toEqual({ raw: 'subtract 5' })
+      // the entered move is REFLECTED under both sides
+      expect(container.querySelector('[data-op-badge="left"]')!.textContent).toContain('5')
+      expect(container.querySelector('[data-op-badge="right"]')!.textContent).toContain('5')
+      // arrow keys cycle the symbol from the single tab stop
       const group = container.querySelector('[role="radiogroup"]')! as HTMLElement
       group.focus()
-      await user.keyboard('{ArrowLeft}')
-      expect(w.extract()).toEqual({ raw: 'divide' })
+      await user.keyboard('{ArrowRight}')
+      expect(w.extract()).toEqual({ raw: 'multiply 5' })
       cleanup()
       const w2 = make()
       const r = render(<>{w2.render({} as never, 'review')}</>)
-      await user.click(r.container.querySelector('[data-op-option="divide"]')!)
+      await user.click(r.container.querySelector('[data-op-sym="divide"]')!)
       expect(w2.extract()).toEqual({ raw: '' })
+      expect((r.container.querySelector('[data-op-by]') as HTMLInputElement).disabled).toBe(true)
       cleanup()
     }
+  })
+})
+
+describe('worked-equation write-the-next-line', () => {
+  it('the next line is typed free-form on the board; review inert', async () => {
+    const user = userEvent.setup()
+    const w = createWorkedEquation({ lines: ['4x + 5 = 33', '4x = 28'], next: true })
+    const { container } = render(<>{w.render({} as never, 'problem')}</>)
+    expect(w.extract()).toEqual({ raw: '' })
+    await user.type(container.querySelector('[data-next-input]')!, 'x = 7')
+    expect(w.extract()).toEqual({ raw: 'x = 7' })
+    cleanup()
+    const w2 = createWorkedEquation({ lines: ['4x = 28'], next: true })
+    const r = render(<>{w2.render({} as never, 'review')}</>)
+    expect((r.container.querySelector('[data-next-input]') as HTMLInputElement).disabled).toBe(true)
   })
 })
 

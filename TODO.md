@@ -30,10 +30,23 @@ non-readers) — scope it separately when its turn comes.
 
 ## Client / widgets
 
-- [ ] Remaining trinity inputs for display-only widgets (semantics in
-      cairn/CLAUDE.md): balance = pick the operation, envelope = distribute
-      counters, hanger = choose the move, area = fill the products,
-      worked-equation = choose the next line.
+- [x] Trinity inputs for display-only widgets (2026-08-27, reworked same
+      day from op-pick MC to constructed op ENTRY per Mia: symbol + operand,
+      mirrored on both sides; worked-equation = write the next line).
+- [ ] **STEPWISE PROBLEMS (major differentiator — Mia 2026-08-27)**: make
+      each stage of a lesson animation its own workable micro-problem. The
+      SAME timeline plays automatically (lesson), or pauses at each stage
+      for the student to construct that stage's move/value (worked mode),
+      with the faded phase as the midpoint. Design sketch: timeline steps
+      gain an optional `expect` (an op/value/expr the student must supply
+      to advance; the patch then plays as confirmation); LessonPlayer gets
+      a 'worked' mode driving per-step inputs through the widget's entry
+      affordances (OpEntry, fill-cells, next-line); engine grades per-step
+      (partial credit / per-step BKT evidence, discount by prompt depth);
+      capstone stays raw final answer. Balance example: stage 1 enter
+      "subtract 5", stage 2 enter "divide 3", stage 3 enter x = 4. The
+      op-entry widgets + 'op' answer type (shipped) are the atoms of this.
+      Big lift: schema (timeline expect), player, engine, validator.
 - [ ] proportional-graph widget (line through origin, read (0,0)/(1,r)) —
       unblocks g7 graph-interpret (rp-slab.md deferred table).
 - [ ] compare-rates "pick with work" upgrade: two offer cards each with a

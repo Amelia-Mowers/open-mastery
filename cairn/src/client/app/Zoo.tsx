@@ -8,7 +8,7 @@ import { LessonPlayer } from './LessonPlayer'
 import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry'
 import { FALLBACK_DEMOS, type ZooDemo } from './zoo-demos'
 import type { CairnApi } from './api'
-import type { Params } from './render'
+import { evalNumber, renderText, type Params } from './render'
 
 function roleBadge(widget: string): string {
   const r = WIDGET_ROLES[widget as WidgetType]
@@ -40,6 +40,90 @@ function DemoCard({ demo }: { demo: ZooDemo }) {
         onDone={() => setReplay((r) => r + 1)}
       />
     </section>
+  )
+}
+
+/** evaluate templated widget config against instance params (zoo mirror of
+ * ItemCard's recursion) */
+function evalConfig(config: Record<string, unknown>, params: Params): Record<string, unknown> {
+  const deep = (v: unknown): unknown => {
+    if (typeof v === 'string' && v.includes('{')) {
+      const n = evalNumber(v, params)
+      return n !== null ? n : renderText(v, params)
+    }
+    if (Array.isArray(v)) return v.map(deep)
+    if (v !== null && typeof v === 'object')
+      return Object.fromEntries(Object.entries(v).map(([k, x]) => [k, deep(x)]))
+    return v
+  }
+  const { stem: _stem, ...rest } = config
+  return Object.fromEntries(Object.entries(rest).map(([k, v]) => [k, deep(v)]))
+}
+
+/** single-timeline view: the trinity's other two faces — the faded
+ * "finish this one" phase (truncated lead + faded answer space, the item's
+ * numbers) and the raw answer input, both from the representation-matched
+ * item the server sends (key stripped). */
+function TrinityCards({ demo }: { demo: ZooDemo }) {
+  const item = demo.item
+  const [replay, setReplay] = useState(0)
+  const [extracted, setExtracted] = useState('')
+  const [fadedWidget] = useState(() =>
+    item ? createWidget(item.widget.type, evalConfig(item.widget.config ?? {}, item.params as Params)) : null,
+  )
+  const [inputWidget] = useState(() =>
+    item ? createWidget(item.widget.type, evalConfig(item.widget.config ?? {}, item.params as Params)) : null,
+  )
+  if (!item || !fadedWidget || !inputWidget)
+    return (
+      <section className="card zoo-card">
+        <p className="zoo-note">
+          No representation-matched item yet — the faded ("finish this one") and answer-input
+          previews need an item with <code>representation: {demo.explanation.representation}</code>.
+        </p>
+      </section>
+    )
+  // same truncation as ItemCard's faded lead: content steps minus the
+  // resolution — the answer space below IS the resolution
+  const content = demo.explanation.timeline.filter(
+    (st) => st.patch !== undefined || st.caption !== undefined,
+  )
+  const truncated =
+    content.length >= 2 ? { ...demo.explanation, timeline: content.slice(0, -1) } : null
+  return (
+    <>
+      {truncated && (
+        <section className="card zoo-card">
+          <div className="card-kicker">
+            <span className="kicker">FINISH THIS ONE — FADED PHASE</span>
+            <span className="mono-chip">{JSON.stringify(item.fadedParams)}</span>
+          </div>
+          <LessonPlayer
+            key={replay}
+            explanation={truncated}
+            params={item.fadedParams as Params}
+            kind="walkthrough"
+            embedded
+            tail="none"
+            onDone={() => setReplay((r) => r + 1)}
+          />
+          <div className="viz-answer">{fadedWidget.render({} as never, 'faded')}</div>
+        </section>
+      )}
+      <section className="card zoo-card">
+        <div className="card-kicker">
+          <span className="kicker">ANSWER INPUT — {item.widget.type.toUpperCase()}</span>
+          <span className="mono-chip">{item.id}</span>
+        </div>
+        <div className="answer-row">
+          {inputWidget.render({} as never, 'problem')}
+          <button className="btn" onClick={() => setExtracted(JSON.stringify(inputWidget.extract()))}>
+            Extract
+          </button>
+        </div>
+        {extracted && <p className="mono-chip zoo-extract">{extracted}</p>}
+      </section>
+    </>
   )
 }
 
@@ -101,39 +185,19 @@ const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<str
     },
   },
   {
-    title: 'balance-scale (pick the operation)',
+    title: 'balance-scale (enter the move — mirrored on both pans)',
     type: 'balance-scale',
-    config: {
-      left: '4x', right: '28',
-      ops: [
-        { key: 'divide4', label: '÷ 4 both sides' },
-        { key: 'sub4', label: '− 4 both sides' },
-        { key: 'mul4', label: '× 4 both sides' },
-      ],
-    },
+    config: { left: '4x + 5', right: '33', entry: true },
   },
   {
-    title: 'hanger-diagram (choose the move)',
+    title: 'hanger-diagram (enter the move — mirrored on both sides)',
     type: 'hanger-diagram',
-    config: {
-      copies: 3, shapeLabel: 'x', weight: '21',
-      ops: [
-        { key: 'third', label: 'split 21 into 3 pieces' },
-        { key: 'sub3', label: 'take 3 off both sides' },
-      ],
-    },
+    config: { copies: 3, shapeLabel: 'x', weight: '21', entry: true },
   },
   {
-    title: 'worked-equation (choose the next line)',
+    title: 'worked-equation (write the next line)',
     type: 'worked-equation',
-    config: {
-      lines: ['3x + 5 = 17', '3x = 12'],
-      options: [
-        { key: 'div3', label: 'x = 12 ÷ 3' },
-        { key: 'sub3', label: 'x = 12 − 3' },
-        { key: 'mul3', label: 'x = 12 × 3' },
-      ],
-    },
+    config: { lines: ['3x + 5 = 17', '3x = 12'], next: true },
   },
   {
     title: 'envelope-model (share the counters)',
@@ -168,6 +232,7 @@ export function Zoo({ api }: { api: CairnApi }) {
             widget: d.widget,
             params: d.params as Params,
             explanation: d.explanation,
+            item: d.item ?? null,
           },
         ]),
       )
@@ -204,6 +269,7 @@ export function Zoo({ api }: { api: CairnApi }) {
         demos.map((d) => (
           <div key={d.explanation.id}>
             <DemoCard demo={d} />
+            {only && <TrinityCards demo={d} />}
             {(index[d.widget] ?? []).length > 0 && (
               <p className="muted zoo-index">
                 every {d.widget} timeline:{' '}

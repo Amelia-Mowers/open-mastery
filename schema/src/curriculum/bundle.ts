@@ -332,19 +332,40 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
       const v = evaluate(parsed.value, {})
       return v.ok && v.value.t === 'num' ? v.value.v : null
     }
-    // choice answers: the value is an option KEY, not an expression — check
-    // it names a real option, and evaluate `verify` (the scenario invariant
-    // that makes the keyed option genuinely correct) over the params alone
-    if (it.answer.type === 'choice') {
-      const opts = (it.widget.config?.['options'] ?? it.widget.config?.['ops'] ?? null) as Array<{ key?: unknown }> | null
-      const keys = Array.isArray(opts) ? opts.map((o) => String(o?.key ?? '')) : []
-      if (keys.length < 2)
-        push('error', 'choice_options', it.id, 'choice items need ≥2 widget.config.options with keys')
-      else if (new Set(keys).size !== keys.length)
-        push('error', 'choice_options', it.id, 'choice option keys must be unique')
-      else if (!keys.includes(String(it.answer.value)))
-        push('error', 'choice_options', it.id, `answer value '${String(it.answer.value)}' is not an option key`)
-      const checkChoice = (env: Env, where: string) => {
+    // categorical/op answers: the value is not an expression — validate the
+    // key against the widget's answer space, and evaluate `verify` (the
+    // scenario invariant that makes the keyed answer genuinely correct)
+    // over the params alone
+    if (it.answer.type === 'choice' || it.answer.type === 'op') {
+      if (it.answer.type === 'choice') {
+        const opts = (it.widget.config?.['options'] ?? null) as Array<{ key?: unknown }> | null
+        const keys = Array.isArray(opts) ? opts.map((o) => String(o?.key ?? '')) : []
+        if (keys.length < 2)
+          push('error', 'choice_options', it.id, 'choice items need ≥2 widget.config.options with keys')
+        else if (new Set(keys).size !== keys.length)
+          push('error', 'choice_options', it.id, 'choice option keys must be unique')
+        else if (!keys.includes(String(it.answer.value)))
+          push('error', 'choice_options', it.id, `answer value '${String(it.answer.value)}' is not an option key`)
+      }
+      const checkOpKey = (env: Env, where: string) => {
+        // op answers: "<word> <operand>" where word names the both-sides
+        // move and the operand evaluates to a number under these params
+        const tpl = typeof it.answer.value === 'string' ? it.answer.value : null
+        const rendered = tpl === null ? null : renderTemplate(tpl, env, { numberStyle: 'fraction' })
+        const m = rendered?.ok ? /^(add|subtract|multiply|divide)\s+(\S.*)$/.exec(rendered.value.trim()) : null
+        if (!m) {
+          push('error', 'op_answer', where, `op answer must render to '<add|subtract|multiply|divide> <operand>' (got '${String(it.answer.value)}')`)
+          return
+        }
+        const parsed = parseExprLoose(m[2]!)
+        const v = parsed.ok ? evaluate(parsed.value, {}) : null
+        if (!v || !v.ok || v.value.t !== 'num')
+          push('error', 'op_answer', where, `op answer operand '${m[2]!}' does not evaluate to a number`)
+      }
+      if (it.answer.type === 'op' && it.widget.config?.['entry'] !== true)
+        push('error', 'op_answer', it.id, "op items need widget.config.entry: true (the widget's op-entry answer space)")
+      const checkScenario = (env: Env, where: string) => {
+        if (it.answer.type === 'op') checkOpKey(env, where)
         if (it.verify === undefined) return
         const parsed = parseTemplate(it.verify)
         if (!parsed.ok) return // reported by the template checks
@@ -359,14 +380,14 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         else if (result.value.t !== 'bool' || !result.value.v)
           push('error', 'verify_failed', where, `scenario does not satisfy '${it.verify}'`)
       }
-      checkChoice(it.params as Env, `${it.id} (authored params)`)
+      checkScenario(it.params as Env, `${it.id} (authored params)`)
       if (it.generator != null) {
         const spec = it.generator as GeneratorSpec
         const fixed: Record<string, number | string> = {}
         for (const [k, v] of Object.entries(it.params)) if (!(k in spec)) fixed[k] = v
         for (const seed of seeds) {
           const g = generateParams(spec, fixed, seed)
-          if (g.ok) checkChoice(g.value as Env, `${it.id} (seed ${seed})`)
+          if (g.ok) checkScenario(g.value as Env, `${it.id} (seed ${seed})`)
         }
       }
       continue

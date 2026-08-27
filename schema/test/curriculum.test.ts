@@ -169,6 +169,21 @@ describe('bundle validation (release gates)', () => {
     expect(authoring.some((i) => i.code === 'explanation_variety' && i.severity === 'warning')).toBe(true)
   })
 
+  it('op answers: value must render to a known move with a numeric operand, and the widget must offer entry', () => {
+    const b = goodBundle()
+    b.items[1]!.answer = { type: 'op', value: 'subtract {b}' } as (typeof b.items)[number]['answer']
+    b.items[1]!.widget = { type: 'balance-scale', config: { left: '{a}{variable} + {b}', right: '{a*3+b}', entry: true } }
+    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'form_mismatch'])
+    expect(validateBundle(b).filter((i) => !advisory.has(i.code))).toEqual([])
+    // missing the entry answer space is an error, not a silent MC fallback
+    b.items[1]!.widget = { type: 'balance-scale', config: { left: 'x', right: '3' } }
+    expect(validateBundle(b).some((i) => i.code === 'op_answer' && i.severity === 'error')).toBe(true)
+    // an op value that renders to no known move word is an error
+    b.items[1]!.widget = { type: 'balance-scale', config: { entry: true } }
+    b.items[1]!.answer = { type: 'op', value: 'banish {b}' } as (typeof b.items)[number]['answer']
+    expect(validateBundle(b).some((i) => i.code === 'op_answer' && i.severity === 'error')).toBe(true)
+  })
+
   it('release gate: ≥2 generator-backed non-choice check items per skill', () => {
     const b = goodBundle()
     b.items[1]!.generator = null

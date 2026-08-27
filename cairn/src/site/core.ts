@@ -269,14 +269,30 @@ export class SiteCore {
     return ok({ demos, index })
   }
 
-  /** one explanation as a playable demo (family params) — review tooling */
+  /** one explanation as a playable demo (family params) — review tooling.
+   * Includes the trinity's other faces: a representation-matched item's
+   * answer widget (input + faded preview), answer key stripped. */
   explanationDemo(id: string): SiteResult {
     const e = this.cur.explanations.get(id)
     if (!e) return err(404, `unknown explanation '${id}'`)
     const skill = this.cur.skills.get(e.skill)
     const family = practiceItems(e.skill, this.cur)[0]?.params ?? {}
     const params = feedableParams(e, [family]) ?? family
-    return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e })
+    const repMatches = practiceItems(e.skill, this.cur).filter(
+      (it) => it.representation === e.representation,
+    )
+    // prefer the item whose ANSWER SPACE is this very widget (shows the
+    // widget's own input role), else any item framed in this representation
+    const repItem = repMatches.find((it) => it.widget.type === e.widget) ?? repMatches[0]
+    const item = repItem
+      ? {
+          id: repItem.id,
+          params: repItem.params,
+          widget: repItem.widget,
+          fadedParams: feedableParams(e, [repItem.params]) ?? params,
+        }
+      : null
+    return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e, item })
   }
 
   next(studentId: string, focusSkill?: string | null, forceFocus = false): SiteResult {

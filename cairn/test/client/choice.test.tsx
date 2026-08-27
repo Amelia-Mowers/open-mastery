@@ -99,7 +99,9 @@ describe('choice through the item card', () => {
 
   it('templated labels evaluate per instance; submitting sends the option key', async () => {
     const user = userEvent.setup()
-    const onSubmit = vi.fn().mockResolvedValue({ verdict: { verdict: 'correct' }, correct: true, points: 5 })
+    const onSubmit = vi
+      .fn()
+      .mockResolvedValue({ verdict: { verdict: 'correct' }, correct: true, points: 5, emitted: [] })
     const { container } = render(
       <ItemCard
         action={action}

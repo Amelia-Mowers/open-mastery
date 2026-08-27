@@ -6,7 +6,7 @@
 import { useSyncExternalStore } from 'react'
 import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
-import { OpChoiceRow, type OpOption } from '../widgets/op-choice'
+import { OpEntry, OP_SYMBOL, moveRaw, type OpMove } from '../widgets/op-entry'
 
 export interface HangerDiagramParams {
   /** copies of the variable shape (the coefficient, as a count) */
@@ -35,7 +35,7 @@ type HangerState = {
   reveal: boolean
   shapesIn: boolean
   weightIn: boolean
-  selectedOp: string | null
+  move: OpMove
 }
 
 const label = (p: HangerDiagramParams): string =>
@@ -45,14 +45,15 @@ export interface HangerDiagramConfig {
   copies?: number
   shapeLabel?: string
   weight?: string
-  /** problem mode: which move keeps the hanger level? */
-  ops?: OpOption[]
+  /** problem mode: constructed op entry — the student enters the symbol
+   * and operand of the move, mirrored live under BOTH sides */
+  entry?: boolean
 }
 
 export function createHangerDiagram(
   config: HangerDiagramConfig = {},
 ): WidgetInstance<HangerDiagramParams, { raw: string } | null, HangerDiagramView> {
-  const store = new WidgetStore<HangerState>({ split: false, share: null, reveal: false, shapesIn: true, weightIn: true, selectedOp: null })
+  const store = new WidgetStore<HangerState>({ split: false, share: null, reveal: false, shapesIn: true, weightIn: true, move: { op: null, by: '' } })
 
   function Shape({ text, share, i, size }: { text: string; share: string | null; i: number; size: number }) {
     return (
@@ -111,7 +112,30 @@ export function createHangerDiagram(
       shapeLabel: params.shapeLabel ?? config.shapeLabel ?? '?',
       weight: params.weight ?? config.weight ?? '',
     }
-    const interactive = mode !== 'lesson' && (config.ops?.length ?? 0) > 0
+    const interactive = mode !== 'lesson' && config.entry === true
+    const entered =
+      interactive && state.move.op !== null && state.move.by.trim() !== ''
+        ? `${OP_SYMBOL[state.move.op]} ${state.move.by.trim()}`
+        : null
+    const moveBadge = (side: 'left' | 'right') =>
+      entered === null ? null : (
+        <span
+          data-op-badge={side}
+          style={{
+            font: "700 15px 'Lora', Georgia, serif",
+            color: '#b05f28',
+            background: '#f7e6d4',
+            border: '1.5px solid #e8c9a8',
+            padding: '2px 11px',
+            borderRadius: 14,
+            marginTop: 8,
+            whiteSpace: 'nowrap',
+            animation: 'cairn-pop 0.3s ease',
+          }}
+        >
+          {entered}
+        </span>
+      )
     const n = Math.max(1, Math.round(p.copies))
     // everything must hang UNDER the bar: shapes shrink as the count grows
     const size = n > 8 ? 26 : n > 5 ? 32 : 40
@@ -131,6 +155,9 @@ export function createHangerDiagram(
               Array.from({ length: n }, (_, i) => (
                 <Shape key={i} i={i} size={size} text={p.shapeLabel} share={state.reveal ? state.share : null} />
               ))}
+            <span style={{ flexBasis: '100%', display: 'flex', justifyContent: 'center' }}>
+              {moveBadge('left')}
+            </span>
           </div>
           {/* right: the weight, whole or split into n equal pieces */}
           <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 3, width: '47%' }}>
@@ -174,18 +201,18 @@ export function createHangerDiagram(
                 {p.weight}
               </span>
             )}
+            {moveBadge('right')}
           </div>
         </div>
         {interactive && (
-          <OpChoiceRow
-            options={config.ops!}
-            selected={state.selectedOp}
+          <OpEntry
+            move={state.move}
             disabled={mode === 'review'}
-            onSelect={(key) => {
-              store.record('select', { key })
-              store.setState({ selectedOp: key })
+            onChange={(move) => {
+              store.record('move', { op: move.op, by: move.by })
+              store.setState({ move })
             }}
-            ariaLabel="Which move keeps the hanger level?"
+            ariaLabel="Move to apply to both sides of the hanger"
           />
         )}
       </div>
@@ -195,9 +222,8 @@ export function createHangerDiagram(
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
     extract: () => {
-      if (!config.ops?.length) return null
-      const key = store.getState().selectedOp
-      return key === null ? { raw: '' } : { raw: key }
+      if (config.entry !== true) return null
+      return { raw: moveRaw(store.getState().move) ?? '' }
     },
     trace: () => store.trace(),
     applyPatch: (patch) => {

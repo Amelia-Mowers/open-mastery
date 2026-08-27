@@ -85,6 +85,19 @@ describe('set / ordered / choice graders', () => {
     expect(v(spec, 'b')).toBe('correct')
     expect(v(spec, 'a')).toBe('incorrect')
   })
+  it('op grades the move word exactly and the operand numerically', () => {
+    const spec: AnswerSpec = { type: 'op', value: 'subtract {b}' } as AnswerSpec
+    expect(v(spec, 'subtract 21')).toBe('correct')
+    expect(v(spec, 'subtract 21.0')).toBe('correct') // operand is numeric, not textual
+    expect(v(spec, 'subtract 20')).toBe('incorrect')
+    expect(v(spec, 'divide 21')).toBe('incorrect') // right operand, wrong move
+    expect(v(spec, 'subtract')).toBe('incorrect') // half a move
+    expect(v(spec, '')).toBe('incorrect')
+    expect(v(spec, 'banish 21')).toBe('incorrect') // unknown op word
+    const div: AnswerSpec = { type: 'op', value: 'divide {a}' } as AnswerSpec
+    expect(v(div, 'divide 7')).toBe('correct')
+    expect(v(div, 'divide 14/2')).toBe('correct')
+  })
 })
 
 describe('form guards (echo-proofing symbolic equivalence)', () => {

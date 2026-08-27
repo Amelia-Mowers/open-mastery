@@ -17,11 +17,13 @@ What every Cairn widget must satisfy. The §4.4 contract is one interface —
   planned input semantic is documented in `CLAUDE.md` — display-only is a
   stage, not a category, and **every audit must list planned-input
   widgets as OPEN DEBT, never as conformant**. (Paid 2026-08-27:
-  balance = pick the operation, hanger = choose the move, worked =
-  choose the next line, envelope = distribute the counters, area = fill
-  the missing product — the shared `OpChoiceRow` carries the keyboard/
-  inertness contract. Remaining debt: cube-model needs a counting
-  interaction designed.)
+  balance/hanger = **op entry** — the student constructs the move (symbol
+  + operand via the shared `OpEntry`), mirrored live under BOTH sides;
+  worked = write the next line free-form; envelope = distribute the
+  counters; area = fill the missing product. Inputs are never
+  multiple-choice in costume: options rows are reserved for the `choice`
+  widget where the answer is genuinely categorical. Remaining debt:
+  cube-model needs a counting interaction designed.)
 - **review**: inert — `disabled` + `aria-disabled`, no pointer or keyboard
   mutation, single tab stop removed (`tabIndex -1`).
 

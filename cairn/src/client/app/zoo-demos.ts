@@ -11,6 +11,13 @@ export interface ZooDemo {
   widget: string
   params: Params
   explanation: Explanation
+  /** single-timeline view: representation-matched item (answer stripped) */
+  item?: {
+    id: string
+    params: Record<string, number | string>
+    widget: { type: string; config?: Record<string, unknown> }
+    fadedParams: Record<string, number | string>
+  } | null
 }
 
 const exp = (id: string, widget: string, timeline: unknown[]): Explanation =>

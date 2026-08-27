@@ -64,7 +64,35 @@ export function gradeAnswer(spec: AnswerSpec, params: Env, raw: string | string[
       return String(spec.value).trim() === asOne(raw).trim()
         ? correct
         : incorrect()
+    case 'op':
+      return gradeOp(spec, params, asOne(raw))
   }
+}
+
+/** Constructed both-sides move: "<word> <operand>" where word ∈ add |
+ * subtract | multiply | divide (exact) and the operand is numerically
+ * equal to the key's. The widget's OpEntry emits exactly this shape. */
+const OP_WORDS = new Set(['add', 'subtract', 'multiply', 'divide'])
+
+function gradeOp(spec: AnswerSpec, params: Env, raw: string): Verdict {
+  if (typeof spec.value !== 'string') return incorrect('answer key is not an op template')
+  const rendered = renderTemplate(spec.value, params, { numberStyle: 'fraction' })
+  if (!rendered.ok) return incorrect('answer key does not evaluate')
+  const splitMove = (s: string): [string, string] | null => {
+    const m = /^(\S+)\s+(.+)$/.exec(s.trim())
+    return m ? [m[1]!.toLowerCase(), m[2]!] : null
+  }
+  const key = splitMove(rendered.value)
+  if (!key || !OP_WORDS.has(key[0])) return incorrect('answer key is not an op template')
+  const student = splitMove(raw)
+  if (!student) return incorrect('empty')
+  if (!OP_WORDS.has(student[0])) return incorrect('unknown operation')
+  if (student[0] !== key[0]) return incorrect()
+  const expected = evalClosed(key[1])
+  if (!expected) return incorrect('answer key operand does not evaluate')
+  const got = evalClosed(student[1])
+  if (!got) return incorrect('operand is not a number')
+  return ratEq(got, expected) ? correct : incorrect()
 }
 
 const asOne = (raw: string | string[]): string => (Array.isArray(raw) ? raw.join(',') : raw)

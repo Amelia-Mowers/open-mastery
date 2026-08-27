@@ -5,7 +5,6 @@
 import { useSyncExternalStore } from 'react'
 import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
-import { OpChoiceRow, type OpOption } from '../widgets/op-choice'
 
 export interface WorkedEquationParams {
   /** first line (the starting equation) */
@@ -15,8 +14,8 @@ export interface WorkedEquationParams {
 export interface WorkedEquationConfig {
   /** problem mode: the lines already on the board */
   lines?: string[]
-  /** problem mode: candidate NEXT lines — pick the right move */
-  options?: OpOption[]
+  /** problem mode: the student WRITES the next line of the solution */
+  next?: boolean
 }
 
 export interface WorkedEquationView {
@@ -26,18 +25,18 @@ export interface WorkedEquationView {
   note?: string
 }
 
-type WorkedState = { lines: Array<{ text: string; note?: string }>; selectedOp: string | null }
+type WorkedState = { lines: Array<{ text: string; note?: string }>; next: string }
 
 const label = (p: WorkedEquationParams): string => `Worked solution starting from ${p.start}`
 
 export function createWorkedEquation(
   config: WorkedEquationConfig = {},
 ): WidgetInstance<WorkedEquationParams, { raw: string } | null, WorkedEquationView> {
-  const store = new WidgetStore<WorkedState>({ lines: [], selectedOp: null })
+  const store = new WidgetStore<WorkedState>({ lines: [], next: '' })
 
   function View({ params, mode }: { params: WorkedEquationParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
-    const interactive = mode !== 'lesson' && (config.options?.length ?? 0) > 0
+    const interactive = mode !== 'lesson' && config.next === true
     const lines: Array<{ text: string; note?: string }> = interactive
       ? (config.lines ?? []).map((text) => ({ text }))
       : [{ text: params.start }, ...state.lines]
@@ -99,15 +98,29 @@ export function createWorkedEquation(
             >
               <span aria-hidden style={{ color: '#d8cdbb' }}>↓</span> what comes next?
             </div>
-            <OpChoiceRow
-              options={config.options!}
-              selected={state.selectedOp}
+            <input
+              data-next-input
+              aria-label="Write the next line of the solution"
               disabled={mode === 'review'}
-              onSelect={(key) => {
-                store.record('select', { key })
-                store.setState({ selectedOp: key })
+              value={state.next}
+              placeholder="write it…"
+              onChange={(e) => {
+                store.record('write', { text: e.target.value })
+                store.setState({ next: e.target.value })
               }}
-              ariaLabel="Pick the next line of the solution"
+              style={{
+                display: 'block',
+                width: '100%',
+                boxSizing: 'border-box',
+                font: "600 24px 'Lora', Georgia, serif",
+                color: '#2e2822',
+                background: 'transparent',
+                border: 'none',
+                borderBottom: '2.5px dashed #d8cdbb',
+                outlineColor: '#b05f28',
+                padding: '6px 0 3px',
+                marginTop: 2,
+              }}
             />
           </div>
         )}
@@ -118,9 +131,8 @@ export function createWorkedEquation(
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
     extract: () => {
-      if (!config.options?.length) return null
-      const key = store.getState().selectedOp
-      return key === null ? { raw: '' } : { raw: key }
+      if (config.next !== true) return null
+      return { raw: store.getState().next.trim() }
     },
     trace: () => store.trace(),
     applyPatch: (patch) => {

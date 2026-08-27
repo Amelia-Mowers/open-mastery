@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
-import { OpChoiceRow, type OpOption } from '../widgets/op-choice'
+import { OpEntry, moveRaw, type OpMove } from '../widgets/op-entry'
 
 export interface BalanceScaleParams {
   left: string
@@ -12,8 +12,9 @@ export interface BalanceScaleConfig {
   /** problem mode: the equation on the pans */
   left?: string
   right?: string
-  /** problem mode: which move keeps the balance AND frees the variable? */
-  ops?: OpOption[]
+  /** problem mode: constructed op entry — the student enters the symbol
+   * and operand of the move, mirrored live under BOTH pans */
+  entry?: boolean
 }
 
 export interface BalanceScaleView {
@@ -35,7 +36,7 @@ type BalanceScaleState = {
   caption: string
   leftIn: boolean
   rightIn: boolean
-  selectedOp: string | null
+  move: OpMove
 }
 
 const label = (params: BalanceScaleParams): string =>
@@ -56,7 +57,7 @@ export function createBalanceScale(
     caption: '',
     leftIn: true,
     rightIn: true,
-    selectedOp: null,
+    move: { op: null, by: '' },
   })
 
   function Tile({ text, highlighted, side }: { text: string; highlighted: boolean; side: 'left' | 'right' }) {
@@ -112,7 +113,14 @@ export function createBalanceScale(
 
   function View({ params, mode }: { params: BalanceScaleParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
-    const interactive = mode !== 'lesson' && (config.ops?.length ?? 0) > 0
+    const interactive = mode !== 'lesson' && config.entry === true
+    // the entered move is reflected on BOTH pans through the same badge the
+    // lesson animation uses
+    const entered: BalanceScaleView['op'] | null =
+      interactive && state.move.op !== null && state.move.by.trim() !== ''
+        ? { op: state.move.op, by: state.move.by.trim() }
+        : null
+    const shownOp = interactive ? entered : state.op
     const left = state.left ?? params.left ?? config.left ?? ''
     const right = state.right ?? params.right ?? config.right ?? ''
     const hl = state.highlight
@@ -147,19 +155,18 @@ export function createBalanceScale(
           </svg>
           {state.leftIn && <Tile text={left} highlighted={hl === 'left' || hl === 'left.coef'} side="left" />}
           {state.rightIn && <Tile text={right} highlighted={hl === 'right'} side="right" />}
-          {state.op && state.leftIn && <OpBadge side="left" op={state.op} />}
-          {state.op && state.rightIn && <OpBadge side="right" op={state.op} />}
+          {shownOp && state.leftIn && <OpBadge side="left" op={shownOp} />}
+          {shownOp && state.rightIn && <OpBadge side="right" op={shownOp} />}
         </div>
         {interactive && (
-          <OpChoiceRow
-            options={config.ops!}
-            selected={state.selectedOp}
+          <OpEntry
+            move={state.move}
             disabled={mode === 'review'}
-            onSelect={(key) => {
-              store.record('select', { key })
-              store.setState({ selectedOp: key })
+            onChange={(move) => {
+              store.record('move', { op: move.op, by: move.by })
+              store.setState({ move })
             }}
-            ariaLabel="Which move keeps the scale balanced and frees the variable?"
+            ariaLabel="Operation to apply to both sides"
           />
         )}
         <div
@@ -181,9 +188,8 @@ export function createBalanceScale(
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
     extract: () => {
-      if (!config.ops?.length) return null
-      const key = store.getState().selectedOp
-      return key === null ? { raw: '' } : { raw: key }
+      if (config.entry !== true) return null
+      return { raw: moveRaw(store.getState().move) ?? '' }
     },
     trace: () => store.trace(),
     applyPatch: (patch) => {

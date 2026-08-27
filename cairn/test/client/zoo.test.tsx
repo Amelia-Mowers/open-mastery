@@ -43,4 +43,25 @@ describe('widget zoo', () => {
     expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(3)
     expect(screen.getAllByRole('slider').length).toBeGreaterThanOrEqual(2)
   })
+
+  it('single-timeline view shows the trinity: lesson, faded phase, answer input', async () => {
+    window.history.pushState({}, '', '?view=zoo&exp=alg1.linear.solve-one-step.exp-balance')
+    try {
+      const { container } = render(<Zoo api={new SiteApi(base, 'zoo-single')} />)
+      // lesson demo + faded lead both play (two timelines on the page)
+      await waitFor(() => {
+        expect(screen.getAllByRole('group', { name: 'Lesson timeline' })).toHaveLength(2)
+      })
+      // faded card: truncated lead (resolution dropped — only the first
+      // caption survives) plus the item's answer space in faded mode
+      expect(screen.getByText(/FINISH THIS ONE — FADED PHASE/)).toBeInTheDocument()
+      expect(screen.getByText(/ANSWER INPUT — EQUATION-INPUT/)).toBeInTheDocument()
+      // the rep-matched item is equation-input: its faded + problem
+      // renders are textboxes, and no answer key ships in the payload
+      expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(2)
+      expect(container.innerHTML).not.toContain('b/a')
+    } finally {
+      window.history.pushState({}, '', '?view=zoo')
+    }
+  })
 })

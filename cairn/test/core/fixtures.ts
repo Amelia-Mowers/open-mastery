@@ -38,6 +38,9 @@ export function fixtureBundle(): Bundle {
       id: `alg1.linear.solve-one-step.${num}`,
       skills: ['alg1.linear.solve-one-step'],
       difficulty,
+      // 001 is representation-tagged so the zoo trinity view has a
+      // rep-matched item to source its faded + input cards from
+      ...(num === '001' ? { representation: 'balance-scale' } : {}),
       params: { a: 7, b: 21, variable: 'x' },
       generator: { a: { int: [2, 12] }, b: { mult_of: 'a', range: [10, 60] } },
       widget: { type: 'equation-input', config: { stem: 'Solve: {a}{variable} = {b}.' } },
@@ -90,6 +93,7 @@ export function fixtureBundle(): Bundle {
       params_from: 'item',
       timeline: [
         { t: 0, caption: 'Watch.' },
+        { t: 2, caption: 'The last move solves it.' },
         { t: 3, handoff: { prompt: 'Now you try.' } },
       ],
       review,

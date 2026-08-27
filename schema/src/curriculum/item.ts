@@ -28,7 +28,11 @@ export const widgetRefSchema = z
 
 export const answerSchema = z
   .object({
-    type: z.enum(['expr', 'numeric', 'set', 'ordered', 'choice']),
+    /** 'op' = a constructed both-sides move: the student enters an
+     * operation symbol AND its operand (e.g. "subtract 5"); value is a
+     * template "subtract {b}" — op word matched exactly, operand
+     * numerically */
+    type: z.enum(['expr', 'numeric', 'set', 'ordered', 'choice', 'op']),
     /** templated via cairn-expr, e.g. "{variable} = {b/a}" */
     value: z.union([z.string(), z.number(), z.array(z.union([z.string(), z.number()]))]),
     equivalence: z.enum(['symbolic', 'numeric', 'exact']).optional(),

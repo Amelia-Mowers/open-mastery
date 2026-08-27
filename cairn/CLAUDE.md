@@ -19,9 +19,12 @@
   the live matrix; the zoo shows both roles. When a representation IS the
   answer space, the same widget teaches AND asks (opposite-flip does
   both for negate). Planned input semantics for the display-only widgets:
-  balance-scale = pick the operation for both sides; tape-diagram = fill
-  a part; envelope-model = distribute counters; hanger = choose the move;
-  area-model = fill the products; worked-equation = choose the next line.
+  balance-scale/hanger = op ENTRY (construct the move: symbol + operand
+  via shared OpEntry, mirrored under both sides; graded by the 'op'
+  answer type); tape-diagram = fill a part; envelope-model = distribute
+  counters; area-model = fill the products; worked-equation = write the
+  next line. Inputs are constructed responses — never multiple choice
+  unless the answer is genuinely categorical (choice widget).
 - **`GOLDEN_WIDGET.md` is the widget standard** — trinity roles, staged
   decomposition entrances paired with `eqHighlight`, semantic (never
   numeric) widget fit, review-mode inertness, keyboard operation, motion,

@@ -291,6 +291,7 @@ body {
 /* ---- widget zoo ---- */
 .zoo-card .card-kicker .mono-chip { max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .zoo-extract { display: inline-block; margin-top: 10px; }
+.zoo-note { color: var(--ink-soft, #8b8070); font-size: 14.5px; margin: 4px 0; }
 
 /* ---- symbolic equation banner (decomposition lessons) ---- */
 .lesson-equation {

@@ -7,14 +7,11 @@ generator: { a: { int: [2, 9] }, b: { int: [2, 20] }, ans: { int: [2, 12] } }
 widget:
   type: balance-scale
   config:
-    stem: "{a}{variable} + {b} = {a*ans+b}. Which move comes FIRST?"
+    stem: "{a}{variable} + {b} = {a*ans+b}. Enter the FIRST move that keeps the scale balanced and starts freeing {variable}."
     left: "{a}{variable} + {b}"
     right: "{a*ans+b}"
-    ops:
-      - { key: "sub", label: "− {b} both sides" }
-      - { key: "div", label: "÷ {a} both sides" }
-      - { key: "add", label: "+ {b} both sides" }
-answer: { type: choice, value: "sub" }
+    entry: true
+answer: { type: op, value: "subtract {b}" }
 hints:
   - "Undo in REVERSE order — the + {b} was applied last, so it goes first."
   - "Subtract {b} from both sides; the ÷ {a} comes after."
