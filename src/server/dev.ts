@@ -251,6 +251,31 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
         explanations: bundle.explanations.length,
       })
     }
+    if (req.method === 'GET' && url.pathname === '/api/demos') {
+      // the widget zoo's single source: one canonical demo per widget type —
+      // the first curriculum explanation using it (skill order, instruction
+      // order), played with its family params
+      const seen = new Set<string>()
+      const demos: Array<{ widget: string; skillName: string; params: Record<string, number | string>; explanation: Explanation }> = []
+      for (const skillId of cur.skillOrder) {
+        const skill = cur.skills.get(skillId)!
+        const all = cur.explanationsBySkill.get(skillId) ?? []
+        const ordered = [
+          ...skill.instruction.map((id) => all.find((e) => e.id === id)).filter((e): e is Explanation => e !== undefined),
+          ...all.filter((e) => !skill.instruction.includes(e.id)),
+        ]
+        for (const e of ordered) {
+          if (seen.has(e.widget)) continue
+          const family = practiceItems(skillId, cur)[0]?.params ?? {}
+          const params = feedableParams(e, [family])
+          if (!params) continue
+          seen.add(e.widget)
+          demos.push({ widget: e.widget, skillName: skill.name, params, explanation: e })
+        }
+      }
+      return json(res, 200, { demos })
+    }
+
     if (studentId === '') return json(res, 400, { error: 'student query param required' })
     const st = slot(studentId)
     const ctx = ctxFor(studentId)

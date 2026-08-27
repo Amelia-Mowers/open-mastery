@@ -212,7 +212,7 @@ function Session({ apiBase, student, onLeave }: { apiBase: string; student: stri
 
   let body
   if (view === 'zoo') {
-    body = <Zoo />
+    body = <Zoo api={api} />
   } else if (view === 'dashboard') {
     body = <Dashboard api={api} />
   } else if (overlay) {

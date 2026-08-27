@@ -1,10 +1,14 @@
 /** The widget zoo (?view=zoo): every explanation animation and answer input
- * on one page, for testing and debugging. Each demo autoplays; the handoff
- * button replays it. */
-import { useState } from 'react'
+ * on one page, for testing and debugging. Demos are SINGLE-SOURCED from the
+ * curriculum (/api/demos — one canonical explanation per widget type), plus
+ * clearly-labeled fallbacks for widgets the curriculum hasn't adopted yet.
+ * Each demo autoplays; the handoff button replays it. */
+import { useEffect, useState } from 'react'
 import { LessonPlayer } from './LessonPlayer'
 import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry'
-import { ZOO_DEMOS, type ZooDemo } from './zoo-demos'
+import { FALLBACK_DEMOS, type ZooDemo } from './zoo-demos'
+import type { SiteApi } from './api'
+import type { Params } from './render'
 
 function roleBadge(widget: string): string {
   const r = WIDGET_ROLES[widget as WidgetType]
@@ -63,19 +67,38 @@ const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<str
   { title: 'expression-input', type: 'equation-input', config: { variable: 'x' } },
 ]
 
-export function Zoo() {
+export function Zoo({ api }: { api: SiteApi }) {
+  const [demos, setDemos] = useState<ZooDemo[] | null>(null)
+  useEffect(() => {
+    void api.demos().then(({ demos: fromCurriculum }) => {
+      const covered = new Set(fromCurriculum.map((d) => d.widget))
+      setDemos([
+        ...fromCurriculum.map((d) => ({
+          title: `${d.widget} — ${d.skillName}`,
+          widget: d.widget,
+          params: d.params as Params,
+          explanation: d.explanation,
+        })),
+        ...FALLBACK_DEMOS.filter((f) => !covered.has(f.widget)),
+      ])
+    })
+  }, [api])
+
   return (
     <div>
       <section className="card">
         <h1 className="dash-h">Widget zoo</h1>
         <p className="muted">
-          Every explanation animation and answer input, for testing and debugging. Demos autoplay;
-          the end button replays. Reach this page with <code>?view=zoo</code>.
+          One canonical demo per widget, single-sourced from the curriculum (fallbacks only for
+          widgets no explanation uses yet), plus every answer input. Demos autoplay; the end button
+          replays. Reach this page with <code>?view=zoo</code>.
         </p>
       </section>
-      {ZOO_DEMOS.map((d) => (
-        <DemoCard key={d.explanation.id} demo={d} />
-      ))}
+      {demos === null ? (
+        <p className="muted loading">Loading…</p>
+      ) : (
+        demos.map((d) => <DemoCard key={d.explanation.id} demo={d} />)
+      )}
       {INPUT_SAMPLES.map((c) => (
         <InputCard key={c.title} title={c.title} type={c.type} config={c.config} />
       ))}

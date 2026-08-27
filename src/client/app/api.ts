@@ -38,6 +38,13 @@ export interface AttemptOutcome {
   mastery?: number
 }
 
+export interface ZooDemoView {
+  widget: string
+  skillName: string
+  params: Record<string, number | string>
+  explanation: Explanation
+}
+
 export interface BundleView {
   skills: Array<{ id: string; name: string; prereqs: string[] }>
 }
@@ -106,6 +113,11 @@ export class SiteApi {
 
   async explained(explanationId: string, skillId: string): Promise<void> {
     await this.post('/api/explained', { explanationId, skillId })
+  }
+
+  async demos(): Promise<{ demos: ZooDemoView[] }> {
+    const r = await fetch(`${this.base}/api/demos`)
+    return (await r.json()) as { demos: ZooDemoView[] }
   }
 
   async bundle(): Promise<BundleView> {
