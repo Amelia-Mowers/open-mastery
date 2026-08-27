@@ -36,6 +36,8 @@ export interface AttemptOutcome {
   points: number
   /** mastery estimate for the attempted skill AFTER this attempt */
   mastery?: number
+  /** this answer unlocked the skill's mastery check — offer it NOW */
+  checkUnlocked?: boolean
 }
 
 export interface ZooDemoView {

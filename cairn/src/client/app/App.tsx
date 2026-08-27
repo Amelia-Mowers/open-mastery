@@ -187,6 +187,8 @@ function Session({
   const focusSkill = useRef<string | null>(null)
   /** skills whose check-unlocked interstitial was dismissed for now */
   const [checkDismissed, setCheckDismissed] = useState<ReadonlySet<string>>(new Set())
+  /** the just-answered skill unlocked its check — offer before moving on */
+  const [unlockOffer, setUnlockOffer] = useState<string | null>(null)
   /** an alternative explanation playing in the lesson slot */
   const [overlay, setOverlay] = useState<OverlayExplanation | null>(null)
 
@@ -253,7 +255,16 @@ function Session({
   if (view === 'zoo') {
     body = <Zoo api={api} />
   } else if (view === 'dashboard') {
-    body = <Dashboard api={api} />
+    body = (
+      <Dashboard
+        api={api}
+        onPick={(skillId) => {
+          focusSkill.current = skillId
+          setView('work')
+          refresh()
+        }}
+      />
+    )
   } else if (overlay) {
     body = (
       <LessonPlayer
@@ -326,10 +337,11 @@ function Session({
       />
     )
   } else if (
-    next.action.checkAvailable &&
-    !checkDismissed.has(next.action.forSkillId)
+    (unlockOffer !== null && !checkDismissed.has(unlockOffer)) ||
+    (next.action.checkAvailable === true && !checkDismissed.has(next.action.forSkillId))
   ) {
-    const skillId = next.action.forSkillId
+    const skillId =
+      unlockOffer !== null && !checkDismissed.has(unlockOffer) ? unlockOffer : next.action.forSkillId
     body = (
       <section className="card unlock" aria-label="Mastery check unlocked">
         <div className="unlock-burst" aria-hidden>
@@ -340,12 +352,21 @@ function Session({
           Two fresh problems, no hints. Get both right and this skill goes on your cairn.
         </p>
         <div className="answer-row">
-          <button className="btn btn-check" onClick={() => startCheck(skillId)}>
+          <button
+            className="btn btn-check"
+            onClick={() => {
+              setUnlockOffer(null)
+              startCheck(skillId)
+            }}
+          >
             Take the check
           </button>
           <button
             className="btn"
-            onClick={() => setCheckDismissed(new Set([...checkDismissed, skillId]))}
+            onClick={() => {
+              setUnlockOffer(null)
+              setCheckDismissed(new Set([...checkDismissed, skillId]))
+            }}
           >
             More practice first
           </button>
@@ -354,7 +375,7 @@ function Session({
     )
   } else {
     const instanceKey = `${next.action.instance.itemId}#${next.action.instance.paramHash}`
-    const { skillId } = next.action
+    const { skillId, forSkillId } = next.action
     const itemRep = next.item?.representation ?? undefined
     body = (
       <ItemCard
@@ -363,7 +384,11 @@ function Session({
         item={next.item!}
         pointsBefore={next.points}
         mastery={next.mastery ?? 0}
-        onSubmit={onSubmit}
+        onSubmit={async (raw, hintLevel, latencyMs) => {
+          const out = await onSubmit(raw, hintLevel, latencyMs)
+          if (out.checkUnlocked === true && !checkDismissed.has(forSkillId)) setUnlockOffer(forSkillId)
+          return out
+        }}
         onContinue={(focus) => {
           if (focus !== undefined) focusSkill.current = focus
           refresh()

@@ -488,7 +488,6 @@ export function LessonPlayer({
       <section className="card unlock" aria-label="What you're learning">
         <div className="card-kicker">
           <span className="kicker">NEW SKILL</span>
-          <span className="mono-chip">representation: {explanation.representation}</span>
         </div>
         <p className="muted preamble-lead">Here's what you're learning:</p>
         <h1 className="preamble-title">{intro.title}</h1>
@@ -522,7 +521,6 @@ export function LessonPlayer({
     <>
       <div className="card-kicker">
         <span className={kind === 'lesson' ? 'kicker' : 'kicker kicker-alt'}>{KICKER[kind]}</span>
-        <span className="mono-chip">representation: {explanation.representation}</span>
         {onCancel && (
           <button className="btn btn-quiet player-close" aria-label="Back to the problem" onClick={onCancel}>
             ✕

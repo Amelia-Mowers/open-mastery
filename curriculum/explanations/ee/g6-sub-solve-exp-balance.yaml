@@ -1,0 +1,14 @@
+id: g6.ee.sub-solve.exp-balance
+skill: g6.ee.sub-solve
+representation: balance-scale
+widget: balance-scale
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], left: "{variable} − {p}", right: "{d}", leftIn: false, rightIn: false }, caption: "Here is the problem in symbols. Watch each side land on the scale." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{variable} − {p} goes on the left pan." }
+  - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{d} on the right — balanced." }
+  - { t: 12, patch: { eqHighlight: ["1"], highlight: left }, caption: "{variable} had {p} TAKEN AWAY. Undo subtracting by ADDING." }
+  - { t: 15.5, patch: { op: add, by: "{p}", highlight: null, eqHighlight: [] }, caption: "Add {p} to BOTH pans — the scale stays balanced." }
+  - { t: 19, patch: { left: "{variable}", right: "{p+d}", op: null }, caption: "{variable} = {p+d}." }
+  - { t: 21, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

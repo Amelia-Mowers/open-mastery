@@ -2,14 +2,14 @@ id: g6.ee.add-solve.002
 skills: [g6.ee.add-solve]
 difficulty: 2
 representation: balance-scale
-params: { p: 9, d: 12, variable: x }
-generator: { p: { int: [2, 30] }, d: { int: [2, 40] } }
-widget: { type: equation-input, config: { stem: "Solve: {variable} − {p} = {d}." } }
-answer: { type: expr, value: "{variable} = {p+d}", equivalence: symbolic, integer: true }
+params: { p: 38, d: 47, variable: y }
+generator: { p: { int: [20, 80] }, d: { int: [20, 90] } }
+widget: { type: equation-input, config: { stem: "Solve: {variable} + {p} = {p+d}." } }
+answer: { type: expr, value: "{variable} = {d}", equivalence: symbolic, integer: true }
 hints:
-  - "What operation undoes subtracting {p}?"
-  - "Add {p} to both sides."
+  - "What operation undoes adding {p}?"
+  - "Subtract {p} from both sides."
 source: { book: ccss-ee-progression, section: "6.EE.B.7" }
-verify: "{answer - p == d}"
-viz: { template: balance-scale, bind: { left: "{variable} - {p}", right: "{d}" } }
+verify: "{answer + p == p + d}"
+viz: { template: balance-scale, bind: { left: "{variable} + {p}", right: "{p+d}" } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

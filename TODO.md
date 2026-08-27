@@ -47,6 +47,13 @@ non-readers) — scope it separately when its turn comes.
       (monorepo github.com/Amelia-Mowers/open-mastery; every push to main
       redeploys via .github/workflows/demo-pages.yml).
 
+- [ ] Wrong-answer DIAGNOSIS (playtest #5): misconception-tagged feedback —
+      author common-error patterns per item family (off-by-one, inverse-op,
+      sign flip) and match the submitted answer against them.
+- [ ] Skill map phone REFLOW (playtest #6, partial): horizontal scroll +
+      hyphenation shipped; a true stacked-list layout under 560px is the
+      real fix.
+
 ## Engine / server
 
 - [ ] Build step 5: Bun site server + SQLite SiteStore, auth/enrollment,

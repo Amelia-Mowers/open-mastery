@@ -16,6 +16,7 @@ import {
   applyEvent,
   bktUpdate,
   buildIndex,
+  checkAvailable,
   freshSession,
   initialStudentState,
   nextAction,
@@ -200,8 +201,13 @@ export class SiteCore {
     return pts
   }
 
+  /** the bar the student sees: progress from the skill's L0 toward the
+   * mastery-grant floor (0.95) — a fresh skill reads 0, a mastered one 1.
+   * Raw p is the model's number; this is the display's. */
   masteryOf(studentId: string, skillId: string): number {
-    return this.slot(studentId).student.skills[skillId]?.p ?? this.bktFor()(skillId).L0
+    const p = this.slot(studentId).student.skills[skillId]?.p ?? this.bktFor()(skillId).L0
+    const L0 = this.bktFor()(skillId).L0
+    return Math.min(1, Math.max(0, (p - L0) / (0.95 - L0)))
   }
 
   // ---------- the endpoints ----------
@@ -297,6 +303,12 @@ export class SiteCore {
       })),
       points: this.pointsFor(studentId),
       mastery: this.masteryOf(studentId, pending.skillId),
+      // the mastery moment must not be lost to interleaving: say so the
+      // instant the qualifying PRACTICE answer lands, whatever skill serves
+      // next (never for check items — that would re-offer mid-check)
+      checkUnlocked:
+        pending.itemKind === 'practice' &&
+        checkAvailable(st.student, st.session, this.ctxFor(studentId), pending.skillId),
     })
   }
 
@@ -325,7 +337,12 @@ export class SiteCore {
   state(studentId: string): SiteResult {
     const st = this.slot(studentId)
     return ok({
-      skills: st.student.skills,
+      skills: Object.fromEntries(
+        Object.entries(st.student.skills).map(([id, sk]) => [
+          id,
+          { ...sk, masteryPct: this.masteryOf(studentId, id) },
+        ]),
+      ),
       assisted: [...st.student.assisted],
       openFlags: st.student.openFlags,
       points: this.pointsFor(studentId),

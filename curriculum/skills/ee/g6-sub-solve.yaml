@@ -1,0 +1,15 @@
+id: g6.ee.sub-solve
+name: Solve x − p = q using the Addition Property of Equality
+preamble:
+  plain: "A number minus something leaves a remainder. You'll learn to find the number by undoing the subtraction — ADDING the same amount to both sides."
+  vocab:
+    - { term: Addition Property of Equality, meaning: "add the same number to both sides of an equation and it stays true" }
+# 6.EE.B.7 enumerates x + p = q; this is its inverse-form twin, taught alongside
+standards: [CCSS.MATH.CONTENT.6.EE.B.7]
+source: { book: ccss-ee-progression, section: "6.EE.B.7" }
+bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+fluency: false
+prereqs: [g6.ee.add-solve]
+instruction:
+  - g6.ee.sub-solve.exp-balance
+  - g6.ee.sub-solve.exp-worked

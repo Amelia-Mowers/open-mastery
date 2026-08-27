@@ -280,7 +280,13 @@ export function ItemCard({
           {scaffold && action.itemKind !== 'faded' && <div className="viz">{scaffold.element}</div>}
           {/* wide widget answer spaces (tape, number lines, tables …) take a
               full row of their own; only the text inputs sit inline with the
-              buttons */}
+              buttons. A <form> so Enter submits from any text field. */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault()
+              void submit()
+            }}
+          >
           {!TEXT_INPUTS.has(item.widget.type) && (
             <div className="viz-answer">
               {widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
@@ -289,20 +295,21 @@ export function ItemCard({
           <div className="answer-row">
             {TEXT_INPUTS.has(item.widget.type) &&
               widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
-            <button className="btn btn-primary" onClick={() => void submit()} disabled={busy || outcome !== null}>
+            <button type="submit" className="btn btn-primary" disabled={busy || outcome !== null}>
               Check answer
             </button>
             {maxHints > revealedHints && outcome === null && (
-              <button className="btn" onClick={() => setRevealedHints((h) => h + 1)}>
+              <button type="button" className="btn" onClick={() => setRevealedHints((h) => h + 1)}>
                 Hint
               </button>
             )}
             {!isCheck && outcome === null && (
-              <button className="btn btn-quiet" onClick={() => void openWalkthrough([])}>
+              <button type="button" className="btn btn-quiet" onClick={() => void openWalkthrough([])}>
                 Show me how
               </button>
             )}
           </div>
+          </form>
         </>
       )}
       {explained && outcome === null && !inline && (

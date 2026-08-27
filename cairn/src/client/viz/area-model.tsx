@@ -31,9 +31,30 @@ const label = (p: AreaModelParams): string =>
 export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaModelView> {
   const store = new WidgetStore<AreaState>({ products: null, highlight: [] })
 
+  /** small positive integer, or null — numeric dimensions get a unit grid
+   * and proportional sizing so "6 rows of 6" LOOKS like 6 rows of 6 */
+  const dim = (s: string): number | null => {
+    const n = Number(s)
+    return Number.isInteger(n) && n > 0 && n <= 14 ? n : null
+  }
+
   function View({ params, mode: _mode }: { params: AreaModelParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
     const cols = params.parts.length
+    const h = dim(params.height)
+    // px per unit: fit the height into 72..240
+    const unit = h ? Math.min(34, Math.max(16, Math.floor(240 / h))) : 0
+    const boxH = h ? h * unit : 110
+    // proportional column weights: numeric widths to scale; variables read
+    // a little wider than the height (the unknown side)
+    const weights = params.parts.map((w) => dim(w) ?? (h ? h * 1.4 : 6))
+    const grid = (w: string): string | undefined => {
+      if (!h || dim(w) === null) return undefined
+      return (
+        `repeating-linear-gradient(90deg, #e4dbc9 0, #e4dbc9 1px, transparent 1px, transparent ${unit}px), ` +
+        `repeating-linear-gradient(0deg, #e4dbc9 0, #e4dbc9 1px, transparent 1px, transparent ${unit}px)`
+      )
+    }
     return (
       <div role="img" aria-label={label(params)} style={{ maxWidth: 520, margin: '0 auto' }}>
         {/* width labels above the columns */}
@@ -43,7 +64,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
               key={i}
               data-width-label
               style={{
-                flex: i === 0 ? 2 : 1,
+                flex: `${weights[i]!} 1 0`,
                 textAlign: 'center',
                 font: "600 19px 'Lora', Georgia, serif",
                 color: '#5c5245',
@@ -77,7 +98,7 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
               border: '2.5px solid #5c4a38',
               borderRadius: 8,
               overflow: 'hidden',
-              minHeight: 110,
+              height: boxH,
               background: '#fffdf9',
             }}
           >
@@ -89,12 +110,13 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
                   data-cell
                   data-highlighted={highlighted || undefined}
                   style={{
-                    flex: i === 0 ? 2 : 1,
+                    flex: `${weights[i]!} 1 0`,
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     borderRight: i < cols - 1 ? '2px dashed #8b6a4d' : 'none',
-                    background: highlighted ? '#f7e6d4' : 'transparent',
+                    backgroundColor: highlighted ? '#f7e6d4' : 'transparent',
+                    backgroundImage: grid(params.parts[i]!),
                     font: "600 clamp(16px, 4vw, 24px) 'Lora', Georgia, serif",
                     color: highlighted ? '#8a4d1d' : '#2e2822',
                     transition: 'background 0.3s ease, color 0.3s ease',
@@ -103,7 +125,16 @@ export function createAreaModel(): WidgetInstance<AreaModelParams, null, AreaMod
                     padding: 6,
                   }}
                 >
-                  <span data-product>{state.products?.[i] ?? ''}</span>
+                  <span
+                    data-product
+                    style={
+                      state.products?.[i]
+                        ? { background: 'rgba(255,253,249,0.88)', padding: '2px 10px', borderRadius: 8 }
+                        : undefined
+                    }
+                  >
+                    {state.products?.[i] ?? ''}
+                  </span>
                 </div>
               )
             })}

@@ -49,7 +49,13 @@ them. The book's section structure is a reading order, not a skill graph.
 ## The programmatic-widget standard
 
 **Every equation FORM gets explicit representation coverage — never
-implied.** If an item family's shape differs from its skill's explanations
+implied.** The DANGEROUS case is identifier overlap: feedableParams
+checks identifier presence only, so an item of a different form that
+reuses the same param names (x − p = q sharing p,d with x + p = q) will
+happily feed the WRONG timeline with its numbers — a student asking
+"show me how" on a subtraction problem got an addition walkthrough
+labeled "same numbers". Different form ⇒ different skill, even when the
+identifiers line up. If an item family's shape differs from its skill's explanations
 (different identifiers, different structure — e.g. -x = b vs x/a = b), it
 is a smell: split it into its own skill with explanations and, if needed,
 its own widget/animation authored against ITS params. Widgets are

@@ -14,7 +14,14 @@ const PHASE_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
 
 const STONES = ['#b05f28', '#8b6a4d', '#5c4a38', '#a8814f', '#6e5a45', '#96502a']
 
-export function Dashboard({ api }: { api: CairnApi }) {
+export function Dashboard({
+  api,
+  onPick,
+}: {
+  api: CairnApi
+  /** click an unlocked, unmastered skill to go work on it */
+  onPick?: (skillId: string) => void
+}) {
   const [bundle, setBundle] = useState<BundleView | null>(null)
   const [state, setState] = useState<StateView | null>(null)
   useEffect(() => {
@@ -145,6 +152,7 @@ export function Dashboard({ api }: { api: CairnApi }) {
 
       <section className="card">
         <h2 className="dash-h">Your path</h2>
+        <div className="skill-map-scroll">
         <div className="skill-map" style={{ height: layout.height }}>
           <svg
             className="skill-edges"
@@ -200,17 +208,32 @@ export function Dashboard({ api }: { api: CairnApi }) {
                     : PHASE_STYLE['unseen']!
                   : (PHASE_STYLE[phase] ?? PHASE_STYLE['unseen']!)
               const p = layout.pos.get(s.id)!
+              const pickable = onPick !== undefined && unlocked && phase !== 'mastered'
               return (
                 <div
                   key={s.id}
                   className="skill-node"
                   data-phase={phase}
+                  role={pickable ? 'button' : undefined}
+                  tabIndex={pickable ? 0 : undefined}
+                  onClick={pickable ? () => onPick(s.id) : undefined}
+                  onKeyDown={
+                    pickable
+                      ? (e) => {
+                          if (e.key === 'Enter' || e.key === ' ') {
+                            e.preventDefault()
+                            onPick(s.id)
+                          }
+                        }
+                      : undefined
+                  }
                   title={
                     s.standards.length > 0
                       ? `${s.name}\n${s.standards.map((c) => c.replace('CCSS.MATH.CONTENT.', '')).join(', ')}`
                       : s.name
                   }
                   style={{
+                    cursor: pickable ? 'pointer' : undefined,
                     left: `${p.x}%`,
                     top: p.y,
                     // centers are 100/(n+1)% apart within this node's own row
@@ -224,12 +247,21 @@ export function Dashboard({ api }: { api: CairnApi }) {
                   <div className="skill-node-name">{s.name}</div>
                   <div className="skill-node-phase">{style.label}</div>
                   <div className="node-bar" aria-hidden>
-                    <span style={{ width: `${Math.round((state.skills[s.id]?.p ?? 0) * 100)}%` }} />
+                    <span
+                      style={{
+                        width: `${Math.round(
+                          ((state.skills[s.id] as { masteryPct?: number } | undefined)?.masteryPct ??
+                            state.skills[s.id]?.p ??
+                            0) * 100,
+                        )}%`,
+                      }}
+                    />
                   </div>
                 </div>
               )
             }),
           )}
+        </div>
         </div>
       </section>
     </div>
