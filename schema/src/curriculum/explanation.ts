@@ -7,8 +7,10 @@ import { explanationIdSchema, skillIdSchema, reviewSchema } from './common.ts'
  * type ('op' = "<move word> <operand>"). Autoplay (lesson rung) ignores it. */
 export const stepExpectSchema = z
   .object({
-    type: z.enum(['op', 'expr', 'numeric']),
-    value: z.union([z.string(), z.number()]),
+    /** 'pick' = decomposition gate: click the equation-banner piece(s) this
+     * step is about; value = the acceptable segment indices */
+    type: z.enum(['op', 'expr', 'numeric', 'pick']),
+    value: z.union([z.string(), z.number(), z.array(z.union([z.string(), z.number()]))]),
     /** question shown at the pause, e.g. "What move comes first?" */
     prompt: z.string().min(1).optional(),
     /** shown after a wrong try (second wrong try reveals the move) */
@@ -32,6 +34,10 @@ export const timelineStepSchema = z
   .refine(
     (s) => s.expect === undefined || s.patch !== undefined,
     'an expect step needs a patch — the confirmation the correct move plays',
+  )
+  .refine(
+    (s) => s.expect === undefined || (s.expect.type === 'pick') === Array.isArray(s.expect.value),
+    'pick expects take an array of segment indices; other expect types take a single value',
   )
 
 export const explanationSchema = z

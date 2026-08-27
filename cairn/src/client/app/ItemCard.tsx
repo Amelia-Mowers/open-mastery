@@ -183,8 +183,13 @@ export function ItemCard({
     }
   }
 
+  // the assistance spectrum: faded serves always get a lead; scaffolded
+  // practice serves get one too WHEN the skill's lead is stepwise-capable
+  // (expects authored) — the discrete phases become presentation rungs
+  const wantsLead =
+    action.itemKind === 'faded' || (action.itemKind === 'practice' && action.scaffolded)
   useEffect(() => {
-    if (action.itemKind !== 'faded') return
+    if (!wantsLead) return
     setLeadDone(false)
     let cancelled = false
     void fetchExplanation([], true).then((r) => {
@@ -196,6 +201,9 @@ export function ItemCard({
       )
       if (content.length < 2) return
       const truncated = { ...r.explanation, timeline: content.slice(0, -1) }
+      // practice rung: only an INTERACTIVE lead earns its place above a
+      // problem; passive replays stay a faded-phase affordance
+      if (action.itemKind === 'practice' && !hasExpects(truncated.timeline)) return
       setFadedLead({
         explanation: truncated,
         params: r.params as Params,
@@ -269,13 +277,21 @@ export function ItemCard({
           {stem}
         </h2>
       )}
-      {action.itemKind === 'faded' && fadedLead && !inline && (
+      {fadedLead && !inline && (
         hasExpects(fadedLead.explanation.timeline) ? (
           <StepwisePlayer
             key={`lead-${action.instance.paramHash}`}
             explanation={fadedLead.explanation}
             params={fadedLead.params}
             onReachedEnd={() => setLeadDone(true)}
+            onEngaged={
+              action.itemKind === 'practice'
+                ? () => {
+                    setExplained(true)
+                    setRevealedHints((h) => Math.max(h, 1))
+                  }
+                : undefined
+            }
           />
         ) : (
           <LessonPlayer
@@ -311,7 +327,7 @@ export function ItemCard({
         />
       ) : (
         <>
-          {scaffold && action.itemKind !== 'faded' && <div className="viz">{scaffold.element}</div>}
+          {scaffold && action.itemKind !== 'faded' && !fadedLead && <div className="viz">{scaffold.element}</div>}
           {/* wide widget answer spaces (tape, number lines, tables …) take a
               full row of their own; only the text inputs sit inline with the
               buttons. A <form> so Enter submits from any text field. */}

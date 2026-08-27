@@ -310,6 +310,20 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             `${e.id}.timeline[${i}]`,
             `op expect value must be '<add|subtract|multiply|divide> <operand>' (got '${String(step.expect.value)}')`,
           )
+        if (step.expect.type === 'pick') {
+          // pick gates click equation-banner segments: indices must be
+          // integers within a banner some EARLIER step established
+          const eq = e.timeline
+            .slice(0, i)
+            .map((st) => st.patch?.['equation'])
+            .filter((v): v is unknown[] => Array.isArray(v))
+            .pop()
+          const idxs = (step.expect.value as unknown[]).map((v) => Number(v))
+          if (!eq)
+            push('error', 'expect_shape', `${e.id}.timeline[${i}]`, 'pick expect needs an earlier equation patch to pick from')
+          else if (idxs.length === 0 || idxs.some((n) => !Number.isInteger(n) || n < 0 || n >= eq.length))
+            push('error', 'expect_shape', `${e.id}.timeline[${i}]`, `pick expect indices must be integers in [0, ${eq.length - 1}]`)
+        }
       }
       for (const src of [
         step.caption,

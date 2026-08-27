@@ -1,11 +1,12 @@
-/** Stepwise problem player — the unified-widget direction's first rung
- * beyond autoplay. Plays a timeline like a lesson UNTIL a step carrying
- * `expect`, then PAUSES: the student must construct that step's move (op
- * entry or typed value/line) before the step's patch plays as
- * confirmation. Wrong try → hint; second wrong try → the move is revealed
- * and played (counted). The answer box below the player stays live the
- * whole time, so a student who can produce the final answer skips the
- * process entirely (expertise-reversal guard).
+/** Stepwise problem player — assistance as a spectrum, not categories. A
+ * timeline plays like a lesson until a step carrying `expect`, then PAUSES:
+ * the student constructs that step's move (op entry, typed line, or picking
+ * the equation piece a decomposition step is about) before the step's patch
+ * plays as confirmation. Wrong try → hint; second wrong try or "Show me" →
+ * the widget solves that step (counted). Completed steps are scrubbable.
+ * The answer box below the player stays live the whole time, so a student
+ * who can produce the final answer skips the process (expertise-reversal
+ * guard).
  *
  * Grading here is instructional (client-side, same graders the server
  * uses): timelines already display their own resolutions, so expects leak
@@ -21,7 +22,7 @@ import { OpEntry, type OpMove } from '../widgets/op-entry'
 export interface StepwiseResult {
   /** wrong tries across all expects */
   misses: number
-  /** expects the player had to reveal (two wrong tries) */
+  /** expects the player had to reveal (two wrong tries or "Show me") */
   reveals: number
 }
 
@@ -32,15 +33,40 @@ const CONFIRM_DELAY_MS = 350
 export const hasExpects = (timeline: ReadonlyArray<TimelineStep>): boolean =>
   timeline.some((st) => st.expect !== undefined)
 
+/** sticky caption + equation banner state after steps[0..upto) */
+function stickyState(steps: TimelineStep[], upto: number, params: Params) {
+  let caption = ''
+  let equation: string[] | null = null
+  let eqHighlight: number[] = []
+  for (let i = 0; i < upto; i++) {
+    const st = steps[i]!
+    if (st.caption !== undefined) caption = renderText(st.caption, params)
+    const patch = st.patch
+    if (patch) {
+      if (Array.isArray(patch['equation']))
+        equation = (patch['equation'] as unknown[]).map((seg) => renderText(String(seg), params))
+      if (Array.isArray(patch['eqHighlight']))
+        eqHighlight = (patch['eqHighlight'] as unknown[])
+          .map((v) => Number(v))
+          .filter((v) => Number.isInteger(v))
+    }
+  }
+  return { caption, equation, eqHighlight }
+}
+
 export function StepwisePlayer({
   explanation,
   params,
   onReachedEnd,
+  onEngaged,
   stepDelayMs = STEP_DELAY_MS,
 }: {
   explanation: Explanation
   params: Params
   onReachedEnd?: (result: StepwiseResult) => void
+  /** first interaction with any gate (a submit or "Show me") — the host
+   * marks the try as assisted; skipping straight to the answer never fires */
+  onEngaged?: () => void
   stepDelayMs?: number
 }) {
   const steps = useMemo(
@@ -54,12 +80,21 @@ export function StepwisePlayer({
   const [feedback, setFeedback] = useState<string | null>(null)
   const [move, setMove] = useState<OpMove>({ op: null, by: '' })
   const [typed, setTyped] = useState('')
+  /** reviewing an earlier step (index into steps), or null = live frontier */
+  const [scrub, setScrub] = useState<number | null>(null)
   const tallies = useRef<StepwiseResult>({ misses: 0, reveals: 0 })
   const endNotified = useRef(false)
+  const engagedNotified = useRef(false)
 
   const pending = applied < steps.length ? steps[applied]! : null
   const waitingOn: StepExpect | null =
     pending?.expect !== undefined && !unlocked.has(applied) ? pending.expect : null
+
+  const engage = () => {
+    if (engagedNotified.current) return
+    engagedNotified.current = true
+    onEngaged?.()
+  }
 
   // a reveal note lingers while its move plays; clear it when a NEW gate opens
   useEffect(() => {
@@ -89,34 +124,57 @@ export function StepwisePlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [applied, waitingOn === null])
 
-  // sticky caption + equation banner from the steps applied so far
-  let caption = ''
-  let equation: string[] | null = null
-  let eqHighlight: number[] = []
-  for (let i = 0; i < applied; i++) {
-    const st = steps[i]!
-    if (st.caption !== undefined) caption = renderText(st.caption, params)
-    const patch = st.patch
-    if (patch) {
-      if (Array.isArray(patch['equation']))
-        equation = (patch['equation'] as unknown[]).map((seg) => renderText(String(seg), params))
-      if (Array.isArray(patch['eqHighlight']))
-        eqHighlight = (patch['eqHighlight'] as unknown[])
-          .map((v) => Number(v))
-          .filter((v) => Number.isInteger(v))
-    }
+  // scrub view: a fresh widget replayed to the reviewed step (the live
+  // widget keeps its state untouched underneath)
+  const scrubWidget = useMemo(() => {
+    if (scrub === null) return null
+    const w = createLessonWidget(explanation, params)
+    if (w) for (let i = 0; i <= scrub; i++) if (steps[i]!.patch) w.apply(steps[i]!.patch!)
+    return w
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scrub])
+
+  const live = stickyState(steps, applied, params)
+  const view = scrub === null ? live : stickyState(steps, scrub + 1, params)
+  const shownWidget = scrub === null ? widget : scrubWidget
+
+  const unlock = () => {
+    setTries(0)
+    setMove({ op: null, by: '' })
+    setTyped('')
+    setUnlocked((u) => new Set([...u, applied]))
+  }
+
+  const reveal = (lead: string) => {
+    if (waitingOn === null) return
+    tallies.current.reveals += 1
+    const shown =
+      waitingOn.type === 'pick'
+        ? (live.equation ?? [])
+            .filter((_, i) => (waitingOn.value as unknown[]).map(Number).includes(i))
+            .join('')
+            .trim()
+        : typeof waitingOn.value === 'string'
+          ? renderText(waitingOn.value, params)
+          : String(waitingOn.value)
+    setFeedback(`${lead} ${shown}. Watch it play — you'll get the next one.`)
+    unlock()
   }
 
   const submitStep = (raw: string) => {
     if (waitingOn === null) return
-    const spec = { type: waitingOn.type, value: waitingOn.value } as AnswerSpec
-    const verdict = gradeAnswer(spec, params as never, raw)
-    if (verdict.verdict === 'correct') {
+    engage()
+    const correct =
+      waitingOn.type === 'pick'
+        ? (waitingOn.value as unknown[]).map((v) => String(Number(v))).includes(raw)
+        : gradeAnswer(
+            { type: waitingOn.type, value: waitingOn.value } as AnswerSpec,
+            params as never,
+            raw,
+          ).verdict === 'correct'
+    if (correct) {
       setFeedback(null)
-      setTries(0)
-      setMove({ op: null, by: '' })
-      setTyped('')
-      setUnlocked((u) => new Set([...u, applied]))
+      unlock()
       return
     }
     tallies.current.misses += 1
@@ -129,42 +187,86 @@ export function StepwisePlayer({
       )
       return
     }
-    // second wrong try: reveal the move and play it
-    tallies.current.reveals += 1
-    const shown =
-      typeof waitingOn.value === 'string' ? renderText(waitingOn.value, params) : String(waitingOn.value)
-    setFeedback(`The move: ${shown}. Watch it play — you'll get the next one.`)
-    setTries(0)
-    setMove({ op: null, by: '' })
-    setTyped('')
-    setUnlocked((u) => new Set([...u, applied]))
+    reveal('The move:')
   }
+
+  const gatePrompt = (e: StepExpect): string =>
+    e.prompt !== undefined
+      ? renderText(e.prompt, params)
+      : e.type === 'op'
+        ? 'Your move — what do we do to both sides?'
+        : e.type === 'pick'
+          ? 'Click the piece of the equation this step is about.'
+          : 'Your move — write the next step.'
 
   return (
     <div className="stepwise" data-testid="stepwise">
-      {equation && (
-        <div className="lesson-equation" aria-label={`Equation ${equation.join('')}`}>
-          {equation.map((seg, i) => (
-            <span key={`${i}-${eqHighlight.includes(i)}`} className={eqHighlight.includes(i) ? 'eq-seg eq-hl' : 'eq-seg'}>
+      {view.equation && (
+        <div className="lesson-equation" aria-label={`Equation ${view.equation.join('')}`}>
+          {view.equation.map((seg, i) => (
+            <span
+              key={`${i}-${view.eqHighlight.includes(i)}`}
+              className={view.eqHighlight.includes(i) ? 'eq-seg eq-hl' : 'eq-seg'}
+            >
               {seg}
             </span>
           ))}
         </div>
       )}
-      <div className="lesson-stage">{widget ? widget.element : null}</div>
-      <p key={caption} className={widget ? 'lesson-caption lesson-caption-under' : 'lesson-caption'} data-testid="stepwise-caption">
-        {caption}
+      <div className="lesson-stage" key={scrub ?? 'live'}>
+        {shownWidget ? shownWidget.element : null}
+      </div>
+      <p
+        key={view.caption}
+        className={shownWidget ? 'lesson-caption lesson-caption-under' : 'lesson-caption'}
+        data-testid="stepwise-caption"
+      >
+        {view.caption}
       </p>
-      {waitingOn !== null && (
+      {/* scrub through what has played so far; the frontier stays put */}
+      {applied > 1 && (
+        <div className="stepwise-track" role="group" aria-label="Steps so far">
+          {steps.slice(0, applied).map((_, i) => (
+            <button
+              key={i}
+              type="button"
+              data-step-dot={i}
+              className={
+                (scrub === null ? i === applied - 1 : i === scrub)
+                  ? 'stepwise-dot stepwise-dot-on'
+                  : 'stepwise-dot'
+              }
+              aria-label={`Step ${i + 1} of ${applied}`}
+              onClick={() => setScrub(i === applied - 1 ? null : i)}
+            />
+          ))}
+          {scrub !== null && (
+            <button type="button" className="btn btn-quiet" data-testid="stepwise-resume" onClick={() => setScrub(null)}>
+              Back to now
+            </button>
+          )}
+        </div>
+      )}
+      {waitingOn !== null && scrub === null && (
         <div className="stepwise-gate" data-testid="stepwise-gate">
-          <p className="stepwise-prompt">
-            {waitingOn.prompt !== undefined
-              ? renderText(waitingOn.prompt, params)
-              : waitingOn.type === 'op'
-                ? 'Your move — what do we do to both sides?'
-                : 'Your move — write the next step.'}
-          </p>
-          {waitingOn.type === 'op' ? (
+          <p className="stepwise-prompt">{gatePrompt(waitingOn)}</p>
+          {waitingOn.type === 'pick' ? (
+            <div className="stepwise-pick" role="group" aria-label="Pick the piece of the equation">
+              {(live.equation ?? []).map((seg, i) =>
+                seg.trim() === '' ? null : (
+                  <button
+                    key={i}
+                    type="button"
+                    className="stepwise-pick-seg"
+                    data-pick-seg={i}
+                    onClick={() => submitStep(String(i))}
+                  >
+                    {seg.trim()}
+                  </button>
+                ),
+              )}
+            </div>
+          ) : waitingOn.type === 'op' ? (
             <form
               onSubmit={(e) => {
                 e.preventDefault()
@@ -199,19 +301,32 @@ export function StepwisePlayer({
               </button>
             </form>
           )}
+          <div className="answer-row" style={{ justifyContent: 'center', marginTop: 6 }}>
+            <button
+              type="button"
+              className="btn btn-quiet"
+              data-testid="stepwise-showme"
+              onClick={() => {
+                engage()
+                reveal('Show me:')
+              }}
+            >
+              Show me
+            </button>
+          </div>
         </div>
       )}
-      {feedback !== null && (
+      {feedback !== null && scrub === null && (
         <p className="stepwise-feedback" data-testid="stepwise-feedback">
           {feedback}
         </p>
       )}
-      {pending === null && (
+      {pending === null && scrub === null && (
         <p className="muted stepwise-done" data-testid="stepwise-done">
           One step left — put the answer in the box below.
         </p>
       )}
-      {applied > 0 && pending !== null && waitingOn === null && (
+      {applied > 0 && pending !== null && waitingOn === null && scrub === null && (
         <p className="muted stepwise-skip">Know the answer already? Type it below anytime.</p>
       )}
     </div>

@@ -316,6 +316,42 @@ body {
   animation: cairn-rise 0.3s ease both;
 }
 .stepwise-skip, .stepwise-done { text-align: center; margin: 6px 0 2px; font-size: 13.5px; }
+.stepwise-track {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 8px 0 2px;
+}
+.stepwise-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid #c9924f;
+  background: #f2e3cd;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.2s ease, transform 0.2s ease;
+}
+.stepwise-dot-on { background: #b05f28; border-color: #b05f28; transform: scale(1.2); }
+.stepwise-pick {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 10px;
+}
+.stepwise-pick-seg {
+  font: 600 22px 'Lora', Georgia, serif;
+  color: #2e2822;
+  background: #fffdf9;
+  border: 2.5px solid #d8cdbb;
+  border-radius: 11px;
+  padding: 8px 16px;
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease;
+}
+.stepwise-pick-seg:hover { border-color: #b05f28; background: #f7e6d4; }
 
 /* ---- symbolic equation banner (decomposition lessons) ---- */
 .lesson-equation {

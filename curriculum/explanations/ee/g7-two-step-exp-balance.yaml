@@ -5,8 +5,22 @@ widget: balance-scale
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], left: "{a}{variable} + {b}", right: "{a*ans+b}", leftIn: false, rightIn: false }, caption: "TWO operations hide {variable}: a multiply and an add. Watch." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{a}{variable} + {b} sits on the left pan." }
-  - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{a*ans+b} on the right — balanced." }
+  - t: 4
+    patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }
+    caption: "{a}{variable} + {b} sits on the left pan."
+    expect:
+      type: pick
+      value: ["0", "1"]
+      prompt: "Click the piece of the equation that goes on the LEFT pan."
+      hint: "The left pan holds the side with {variable} in it."
+  - t: 8
+    patch: { eqHighlight: ["3"], rightIn: true, highlight: right }
+    caption: "{a*ans+b} on the right — balanced."
+    expect:
+      type: pick
+      value: ["3"]
+      prompt: "And which piece balances it on the RIGHT pan?"
+      hint: "The lone number after the equals sign."
   - t: 12
     patch: { eqHighlight: ["1"], highlight: left, op: subtract, by: "{b}" }
     caption: "Peel the OUTSIDE first: subtract {b} from both pans."

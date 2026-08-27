@@ -186,6 +186,18 @@ describe('bundle validation (release gates)', () => {
         timeline: [{ t: 0, caption: 'watch', expect: { type: 'op', value: 'subtract 2' } }],
       }),
     ).toThrow(/needs a patch/)
+    // pick expects need an EARLIER equation banner and in-range indices
+    const b2 = goodBundle()
+    const tl2 = b2.explanations[0]!.timeline
+    tl2[0]!.expect = { type: 'pick', value: ['0'] }
+    expect(validateBundle(b2).some((i) => i.code === 'expect_shape')).toBe(true) // no banner yet
+    tl2[0]!.expect = undefined
+    tl2[0]!.patch = { ...tl2[0]!.patch, equation: ['{a}{variable}', ' = ', '{b}'] }
+    tl2[1]!.expect = { type: 'pick', value: ['0'] }
+    const advisory2 = new Set(['representation_count', 'worked_missing', 'missing_banner', 'form_mismatch'])
+    expect(validateBundle(b2).filter((i) => !advisory2.has(i.code))).toEqual([])
+    tl2[1]!.expect = { type: 'pick', value: ['7'] } // out of range
+    expect(validateBundle(b2).some((i) => i.code === 'expect_shape')).toBe(true)
   })
 
   it('op answers: value must render to a known move with a numeric operand, and the widget must offer entry', () => {

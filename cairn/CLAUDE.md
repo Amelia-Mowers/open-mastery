@@ -26,13 +26,19 @@
   next line. Inputs are constructed responses — never multiple choice
   unless the answer is genuinely categorical (choice widget).
 - **STEPWISE PROBLEMS (the unified-widget direction)**: timeline steps
-  may carry `expect` ({type: op|expr|numeric, value, prompt?, hint?}) —
-  in stepwise play (`StepwisePlayer`) the timeline PAUSES there and the
-  student constructs the move; the step's patch plays as confirmation.
-  ItemCard's faded phase auto-upgrades to stepwise when the lead
-  explanation has expects; the answer box below stays live (the skip).
-  Autoplay lessons ignore expects. Author expects on the steps that ARE
-  moves (both-sides ops, next lines), never on scene-setting steps.
+  may carry `expect` ({type: op|expr|numeric|pick, value, prompt?,
+  hint?}) — in stepwise play (`StepwisePlayer`) the timeline PAUSES
+  there and the student constructs the move; the step's patch plays as
+  confirmation. `pick` = decomposition gates (click the equation-banner
+  piece; value = acceptable segment indices; needs an earlier `equation`
+  patch). Every gate has "Show me" (the widget solves that step,
+  tallied); completed steps scrub via dots. THE SPECTRUM: faded serves
+  always lead stepwise; scaffolded PRACTICE serves lead stepwise too
+  when expects exist (engaging any gate → hintLevel ≥1 via onEngaged;
+  skipping straight to the answer box keeps full credit — the
+  expertise-reversal guard). Autoplay lessons ignore expects. Author
+  expects on the steps that ARE moves (decompositions, both-sides ops,
+  next lines), never on pure scene-setting.
 - **`GOLDEN_WIDGET.md` is the widget standard** — trinity roles, staged
   decomposition entrances paired with `eqHighlight`, semantic (never
   numeric) widget fit, review-mode inertness, keyboard operation, motion,

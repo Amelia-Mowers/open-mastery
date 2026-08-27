@@ -60,13 +60,22 @@ non-readers) — scope it separately when its turn comes.
       miss, tallies out), wired as the faded phase whenever the lead
       explanation carries expects (answer box below = the skip), zoo
       stepwise card; g7.ee.two-step balance+worked timelines authored.
-      REMAINING for the full ladder: rung selection in the engine
-      (prompted vs independent vs fluent driven by p), per-step BKT
-      evidence events (stepwise tallies currently only gate the pulse;
-      faded discount covers evidence), wrong-step → misconception
-      diagnosis surfacing, expects across the rest of the catalog
-      (author per slab batch), stepwise in the corrective ladder
-      (walkthrough → stepwise retry instead of plain re-serve).
+      SPECTRUM SHIPPED 2026-08-27 round 2: scaffolded PRACTICE serves
+      lead stepwise too (the p-driven scaffolded flag IS the rung
+      selector: lesson → faded stepwise → scaffolded-practice stepwise →
+      bare practice → check); gate engagement marks the try assisted
+      (hintLevel ≥1), skipping to the answer box keeps full credit;
+      every gate has "Show me" (the widget solves the step); `pick`
+      expects make decomposition steps interactive (click the equation
+      piece); completed steps scrub via dots.
+      REMAINING for the full ladder: per-step BKT evidence events
+      (tallies currently collapse into hintLevel), prompted rung
+      (proactive hints at gates for lowest p, vs current hint-on-miss),
+      wrong-step → misconception diagnosis surfacing, expects across
+      the rest of the catalog (author per slab batch), stepwise in the
+      corrective ladder (missed practice → stepwise retry of the SAME
+      instance instead of plain re-serve), scrub for LessonPlayer parity
+      (dots exist only in stepwise).
 - [ ] proportional-graph widget (line through origin, read (0,0)/(1,r)) —
       unblocks g7 graph-interpret (rp-slab.md deferred table).
 - [ ] compare-rates "pick with work" upgrade: two offer cards each with a
