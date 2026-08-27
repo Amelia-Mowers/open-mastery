@@ -282,3 +282,11 @@ body {
 /* ---- widget zoo ---- */
 .zoo-card .card-kicker .mono-chip { max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .zoo-extract { display: inline-block; margin-top: 10px; }
+
+/* ---- symbolic equation banner (decomposition lessons) ---- */
+.lesson-equation {
+  text-align: center; font: 600 30px 'Lora', Georgia, serif; color: #2e2822;
+  margin: 2px 0 8px; letter-spacing: 0.01em;
+}
+.eq-seg { transition: color 0.3s ease; border-radius: 8px; padding: 1px 3px; }
+.eq-hl { color: #b05f28; background: #f7e6d4; animation: cairn-bump 0.5s ease; display: inline-block; }

@@ -46,6 +46,9 @@ export interface LessonPlayerProps {
   onAnotherWay?: () => void
   /** leave without finishing (embedded walk-throughs only) — no logging */
   onCancel?: () => void
+  /** 'none' hides the handoff row — used when the player leads INTO an
+   * answer that sits below it (the faded phase) */
+  tail?: 'handoff' | 'none'
 }
 
 const TICK_MS = 100
@@ -153,9 +156,11 @@ function createLessonWidget(explanation: Explanation, params: Params): LessonWid
     return {
       element: w.render(setup, 'lesson'),
       apply: (patch) => {
-        const view: { partition?: boolean; reveal?: boolean } = {}
+        const view: { partition?: boolean; reveal?: boolean; envelopesIn?: boolean; countersIn?: boolean } = {}
         if ('partition' in patch) view.partition = patch['partition'] === true
         if ('reveal' in patch) view.reveal = patch['reveal'] === true
+        if ('envelopesIn' in patch) view.envelopesIn = patch['envelopesIn'] === true
+        if ('countersIn' in patch) view.countersIn = patch['countersIn'] === true
         w.applyPatch(view)
       },
     }
@@ -269,6 +274,7 @@ export function LessonPlayer({
   onDone,
   onAnotherWay,
   onCancel,
+  tail = 'handoff',
 }: LessonPlayerProps) {
   const steps = explanation.timeline
   const handoffStep = steps.find((s) => s.handoff)
@@ -363,11 +369,23 @@ export function LessonPlayer({
   }
   const currentSegIdx = contentSteps.reduce((acc, s, i) => (s.t <= time + 1e-9 ? i : acc), 0)
 
-  // the caption sticks: latest step at/before now that HAS one
+  // the caption sticks: latest step at/before now that HAS one; the symbolic
+  // equation banner and its highlighted spans stick the same way
   let caption = ''
+  let equation: string[] | null = null
+  let eqHighlight: number[] = []
   for (let i = 0; i <= stepIdx; i++) {
-    const c = steps[i]!.caption
-    if (c !== undefined) caption = renderText(c, params)
+    const st = steps[i]!
+    if (st.caption !== undefined) caption = renderText(st.caption, params)
+    const patch = st.patch
+    if (patch) {
+      if (Array.isArray(patch['equation']))
+        equation = (patch['equation'] as unknown[]).map((seg) => renderText(String(seg), params))
+      if (Array.isArray(patch['eqHighlight']))
+        eqHighlight = (patch['eqHighlight'] as unknown[])
+          .map((v) => Number(v))
+          .filter((v) => Number.isInteger(v))
+    }
   }
 
   if (preamble && intro) {
@@ -416,6 +434,15 @@ export function LessonPlayer({
           </button>
         )}
       </div>
+      {equation && (
+        <div className="lesson-equation" data-testid="lesson-equation" aria-label={`Equation ${equation.join('')}`}>
+          {equation.map((seg, i) => (
+            <span key={`${i}-${eqHighlight.includes(i)}`} className={eqHighlight.includes(i) ? 'eq-seg eq-hl' : 'eq-seg'}>
+              {seg}
+            </span>
+          ))}
+        </div>
+      )}
       <div className="lesson-stage" key={epoch}>
         {widget ? widget.element : null}
       </div>
@@ -459,7 +486,7 @@ export function LessonPlayer({
           {SPEEDS[speedIdx]}×
         </button>
       </div>
-      {reachedEnd && (
+      {reachedEnd && tail !== 'none' && (
         <div className="answer-row handoff-row">
           <button className="btn btn-primary handoff" onClick={onDone}>
             {handoffStep ? renderText(handoffStep.handoff!.prompt, params) : 'Now you try.'}

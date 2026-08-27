@@ -173,20 +173,14 @@ export function nextAction(
     return { kind: 'lesson', skillId, explanationId, representation: rep }
   }
 
-  if (phase === 'faded') {
-    for (const itemId of skill.faded_examples) {
-      const item = ctx.cur.items.get(itemId)
-      if (!item) continue
-      const inst = instantiate(item, blockedSet(student, session), seedFor(session), pol.selector.isomorphSeedTries)
-      if (inst) return serveWorkItem('faded', skillId, inst, student, session, ctx)
-    }
-    // no (more) faded examples: proceed to practice
-  }
-
   const pool = practiceItems(skillId, ctx.cur)
   const inst = instantiateFor(pool, student, session, pol, skillId)
   if (!inst) return { kind: 'session_done' } // out of items (bundle bug)
-  return serveWorkItem('practice', skillId, inst, student, session, ctx)
+  // the faded phase is a normal instance served as 'faded': the client plays
+  // the skill's explanation up to just before the resolution with THIS
+  // instance's numbers, and the student finishes it — no separate
+  // worked-steps system
+  return serveWorkItem(phase === 'faded' ? 'faded' : 'practice', skillId, inst, student, session, ctx)
 }
 
 function serveWorkItem(

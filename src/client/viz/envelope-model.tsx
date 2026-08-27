@@ -15,11 +15,16 @@ export interface EnvelopeModelParams {
 export interface EnvelopeModelView {
   partition?: boolean
   reveal?: boolean
+  /** staged decomposition: bring in each side as its symbol is explained */
+  envelopesIn?: boolean
+  countersIn?: boolean
 }
 
 type EnvelopeModelState = {
   partition: boolean
   reveal: boolean
+  envelopesIn: boolean
+  countersIn: boolean
 }
 
 const label = (p: EnvelopeModelParams): string =>
@@ -63,7 +68,7 @@ function Envelope({ share, revealed, i }: { share: number; revealed: boolean; i:
 }
 
 export function createEnvelopeModel(): WidgetInstance<EnvelopeModelParams, null, EnvelopeModelView> {
-  const store = new WidgetStore<EnvelopeModelState>({ partition: false, reveal: false })
+  const store = new WidgetStore<EnvelopeModelState>({ partition: false, reveal: false, envelopesIn: true, countersIn: true })
 
   function View({ params, mode: _mode }: { params: EnvelopeModelParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
@@ -106,13 +111,14 @@ export function createEnvelopeModel(): WidgetInstance<EnvelopeModelParams, null,
               minHeight: 170,
             }}
           >
-            {Array.from({ length: n }, (_, i) => (
-              <Envelope key={i} i={i} share={share} revealed={state.reveal} />
-            ))}
+            {state.envelopesIn &&
+              Array.from({ length: n }, (_, i) => (
+                <Envelope key={i} i={i} share={share} revealed={state.reveal} />
+              ))}
           </div>
           <div style={{ width: 2.5, background: '#5c4a38' }} aria-hidden />
           <div style={{ flex: 1.2, padding: '16px 12px', display: 'flex', justifyContent: 'center', alignItems: 'center', minHeight: 170 }}>
-            {state.partition && groups.length > 0 ? (
+            {!state.countersIn ? null : state.partition && groups.length > 0 ? (
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', justifyContent: 'center' }}>
                 {groups.map((g, gi) => (
                   <div
@@ -192,6 +198,8 @@ export function createEnvelopeModel(): WidgetInstance<EnvelopeModelParams, null,
       const next: Partial<EnvelopeModelState> = {}
       if (patch.partition !== undefined) next.partition = patch.partition === true
       if (patch.reveal !== undefined) next.reveal = patch.reveal === true
+      if (patch.envelopesIn !== undefined) next.envelopesIn = patch.envelopesIn === true
+      if (patch.countersIn !== undefined) next.countersIn = patch.countersIn === true
       store.setState(next)
     },
     a11y: { role: 'img', label },

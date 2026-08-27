@@ -1,7 +1,7 @@
 /** One served item: stem, answer widget, optional viz, hints, feedback, and
  * an in-place walk-through of the skill with this problem's own numbers.
  * All copy here is child-facing: encouraging, no mastery-model internals. */
-import { useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import type { Explanation } from '@openmastery/schema'
 import type { NextAction } from '../../core/engine'
 import { createWidget } from '../widgets/registry'
@@ -70,6 +70,9 @@ export function ItemCard({
   const [explained, setExplained] = useState(false)
   /** the bar the student sees; jumps to the server's post-attempt value */
   const [shownMastery, setShownMastery] = useState(mastery)
+  /** faded phase: the skill's explanation, THIS instance's numbers, played
+   * up to just before the resolution — the student finishes it below */
+  const [fadedLead, setFadedLead] = useState<InlinePlay | null>(null)
   const startedAt = useMemo(() => performance.now(), [action.instance.paramHash])
 
   const widget = useMemo(() => {
@@ -142,6 +145,34 @@ export function ItemCard({
     }
   }
 
+  useEffect(() => {
+    if (action.itemKind !== 'faded') return
+    let cancelled = false
+    void fetchExplanation([]).then((r) => {
+      if (cancelled || !r?.explanation) return
+      // drop the resolution (final content step) and the handoff — the
+      // answer input below IS the resolution
+      const content = r.explanation.timeline.filter(
+        (st) => st.patch !== undefined || st.caption !== undefined,
+      )
+      if (content.length < 2) return
+      const truncated = { ...r.explanation, timeline: content.slice(0, -1) }
+      setFadedLead({
+        explanation: truncated,
+        params: r.params as Params,
+        seenReps: [r.explanation.representation],
+        totalReps: r.totalReps,
+      })
+      // the lead is served instruction, not requested help: log the view,
+      // no assistance marking
+      onExplained(r.explanation.id)
+    })
+    return () => {
+      cancelled = true
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [action.instance.paramHash])
+
   const openWalkthrough = async (excludeReps: string[]) => {
     const r = await fetchExplanation(excludeReps)
     if (!r.explanation) return
@@ -197,21 +228,16 @@ export function ItemCard({
           {stem}
         </h2>
       )}
-      {action.itemKind === 'faded' && item.faded?.steps && (
-        <ol className="faded-steps">
-          {item.faded.steps.map((s, i) => {
-            const n = i + 1
-            const revealed = item.faded!.reveal_steps.includes(n)
-            const yours = item.faded!.student_completes.includes(n)
-            return (
-              <li key={n} className={revealed ? 'faded-step done' : 'faded-step yours'}>
-                <span className="faded-step-tag">{revealed ? `step ${n} ✓` : 'your turn'}</span>
-                <span className="faded-step-text">{renderText(s, params)}</span>
-                {yours && <span className="faded-step-arrow" aria-hidden>→</span>}
-              </li>
-            )
-          })}
-        </ol>
+      {action.itemKind === 'faded' && fadedLead && !inline && (
+        <LessonPlayer
+          key={`lead-${action.instance.paramHash}`}
+          explanation={fadedLead.explanation}
+          params={fadedLead.params}
+          kind="walkthrough"
+          embedded
+          tail="none"
+          onDone={() => {}}
+        />
       )}
       {inline ? (
         <LessonPlayer
@@ -232,7 +258,7 @@ export function ItemCard({
         />
       ) : (
         <>
-          {scaffold && <div className="viz">{scaffold.element}</div>}
+          {scaffold && action.itemKind !== 'faded' && <div className="viz">{scaffold.element}</div>}
           <div className="answer-row">
             {widget.render({} as never, action.itemKind === 'faded' ? 'faded' : 'problem')}
             <button className="btn btn-primary" onClick={() => void submit()} disabled={busy || outcome !== null}>

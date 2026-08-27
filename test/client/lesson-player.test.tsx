@@ -314,6 +314,41 @@ describe('explanation player', () => {
     expect(container.querySelectorAll('[data-line]')).toHaveLength(1)
   })
 
+  it('decomposition: the symbolic equation appears and its parts light up as the diagram builds', () => {
+    const decompExp = explanationSchema.parse({
+      id: 'alg1.test.exp-decomp',
+      skill: 'alg1.test.skill',
+      representation: 'envelopes-counters',
+      widget: 'envelope-model',
+      params_from: 'item',
+      timeline: [
+        { t: 0, patch: { equation: ['{a}', '{variable}', ' = ', '{b}'], envelopes: '{a}', counters: '{b}', envelopesIn: false, countersIn: false }, caption: 'Symbols first.' },
+        { t: 4, patch: { eqHighlight: ['0', '1'], envelopesIn: true }, caption: '{a}{variable} becomes envelopes.' },
+        { t: 8, patch: { eqHighlight: ['3'], countersIn: true }, caption: '{b} becomes counters.' },
+        { t: 10, handoff: { prompt: 'Now you try.' } },
+      ],
+      review: { status: 'vetted' },
+    })
+    const { container } = render(
+      <LessonPlayer explanation={decompExp} params={P} kind="lesson" onDone={() => {}} />,
+    )
+    // t0: equation shown, diagram empty
+    expect(screen.getByTestId('lesson-equation')).toHaveTextContent('4x = 28')
+    expect(container.querySelectorAll('[data-envelope]')).toHaveLength(0)
+    expect(container.querySelectorAll('[data-counter]')).toHaveLength(0)
+    // 4x lights up as the envelopes arrive
+    goToStep(2, 3)
+    expect(container.querySelectorAll('.eq-hl')).toHaveLength(2)
+    expect(container.querySelectorAll('.eq-hl')[0]).toHaveTextContent('4')
+    expect(container.querySelectorAll('[data-envelope]')).toHaveLength(4)
+    expect(container.querySelectorAll('[data-counter]')).toHaveLength(0)
+    // 28 lights up as the counters pour in
+    goToStep(3, 3)
+    expect(container.querySelectorAll('.eq-hl')).toHaveLength(1)
+    expect(container.querySelectorAll('.eq-hl')[0]).toHaveTextContent('28')
+    expect(container.querySelectorAll('[data-counter]')).toHaveLength(28)
+  })
+
   it('falls back to caption-only when the widget has no lesson support', () => {
     const captionOnly = explanationSchema.parse({
       ...numberLineExp,
