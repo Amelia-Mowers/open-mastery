@@ -64,7 +64,8 @@ non-readers) — scope it separately when its turn comes.
 - [ ] square-tiles widget (exponents deserve their own picture — the
       gridded area model is a stopgap; see GOLDEN_WIDGET §6b reuse rule).
 - [ ] algebra-tiles widget — unlocks the honest third rep for
-      write-expression, combine (and future factoring).
+      write-expression, combine, simplify-first (its number-line rep was
+      removed as a wrong picture) and future factoring.
 - [ ] g7 two-step SUBTRACTION variant (ax − b = c) as its own skill with
       its own timelines (form_mismatch caught it riding the addition
       skill).

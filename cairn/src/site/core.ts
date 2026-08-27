@@ -275,10 +275,15 @@ export class SiteCore {
     return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e })
   }
 
-  next(studentId: string, focusSkill?: string | null): SiteResult {
+  next(studentId: string, focusSkill?: string | null, forceFocus = false): SiteResult {
     const st = this.slot(studentId)
     const ctx = this.ctxFor(studentId)
-    const action = nextAction(st.student, st.session, ctx, focusSkill ? { focusSkill } : {})
+    const action = nextAction(
+      st.student,
+      st.session,
+      ctx,
+      focusSkill ? { focusSkill, ...(forceFocus ? { forceFocus: true } : {}) } : {},
+    )
     st.pending = action
     const points = this.pointsFor(studentId)
     if (action.kind === 'serve_item') {

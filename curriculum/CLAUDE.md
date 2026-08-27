@@ -36,6 +36,17 @@ widgets/explanation timelines.
 Implemented so far: tape diagram (G7 U6 L2–3), hanger diagram (G6 U6 L3),
 area model (G6 U6 L10), plus OpenStax's envelopes-and-counters (§3.5).
 
+## Before inventing ANY visualization: check the quarries
+
+For every new skill batch (and every new widget), FIRST list candidate
+representations from (1) Illustrative Mathematics first edition's lesson
+pages for the matching standard, (2) the Progressions document's figures
+for that domain, (3) the existing widget fleet. Only invent when none
+fit — and when a rep genuinely doesn't exist in the fleet (algebra
+tiles), queue the widget rather than forcing a wrong picture (the
+simplify-first number line, removed, is the cautionary example: a line
+cannot show combining like terms).
+
 ## Don't map textbook sections to skills naively
 
 A textbook section is NOT a skill. OpenStax §8.2 quietly contained three

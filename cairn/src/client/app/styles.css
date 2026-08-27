@@ -346,7 +346,7 @@ body {
 .join-guide-link .btn { padding: 4px 8px; }
 
 .zoo-index { margin: -8px 4px 18px; font-size: 12px; }
-.zoo-index a { color: #8a5320; margin-right: 10px; text-decoration: none; border-bottom: 1px dotted #c4a37f; }
+.zoo-index a { display: block; width: fit-content; color: #8a5320; margin: 3px 0; text-decoration: none; border-bottom: 1px dotted #c4a37f; }
 
 .skill-peek { animation: cairn-pop 0.25s ease; }
 .peek-plain { font: 600 15.5px 'Nunito Sans', sans-serif; color: #5c5245; }

@@ -102,6 +102,8 @@ export interface NextOptions {
   /** student-chosen skill to work on; overrides ranking AND the parked
    * exclusion (soft parking: opt-in practice continues after a flag) */
   focusSkill?: string
+  /** testing/demo: honor focusSkill even when locked or already mastered */
+  forceFocus?: boolean
 }
 
 export function nextAction(
@@ -195,7 +197,9 @@ export function nextAction(
     activeCount >= pol.selector.maxActiveSkills ? unparked.filter(started) : unparked
   const pickPool = capped.length > 0 ? capped : unparked
   const skillId =
-    opts.focusSkill !== undefined && allEligible.includes(opts.focusSkill)
+    opts.focusSkill !== undefined &&
+    (allEligible.includes(opts.focusSkill) ||
+      (opts.forceFocus === true && ctx.cur.skills.has(opts.focusSkill)))
       ? opts.focusSkill
       : session.currentSkill !== null &&
           unparked.includes(session.currentSkill) &&

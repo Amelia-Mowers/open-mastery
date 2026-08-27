@@ -85,6 +85,7 @@ export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: Ap
         student={student}
         onLeave={() => setStudent('')}
         apiFactory={apiFactory}
+        testMode={demoBanner === true}
       />
     </>
   )
@@ -233,11 +234,13 @@ function Session({
   student,
   onLeave,
   apiFactory,
+  testMode,
 }: {
   apiBase: string
   student: string
   onLeave: () => void
   apiFactory?: (base: string, student: string) => CairnApi
+  testMode?: boolean
 }) {
   const api = useMemo(
     () => (apiFactory ? apiFactory(apiBase, student) : new SiteApi(apiBase, student)),
@@ -338,6 +341,7 @@ function Session({
     body = (
       <Dashboard
         api={api}
+        testMode={testMode}
         onPick={(skillId) => {
           focusSkill.current = skillId
           setFocusedOn(true)

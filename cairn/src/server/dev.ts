@@ -105,7 +105,7 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       return send(res, { status: 400, body: { error: 'student query param required' } })
 
     if (req.method === 'GET' && url.pathname === '/api/next')
-      return send(res, core.next(studentId, url.searchParams.get('skill')))
+      return send(res, core.next(studentId, url.searchParams.get('skill'), url.searchParams.get('force') === '1'))
     if (req.method === 'POST' && url.pathname === '/api/attempt')
       return send(res, core.attempt(studentId, (await readBody(req)) as Record<string, never>))
     if (req.method === 'POST' && url.pathname === '/api/explanation-viewed')

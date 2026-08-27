@@ -111,6 +111,22 @@ describe('blocked acquisition, interleaved consolidation', () => {
   })
 })
 
+describe('forceFocus (demo/testing) bypasses the eligibility gate', () => {
+  it('a locked skill serves its lesson under forceFocus; never without', () => {
+    const { ctx } = miniCtx(2)
+    // make s2 locked behind s1
+    const s2 = ctx.cur.skills.get('t.sched.s2')!
+    ctx.cur.skills.set('t.sched.s2', { ...s2, prereqs: ['t.sched.s1'] })
+    const student = initialStudentState()
+    const session = freshSession()
+    const plain = nextAction(student, session, ctx, { focusSkill: 't.sched.s2' })
+    expect(plain.kind === 'lesson' ? plain.skillId : null).not.toBe('t.sched.s2')
+    const forced = nextAction(student, session, ctx, { focusSkill: 't.sched.s2', forceFocus: true })
+    expect(forced.kind).toBe('lesson')
+    if (forced.kind === 'lesson') expect(forced.skillId).toBe('t.sched.s2')
+  })
+})
+
 describe('the faded phase poses a DIFFERENT problem than the lesson', () => {
   it('the first faded serve never uses the authored (lesson-example) params', () => {
     const { ctx } = miniCtx(1)

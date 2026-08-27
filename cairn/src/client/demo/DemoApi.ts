@@ -71,7 +71,8 @@ export class DemoApi implements CairnApi {
   }
 
   next(focusSkill?: string): Promise<ServerNext> {
-    return Promise.resolve(this.unwrap(this.core.next(this.studentId, focusSkill ?? null)))
+    // demo: focus is forced so testers can jump to locked/mastered skills
+    return Promise.resolve(this.unwrap(this.core.next(this.studentId, focusSkill ?? null, true)))
   }
 
   attempt(raw: string, hintLevel: number, latencyMs: number): Promise<AttemptOutcome> {

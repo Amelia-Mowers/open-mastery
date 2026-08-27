@@ -12,5 +12,4 @@ bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
 fluency: false
 instruction:
   - prealg.lineq.simplify-first.exp-balance
-  - prealg.lineq.simplify-first.exp-numberline
   - prealg.lineq.simplify-first.exp-worked

@@ -17,10 +17,13 @@ const STONES = ['#b05f28', '#8b6a4d', '#5c4a38', '#a8814f', '#6e5a45', '#96502a'
 export function Dashboard({
   api,
   onPick,
+  testMode,
 }: {
   api: CairnApi
   /** click an unlocked, unmastered skill to go work on it */
   onPick?: (skillId: string) => void
+  /** demo/testing: every node is clickable, locked and mastered included */
+  testMode?: boolean
 }) {
   const [bundle, setBundle] = useState<BundleView | null>(null)
   const [state, setState] = useState<StateView | null>(null)
@@ -93,12 +96,25 @@ export function Dashboard({
       sweep(true)
       sweep(false)
       sweep(true)
-      layers.forEach((layer, li) =>
-        layer.forEach((id, i) =>
-          pos.set(id, { x: ((i + 1) / (layer.length + 1)) * 100, y: yOffset + li * rowH + 58, rowLen: layer.length }),
-        ),
-      )
-      const height = layers.length * rowH
+      // wide layers wrap into interleaved sub-rows (brick-stagger) instead of
+      // compressing into slivers
+      const PER_ROW = 4
+      let yCursor = yOffset
+      for (const layer of layers) {
+        const rows: string[][] = []
+        for (let i = 0; i < layer.length; i += PER_ROW) rows.push(layer.slice(i, i + PER_ROW))
+        rows.forEach((row, r) => {
+          row.forEach((id, i) =>
+            pos.set(id, {
+              x: ((i + 1) / (row.length + 1)) * 100,
+              y: yCursor + r * rowH * 0.85 + 58,
+              rowLen: row.length,
+            }),
+          )
+        })
+        yCursor += rowH + (rows.length - 1) * rowH * 0.85
+      }
+      const height = yCursor - yOffset
       const top = yOffset
       yOffset += height + gapBetween
       const maxRow = Math.max(...layers.map((l) => l.length), 1)
@@ -233,7 +249,7 @@ export function Dashboard({
                     : PHASE_STYLE['unseen']!
                   : (PHASE_STYLE[phase] ?? PHASE_STYLE['unseen']!)
               const p = layout.pos.get(s.id)!
-              const pickable = unlocked && phase !== 'mastered'
+              const pickable = testMode === true || (unlocked && phase !== 'mastered')
               return (
                 <div
                   key={s.id}
