@@ -55,6 +55,32 @@ lesson says so).
 | unit-convert | 6.RP.A.3d | nothing hard — cut for slab size; next batch |
 | percent-error/markup chains | 7.RP.A.3 | multi-step answer UX; single-step tax/tip/discount IS implemented |
 
+## Granularity watchlist (candidate splits — decide on mastery DATA)
+
+The implemented nodes are method-sized (one solution method, one primary
+representation, one misconception profile each), which is the right
+mastery-node test. But several deliberately bundle variants that the
+literature says can dissociate. The rule: split when p trajectories go
+bimodal within a skill, or when misses cluster on a form the
+explanations never show (the -r = 2 lesson). Watch for:
+
+- **unit-rate**: only ONE direction is taught ($ per pound). The other
+  unit rate (pounds per $) and *choosing which one a question needs* is
+  a classic, well-documented misconception — likeliest first split.
+- **equiv-table**: scaling UP only. Scaling DOWN (÷) and composite
+  scaling (through the unit rate, non-integer factor) are variants.
+- **percent-of**: benchmark percents only (multiples of 5). Arbitrary
+  percents, decimals, and percents > 100% are real jumps.
+- **missing-value**: teaches the unit-rate-first strategy; the
+  scale-factor-between-ratios strategy is genuinely different. If data
+  shows two populations, split by strategy.
+- **percent-multistep**: single change only (one discount OR one tax).
+  Chained changes and percent error are separate nodes (deferred).
+
+Splitting later is cheap (new skill ids + `supersedes`, prereq edge from
+the narrow node; mastery events survive) — so default to method-sized
+now and let BKT arbitrate.
+
 ## New widgets this slab demanded (the measured "widget load")
 
 2 new widget types for 9 skills: `double-number-line`,
