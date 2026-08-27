@@ -1,0 +1,8 @@
+node_modules/
+dist/
+dist-demo/
+src/client/demo/bundle.json
+cairn/src/client/demo/bundle.json
+.claude/
+*.log
+.git-local-archive/

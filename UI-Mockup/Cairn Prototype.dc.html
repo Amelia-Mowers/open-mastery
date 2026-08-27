@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link href="https://fonts.googleapis.com/css2?family=Lora:wght@500;600;700&amp;family=Nunito+Sans:opsz,wght@6..12,400;6..12,600;6..12,700;6..12,800&amp;display=swap" rel="stylesheet">
+<style>body{margin:0;background:#f2ede4;color:#2e2822;font-family:'Nunito Sans',sans-serif}a{color:#b05f28}a:hover{color:#8f4c1e}input:focus{outline:none;border-color:#b05f28 !important}@keyframes fadeUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}</style>
+</helmet>
+<div style="position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:16px;padding:10px 22px;background:#fffdf9;border-bottom:1px solid #e6ddd0">
+  <div style="display:flex;align-items:center;gap:10px">
+    <div style="display:flex;flex-direction:column;align-items:center;gap:2px"><div style="width:9px;height:5px;background:#b05f28;border-radius:2px"></div><div style="width:14px;height:5px;background:#8b6a4d;border-radius:2px"></div><div style="width:19px;height:6px;background:#5c4a38;border-radius:2px"></div></div>
+    <span style="font:700 19px 'Lora',serif">Cairn</span>
+    <span style="font:600 11px ui-monospace,Menlo,monospace;color:#8b8070;background:#f2ede4;padding:3px 8px;border-radius:5px">alg1 · linear equations pilot</span>
+  </div>
+  <div style="display:flex;background:#ece5d8;border-radius:8px;padding:3px;gap:2px">
+    <button onClick="{{setStudent}}" style="border:none;cursor:pointer;font:700 12.5px 'Nunito Sans',sans-serif;padding:6px 14px;border-radius:6px;background:{{roleSBg}};color:{{roleSFg}}">Student</button>
+    <button onClick="{{setGuide}}" style="border:none;cursor:pointer;font:700 12.5px 'Nunito Sans',sans-serif;padding:6px 14px;border-radius:6px;background:{{roleGBg}};color:{{roleGFg}}">Guide</button>
+  </div>
+  <sc-if value="{{isStudent}}" hint-placeholder-val="{{true}}">
+    <div style="display:flex;align-items:center;gap:6px"><span style="font:600 11px 'Nunito Sans',sans-serif;color:#8b8070">LAYOUT</span>
+      <div style="display:flex;background:#ece5d8;border-radius:8px;padding:3px;gap:2px">
+        <button onClick="{{setVarA}}" style="border:none;cursor:pointer;font:700 12px 'Nunito Sans',sans-serif;padding:5px 12px;border-radius:6px;background:{{varABg}};color:{{varAFg}}">A · Focus</button>
+        <button onClick="{{setVarB}}" style="border:none;cursor:pointer;font:700 12px 'Nunito Sans',sans-serif;padding:5px 12px;border-radius:6px;background:{{varBBg}};color:{{varBFg}}">B · Rail</button>
+      </div></div>
+  </sc-if>
+  <sc-if value="{{isGuide}}" hint-placeholder-val="{{false}}">
+    <div style="display:flex;align-items:center;gap:6px"><span style="font:600 11px 'Nunito Sans',sans-serif;color:#8b8070">LAYOUT</span>
+      <div style="display:flex;background:#ece5d8;border-radius:8px;padding:3px;gap:2px">
+        <button onClick="{{setGVarA}}" style="border:none;cursor:pointer;font:700 12px 'Nunito Sans',sans-serif;padding:5px 12px;border-radius:6px;background:{{gvarABg}};color:{{gvarAFg}}">A · Grid first</button>
+        <button onClick="{{setGVarB}}" style="border:none;cursor:pointer;font:700 12px 'Nunito Sans',sans-serif;padding:5px 12px;border-radius:6px;background:{{gvarBBg}};color:{{gvarBFg}}">B · Queue first</button>
+      </div></div>
+  </sc-if>
+  <div style="flex:1"></div>
+  <button onClick="{{toggleSpec}}" style="border:1px solid #d8cdbb;cursor:pointer;font:700 12px 'Nunito Sans',sans-serif;padding:6px 13px;border-radius:7px;background:{{specBg}};color:{{specFg}}">Spec notes</button>
+  <button onClick="{{reset}}" style="border:1px solid #d8cdbb;cursor:pointer;font:700 12px 'Nunito Sans',sans-serif;padding:6px 13px;border-radius:7px;background:transparent;color:#7a6f61">Reset session</button>
+</div>
+<div style="display:flex;align-items:flex-start">
+<div style="flex:1;min-width:0">
+
+<sc-if value="{{isStudent}}" hint-placeholder-val="{{true}}">
+<div data-screen-label="Student session" style="max-width:960px;margin:0 auto;padding:26px 28px 60px;display:flex;gap:26px;align-items:flex-start">
+
+  <sc-if value="{{variantB}}" hint-placeholder-val="{{false}}">
+  <div style="width:225px;flex:none;display:flex;flex-direction:column;gap:14px;position:sticky;top:78px">
+    <div style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:12px;padding:16px">
+      <div style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#8b8070">SKILL</div>
+      <div style="font:600 15px 'Lora',serif;margin-top:4px">Solve one-step linear equations</div>
+      <div style="font:600 10.5px ui-monospace,Menlo,monospace;color:#8b8070;margin-top:4px">alg1.linear.solve-one-step</div>
+      <div style="display:flex;flex-direction:column;gap:7px;margin-top:14px">
+        <sc-for list="{{stepper}}" as="st" hint-placeholder-count="4">
+          <div style="display:flex;align-items:center;gap:8px"><div style="width:9px;height:9px;border-radius:50%;background:{{st.dot}}"></div><span style="font:700 12.5px 'Nunito Sans',sans-serif;color:{{st.fg}}">{{st.name}}</span></div>
+        </sc-for>
+      </div>
+      <div style="margin-top:14px"><div style="display:flex;justify-content:space-between;font:700 11px 'Nunito Sans',sans-serif;color:#8b8070"><span>P(KNOWN)</span><span style="color:#2e2822">{{pLabel}}</span></div>
+        <div style="height:7px;background:#ece5d8;border-radius:4px;margin-top:5px;overflow:hidden"><div style="height:100%;width:{{pPct}}%;background:#b05f28;border-radius:4px"></div></div></div>
+      <div style="display:flex;gap:12px;margin-top:12px;font:600 11.5px 'Nunito Sans',sans-serif;color:#7a6f61"><span>Attempts {{attempts}}</span><span>Misses {{misses}}</span></div>
+    </div>
+    <div style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:12px;padding:14px 16px">
+      <div style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#8b8070;margin-bottom:8px">RECENT EVENTS</div>
+      <div style="display:flex;flex-direction:column;gap:6px">
+        <sc-for list="{{eventsMini}}" as="ev" hint-placeholder-count="3">
+          <div style="font:600 10.5px ui-monospace,Menlo,monospace;color:{{ev.tone}};overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ev.kind}}</div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <div style="flex:1;min-width:0;display:flex;flex-direction:column;gap:16px">
+    <sc-if value="{{variantA}}" hint-placeholder-val="{{true}}">
+    <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+      <div style="font:600 17px 'Lora',serif">Solve one-step linear equations</div>
+      <div style="display:flex;gap:6px">
+        <sc-for list="{{stepper}}" as="st" hint-placeholder-count="4">
+          <span style="font:700 11px 'Nunito Sans',sans-serif;padding:4px 10px;border-radius:20px;background:{{st.bg}};color:{{st.fg}}">{{st.name}}</span>
+        </sc-for>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:flex;align-items:center;gap:7px"><span style="font:700 11px 'Nunito Sans',sans-serif;color:#8b8070">p {{pLabel}}</span>
+        <div style="width:90px;height:7px;background:#ece5d8;border-radius:4px;overflow:hidden"><div style="height:100%;width:{{pPct}}%;background:#b05f28"></div></div></div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{scrLesson}}" hint-placeholder-val="{{true}}">
+    <div data-screen-label="Lesson — explanation player" style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:14px;padding:30px;animation:fadeUp .3s ease">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+        <span style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#b05f28">LESSON</span>
+        <span style="font:600 10.5px ui-monospace,Menlo,monospace;color:#8b8070;background:#f2ede4;padding:2px 7px;border-radius:4px">representation: balance-scale</span>
+      </div>
+      <div style="font:600 22px 'Lora',serif;margin-bottom:22px">Solving {{eqLeft}} = {{eqRight}}</div>
+      <div style="position:relative;height:186px;max-width:520px;margin:0 auto">
+        <div style="position:absolute;top:34px;left:6%;right:6%;height:7px;background:#8b8070;border-radius:4px"></div>
+        <svg style="position:absolute;top:41px;left:50%;transform:translateX(-50%)" width="72" height="88" viewBox="0 0 72 88"><path d="M30 4 Q36 -4 42 4 L66 80 Q69 88 60 88 L12 88 Q3 88 6 80 Z" fill="#d8cdbb"></path></svg>
+        <div style="position:absolute;top:129px;left:50%;transform:translateX(-50%);width:110px;height:8px;background:#b6a88f;border-radius:4px"></div>
+        <div style="position:absolute;top:41px;left:18%;width:3px;height:22px;background:#b6a88f;transform:translateX(-50%)"></div>
+        <div style="position:absolute;top:41px;left:82%;width:3px;height:22px;background:#b6a88f;transform:translateX(-50%)"></div>
+        <div style="position:absolute;top:63px;left:0;width:36%;box-sizing:border-box;text-align:center;background:#fffdf9;border:2.5px solid {{lpBorder}};border-radius:12px;padding:14px 6px;font:600 28px 'Lora',serif;white-space:nowrap;overflow:hidden">{{lessonLeft}}</div>
+        <div style="position:absolute;top:63px;right:0;width:36%;box-sizing:border-box;text-align:center;background:#fffdf9;border:2.5px solid #d8cdbb;border-radius:12px;padding:14px 6px;font:600 28px 'Lora',serif;white-space:nowrap;overflow:hidden">{{lessonRight}}</div>
+        <sc-if value="{{lessonDiv}}" hint-placeholder-val="{{false}}">
+          <div style="position:absolute;top:146px;left:0;width:36%;text-align:center"><span style="font:700 15px 'Lora',serif;color:#b05f28;background:#f3e4d4;padding:3px 12px;border-radius:14px">÷ {{a}}</span></div>
+          <div style="position:absolute;top:146px;right:0;width:36%;text-align:center"><span style="font:700 15px 'Lora',serif;color:#b05f28;background:#f3e4d4;padding:3px 12px;border-radius:14px">÷ {{a}}</span></div>
+        </sc-if>
+      </div>
+      <div style="text-align:center;font:600 17px 'Lora',serif;color:#5c5245;margin:18px 0 22px;min-height:24px">{{lessonCap}}</div>
+      <div style="display:flex;align-items:center;justify-content:center;gap:16px">
+        <div style="display:flex;gap:6px">
+          <sc-for list="{{lessonDots}}" as="d" hint-placeholder-count="5"><div style="width:8px;height:8px;border-radius:50%;background:{{d.bg}}"></div></sc-for>
+        </div>
+        <button onClick="{{lessonNext}}" style="border:none;cursor:pointer;background:#b05f28;color:#fff;font:700 14px 'Nunito Sans',sans-serif;padding:11px 22px;border-radius:9px">{{lessonBtnLabel}}</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{scrFaded}}" hint-placeholder-val="{{false}}">
+    <div data-screen-label="Faded example" style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:14px;padding:30px;animation:fadeUp .3s ease">
+      <div style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#b05f28;margin-bottom:6px">FADED EXAMPLE</div>
+      <div style="font:600 20px 'Lora',serif;margin-bottom:20px">Finish this one — the first steps are done for you.</div>
+      <div style="display:flex;flex-direction:column;gap:12px;max-width:460px">
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:700 12px ui-monospace,Menlo,monospace;color:#8b8070;width:44px">given</span><span style="font:600 24px 'Lora',serif">5x = 40</span></div>
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:700 12px ui-monospace,Menlo,monospace;color:#4f7f5d;width:44px">step 1</span><span style="font:600 15px 'Nunito Sans',sans-serif;color:#5c5245">Divide both sides by 5</span></div>
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:700 12px ui-monospace,Menlo,monospace;color:#4f7f5d;width:44px">step 2</span><span style="font:600 22px 'Lora',serif">5x ÷ 5 = 40 ÷ 5</span></div>
+        <div style="display:flex;align-items:center;gap:12px"><span style="font:700 12px ui-monospace,Menlo,monospace;color:#b05f28;width:44px">step 3</span><span style="font:600 24px 'Lora',serif">x =</span>
+          <input value="{{fadedInput}}" onChange="{{fadedOnInput}}" onKeyDown="{{fadedOnKey}}" placeholder="?" style="width:90px;font:600 24px 'Lora',serif;text-align:center;padding:8px;border:2px solid #d8cdbb;border-radius:10px;background:#fff"/>
+          <button onClick="{{fadedSubmit}}" style="border:none;cursor:pointer;background:#b05f28;color:#fff;font:700 14px 'Nunito Sans',sans-serif;padding:11px 20px;border-radius:9px">Check</button>
+        </div>
+      </div>
+      <sc-if value="{{fadedMsg}}" hint-placeholder-val="{{false}}">
+        <div style="margin-top:16px;font:700 14px 'Nunito Sans',sans-serif;color:{{fadedMsgFg}}">{{fadedMsg}}</div>
+      </sc-if>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{scrWork}}" hint-placeholder-val="{{false}}">
+      <sc-if value="{{overlayAlt}}" hint-placeholder-val="{{false}}">
+      <div data-screen-label="Corrective — alternative explanation" style="background:#fffdf9;border:1px solid #e6ddd0;border-left:4px solid #b05f28;border-radius:14px;padding:30px;animation:fadeUp .3s ease">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <span style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#b05f28">LET'S LOOK AT IT DIFFERENTLY</span>
+          <span style="font:600 10.5px ui-monospace,Menlo,monospace;color:#8b8070;background:#f2ede4;padding:2px 7px;border-radius:4px">representation: number-line</span>
+        </div>
+        <div style="font:600 20px 'Lora',serif;margin-bottom:24px">{{eqLeft}} = {{eqRight}}, on a number line</div>
+        <div style="max-width:560px;margin:0 auto">
+          <div style="display:flex;border-radius:8px;overflow:hidden;border:1px solid #d8cdbb">
+            <sc-for list="{{altSegs}}" as="seg" hint-placeholder-count="7">
+              <div style="flex:1;height:40px;background:{{seg.bg}};border-right:1px solid #fffdf9;display:flex;align-items:center;justify-content:center;font:700 14px 'Lora',serif;color:#6b4318">{{seg.label}}</div>
+            </sc-for>
+          </div>
+          <div style="display:flex;justify-content:space-between;font:700 13px 'Lora',serif;color:#8b8070;margin-top:6px"><span>0</span><span>{{b}}</span></div>
+        </div>
+        <div style="text-align:center;font:600 16px 'Lora',serif;color:#5c5245;margin:20px 0;min-height:22px">{{altCap}}</div>
+        <div style="text-align:center"><button onClick="{{altNext}}" style="border:none;cursor:pointer;background:#b05f28;color:#fff;font:700 14px 'Nunito Sans',sans-serif;padding:11px 22px;border-radius:9px">{{altBtnLabel}}</button></div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{overlayProbe}}" hint-placeholder-val="{{false}}">
+      <div data-screen-label="Corrective — prerequisite probe" style="background:#fffdf9;border:1px solid #e6ddd0;border-left:4px solid #b3822d;border-radius:14px;padding:30px;animation:fadeUp .3s ease">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:6px">
+          <span style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#b3822d">QUICK CHECK OF AN EARLIER SKILL</span>
+          <span style="font:600 10.5px ui-monospace,Menlo,monospace;color:#8b8070;background:#f2ede4;padding:2px 7px;border-radius:4px">alg1.arith.inverse-ops</span>
+        </div>
+        <div style="font:600 30px 'Lora',serif;margin:20px 0">{{b}} ÷ {{a}} =
+          <input value="{{probeInput}}" onChange="{{probeOnInput}}" onKeyDown="{{probeOnKey}}" placeholder="?" style="width:100px;font:600 26px 'Lora',serif;text-align:center;padding:8px;border:2px solid #d8cdbb;border-radius:10px;background:#fff"/>
+        </div>
+        <button onClick="{{probeSubmit}}" style="border:none;cursor:pointer;background:#b05f28;color:#fff;font:700 14px 'Nunito Sans',sans-serif;padding:11px 22px;border-radius:9px">Check</button>
+        <sc-if value="{{probeMsg}}" hint-placeholder-val="{{false}}">
+          <div style="margin-top:14px;font:700 14px 'Nunito Sans',sans-serif;color:#a8453a">{{probeMsg}}</div>
+        </sc-if>
+        <div style="margin-top:16px;font:600 12px 'Nunito Sans',sans-serif;color:#8b8070">Attempts here count toward the earlier skill, not this one.</div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{parked}}" hint-placeholder-val="{{false}}">
+      <div data-screen-label="Skill parked" style="background:#fffdf9;border:1px solid #e6ddd0;border-left:4px solid #a8453a;border-radius:14px;padding:34px;text-align:center;animation:fadeUp .3s ease">
+        <div style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#a8453a;margin-bottom:8px">SKILL PARKED FOR THIS SESSION</div>
+        <div style="font:600 22px 'Lora',serif;margin-bottom:10px">Good stopping point — your guide has been flagged.</div>
+        <div style="font:600 14px 'Nunito Sans',sans-serif;color:#7a6f61;max-width:420px;margin:0 auto 22px">{{capN}} attempts on this skill this session. It will come back fresh next time; something else is up next.</div>
+        <div style="display:flex;gap:10px;justify-content:center">
+          <button onClick="{{setGuide}}" style="border:none;cursor:pointer;background:#b05f28;color:#fff;font:700 14px 'Nunito Sans',sans-serif;padding:11px 20px;border-radius:9px">See the guide view</button>
+          <button onClick="{{reset}}" style="border:1px solid #d8cdbb;cursor:pointer;background:transparent;color:#7a6f61;font:700 14px 'Nunito Sans',sans-serif;padding:11px 20px;border-radius:9px">Reset &amp; replay</button>
+        </div>
+      </div>
+      </sc-if>
+
+      <sc-if value="{{showItem}}" hint-placeholder-val="{{true}}">
+      <div data-screen-label="Practice item" style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:14px;padding:30px;animation:fadeUp .3s ease">
+        <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+          <sc-if value="{{scrPractice}}" hint-placeholder-val="{{true}}"><span style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#b05f28">PRACTICE</span></sc-if>
+          <sc-if value="{{scrCheck}}" hint-placeholder-val="{{false}}">
+            <span style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#fff;background:#5c4a38;padding:4px 10px;border-radius:5px">MASTERY CHECK · ITEM {{checkNo}} OF 2</span>
+            <span style="font:700 11.5px 'Nunito Sans',sans-serif;color:#8b8070">unassisted — hints are off</span>
+          </sc-if>
+          <div style="flex:1"></div>
+          <span style="font:600 10.5px ui-monospace,Menlo,monospace;color:#b6a88f">widget: equation-input</span>
+        </div>
+        <div style="font:600 15px 'Nunito Sans',sans-serif;color:#7a6f61;margin:10px 0 18px">Solve for x.</div>
+        <div style="display:flex;align-items:center;gap:18px;flex-wrap:wrap">
+          <span style="font:600 42px 'Lora',serif">{{eqLeft}} = {{eqRight}}</span>
+          <input value="{{input}}" onChange="{{onInput}}" onKeyDown="{{onKey}}" placeholder="x = ?" style="width:150px;font:600 26px 'Lora',serif;text-align:center;padding:10px;border:2px solid #d8cdbb;border-radius:10px;background:#fff"/>
+          <button onClick="{{submit}}" style="border:none;cursor:pointer;background:#b05f28;color:#fff;font:700 15px 'Nunito Sans',sans-serif;padding:13px 24px;border-radius:9px">Check answer</button>
+          <sc-if value="{{scrPractice}}" hint-placeholder-val="{{true}}">
+            <button onClick="{{hint}}" style="border:1px solid #d8cdbb;cursor:pointer;background:transparent;color:#7a6f61;font:700 14px 'Nunito Sans',sans-serif;padding:12px 18px;border-radius:9px">Hint</button>
+          </sc-if>
+        </div>
+        <sc-if value="{{hint1On}}" hint-placeholder-val="{{false}}">
+          <div style="margin-top:16px;background:#f3e4d4;border-radius:9px;padding:10px 14px;font:600 14px 'Nunito Sans',sans-serif;color:#6b4318">{{hint1}}</div>
+        </sc-if>
+        <sc-if value="{{hint2On}}" hint-placeholder-val="{{false}}">
+          <div style="margin-top:8px;background:#f3e4d4;border-radius:9px;padding:10px 14px;font:600 14px 'Nunito Sans',sans-serif;color:#6b4318">{{hint2}}</div>
+        </sc-if>
+        <sc-if value="{{fbShow}}" hint-placeholder-val="{{false}}">
+          <div style="margin-top:16px;background:{{fbBg}};border-radius:9px;padding:11px 14px;font:700 14px 'Nunito Sans',sans-serif;color:{{fbFg}}">{{fbText}}</div>
+        </sc-if>
+        <sc-if value="{{offered}}" hint-placeholder-val="{{false}}">
+          <div style="margin-top:16px;display:flex;align-items:center;gap:14px;background:#e9efe6;border-radius:10px;padding:13px 16px">
+            <span style="font:700 14px 'Nunito Sans',sans-serif;color:#3f6a4d">Mastery check is ready — two fresh problems, no hints.</span>
+            <button onClick="{{startCheck}}" style="border:none;cursor:pointer;background:#4f7f5d;color:#fff;font:700 13.5px 'Nunito Sans',sans-serif;padding:9px 16px;border-radius:8px">Start the check</button>
+          </div>
+        </sc-if>
+      </div>
+      </sc-if>
+    </sc-if>
+
+    <sc-if value="{{scrResults}}" hint-placeholder-val="{{false}}">
+    <div data-screen-label="Mastery results" style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:14px;padding:38px;text-align:center;animation:fadeUp .3s ease">
+      <div style="width:58px;height:58px;border-radius:50%;background:#dbe8d6;color:#3f6a4d;font:700 28px 'Lora',serif;line-height:58px;margin:0 auto 14px">✓</div>
+      <div style="font:700 26px 'Lora',serif;margin-bottom:6px">Skill mastered</div>
+      <div style="font:600 12px ui-monospace,Menlo,monospace;color:#8b8070;margin-bottom:20px">mastery_granted · alg1.linear.solve-one-step</div>
+      <div style="display:flex;justify-content:center;gap:14px;flex-wrap:wrap;margin-bottom:24px">
+        <div style="background:#f7f3ec;border-radius:10px;padding:12px 18px;min-width:140px"><div style="font:700 10.5px 'Nunito Sans',sans-serif;letter-spacing:.07em;color:#8b8070">EVIDENCE</div><div style="font:700 14px 'Nunito Sans',sans-serif;margin-top:4px">2 unassisted isomorphs</div></div>
+        <div style="background:#f7f3ec;border-radius:10px;padding:12px 18px;min-width:140px"><div style="font:700 10.5px 'Nunito Sans',sans-serif;letter-spacing:.07em;color:#8b8070">P(KNOWN)</div><div style="font:700 14px 'Nunito Sans',sans-serif;margin-top:4px">set to 0.95</div></div>
+        <div style="background:#f7f3ec;border-radius:10px;padding:12px 18px;min-width:140px"><div style="font:700 10.5px 'Nunito Sans',sans-serif;letter-spacing:.07em;color:#8b8070">RETENTION</div><div style="font:700 14px 'Nunito Sans',sans-serif;margin-top:4px">review due in 3 days</div></div>
+      </div>
+      <div style="font:600 14px 'Nunito Sans',sans-serif;color:#7a6f61;margin-bottom:22px">Next up: <span style="font-weight:700;color:#2e2822">Solve two-step linear equations</span> — prerequisites are now met.</div>
+      <div style="display:flex;gap:10px;justify-content:center">
+        <button onClick="{{setGuide}}" style="border:none;cursor:pointer;background:#b05f28;color:#fff;font:700 14px 'Nunito Sans',sans-serif;padding:11px 20px;border-radius:9px">See the guide view</button>
+        <button onClick="{{reset}}" style="border:1px solid #d8cdbb;cursor:pointer;background:transparent;color:#7a6f61;font:700 14px 'Nunito Sans',sans-serif;padding:11px 20px;border-radius:9px">Reset &amp; replay</button>
+      </div>
+    </div>
+    </sc-if>
+
+    <sc-if value="{{simShow}}" hint-placeholder-val="{{false}}">
+    <div style="display:flex;align-items:center;gap:10px;background:#ece5d8;border-radius:10px;padding:9px 14px">
+      <span style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.07em;color:#8b8070">SIMULATE STUDENT</span>
+      <button onClick="{{simC}}" style="border:1px solid #c9dcc4;cursor:pointer;background:#e9efe6;color:#3f6a4d;font:700 12.5px 'Nunito Sans',sans-serif;padding:6px 13px;border-radius:7px">Answer correctly</button>
+      <button onClick="{{simW}}" style="border:1px solid #e4c4bd;cursor:pointer;background:#f5dfda;color:#96453a;font:700 12.5px 'Nunito Sans',sans-serif;padding:6px 13px;border-radius:7px">Miss it</button>
+      <span style="font:600 11.5px 'Nunito Sans',sans-serif;color:#8b8070">Miss it repeatedly to walk the corrective ladder: hint → new representation → prerequisite probe → guide flag.</span>
+    </div>
+    </sc-if>
+  </div>
+</div>
+</sc-if>
+
+<sc-if value="{{isGuide}}" hint-placeholder-val="{{false}}">
+<div data-screen-label="Guide dashboard" style="max-width:1020px;margin:0 auto;padding:26px 28px 60px;display:flex;flex-direction:column;gap:20px">
+  <div style="display:flex;align-items:baseline;gap:8px 14px;flex-wrap:wrap">
+    <div style="font:700 22px 'Lora',serif;white-space:nowrap">Room 3 — Algebra 1</div>
+    <div style="font:600 13px 'Nunito Sans',sans-serif;color:#8b8070;white-space:nowrap">8 students · session started 9:35a · site time synced</div>
+    <div style="flex:1"></div>
+    <div style="display:flex;gap:8px 10px;font:700 11px 'Nunito Sans',sans-serif;color:#7a6f61;align-items:center;flex-wrap:wrap">
+      <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#ede7db"></span>unseen</span>
+      <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#e7d9be"></span>lesson</span>
+      <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#ecd0b0"></span>practice</span>
+      <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#dbe8d6"></span>mastered</span>
+      <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#f0d6d0"></span>flagged / lapsed</span>
+      <span style="display:inline-flex;align-items:center;gap:5px"><span style="width:11px;height:11px;border-radius:3px;background:#dbe8d6;border:2px solid #b05f28;box-sizing:border-box"></span>review due</span>
+    </div>
+  </div>
+
+  <div data-screen-label="Flag queue" style="order:{{queueOrder}};background:#fffdf9;border:1px solid #e6ddd0;border-radius:14px;padding:22px 24px">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:14px">
+      <div style="font:700 15px 'Lora',serif">Needs you</div>
+      <div style="font:600 12px 'Nunito Sans',sans-serif;color:#8b8070">exception signals only — no rankings, no throughput</div>
+      <div style="flex:1"></div>
+      <span style="font:700 12px 'Nunito Sans',sans-serif;background:#f5dfda;color:#96453a;padding:3px 10px;border-radius:12px">{{openFlagCount}} open</span>
+    </div>
+    <div style="display:flex;flex-direction:column;gap:10px">
+      <sc-for list="{{flagRows}}" as="f" hint-placeholder-count="3">
+        <div style="display:flex;align-items:center;gap:14px;border:1px solid #eee5d6;border-radius:11px;padding:13px 16px;background:{{f.bg}};opacity:{{f.op}}">
+          <span style="font:700 11px ui-monospace,Menlo,monospace;background:{{f.chipBg}};color:{{f.chipFg}};padding:4px 9px;border-radius:6px;flex:none">{{f.reason}}</span>
+          <div style="min-width:0;flex:1">
+            <div style="font:700 14px 'Nunito Sans',sans-serif">{{f.student}} <span style="font:600 11.5px ui-monospace,Menlo,monospace;color:#8b8070">· {{f.skill}}</span></div>
+            <div style="font:600 12.5px 'Nunito Sans',sans-serif;color:#7a6f61;margin-top:2px">{{f.detail}}</div>
+          </div>
+          <span style="font:600 11.5px 'Nunito Sans',sans-serif;color:#b6a88f;flex:none">{{f.time}}</span>
+          <sc-if value="{{f.open}}" hint-placeholder-val="{{true}}">
+            <button onClick="{{f.resolve}}" style="border:1px solid #d8cdbb;cursor:pointer;background:#fffdf9;color:#5c4a38;font:700 12.5px 'Nunito Sans',sans-serif;padding:8px 14px;border-radius:8px;flex:none">Mark resolved</button>
+          </sc-if>
+          <sc-if value="{{f.done}}" hint-placeholder-val="{{false}}">
+            <span style="font:600 11px ui-monospace,Menlo,monospace;color:#4f7f5d;flex:none">guide_intervention logged</span>
+          </sc-if>
+        </div>
+      </sc-for>
+    </div>
+  </div>
+
+  <div data-screen-label="Class overview grid" style="order:{{gridOrder}};background:#fffdf9;border:1px solid #e6ddd0;border-radius:14px;padding:22px 24px">
+    <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:14px">
+      <div style="font:700 15px 'Lora',serif">Where everyone is</div>
+      <div style="font:600 12px 'Nunito Sans',sans-serif;color:#8b8070">unit: linear equations · riley.k reflects the live session</div>
+    </div>
+    <div style="display:grid;grid-template-columns:150px repeat(5,1fr);gap:6px;align-items:stretch">
+      <div></div>
+      <div style="font:700 11px 'Nunito Sans',sans-serif;color:#8b8070;text-align:center">inverse ops</div>
+      <div style="font:700 11px 'Nunito Sans',sans-serif;color:#8b8070;text-align:center">evaluate</div>
+      <div style="font:700 11px 'Nunito Sans',sans-serif;color:#8b8070;text-align:center">one-step</div>
+      <div style="font:700 11px 'Nunito Sans',sans-serif;color:#8b8070;text-align:center">two-step</div>
+      <div style="font:700 11px 'Nunito Sans',sans-serif;color:#8b8070;text-align:center">graph</div>
+      <sc-for list="{{gCells}}" as="c" hint-placeholder-count="12">
+        <div style="font:{{c.font}};color:{{c.fg}};background:{{c.bg}};border:2px solid {{c.bd}};border-radius:7px;min-height:34px;display:flex;align-items:center;justify-content:{{c.just}};padding:0 10px;box-sizing:border-box">{{c.label}}</div>
+      </sc-for>
+    </div>
+  </div>
+</div>
+</sc-if>
+</div>
+
+<sc-if value="{{specOn}}" hint-placeholder-val="{{false}}">
+<div data-screen-label="Spec notes" style="width:300px;flex:none;border-left:1px solid #e6ddd0;background:#faf6ef;min-height:calc(100vh - 55px);padding:18px;box-sizing:border-box;position:sticky;top:55px;max-height:calc(100vh - 55px);overflow:auto">
+  <div style="font:700 11px 'Nunito Sans',sans-serif;letter-spacing:.08em;color:#8b8070;margin-bottom:10px">SPEC NOTES · FOR DEV REVIEW</div>
+  <div style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:10px;padding:13px 14px;margin-bottom:12px">
+    <div style="font:700 11.5px ui-monospace,Menlo,monospace;color:#b05f28;margin-bottom:7px">core/policy/v1</div>
+    <div style="font:600 12px 'Nunito Sans',sans-serif;color:#5c5245;line-height:1.7">Escalate after <b>{{escN}} misses</b>: hint → alt representation → prereq probe → guide_flag<br>Hard cap <b>{{capN}} attempts</b>/skill/session, then park<br>Check = <b>2 unassisted isomorphs</b> (grants regardless of p)<br>Hints don't consume attempts; probe attempts scope to the prereq</div>
+  </div>
+  <div style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:10px;padding:13px 14px;margin-bottom:12px">
+    <div style="font:700 11.5px ui-monospace,Menlo,monospace;color:#b05f28;margin-bottom:7px">state (read model)</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px 10px;font:600 11.5px ui-monospace,Menlo,monospace;color:#5c5245">
+      <span>p = {{pLabel}}</span><span>phase: {{phaseLabel}}</span>
+      <span>attempts: {{attempts}}</span><span>misses: {{misses}}</span>
+      <span>consec: {{consec}}</span><span>hintLvl: {{hintLevel}}</span>
+    </div>
+  </div>
+  <div style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:10px;padding:13px 14px">
+    <div style="font:700 11.5px ui-monospace,Menlo,monospace;color:#b05f28;margin-bottom:8px">event log (siteSeq order)</div>
+    <div style="display:flex;flex-direction:column;gap:7px">
+      <sc-for list="{{events}}" as="ev" hint-placeholder-count="4">
+        <div style="font:600 10.5px ui-monospace,Menlo,monospace;line-height:1.45"><span style="color:#b6a88f">#{{ev.seq}}</span> <span style="color:{{ev.tone}}">{{ev.kind}}</span><br><span style="color:#8b8070">{{ev.detail}}</span></div>
+      </sc-for>
+      <sc-if value="{{noEvents}}" hint-placeholder-val="{{true}}"><div style="font:600 11px 'Nunito Sans',sans-serif;color:#b6a88f">No events yet — interact with the student view.</div></sc-if>
+    </div>
+  </div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;escalationMisses&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:3,&quot;min&quot;:2,&quot;max&quot;:5,&quot;section&quot;:&quot;policy/v1&quot;},&quot;attemptCap&quot;:{&quot;editor&quot;:&quot;int&quot;,&quot;default&quot;:6,&quot;min&quot;:4,&quot;max&quot;:8,&quot;section&quot;:&quot;policy/v1&quot;},&quot;specNotesDefault&quot;:{&quot;editor&quot;:&quot;boolean&quot;,&quot;default&quot;:true,&quot;section&quot;:&quot;Review&quot;}}">
+class Component extends DCLogic {
+  state = {
+    role:'student', variant:'A', gVariant:'A', spec:null,
+    screen:'lesson', lessonStep:0,
+    a:7, b:21, input:'', feedback:null, hintLevel:0,
+    attempts:0, misses:0, consec:0, p:0.30, offered:false,
+    overlay:null, altStep:0, probeInput:'', probeMsg:null, probeMisses:0,
+    fadedInput:'', fadedMsg:null,
+    checkN:0, parked:false, mastered:false,
+    seq:0, events:[],
+    flags:[
+      {id:1, student:'marcus.t', skill:'alg1.arith.inverse-ops', reason:'hint_rate_spike', detail:'4 hints in the last 5 attempts — evidence discounted, may be hint-dependent', time:'9:42a', resolved:false},
+      {id:2, student:'ana.v', skill:'alg1.expr.evaluate', reason:'prereq_failure', detail:'Missed the prerequisite probe twice (order of operations)', time:'9:51a', resolved:false},
+    ], nextFlag:3,
+  };
+  pol(){ return { esc: this.props.escalationMisses ?? 3, cap: this.props.attemptCap ?? 6 }; }
+  ev(kind, detail, tone){ this.setState(s=>({ seq:s.seq+1, events:[{seq:s.seq+1, kind, detail, tone: tone||'#7a6f61'}, ...s.events].slice(0,40) })); }
+  bkt(p, correct, k){ const G=.2,S=.1,T=.15,Ge=1-(1-G)*Math.pow(.5,k||0);
+    const pe = correct ? p*(1-S)/(p*(1-S)+(1-p)*Ge) : p*S/(p*S+(1-p)*(1-Ge));
+    return Math.min(.99, pe+(1-pe)*T); }
+  newIso(s){ const pool=[2,3,4,5,6,7,8,9,11,12].filter(x=>x!==s.a);
+    const a=pool[Math.floor(Math.random()*pool.length)]; const k=2+Math.floor(Math.random()*8);
+    return {a, b:a*k, input:'', hintLevel:0}; }
+  flagSelf(reason, detail){ this.setState(s=>({ flags:[{id:s.nextFlag, student:'riley.k (live)', skill:'alg1.linear.solve-one-step', reason, detail, time:'now', resolved:false}, ...s.flags], nextFlag:s.nextFlag+1 })); }
+  submit = () => { const s=this.state; if(s.parked||s.overlay||s.mastered) return;
+    if(s.screen!=='practice'&&s.screen!=='check') return;
+    const ans=s.b/s.a; const norm=s.input.toLowerCase().replace(/\s+/g,'').replace(/^x=/,''); if(norm==='') return;
+    const correct = Number(norm)===ans;
+    const k = s.screen==='check'?0:s.hintLevel;
+    const p2 = this.bkt(s.p,correct,k);
+    this.ev('attempt', s.a+'x='+s.b+' · '+(correct?'correct':'wrong')+' · hintLevel '+k+(k>0?' (assisted)':''), correct?'#4f7f5d':'#a8453a');
+    const attempts=s.attempts+1;
+    if(s.screen==='check'){
+      if(correct){ const n=s.checkN+1;
+        if(n>=2){ this.ev('mastery_granted','alg1.linear.solve-one-step · 2 unassisted isomorphs','#4f7f5d');
+          this.setState({checkN:n, p:.95, mastered:true, screen:'results', feedback:null, attempts}); }
+        else this.setState(Object.assign({checkN:n, attempts, p:p2, feedback:{ok:true, text:'Check item 1 passed — x = '+ans+'. One more.'}}, this.newIso(s)));
+      } else {
+        this.ev('check_failed','back to practice','#a8453a');
+        this.setState(Object.assign({screen:'practice', checkN:0, offered:false, consec:0, attempts, misses:s.misses+1, p:p2, feedback:{ok:false, text:'Not quite — x = '+ans+'. Back to practice; the check will come around again.'}}, this.newIso(s)));
+      }
+      return;
+    }
+    if(correct){ const consec = k>0?0:s.consec+1; const offered = p2>=.9||consec>=3;
+      if(offered && !s.offered) this.ev('check_offered','p='+p2.toFixed(2)+' · consec unassisted '+consec,'#b05f28');
+      this.setState(Object.assign({attempts, p:p2, consec, offered, feedback:{ok:true, text:'Correct — x = '+ans+'.'+(k>0?' Assisted, so it carries reduced evidence.':'')}}, this.newIso(s)));
+    } else {
+      const misses=s.misses+1; const pol=this.pol(); let extra={};
+      if(attempts>=pol.cap){ extra={parked:true, offered:false};
+        this.flagSelf('attempt_cap', pol.cap+' attempts this session — skill parked by policy/v1');
+        this.ev('guide_flag','attempt_cap · skill parked','#a8453a'); }
+      else if(misses===pol.esc){ extra={overlay:'alt', altStep:0}; this.ev('corrective',misses+' misses → alternative explanation (number-line)','#b05f28'); }
+      else if(misses===pol.esc+1){ extra={overlay:'probe', probeInput:'', probeMsg:null}; this.ev('corrective','still missing → prerequisite probe (inverse-ops)','#b05f28'); }
+      this.setState(Object.assign({attempts, misses, p:p2, consec:0, offered:false, feedback:{ok:false, text:'Not quite — x = '+ans+'.'}}, this.newIso(s), extra));
+    }
+  };
+  hint = () => { const s=this.state; if(s.screen!=='practice'||s.hintLevel>=2||s.parked||s.overlay) return;
+    this.ev('hint','level '+(s.hintLevel+1)+' · does not consume an attempt','#b3822d');
+    this.setState({hintLevel:s.hintLevel+1}); };
+  lessonNext = () => { const s=this.state;
+    if(s.lessonStep<4) this.setState({lessonStep:s.lessonStep+1});
+    else { this.ev('explanation_viewed','exp-balance · completed · representation: balance-scale','#7a6f61'); this.setState({screen:'faded'}); } };
+  fadedOnInput = (e)=>this.setState({fadedInput:e.target.value});
+  fadedSubmit = () => { const s=this.state; const v=s.fadedInput.replace(/\s+/g,'');
+    if(v==='') return;
+    if(Number(v)===8){ this.ev('attempt','faded 5x=40 · step completed correctly','#4f7f5d'); this.setState({screen:'practice', fadedMsg:null}); }
+    else { this.ev('attempt','faded 5x=40 · wrong step','#a8453a'); this.setState({fadedMsg:'Check step 2: 40 ÷ 5. Try again.'}); } };
+  altNext = () => { const s=this.state;
+    if(s.altStep<3) this.setState({altStep:s.altStep+1});
+    else { this.ev('explanation_viewed','exp-numberline · completed · representation: number-line','#7a6f61'); this.setState({overlay:null}); } };
+  probeOnInput = (e)=>this.setState({probeInput:e.target.value});
+  probeSubmit = () => { const s=this.state; const v=s.probeInput.replace(/\s+/g,''); if(v==='') return;
+    const ans=s.b/s.a;
+    if(Number(v)===ans){ this.ev('attempt','prereq probe correct · scoped to alg1.arith.inverse-ops','#4f7f5d');
+      this.setState({overlay:null, probeMsg:null, probeMisses:0, feedback:{ok:true, text:'Prerequisite confirmed — back to the skill.'}}); }
+    else { const m=s.probeMisses+1;
+      this.ev('attempt','prereq probe wrong · scoped to alg1.arith.inverse-ops','#a8453a');
+      if(m>=2){ this.flagSelf('prereq_failure','Missed the inverse-ops probe twice during correctives');
+        this.ev('guide_flag','prereq_failure · flagged for guide','#a8453a');
+        this.setState({overlay:null, parked:true, probeMisses:0}); }
+      else this.setState({probeMisses:m, probeMsg:'Not quite — how many groups of '+s.a+' make '+s.b+'?'}); } };
+  startCheck = () => { const s=this.state; this.ev('check_start','2 generator-backed isomorphs · unassisted only','#5c4a38');
+    this.setState(Object.assign({screen:'check', checkN:0, offered:false, feedback:null}, this.newIso(s))); };
+  onInput = (e)=>this.setState({input:e.target.value});
+  onKey = (e)=>{ if(e.key==='Enter') this.submit(); };
+  fadedOnKey = (e)=>{ if(e.key==='Enter') this.fadedSubmit(); };
+  probeOnKey = (e)=>{ if(e.key==='Enter') this.probeSubmit(); };
+  simC = () => { const s=this.state;
+    if(s.overlay==='probe') this.setState({probeInput:String(s.b/s.a)}, ()=>this.probeSubmit());
+    else if(s.overlay==='alt') this.altNext();
+    else if(s.screen==='faded') this.setState({fadedInput:'8'}, ()=>this.fadedSubmit());
+    else if(s.screen==='practice'||s.screen==='check') this.setState({input:String(s.b/s.a)}, ()=>this.submit()); };
+  simW = () => { const s=this.state;
+    if(s.overlay==='probe') this.setState({probeInput:String(s.b/s.a+2)}, ()=>this.probeSubmit());
+    else if(s.overlay==='alt') this.altNext();
+    else if(s.screen==='faded') this.setState({fadedInput:'9'}, ()=>this.fadedSubmit());
+    else if(s.screen==='practice'||s.screen==='check') this.setState({input:String(s.b)}, ()=>this.submit()); };
+  resolveFlag(id){ this.ev('guide_intervention','flag #'+id+' resolved · appears on the parent report','#4f7f5d');
+    this.setState(s=>({flags:s.flags.map(f=>f.id===id?Object.assign({},f,{resolved:true}):f)})); }
+  reset = () => this.setState({ role:'student', screen:'lesson', lessonStep:0, a:7, b:21, input:'', feedback:null,
+    hintLevel:0, attempts:0, misses:0, consec:0, p:0.30, offered:false, overlay:null, altStep:0,
+    probeInput:'', probeMsg:null, probeMisses:0, fadedInput:'', fadedMsg:null, checkN:0, parked:false,
+    mastered:false, seq:0, events:[], flags:this.state.flags.filter(f=>f.id<3) });
+  setStudent = ()=>this.setState({role:'student'});
+  setGuide = ()=>this.setState({role:'guide'});
+  setVarA = ()=>this.setState({variant:'A'});
+  setVarB = ()=>this.setState({variant:'B'});
+  setGVarA = ()=>this.setState({gVariant:'A'});
+  setGVarB = ()=>this.setState({gVariant:'B'});
+  toggleSpec = ()=>this.setState(s=>({spec: !(s.spec ?? (this.props.specNotesDefault ?? true))}));
+  renderVals(){
+    const s=this.state, pol=this.pol();
+    const spec = s.spec ?? (this.props.specNotesDefault ?? true);
+    const seg=(on)=>({bg:on?'#fffdf9':'transparent', fg:on?'#2e2822':'#8b8070'});
+    const rS=seg(s.role==='student'), rG=seg(s.role==='guide'), vA=seg(s.variant==='A'), vB=seg(s.variant==='B'), gA=seg(s.gVariant==='A'), gB=seg(s.gVariant==='B');
+    const phase = s.mastered?'mastered': s.parked?'flagged': s.screen==='lesson'?'lesson': s.screen==='faded'?'faded': s.screen==='check'?'check':'practice';
+    const stepNames=['Lesson','Faded','Practice','Check'];
+    const idx = s.mastered?4 : ({lesson:0,faded:1,practice:2,check:3,results:4})[s.screen];
+    const stepper = stepNames.map((name,i)=>({ name,
+      bg: i<idx?'#dbe8d6': i===idx?'#f3e4d4':'#ece5d8',
+      fg: i<idx?'#3f6a4d': i===idx?'#8a4d1d':'#a09582',
+      dot: i<idx?'#4f7f5d': i===idx?'#b05f28':'#cfc4b0' }));
+    const L=[
+      {l:s.a+'x', r:''+s.b, cap:'Both sides are balanced.'},
+      {l:s.a+'x', r:''+s.b, cap:'x is multiplied by '+s.a+'. Undo it by dividing.', hl:true},
+      {l:s.a+'x ÷ '+s.a, r:s.b+' ÷ '+s.a, cap:'Divide both sides by '+s.a+'.', div:true},
+      {l:'x', r:''+(s.b/s.a), cap:'x = '+(s.b/s.a)+'.'},
+      {l:'x', r:''+(s.b/s.a), cap:'Now you try.', end:true},
+    ][s.lessonStep];
+    const lessonDots = [0,1,2,3,4].map(i=>({bg: i<=s.lessonStep?'#b05f28':'#d8cdbb'}));
+    const kVal = s.b/s.a;
+    const altSegs = s.altStep===0 ? [{label:''+s.b, bg:'#ecd0b0'}]
+      : Array.from({length:s.a},()=>({label: s.altStep>=2?''+kVal:'', bg:'#ecd0b0'}));
+    const altCap = ['Here is '+s.b+' on a number line.', s.a+'x = '+s.b+' means '+s.a+' equal jumps land exactly on '+s.b+'.', 'Each jump is '+s.b+' ÷ '+s.a+' = '+kVal+', so x = '+kVal+'.', 'Now you try.'][s.altStep];
+    const PH={unseen:{label:'',bg:'#ede7db',fg:'#8b8070'}, lesson:{label:'lesson',bg:'#e7d9be',fg:'#6b5a33'},
+      faded:{label:'faded',bg:'#e7d9be',fg:'#6b5a33'}, practice:{label:'practice',bg:'#ecd0b0',fg:'#8a5320'},
+      check:{label:'check',bg:'#ecd0b0',fg:'#8a5320'}, mastered:{label:'✓',bg:'#dbe8d6',fg:'#3f6a4d'},
+      flagged:{label:'flag',bg:'#f0d6d0',fg:'#96453a'}, lapsed:{label:'lapsed',bg:'#f0d6d0',fg:'#96453a'}};
+    const livePh = s.mastered?'mastered': s.parked?'flagged': ({lesson:'lesson',faded:'faded',practice:'practice',check:'check',results:'mastered'})[s.screen];
+    const roster=[
+      ['riley.k (live)', ['mastered','mastered',livePh,'unseen','unseen'], [false,false,false,false,false]],
+      ['marcus.t', ['practice','unseen','unseen','unseen','unseen'], [false,false,false,false,false]],
+      ['ana.v', ['mastered','practice','unseen','unseen','unseen'], [true,false,false,false,false]],
+      ['jo.p', ['mastered','mastered','mastered','practice','unseen'], [false,true,false,false,false]],
+      ['sam.r', ['mastered','mastered','lesson','unseen','unseen'], [false,false,false,false,false]],
+      ['elena.g', ['mastered','lapsed','unseen','unseen','unseen'], [false,false,false,false,false]],
+      ['kai.w', ['mastered','mastered','practice','unseen','unseen'], [true,false,false,false,false]],
+      ['tessa.m', ['lesson','unseen','unseen','unseen','unseen'], [false,false,false,false,false]],
+    ];
+    const gCells=[];
+    roster.forEach(([name,phases,due])=>{
+      gCells.push({label:name, bg:'transparent', fg:'#2e2822', bd:'transparent', font:"700 13px 'Nunito Sans',sans-serif", just:'flex-start'});
+      phases.forEach((ph,i)=>{ const c=PH[ph];
+        gCells.push({label:c.label, bg:c.bg, fg:c.fg, bd:due[i]?'#b05f28':'transparent', font:"700 11px 'Nunito Sans',sans-serif", just:'center'}); });
+    });
+    const RC={hint_rate_spike:{bg:'#f4e8cd',fg:'#7d5a1c'}, prereq_failure:{bg:'#f5dfda',fg:'#96453a'}, attempt_cap:{bg:'#f5dfda',fg:'#96453a'}};
+    const flagRows = s.flags.map(f=>({ reason:f.reason, student:f.student, skill:f.skill, detail:f.detail, time:f.time,
+      open:!f.resolved, done:!!f.resolved, bg:f.resolved?'#faf6ef':'#fffdf9', op:f.resolved?0.62:1,
+      chipBg:RC[f.reason].bg, chipFg:RC[f.reason].fg, resolve:()=>this.resolveFlag(f.id) }));
+    return {
+      isStudent:s.role==='student', isGuide:s.role==='guide',
+      setStudent:this.setStudent, setGuide:this.setGuide, reset:this.reset, toggleSpec:this.toggleSpec,
+      setVarA:this.setVarA, setVarB:this.setVarB, setGVarA:this.setGVarA, setGVarB:this.setGVarB,
+      roleSBg:rS.bg, roleSFg:rS.fg, roleGBg:rG.bg, roleGFg:rG.fg,
+      varABg:vA.bg, varAFg:vA.fg, varBBg:vB.bg, varBFg:vB.fg,
+      gvarABg:gA.bg, gvarAFg:gA.fg, gvarBBg:gB.bg, gvarBFg:gB.fg,
+      specOn:spec, specBg:spec?'#5c4a38':'transparent', specFg:spec?'#fffdf9':'#7a6f61',
+      variantA:s.variant==='A', variantB:s.variant==='B',
+      gridOrder:s.gVariant==='A'?0:1, queueOrder:s.gVariant==='A'?1:0,
+      scrLesson:s.screen==='lesson', scrFaded:s.screen==='faded',
+      scrWork:(s.screen==='practice'||s.screen==='check')&&!s.mastered,
+      scrPractice:s.screen==='practice', scrCheck:s.screen==='check', scrResults:s.screen==='results',
+      showItem:!s.overlay&&!s.parked, overlayAlt:s.overlay==='alt'&&!s.parked, overlayProbe:s.overlay==='probe'&&!s.parked,
+      parked:s.parked,
+      a:s.a, b:s.b, eqLeft:s.a+'x', eqRight:''+s.b,
+      input:s.input, onInput:this.onInput, onKey:this.onKey, submit:this.submit, hint:this.hint,
+      hint1On:s.hintLevel>=1&&s.screen==='practice', hint2On:s.hintLevel>=2&&s.screen==='practice',
+      hint1:'What operation undoes multiplying by '+s.a+'?', hint2:'Divide both sides by '+s.a+'.',
+      fbShow:!!s.feedback, fbText:s.feedback?s.feedback.text:'',
+      fbBg:s.feedback&&s.feedback.ok?'#e9efe6':'#f5dfda', fbFg:s.feedback&&s.feedback.ok?'#3f6a4d':'#96453a',
+      offered:s.offered&&s.screen==='practice', startCheck:this.startCheck, checkNo:s.checkN+1,
+      lessonLeft:L.l, lessonRight:L.r, lessonCap:L.cap, lessonDiv:!!L.div, lpBorder:L.hl?'#b05f28':'#d8cdbb',
+      lessonDots, lessonNext:this.lessonNext, lessonBtnLabel:L.end?'Start the faded example':'Next',
+      fadedInput:s.fadedInput, fadedOnInput:this.fadedOnInput, fadedOnKey:this.fadedOnKey, fadedSubmit:this.fadedSubmit,
+      fadedMsg:s.fadedMsg, fadedMsgFg:'#96453a',
+      altSegs, altCap, altNext:this.altNext, altBtnLabel:s.altStep<3?'Next':'Back to practice',
+      probeInput:s.probeInput, probeOnInput:this.probeOnInput, probeOnKey:this.probeOnKey, probeSubmit:this.probeSubmit, probeMsg:s.probeMsg,
+      simShow:s.role==='student'&&!s.mastered&&s.screen!=='results'&&s.screen!=='lesson'&&!s.parked,
+      simC:this.simC, simW:this.simW,
+      stepper, pPct:Math.round(s.p*100), pLabel:s.p.toFixed(2), phaseLabel:phase,
+      attempts:s.attempts, misses:s.misses, consec:s.consec, hintLevel:s.hintLevel,
+      escN:pol.esc, capN:pol.cap,
+      events:s.events.slice(0,14), eventsMini:s.events.slice(0,5), noEvents:s.events.length===0,
+      gCells, flagRows, openFlagCount:s.flags.filter(f=>!f.resolved).length,
+    };
+  }
+}
+</script>
+</body>
+</html>
