@@ -7,7 +7,7 @@ import { useEffect, useState } from 'react'
 import { LessonPlayer } from './LessonPlayer'
 import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry'
 import { FALLBACK_DEMOS, type ZooDemo } from './zoo-demos'
-import type { SiteApi } from './api'
+import type { CairnApi } from './api'
 import type { Params } from './render'
 
 function roleBadge(widget: string): string {
@@ -88,7 +88,7 @@ const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<str
   { title: 'expression-input', type: 'equation-input', config: { variable: 'x' } },
 ]
 
-export function Zoo({ api }: { api: SiteApi }) {
+export function Zoo({ api }: { api: CairnApi }) {
   const [demos, setDemos] = useState<ZooDemo[] | null>(null)
   useEffect(() => {
     void api.demos().then(({ demos: fromCurriculum }) => {

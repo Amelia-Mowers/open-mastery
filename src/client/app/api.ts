@@ -55,7 +55,27 @@ export interface StateView {
   points: number
 }
 
-export class SiteApi {
+/** What the app needs from a backend — implemented over HTTP (SiteApi) and
+ * fully in-browser by the GitHub-Pages demo (DemoApi wraps SiteCore). */
+export interface CairnApi {
+  next(focusSkill?: string): Promise<ServerNext>
+  attempt(raw: string, hintLevel: number, latencyMs: number): Promise<AttemptOutcome>
+  explanationViewed(): Promise<void>
+  startCheck(skillId: string): Promise<void>
+  explain(
+    skillId: string,
+    excludeReps?: string[],
+    prefer?: string,
+    sameAsLesson?: boolean,
+  ): Promise<ExplainResult>
+  explained(explanationId: string, skillId: string): Promise<void>
+  demos(): Promise<{ demos: ZooDemoView[] }>
+  bundle(): Promise<BundleView>
+  state(): Promise<StateView>
+  reset(): Promise<void>
+}
+
+export class SiteApi implements CairnApi {
   constructor(
     private readonly base: string,
     private readonly studentId: string,

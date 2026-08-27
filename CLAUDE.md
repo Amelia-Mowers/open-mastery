@@ -42,3 +42,10 @@
   content via `/api/explain` curl BEFORE screenshotting.
 - **Future work is tracked centrally in `../TODO.md`** (flow gaps,
   planned inputs, build steps) — leave context in docs, move the task.
+- **Browser demo** (`npm run build:demo` → `dist-demo/`): the app with the
+  backend rolled into the browser — `src/site/core.ts` (SiteCore) is ALL
+  site behavior, shared by the HTTP dev server and `src/client/demo/DemoApi`
+  (localStorage event log). Demo builds ship answer keys by design; the
+  normal build never references the demo entry. GH Pages workflow:
+  `../.github/workflows/demo-pages.yml` (expects an open_mastery monorepo
+  remote).

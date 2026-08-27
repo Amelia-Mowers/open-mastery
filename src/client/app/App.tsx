@@ -1,7 +1,7 @@
 /** Student session shell: a thin loop over the site server. */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { Explanation } from '@openmastery/schema'
-import { SiteApi, type AttemptOutcome, type ServerNext } from './api'
+import { SiteApi, type AttemptOutcome, type CairnApi, type ServerNext } from './api'
 import { LessonPlayer } from './LessonPlayer'
 import { ItemCard } from './ItemCard'
 import { Dashboard } from './Dashboard'
@@ -24,6 +24,10 @@ export interface AppProps {
   apiBase?: string
   /** preset student id (tests; normally the join card or ?student= URL) */
   initialStudent?: string
+  /** backend override — the GitHub-Pages demo passes a DemoApi factory */
+  apiFactory?: (base: string, student: string) => CairnApi
+  /** small "runs in your browser" notice (demo builds) */
+  demoBanner?: boolean
 }
 
 function readStoredStudent(): string {
@@ -42,12 +46,34 @@ const urlParam = (name: string): string | null => {
   }
 }
 
-export function App({ apiBase = '', initialStudent }: AppProps) {
+export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppProps) {
   const [student, setStudent] = useState(
     initialStudent ?? urlParam('student') ?? readStoredStudent(),
   )
-  if (student === '') return <JoinCard onJoin={setStudent} />
-  return <Session key={student} apiBase={apiBase} student={student} onLeave={() => setStudent('')} />
+  const banner = demoBanner === true && (
+    <p className="muted demo-banner">
+      Demo — runs entirely in your browser. Progress stays on this device.
+    </p>
+  )
+  if (student === '')
+    return (
+      <>
+        {banner}
+        <JoinCard onJoin={setStudent} />
+      </>
+    )
+  return (
+    <>
+      {banner}
+      <Session
+        key={student}
+        apiBase={apiBase}
+        student={student}
+        onLeave={() => setStudent('')}
+        apiFactory={apiFactory}
+      />
+    </>
+  )
 }
 
 function JoinCard({ onJoin }: { onJoin: (id: string) => void }) {
@@ -133,8 +159,21 @@ function Header({
   )
 }
 
-function Session({ apiBase, student, onLeave }: { apiBase: string; student: string; onLeave: () => void }) {
-  const api = useMemo(() => new SiteApi(apiBase, student), [apiBase, student])
+function Session({
+  apiBase,
+  student,
+  onLeave,
+  apiFactory,
+}: {
+  apiBase: string
+  student: string
+  onLeave: () => void
+  apiFactory?: (base: string, student: string) => CairnApi
+}) {
+  const api = useMemo(
+    () => (apiFactory ? apiFactory(apiBase, student) : new SiteApi(apiBase, student)),
+    [apiBase, student, apiFactory],
+  )
   const [next, setNext] = useState<ServerNext | null>(null)
   const [error, setError] = useState<string | null>(null)
   /** a fetch is in flight — the previous card stays, dimmed, so the height

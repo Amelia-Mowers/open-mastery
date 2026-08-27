@@ -294,3 +294,5 @@ body {
 }
 .eq-seg { transition: color 0.3s ease; border-radius: 8px; padding: 1px 3px; }
 .eq-hl { color: #b05f28; background: #f7e6d4; animation: cairn-bump 0.5s ease; display: inline-block; }
+
+.demo-banner { text-align: center; margin: 8px auto 0; max-width: 760px; padding: 6px 20px; }

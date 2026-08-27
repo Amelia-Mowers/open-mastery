@@ -2,7 +2,7 @@
  * and the skill map — prereq layers flowing top to bottom. Personal progress
  * only; no comparisons (invariant 3). */
 import { useEffect, useMemo, useState } from 'react'
-import type { BundleView, SiteApi, StateView } from './api'
+import type { BundleView, CairnApi, StateView } from './api'
 
 const PHASE_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
   unseen: { bg: '#ede7db', fg: '#8b8070', label: 'up ahead' },
@@ -14,7 +14,7 @@ const PHASE_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
 
 const STONES = ['#b05f28', '#8b6a4d', '#5c4a38', '#a8814f', '#6e5a45', '#96502a']
 
-export function Dashboard({ api }: { api: SiteApi }) {
+export function Dashboard({ api }: { api: CairnApi }) {
   const [bundle, setBundle] = useState<BundleView | null>(null)
   const [state, setState] = useState<StateView | null>(null)
   useEffect(() => {
