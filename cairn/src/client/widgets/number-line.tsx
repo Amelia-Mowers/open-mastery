@@ -100,7 +100,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
             paddingTop: 0,
             outlineColor: '#b05f28',
             position: 'relative',
-            marginTop: 58,
+            marginTop: 70,
           }}
         >
           {state.arcs.length > 0 && (
@@ -140,9 +140,10 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                       strokeLinecap="round"
                       vectorEffect="non-scaling-stroke"
                     />
-                    {/* the arrowhead lands ON the tick it reaches */}
+                    {/* the head sits AT the landing tick, pointing the way the
+                        arc is travelling: down and forward */}
                     <path
-                      d={`M ${x2} 26 l ${-dir * 1.4} -6 l ${dir * 2.8} 1.2 Z`}
+                      d={`M ${x2} 27 L ${x2 - dir * 2.6} 17 L ${x2 + dir * 1.1} 18.5 Z`}
                       fill="#b05f28"
                       vectorEffect="non-scaling-stroke"
                     />
@@ -162,7 +163,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   left: `${
                     ((ticks.indexOf(a.from) + ticks.indexOf(a.to) + 1) / 2 / ticks.length) * 100
                   }%`,
-                  transform: 'translate(-50%, -40px)',
+                  transform: 'translate(-50%, -52px)',
                   font: "700 16px 'Lora', Georgia, serif",
                   color: '#b05f28',
                   whiteSpace: 'nowrap',
@@ -179,12 +180,14 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
             const marked = state.marker === t
             // a tick shows its number once it has been reached; before the
             // walk starts, an unlabelled line cannot give the answer away
+            // An arc's DESTINATION is deliberately not self-labelling: a jump
+            // can be drawn while "where does it land?" is still the question.
+            // `labelled` (and the marker) say what has been established.
             const shows = (v: number): boolean =>
               state.labelled === null ||
               state.labelled.includes(v) ||
               state.marker === v ||
-              state.value === v ||
-              state.arcs.some((a) => a.from === v || a.to === v)
+              state.value === v
             return (
               <button
                 key={t}

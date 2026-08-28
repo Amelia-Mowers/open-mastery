@@ -14,29 +14,29 @@ timeline:
       prompt: "Which piece — or pieces — of the expression says where to START?"
       hint: "One part is added on no matter what {variable} is. That is the start."
   - t: 8
-    patch: { eqHighlight: ["2"], labelled: ["{b}"] }
-    caption: "{variable} = {c}, so one jump covers {c}."
+    patch: { eqHighlight: ["2"], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }], labelled: ["{b}"] }
+    caption: "{variable} = {c}, so one jump covers {c} — here it is, leaving {b}."
     expect:
       type: pick
       value: ["2"]
       prompt: "Which piece — or pieces — tells how FAR one jump goes?"
       hint: "The value given for {variable} is the size of a single jump."
   - t: 12
-    patch: { eqHighlight: ["0"], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }], marker: "{b+c}", labelled: ["{b}", "{b+c}"] }
-    caption: "The {a} in {a}{variable} counts the jumps — here is the first, landing on {b+c}."
+    patch: { eqHighlight: [], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }], marker: "{b+c}", labelled: ["{b}", "{b+c}"] }
+    caption: "That jump lands on {b+c}."
+    expect:
+      type: numeric
+      value: "{b+c}"
+      prompt: "Where does the first jump land?"
+      hint: "{c} on from {b}."
+  - t: 16
+    patch: { eqHighlight: ["0"], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }, { from: "{b+c}", to: "{b+2*c}", label: "+{c}" }], marker: "{b+2*c}", labelled: ["{b}", "{b+c}", "{b+2*c}"] }
+    caption: "The {a} in {a}{variable} counts the jumps — a second one lands on {b+2*c}."
     expect:
       type: pick
       value: ["0"]
       prompt: "Which piece — or pieces — says HOW MANY jumps to take?"
       hint: "The number written in front of {variable} counts them."
-  - t: 16
-    patch: { arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }, { from: "{b+c}", to: "{b+2*c}", label: "+{c}" }], marker: "{b+2*c}", labelled: ["{b}", "{b+c}", "{b+2*c}"] }
-    caption: "A second jump of {c} lands on {b+2*c}. One more to go."
-    expect:
-      type: numeric
-      value: "{b+2*c}"
-      prompt: "The second jump lands where?"
-      hint: "Another {c} on from {b+c}."
   - { t: 20, patch: { eqHighlight: [], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }, { from: "{b+c}", to: "{b+2*c}", label: "+{c}" }, { from: "{b+2*c}", to: "{a*c+b}", label: "+{c}" }], marker: "{a*c+b}", labelled: ["{b}", "{b+c}", "{b+2*c}", "{a*c+b}"] }, caption: "All {a} jumps of {c} from {b}: {a}·{c} + {b} = {a*c+b}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
