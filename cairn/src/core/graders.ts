@@ -38,6 +38,61 @@ const correct: Verdict = { verdict: 'correct' }
 const incorrect = (reason?: string): Verdict =>
   reason === undefined ? { verdict: 'incorrect' } : { verdict: 'incorrect', reason }
 
+/** Diagnosis (§5): a wrong submission is matched against the item's NAMED
+ * misconceptions, so the student hears what they did rather than only that
+ * they missed. Deterministic and authored — no inference, no LLM: a
+ * misconception fires only when the submitted value equals the value that
+ * error produces under these params.
+ *
+ * The match is numeric-or-symbolic on purpose: "84" and "25 + 59" are the
+ * same mistake. */
+export function diagnose(
+  misconceptions: ReadonlyArray<{ id: string; when: string; says: string }> | undefined,
+  params: Env,
+  raw: string,
+): { id: string; says: string } | null {
+  if (!misconceptions || misconceptions.length === 0) return null
+  const student = raw.trim()
+  if (student === '') return null
+  for (const m of misconceptions) {
+    const rendered = renderTemplate(m.when, params, { numberStyle: 'fraction' })
+    if (!rendered.ok) continue
+    // MOVE-shaped errors ("divide 3" at an op gate) compare as moves: the
+    // word must match and the operand must agree numerically
+    const asMove = (x: string): [string, string] | null => {
+      const mm = /^(add|subtract|multiply|divide)\s+(\S.*)$/i.exec(x.trim())
+      return mm ? [mm[1]!.toLowerCase(), mm[2]!] : null
+    }
+    const wantMove = asMove(rendered.value)
+    if (wantMove) {
+      const gotMove = asMove(student)
+      if (
+        gotMove &&
+        gotMove[0] === wantMove[0] &&
+        (() => {
+          const a = evalClosed(gotMove[1])
+          const b = evalClosed(wantMove[1])
+          return a !== null && b !== null && ratEq(a, b)
+        })()
+      ) {
+        const says = renderTemplate(m.says, params, { numberStyle: 'fraction' })
+        return { id: m.id, says: says.ok ? says.value : m.says }
+      }
+      continue
+    }
+    // an equation-shaped submission ("x = 84") is compared on its value side
+    const side = (x: string): string => {
+      const parts = x.split(/(?<![=<>!])=(?!=)/)
+      return (parts.length === 2 ? parts[1]! : x).trim()
+    }
+    if (exprEquivalent(side(student), side(rendered.value))) {
+      const says = renderTemplate(m.says, params, { numberStyle: 'fraction' })
+      return { id: m.id, says: says.ok ? says.value : m.says }
+    }
+  }
+  return null
+}
+
 /** Route an item's attempt: rubric items go to the LLM queue, everything else
  * grades deterministically. */
 export function gradeItem(

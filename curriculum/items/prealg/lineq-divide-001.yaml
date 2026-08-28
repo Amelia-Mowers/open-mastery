@@ -7,6 +7,10 @@ generator: { a: { int: [2, 12] }, b: { mult_of: a, range: [12, 60] } }
 widget: { type: equation-input, config: { stem: "Solve: {a}{variable} = {b}." } }
 answer: { type: expr, value: "{variable} = {b/a}", equivalence: symbolic, integer: true }
 viz: { template: balance-scale, bind: { left: "{a}{variable}", right: "{b}" } }
+misconceptions:
+  - id: subtracted-the-coefficient
+    when: "{b-a}"
+    says: "{a}{variable} means {a} TIMES {variable}, not {a} plus {variable} — so subtracting {a} won't free it. Undo a multiply with a divide."
 hints:
   - "What operation undoes multiplying by {a}?"
   - "Divide both sides by {a}."

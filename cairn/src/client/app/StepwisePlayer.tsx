@@ -14,7 +14,7 @@
  * server-graded evidence. */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { Explanation, TimelineStep, StepExpect } from '@openmastery/schema'
-import { gradeAnswer, type AnswerSpec } from '../../core/graders'
+import { diagnose, gradeAnswer, type AnswerSpec } from '../../core/graders'
 import { createLessonWidget } from './LessonPlayer'
 import { renderText, type Params } from './render'
 import { OpEntry, type OpMove } from '../widgets/op-entry'
@@ -214,6 +214,13 @@ export function StepwisePlayer({
       return
     }
     tallies.current.misses += 1
+    // the same diagnosis standard as final answers, applied to this move
+    const named = diagnose(waitingOn.misconceptions, params as never, raw)
+    if (named) {
+      setTries(1)
+      setFeedback(named.says)
+      return
+    }
     let missLead = 'Not quite.'
     if (waitingOn.type === 'pick') {
       const want = new Set((waitingOn.value as unknown[]).map(Number))

@@ -30,7 +30,7 @@ import {
 } from './select.ts'
 import type { CurriculumIndex } from './curriculum.ts'
 import { isCheckEligible } from './curriculum.ts'
-import { gradeItem, type Verdict } from './graders.ts'
+import { diagnose, gradeItem, type Verdict } from './graders.ts'
 import type { PolicyV1 } from './policy/v1.ts'
 
 export interface EngineCtx {
@@ -384,6 +384,12 @@ export function recordAttempt(
 ): AttemptResult {
   const item = ctx.cur.items.get(action.instance.itemId)!
   const verdict = gradeItem(item, action.instance.params as Env, submission.raw)
+  // a miss the author anticipated is named, not just marked wrong
+  if (verdict.verdict === 'incorrect' && verdict.reason === undefined) {
+    const raw = Array.isArray(submission.raw) ? submission.raw.join(',') : submission.raw
+    const hit = diagnose(item.misconceptions, action.instance.params as Env, raw)
+    if (hit) verdict.reason = hit.says
+  }
   if (verdict.verdict === 'needs_llm') {
     // rubric grading is queued (build step 7); nothing enters the log yet
     return { verdict, correct: false, events: [] }

@@ -52,8 +52,8 @@ rationale and literature live in memory + cairn/CLAUDE.md. What is LEFT:
       collapse into hintLevel. (= first-run report S-06.)
 - [ ] Prompted rung: proactive hints at gates for the lowest p (today's
       hints are on-miss only) — the ladder's rung 2.
-- [ ] Wrong-step → misconception diagnosis surfacing (the failed gate
-      names the error; pairs with wrong-answer diagnosis below).
+- [ ] Misconception ids → the guide view: aggregate which error a student
+      repeats, per skill (the ids exist; nothing reads them yet).
 - [ ] Stepwise in the corrective ladder: a missed practice item retries
       the SAME instance stepwise instead of re-serving a different one.
 - [ ] Scrub parity for LessonPlayer (step dots exist only in stepwise).
@@ -85,9 +85,11 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
 - [ ] compare-rates "pick with work" upgrade: two offer cards each with a
       unit-rate fill-in, then click the winner — constructed response where
       today's choice items are the d1 entry point.
-- [ ] Wrong-answer DIAGNOSIS: misconception-tagged feedback — author
-      common-error patterns per item family (off-by-one, inverse-op, sign
-      flip) and match the submitted answer against them.
+- [ ] Wrong-answer DIAGNOSIS: the STANDARD shipped 2026-08-28
+      (misconceptions on items + gates, diagnose(), validator guards —
+      curriculum/CLAUDE.md). What's left is AUTHORING: 4 items and 1 gate
+      carry them so far; work through the catalog family by family, and
+      aggregate ids in the guide view ("keeps inverting operations").
 - [ ] Skill map phone REFLOW: horizontal scroll + hyphenation shipped; a
       true stacked-list layout under 560px is the real fix.
 - [ ] ENGAGEMENT batch (family playtest): sounds (correct/mastery chimes),

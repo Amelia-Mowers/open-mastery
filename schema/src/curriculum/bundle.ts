@@ -523,6 +523,54 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
       continue
     }
 
+    // ---- MISCONCEPTIONS: a named wrong answer must actually be WRONG, and
+    //      must evaluate under every instance. A `when` that collides with
+    //      the real answer would tell a correct student they made an error —
+    //      the one failure mode diagnosis must never have. ----
+    if (it.misconceptions && it.misconceptions.length > 0) {
+      const ids = it.misconceptions.map((m) => m.id)
+      if (new Set(ids).size !== ids.length)
+        push('error', 'misconception_dup', it.id, 'misconception ids must be unique within an item')
+      const checkMis = (env: Env, where: string) => {
+        const truth = answerValue(env)
+        for (const m of it.misconceptions ?? []) {
+          const rendered = renderTemplate(m.when, env, { numberStyle: 'fraction' })
+          if (!rendered.ok) {
+            push('error', 'misconception_shape', `${where} [${m.id}]`, `'${m.when}' does not render`)
+            continue
+          }
+          const parsed = parseExprLoose(rendered.value)
+          const v = parsed.ok ? evaluate(parsed.value, {}) : null
+          if (!v || !v.ok || v.value.t !== 'num') {
+            push(
+              'error',
+              'misconception_shape',
+              `${where} [${m.id}]`,
+              `'${m.when}' does not evaluate to a number`,
+            )
+            continue
+          }
+          if (truth && ratEq(v.value.v, truth))
+            push(
+              'error',
+              'misconception_correct',
+              `${where} [${m.id}]`,
+              `'${m.when}' equals the right answer — a correct student would be told they erred`,
+            )
+        }
+      }
+      checkMis(it.params as Env, it.id)
+      if (it.generator != null) {
+        const spec = it.generator as GeneratorSpec
+        const fixed: Record<string, number | string> = {}
+        for (const [k, v] of Object.entries(it.params)) if (!(k in spec)) fixed[k] = v
+        for (const seed of seeds) {
+          const g = generateParams(spec, fixed, seed)
+          if (g.ok) checkMis(g.value as Env, `${it.id} (seed ${seed})`)
+        }
+      }
+    }
+
     const exprIdentifiers = (e: Expr): Set<string> => {
       const out = new Set<string>()
       const walk = (x: Expr): void => {

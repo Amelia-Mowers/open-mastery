@@ -272,9 +272,13 @@ export function ItemCard({
       ? revealedHints > 0 && askedForHelp
         ? 'You got it — the hint helped. Try the next one on your own!'
         : 'Correct!'
-      : isCheck
-        ? 'Not this time — back to practice. The check will come around again.'
-        : 'Not quite — you’ll get another one like it.'
+      : // a named misconception speaks for itself — the generic line would
+        // only bury it
+        outcome.verdict.verdict === 'incorrect' && outcome.verdict.reason
+        ? outcome.verdict.reason
+        : isCheck
+          ? 'Not this time — back to practice. The check will come around again.'
+          : 'Not quite — you’ll get another one like it.'
 
   return (
     <section className="card" aria-label={KICKERS[action.itemKind]}>

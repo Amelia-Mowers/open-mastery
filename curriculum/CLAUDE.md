@@ -1,6 +1,39 @@
 # Curriculum authoring notes
 
 
+
+## Misconception diagnosis (2026-08-28) — the standard
+
+A wrong answer should tell the student WHAT THEY DID, not just that they
+missed. Both the final answer and every stepwise gate take an optional
+`misconceptions:` list; each entry is
+`{ id, when, says }`:
+
+- **`id`** — lower-kebab-case, stable, and named for the ERROR, not the
+  value (`added-instead-of-subtracted`, not `answer-29`). It is the
+  aggregation key: the same id across items is the same misunderstanding,
+  which is what makes "this student keeps inverting operations" a
+  question the data can answer.
+- **`when`** — a cairn-expr template producing the value that error
+  yields under these params (`"{2*p+d}"`), or, at an `op` gate, the MOVE
+  it produces (`"divide {a}"`). Matching is by VALUE, not spelling: "29",
+  "x = 29" and "21 + 8" are one mistake.
+- **`says`** — child-facing, templated, and it must do three things:
+  name the move the student made, say why it doesn't work here, and
+  point at the fix. Never scold, never merely restate the rule.
+
+Author them for errors that are *predictable from the mathematics* —
+inverse-operation slips, sign flips, off-by-one, operating on one side
+only, dividing before clearing a term. Do not invent exotic ones: an
+unanticipated miss falls back to the generic line, which is correct
+behaviour, not a gap.
+
+**Invariants:** `[misconception_correct]` errors if a `when` ever equals
+the real answer under the authored params or any generator seed — a
+diagnosis that fires on a correct answer is the one thing this system
+must never do — and `[misconception_shape]`/`[misconception_dup]` catch
+templates that don't evaluate and duplicate ids.
+
 ## Stepwise gates (2026-08-27)
 
 Passive timelines are DEPRECATED — the validator warns `[no_expects]`

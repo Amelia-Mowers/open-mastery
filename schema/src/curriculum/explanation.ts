@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { explanationIdSchema, skillIdSchema, reviewSchema } from './common.ts'
+import { misconceptionSchema } from './item.ts'
 
 /** Stepwise expectation: in worked/stepwise play the timeline PAUSES before
  * this step and the student must supply the move; the step's patch then
@@ -15,6 +16,9 @@ export const stepExpectSchema = z
     prompt: z.string().min(1).optional(),
     /** shown after a wrong try (second wrong try reveals the move) */
     hint: z.string().optional(),
+    /** named wrong MOVES at this gate — the same diagnosis standard the
+     * items use, applied to a step instead of a final answer */
+    misconceptions: z.array(misconceptionSchema).optional(),
   })
   .strict()
 

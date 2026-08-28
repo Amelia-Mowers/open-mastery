@@ -29,6 +29,13 @@ timeline:
       value: "subtract {b}"
       prompt: "Two operations hide {variable}. Which one do you undo FIRST?"
       hint: "The + {b} was applied LAST, so it comes off first. Which move un-does adding {b}?"
+      misconceptions:
+        - id: divided-before-clearing-the-add
+          when: "divide {a}"
+          says: "Dividing now would split the + {b} as well. Clear the {b} off both pans FIRST, then divide."
+        - id: added-instead-of-subtracted
+          when: "add {b}"
+          says: "Adding {b} puts MORE on the left. The {b} is already there — take it away from both pans."
   - { t: 16, patch: { left: "{a}{variable}", right: "{a*ans}", op: null, eqHighlight: ["0"], highlight: null }, caption: "Now it reads {a}{variable} = {a*ans} — a problem you already know." }
   - t: 20
     patch: { op: divide, by: "{a}" }

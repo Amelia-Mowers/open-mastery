@@ -7,6 +7,10 @@ params: { p: 9, d: 12, variable: x }
 generator: { p: { int: [2, 30] }, d: { int: [2, 40] } }
 widget: { type: equation-input, config: { stem: "Solve: {variable} − {p} = {d}." } }
 answer: { type: expr, value: "{variable} = {p+d}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: subtracted-instead-of-added
+    when: "{d-p}"
+    says: "That's {d} MINUS {p}. The {p} was already taken away — to get {variable} back whole, put it back: add {p} to both sides."
 hints:
   - "What operation undoes subtracting {p}?"
   - "Add {p} to both sides."

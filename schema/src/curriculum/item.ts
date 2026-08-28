@@ -26,6 +26,21 @@ export const widgetRefSchema = z
   })
   .strict()
 
+/** A named wrong answer and what to say when it lands. Shared by items
+ * (final answers) and timeline gates (stepwise moves). */
+export const misconceptionSchema = z
+  .object({
+    /** stable id for analytics/aggregation, e.g. 'added-instead-of-subtracted' */
+    id: z
+      .string()
+      .regex(/^[a-z][a-z0-9-]*$/, 'misconception ids are lower-kebab-case'),
+    /** cairn-expr template producing the value this error yields */
+    when: z.string().min(1),
+    /** child-facing: name the move, point at the fix */
+    says: z.string().min(1),
+  })
+  .strict()
+
 export const answerSchema = z
   .object({
     /** 'op' = a constructed both-sides move: the student enters an
@@ -96,6 +111,13 @@ export const itemSchema = z
       .strict()
       .nullish(),
     hints: z.array(z.string()).default([]),
+    /** Named wrong answers: when a submission matches one, the student is
+     * told WHAT they did instead of just "not quite". `when` is a cairn-expr
+     * template that must evaluate to the value this misconception produces
+     * (e.g. "{a+b}" for add-instead-of-subtract); `says` is the child-facing
+     * sentence. Diagnosis is a teaching act, so the copy names the move the
+     * student made and points at the fix — never scolds. */
+    misconceptions: z.array(misconceptionSchema).optional(),
     faded: fadedSpecSchema.nullish().default(null),
     source: sourceRefSchema.optional(),
     review: reviewSchema,

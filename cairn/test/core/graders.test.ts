@@ -2,7 +2,7 @@
 import { describe, it, expect } from 'vitest'
 import fc from 'fast-check'
 import { generateParams, renderTemplate, type Env } from '@openmastery/schema'
-import { gradeAnswer, gradeItem, exprEquivalent, type AnswerSpec } from '../../src/core/graders'
+import { diagnose, gradeAnswer, gradeItem, exprEquivalent, type AnswerSpec } from '../../src/core/graders'
 
 const expr = (value: string, extra: Partial<AnswerSpec> = {}): AnswerSpec =>
   ({ type: 'expr', value, ...extra }) as AnswerSpec
@@ -154,5 +154,37 @@ describe('generator ↔ grader contract (§5: total, grader-verified)', () => {
         expect(gradeAnswer(answer, g.value as Env, '999999').verdict).toBe('incorrect')
       }),
     )
+  })
+})
+
+describe('diagnosis: named wrong answers (the misconception standard)', () => {
+  const MIS = [
+    { id: 'added-instead-of-subtracted', when: '{2*p+d}', says: 'That is {p+d} plus {p}.' },
+    { id: 'off-by-one', when: '{d+1}', says: 'One too many.' },
+  ]
+  const P2: Env = { p: 8, d: 13 }
+
+  it('names the error a wrong value matches, and stays silent otherwise', () => {
+    // x + 8 = 21 → answer 13; adding instead of subtracting gives 29
+    expect(diagnose(MIS, P2, '29')?.id).toBe('added-instead-of-subtracted')
+    expect(diagnose(MIS, P2, '29')?.says).toBe('That is 21 plus 8.') // templated
+    expect(diagnose(MIS, P2, '14')?.id).toBe('off-by-one')
+    expect(diagnose(MIS, P2, '7')).toBeNull() // an unanticipated miss stays generic
+    expect(diagnose(MIS, P2, '')).toBeNull()
+    expect(diagnose(undefined, P2, '29')).toBeNull()
+  })
+
+  it('matches the VALUE, not the spelling — equation shape and arithmetic both', () => {
+    expect(diagnose(MIS, P2, 'x = 29')?.id).toBe('added-instead-of-subtracted')
+    expect(diagnose(MIS, P2, '21 + 8')?.id).toBe('added-instead-of-subtracted')
+  })
+
+  it('MOVE-shaped errors compare as moves (op gates), word and operand', () => {
+    const moves = [{ id: 'divided-early', when: 'divide {a}', says: 'Clear the add first.' }]
+    const P3: Env = { a: 3, b: 5 }
+    expect(diagnose(moves, P3, 'divide 3')?.id).toBe('divided-early')
+    expect(diagnose(moves, P3, 'divide 5')).toBeNull() // right word, wrong operand
+    expect(diagnose(moves, P3, 'subtract 3')).toBeNull() // wrong word
+    expect(diagnose(moves, P3, '3')).toBeNull() // not a move at all
   })
 })

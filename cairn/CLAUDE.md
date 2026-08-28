@@ -55,6 +55,12 @@
   a skill in two answers). Retune `scaffolding.fadeAtP` and
   `check.pThreshold` together with these; per-skill fitting waits for
   pilot data.
+- **Wrong answers are DIAGNOSED, not just marked.** Items and stepwise
+  gates carry `misconceptions: [{id, when, says}]`; `diagnose()` in
+  graders.ts matches a miss against them (by value, or by move at op
+  gates) and the named sentence replaces the generic "not quite" in both
+  the item card and the stepwise gate. Authoring rules and invariants:
+  `../curriculum/CLAUDE.md`.
 - **`GOLDEN_WIDGET.md` is the widget standard** — trinity roles, staged
   decomposition entrances paired with `eqHighlight`, semantic (never
   numeric) widget fit, review-mode inertness, keyboard operation, motion,
