@@ -5,8 +5,8 @@ widget: number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}"], min: "{b}", max: "{a*c+b}", step: "{c}" }, caption: "An expression and a value for its letter — watch it walk the line." }
-  - { t: 4, patch: { eqHighlight: ["1"], marker: "{b}", highlight: ["{b}"] }, caption: "The + {b} is the starting point.", expect: { type: numeric, value: "{b}", prompt: "Where on the line? Type the number." } }
-  - { t: 8, patch: { eqHighlight: ["0", "2"], marker: "{b+c}", highlight: ["{b}", "{b+c}"] }, caption: "{a}{variable} at {variable} = {c}: each jump is {c}.", expect: { type: numeric, value: "{b+c}", prompt: "Where on the line? Type the number." } }
-  - { t: 12, patch: { eqHighlight: [], marker: "{a*c+b}", highlight: [] }, caption: "{a} jumps later: {a}·{c} + {b} = {a*c+b}.", expect: { type: numeric, value: "{a*c+b}", prompt: "Where on the line? Type the number." } }
+  - { t: 4, patch: { eqHighlight: ["1"], marker: "{b}", highlight: ["{b}"] }, caption: "The + {b} is the starting point.", expect: { type: numeric, value: "{b}", prompt: "Type the STARTING point." } }
+  - { t: 8, patch: { eqHighlight: ["0", "2"], marker: "{b+c}", highlight: ["{b}", "{b+c}"] }, caption: "{a}{variable} at {variable} = {c}: each jump is {c}.", expect: { type: numeric, value: "{b+c}", prompt: "One jump from the start: where do we land? Type the number." } }
+  - { t: 12, patch: { eqHighlight: [], marker: "{a*c+b}", highlight: [] }, caption: "{a} jumps later: {a}·{c} + {b} = {a*c+b}.", expect: { type: numeric, value: "{a*c+b}", prompt: "All {a} jumps taken: where do we END? Type the number." } }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

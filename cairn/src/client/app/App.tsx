@@ -73,7 +73,7 @@ export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: Ap
     return (
       <>
         {banner}
-        <JoinCard onJoin={setStudent} onGuide={() => setGuideMode(true)} />
+        <JoinCard onJoin={setStudent} onGuide={() => setGuideMode(true)} about={demoBanner === true} />
       </>
     )
   return (
@@ -110,7 +110,31 @@ function GuidePage({ api, onBack }: { api: CairnApi; onBack: () => void }) {
   )
 }
 
-function JoinCard({ onJoin, onGuide }: { onJoin: (id: string) => void; onGuide?: () => void }) {
+function AboutPanel() {
+  return (
+    <section className="card about">
+      <h1>Cairn</h1>
+      <p>
+        An open-source, self-hostable <b>mastery-learning engine</b> for K-8 math. Every skill is
+        taught with animated lessons in several representations — a balance scale, a bar model, a
+        number line, the worked symbols — and practiced as <b>stepwise problems</b> you work move
+        by move, with an answer box always open if you can already solve it. Skills unlock along a
+        graph derived from the Common Core standards, and mastered skills come back for spaced
+        review.
+      </p>
+      <p className="muted">
+        This demo runs entirely in your browser — the full engine, event log and all, with no
+        server. Type a name below to try it as a student.{' '}
+        <a href="https://github.com/Amelia-Mowers/open-mastery" target="_blank" rel="noreferrer">
+          Source on GitHub
+        </a>
+        {' · '}AGPL engine, CC BY curriculum.
+      </p>
+    </section>
+  )
+}
+
+function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; onGuide?: () => void; about?: boolean }) {
   const [name, setName] = useState('')
   const join = () => {
     const id = name.trim().toLowerCase()
@@ -125,9 +149,14 @@ function JoinCard({ onJoin, onGuide }: { onJoin: (id: string) => void; onGuide?:
   return (
     <main className="shell">
       <Header points={null} />
+      {about && <AboutPanel />}
       <section className="card join">
-        <h1>Welcome to Cairn</h1>
-        <p className="muted">Type your name to pick up where you left off.</p>
+        <h1>{about ? 'Try it as a student' : 'Welcome to Cairn'}</h1>
+        <p className="muted">
+          {about
+            ? 'Pick any name — progress stays on this device under that name.'
+            : 'Type your name to pick up where you left off.'}
+        </p>
         <div className="answer-row">
           <input
             aria-label="Your name"

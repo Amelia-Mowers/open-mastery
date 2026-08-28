@@ -78,6 +78,20 @@ non-readers) — scope it separately when its turn comes.
       share, tape partLabel → numeric gates; 4 wordy worked timelines
       hand-gated. [no_expects] validator warning = the standing
       invariant against regressing to passive timelines.
+      FIRST-RUN REPORT (artifact 14a3480f, 2026-08-27) — deferred items:
+      [ ] S-01 mastery MOMENT: verify/restore the grant card in the demo
+      flow (report saw silent skill transition); smooth the mastery-meter
+      curve (5%→67% jump reads arbitrary). [ ] S-02 guide roster reads
+      stale skill/stones — read from the same projection as the student
+      view; make rows open a student detail. [ ] S-04 practice scaffolds
+      must not print the answer (number-line scaffold labeled through the
+      final value) — withhold-terminal-value mode, reveal on submit.
+      [ ] S-05 map: label the three clusters, print standards codes on
+      cards, wrap titles, empty-cairn state. [ ] S-06 emit scaffold_step
+      events (folds into per-step BKT evidence below). [ ] F-02 opening
+      placement: open on the map or ask a grade; frame the first pick.
+      [ ] F-03 leftovers: reset-demo confirmation feedback; name display
+      keeps typed casing. [ ] OG image for the share card.
       REMAINING for the full ladder: HUMAN VETTING PASS over the ~180
       mechanically-derived gate prompts/values (zoo per-timeline view is
       the tracker; machine checks prove self-passability, not

@@ -5,8 +5,8 @@ widget: number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{p}/{q}", "{variable}", " = ", "{b}"], min: 0, max: "{q*b/p}", step: "{b/p}" }, caption: "Here is the problem in symbols. Watch it live on a line." }
-  - { t: 3.5, patch: { eqHighlight: ["0", "1"], marker: "{b}", highlight: ["{b}"] }, caption: "{p}/{q} of {variable} is {b} — that is {p} of {variable}'s {q} equal parts.", expect: { type: numeric, value: "{b}", prompt: "Where on the line? Type the number." } }
-  - { t: 7.5, patch: { eqHighlight: [], highlight: ["{b/p}"], marker: "{b/p}" }, caption: "So ONE part is {b} ÷ {p} = {b/p}.", expect: { type: numeric, value: "{b/p}", prompt: "Where on the line? Type the number." } }
-  - { t: 11.5, patch: { marker: "{q*b/p}", highlight: ["{q*b/p}"] }, caption: "{variable} has {q} parts: {q} × {b/p} = {q*b/p}. {variable} = {q*b/p}.", expect: { type: numeric, value: "{q*b/p}", prompt: "Where on the line? Type the number." } }
+  - { t: 3.5, patch: { eqHighlight: ["0", "1"], marker: "{b}", highlight: ["{b}"] }, caption: "{p}/{q} of {variable} is {b} — that is {p} of {variable}'s {q} equal parts.", expect: { type: numeric, value: "{b}", prompt: "Where does {p}/{q} of {variable} sit? The equation says it — type the number." } }
+  - { t: 7.5, patch: { eqHighlight: [], highlight: ["{b/p}"], marker: "{b/p}" }, caption: "So ONE part is {b} ÷ {p} = {b/p}.", expect: { type: numeric, value: "{b/p}", prompt: "How big is ONE of the parts? Type the number." } }
+  - { t: 11.5, patch: { marker: "{q*b/p}", highlight: ["{q*b/p}"] }, caption: "{variable} has {q} parts: {q} × {b/p} = {q*b/p}. {variable} = {q*b/p}.", expect: { type: numeric, value: "{q*b/p}", prompt: "All {q} parts together: where does {variable} land? Type the number." } }
   - { t: 14, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

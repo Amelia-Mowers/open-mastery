@@ -8,6 +8,7 @@ import { createWidget } from '../widgets/registry'
 import { createBalanceScale } from '../viz/balance-scale'
 import { createEnvelopeModel } from '../viz/envelope-model'
 import { StepwisePlayer, hasExpects } from './StepwisePlayer'
+import { SmoothHeight } from './SmoothHeight'
 import { LessonPlayer } from './LessonPlayer'
 import { evalNumber, renderText, type Params } from './render'
 import type { AttemptOutcome, ClientItem, ExplainResult } from './api'
@@ -48,7 +49,7 @@ interface InlinePlay {
 const TEXT_INPUTS = new Set(['numeric-input', 'expression-input', 'equation-input'])
 
 const KICKERS: Record<ServeAction['itemKind'], string> = {
-  faded: 'FINISH THIS ONE',
+  faded: 'WORK IT OUT — STEP BY STEP',
   review: 'QUICK REVIEW',
   practice: 'PRACTICE',
   check: 'MASTERY CHECK',
@@ -76,6 +77,8 @@ export function ItemCard({
   const [inline, setInline] = useState<InlinePlay | null>(null)
   /** watched the walk-through → this try counts as helped */
   const [explained, setExplained] = useState(false)
+  /** the student CLICKED for help (vs help offered/served) — copy only */
+  const [askedForHelp, setAskedForHelp] = useState(false)
   /** the bar the student sees; jumps to the server's post-attempt value */
   const [shownMastery, setShownMastery] = useState(mastery)
   /** faded phase: the skill's explanation, THIS instance's numbers, played
@@ -250,6 +253,7 @@ export function ItemCard({
     if (!inline) return
     onExplained(inline.explanation.id)
     setExplained(true)
+    setAskedForHelp(true)
     setRevealedHints((h) => Math.max(h, 1, Math.min(item.hints.length, 2)))
     setInline(null)
   }
@@ -261,12 +265,12 @@ export function ItemCard({
   const feedbackText = !outcome
     ? ''
     : outcome.correct
-      ? revealedHints > 0
+      ? revealedHints > 0 && askedForHelp
         ? 'You got it — the hint helped. Try the next one on your own!'
         : 'Correct!'
       : isCheck
         ? 'Not this time — back to practice. The check will come around again.'
-        : 'Not quite — you’ll get another shot.'
+        : 'Not quite — you’ll get another one like it.'
 
   return (
     <section className="card" aria-label={KICKERS[action.itemKind]}>
@@ -290,7 +294,12 @@ export function ItemCard({
           {stem}
         </h2>
       )}
-      {fadedLead && !inline && (
+      {/* the lead region keeps a stable footprint from FIRST PAINT — nothing
+          that accepts typing may move under the student's cursor (B-02) */}
+      {wantsLead && !inline && (
+      <SmoothHeight>
+      {!fadedLead && outcome === null && !leadDone && <div className="lead-skeleton" aria-hidden />}
+      {fadedLead && (
         hasExpects(fadedLead.explanation.timeline) ? (
           <StepwisePlayer
             key={`lead-${action.instance.paramHash}`}
@@ -319,6 +328,14 @@ export function ItemCard({
             onDone={() => {}}
           />
         )
+      )}
+      {/* B-03: while the stepwise lead is live, name the second affordance */}
+      {fadedLead && hasExpects(fadedLead.explanation.timeline) && !leadDone && outcome === null && (
+        <p className="skip-divider" aria-hidden>
+          — or skip ahead: put the final answer below —
+        </p>
+      )}
+      </SmoothHeight>
       )}
       {inline ? (
         <LessonPlayer
@@ -362,11 +379,14 @@ export function ItemCard({
               Check answer
             </button>
             {maxHints > revealedHints && outcome === null && (
-              <button type="button" className="btn" onClick={() => setRevealedHints((h) => h + 1)}>
+              <button type="button" className="btn" onClick={() => {
+                setAskedForHelp(true)
+                setRevealedHints((h) => h + 1)
+              }}>
                 Hint
               </button>
             )}
-            {!isCheck && outcome === null && (
+            {!isCheck && (outcome === null || !outcome.correct) && (
               <button type="button" className="btn btn-quiet" onClick={() => void openWalkthrough([])}>
                 Show me how
               </button>

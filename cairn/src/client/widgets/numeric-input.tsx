@@ -48,6 +48,7 @@ export const createNumericInput: WidgetFactory<NumericInputParams, NumericAnswer
       <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontFamily: "'Lora', serif" }}>
         {params.prompt && <span style={{ color: '#5c5245' }}>{params.prompt}</span>}
         <input
+          inputMode="decimal"
           aria-label={label(params)}
           aria-disabled={disabled}
           disabled={disabled}
