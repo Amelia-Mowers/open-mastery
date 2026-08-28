@@ -28,14 +28,20 @@ describe('number line: jumps are shown, answers are not', () => {
     // a jump: an arc from 8 to 12 carrying its size, and 12 now shows
     w.applyPatch({ arcs: [{ from: 8, to: 12, label: '+4' }], marker: 12, labelled: [8, 12] })
     rerender(view())
-    const arc = container.querySelector('[data-arc="8-12"]') as SVGPathElement
+    const arc = container.querySelector('[data-arc="8-12"]')
     expect(arc).toBeTruthy()
-    // the arc springs from tick CENTRES — ticks sit at (i+0.5)/n across the
+    const curve = arc!.querySelector('path')!
+    // drawn like the opposite-flip arc: thick and dashed, not a hairline
+    expect(Number(curve.getAttribute('stroke-width'))).toBeGreaterThanOrEqual(3)
+    expect(curve.getAttribute('stroke-dasharray')).toBeTruthy()
+    // and it springs from tick CENTRES — ticks sit at (i+0.5)/n across the
     // row, so an arc anchored at i/(n-1) hangs off the ends of the line
-    const d = arc.getAttribute('d') ?? ''
-    const [x1, x2] = [...d.matchAll(/M ([\d.]+)|([\d.]+) 24$/g)].map((m) => Number(m[1] ?? m[2]))
-    expect(x1).toBeCloseTo(((2 + 0.5) / 6) * 100, 1) // tick 8 of 0,4,8,12,16,20
-    expect(x2).toBeCloseTo(((3 + 0.5) / 6) * 100, 1) // tick 12
+    const d = curve.getAttribute('d') ?? ''
+    const nums = [...d.matchAll(/-?[\d.]+/g)].map((m) => Number(m[0]))
+    expect(nums[0]).toBeCloseTo(((2 + 0.5) / 6) * 100, 1) // tick 8 of 0,4,8,12,16,20
+    expect(nums[nums.length - 2]).toBeCloseTo(((3 + 0.5) / 6) * 100, 1) // tick 12
+    // an arrowhead marks the landing
+    expect(arc!.querySelectorAll('path').length).toBe(2)
     expect(container.querySelector('[data-arc-label]')?.textContent).toBe('+4')
     expect(labels().filter((t) => t !== '').sort()).toEqual(['12', '8'])
     // and the endpoint 20 is still hidden

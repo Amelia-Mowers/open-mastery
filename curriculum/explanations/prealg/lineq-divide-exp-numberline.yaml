@@ -4,9 +4,23 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], min: 0, max: "{b}", step: "{b/a}" }, caption: "Here is the problem in symbols. Watch it become jumps on a line." }
-  - { t: 3.5, patch: { eqHighlight: ["0", "1"] }, caption: "{a}{variable} means {a} equal jumps." }
-  - { t: 7, patch: { eqHighlight: ["3"], marker: "{b}" }, caption: "= {b}: the jumps must land exactly on {b}.", expect: { type: numeric, value: "{b}", prompt: "Where must the jumps FINISH? Type the number." } }
-  - { t: 10.5, patch: { eqHighlight: [], highlight: ["{b/a}"], marker: "{b/a}" }, caption: "The first jump lands on {b/a} — that is the size of every jump. {variable} = {b/a}.", expect: { type: numeric, value: "{b/a}", prompt: "The FIRST jump: where does it land? Type the number." } }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], min: 0, max: "{b}", step: "{b/a}", labelled: ["0"], marker: 0 }, caption: "A bare line, starting at 0. The equation says how the jumps go." }
+  - t: 3.5
+    patch: { eqHighlight: ["0", "1"], labelled: ["0"] }
+    caption: "{a}{variable} means {a} equal jumps, each one {variable} long."
+    expect:
+      type: pick
+      value: ["0", "1"]
+      prompt: "Which piece — or pieces — of the equation says how many jumps to take?"
+      hint: "The number written in front of {variable} counts them."
+  - t: 7
+    patch: { eqHighlight: ["3"], marker: "{b}", labelled: ["0", "{b}"] }
+    caption: "= {b}: the jumps must finish exactly on {b}."
+    expect:
+      type: pick
+      value: ["3"]
+      prompt: "Which piece — or pieces — says where the jumps must FINISH?"
+      hint: "Whatever is on the far side of the equals sign is the landing place."
+  - { t: 10.5, patch: { eqHighlight: [], arcs: [{ from: 0, to: "{b/a}", label: "+{b/a}" }], marker: "{b/a}", labelled: ["0", "{b/a}", "{b}"] }, caption: "Split the trip into {a} equal jumps: each one is {b/a}. So {variable} = {b/a}." }
   - { t: 13, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

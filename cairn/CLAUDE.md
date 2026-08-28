@@ -111,6 +111,13 @@
   that make the state unrepresentable; where that's not mechanical, add
   a validator check that at least WARNS (see [form_mismatch]). Never let
   a fallback silently produce content that could teach the wrong thing.
+- **Review EVERY STEP, not the last frame.** `node
+  scripts/shoot-steps.mjs <explanation-id> <out.png>` drives the real
+  widget through its patches, renders each state with the app's own
+  stylesheet, and shoots them as one strip. `shoot-widgets.sh` captures
+  only resting states, which is how thin arcs, adrift labels and a final
+  step that dropped its own working all reached the user. Look at the
+  strip after any timeline or widget change.
 - **Visual review pass**: after ANY widget or timeline change, run
   `scripts/shoot-widgets.sh <out>` (screenshots every explanation's final
   state via ?view=zoo&exp=<id>, tiles contact sheets) and actually REVIEW

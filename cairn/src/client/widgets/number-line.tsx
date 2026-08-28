@@ -100,7 +100,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
             paddingTop: 0,
             outlineColor: '#b05f28',
             position: 'relative',
-            marginTop: 40,
+            marginTop: 58,
           }}
         >
           {state.arcs.length > 0 && (
@@ -112,9 +112,9 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                 position: 'absolute',
                 left: 0,
                 right: 0,
-                bottom: 'calc(100% - 2px)',
+                bottom: 'calc(100% - 3px)',
                 width: '100%',
-                height: 28,
+                height: 44,
                 overflow: 'visible',
               }}
             >
@@ -128,17 +128,25 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                 const x1 = at(a.from)
                 const x2 = at(a.to)
                 if (x1 < 0 || x2 < 0) return null
+                const dir = x2 >= x1 ? 1 : -1
                 return (
-                  <path
-                    key={i}
-                    data-arc={`${a.from}-${a.to}`}
-                    d={`M ${x1} 24 Q ${(x1 + x2) / 2} 2 ${x2} 24`}
-                    fill="none"
-                    stroke="#b05f28"
-                    strokeWidth="0.7"
-                    vectorEffect="non-scaling-stroke"
-                    style={{ animation: 'cairn-rise 0.4s ease both' }}
-                  />
+                  <g key={i} data-arc={`${a.from}-${a.to}`} style={{ animation: 'cairn-pop 0.45s ease both' }}>
+                    <path
+                      d={`M ${x1} 26 Q ${(x1 + x2) / 2} -6 ${x2} 26`}
+                      fill="none"
+                      stroke="#b05f28"
+                      strokeWidth="3"
+                      strokeDasharray="7 6"
+                      strokeLinecap="round"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                    {/* the arrowhead lands ON the tick it reaches */}
+                    <path
+                      d={`M ${x2} 26 l ${-dir * 1.4} -6 l ${dir * 2.8} 1.2 Z`}
+                      fill="#b05f28"
+                      vectorEffect="non-scaling-stroke"
+                    />
+                  </g>
                 )
               })}
             </svg>
@@ -154,8 +162,8 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   left: `${
                     ((ticks.indexOf(a.from) + ticks.indexOf(a.to) + 1) / 2 / ticks.length) * 100
                   }%`,
-                  transform: 'translate(-50%, -22px)',
-                  font: "700 14px 'Lora', Georgia, serif",
+                  transform: 'translate(-50%, -40px)',
+                  font: "700 16px 'Lora', Georgia, serif",
                   color: '#b05f28',
                   whiteSpace: 'nowrap',
                   animation: 'cairn-pop 0.35s ease both',
