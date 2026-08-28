@@ -23,14 +23,28 @@ describe('tape: a move changes the bar', () => {
 
     const gone = cells()[1]!
     expect(gone.getAttribute('data-removed')).toBe('true')
-    // the section collapses to nothing — the bar is genuinely shorter
     expect(gone.style.flex).toBe('0 0 0px')
     expect(gone.style.opacity).toBe('0')
+    // THE BAR ITSELF gets shorter. Cells are flex:1, so collapsing one only
+    // lets the survivor expand — the earlier version looked like "x got
+    // bigger", the opposite of taking a piece off. Half the sections remain,
+    // so the bar is half as wide.
+    const wrap = container.querySelector('[data-bar-wrap]') as HTMLElement
+    expect(wrap.style.width).toBe('50%')
+    expect(wrap.style.transition).toContain('width')
     // …and the move is named on the total, like the balance's op badge
     expect(container.querySelector('[data-total-op]')?.textContent).toContain('8')
     expect(container.querySelector('[data-total-op]')?.textContent).toContain('−')
     // the surviving section is untouched
     expect(cells()[0]!.getAttribute('data-removed')).toBeNull()
     expect(cells()[0]!.style.opacity).toBe('')
+  })
+
+  it('an untouched bar stays full width', () => {
+    const w = createTapeDiagram()
+    const { container } = render(
+      <>{w.render({ parts: 3, partLabel: '7', total: '21' }, 'lesson')}</>,
+    )
+    expect((container.querySelector('[data-bar-wrap]') as HTMLElement).style.width).toBe('100%')
   })
 })

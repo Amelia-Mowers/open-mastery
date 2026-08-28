@@ -191,9 +191,22 @@ export function createTapeDiagram(
     const n = cells ? cells.length : Math.max(1, Math.round(params.parts))
     const partLabel = state.partLabel ?? params.partLabel
     const total = state.total ?? params.total
+    // The BAR ITSELF shrinks when a section is taken away. Cells are flex:1,
+    // so collapsing one only lets the others expand — the bar has to lose
+    // that share of its own width, or "take the 8 off" looks like "the x
+    // piece got bigger", which is the opposite of what the move means.
+    const alive = Array.from({ length: n }, (_, i) => i + 1).filter(
+      (k) => !state.removed.includes(k),
+    ).length
+    const barWidth = n > 0 ? `${(alive / n) * 100}%` : '100%'
     return (
       <div role="img" aria-label={label(params)} style={{ maxWidth: 560, margin: '0 auto' }}>
         <div
+          data-bar-wrap
+          style={{ width: barWidth, transition: 'width 0.55s ease' }}
+        >
+        <div
+          data-bar
           style={{
             display: 'flex',
             border: '2.5px solid #5c4a38',
@@ -273,6 +286,7 @@ export function createTapeDiagram(
               {state.totalOp.by}
             </span>
           )}
+        </div>
         </div>
       </div>
     )
