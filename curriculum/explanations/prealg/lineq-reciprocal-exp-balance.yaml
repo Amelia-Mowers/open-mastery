@@ -7,8 +7,8 @@ timeline:
   - { t: 0, patch: { equation: ["{p}/{q}", "{variable}", " = ", "{b}"], left: "{p}/{q} {variable}", right: "{b}", leftIn: false, rightIn: false }, caption: "Here is the problem in symbols. Watch each piece land on the scale." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{p}/{q} {variable} goes on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} goes on the right pan — and the scale balances.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
-  - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "A fraction does two jobs at once: × {p} and ÷ {q}. The RECIPROCAL {q}/{p} un-does both in ONE move." }
-  - { t: 16, patch: { op: multiply, by: "{q}/{p}", highlight: null }, caption: "Multiply both sides by {q}/{p}: the ÷{q} and the ×{p} both cancel.", expect: { type: op, value: "multiply {q}/{p}", prompt: "Use the reciprocal — what is the ONE move for both sides?", hint: "Dividing by {p} first works too — but the reciprocal {q}/{p} does the whole job in one multiply. Try × {q}/{p}." } }
+  - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "One move frees {variable}: multiply both sides by the RECIPROCAL — {p}/{q} flipped over is {q}/{p}." }
+  - { t: 16, patch: { op: multiply, by: "{q}/{p}", highlight: null }, caption: "× {q}/{p} on both sides.", expect: { type: op, value: "multiply {q}/{p}", prompt: "Do it — multiply both sides by the reciprocal.", hint: "The reciprocal of {p}/{q} is {q}/{p}. Multiply both sides by it. (Dividing by {p} first works too — this way does it in one move.)" } }
   - { t: 20, patch: { left: "{variable}", right: "{q*b/p}", op: null }, caption: "{p}/{q} × {q}/{p} = 1, so {variable} stands alone. {variable} = {q*b/p}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

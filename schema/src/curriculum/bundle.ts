@@ -171,7 +171,13 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           if (!prior?.caption) return
           if (st.expect.type === 'op') {
             const word = String(st.expect.value).split(/\s/)[0] ?? ''
-            if (opStem[word]?.test(prior.caption))
+            // DO-gates are exempt: when the gate's own prompt names the move
+            // ("Do it — multiply both sides…"), the gate is enactment, not a
+            // question — the caption naming the move is the teaching, not a
+            // leak. Only ASK-gates (prompt withholds the move) must not have
+            // it on screen.
+            const enactment = st.expect.prompt !== undefined && opStem[word]?.test(st.expect.prompt)
+            if (!enactment && opStem[word]?.test(prior.caption))
               push(
                 'warning',
                 'gate_telegraph',
