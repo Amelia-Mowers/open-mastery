@@ -6,6 +6,7 @@ import { itemSchema, skillSchema, explanationSchema, renderTemplate, type Bundle
 import { buildIndex } from '../../src/core/curriculum'
 import { policyV1 } from '../../src/core/policy/v1'
 import { DAY_MS } from '../../src/core/fsrs'
+import { SiteCore } from '../../src/site/core'
 import { initialStudentState } from '../../src/core/fold'
 import {
   freshSession,
@@ -286,3 +287,16 @@ function correctFor(ctx: EngineCtx, a: Extract<NextAction, { kind: 'serve_item' 
   if (!r.ok) throw new Error(r.error.message)
   return r.value
 }
+
+describe('milestones (waypoints between stones)', () => {
+  it('the display scale crosses named checkpoints on the way to mastery', () => {
+    // the thresholds are display-scale, so they read like the bar does
+    expect(SiteCore.milestoneAt(0.1)).toBeNull()
+    expect(SiteCore.milestoneAt(0.25)?.name).toBe('Getting it')
+    expect(SiteCore.milestoneAt(0.6)?.name).toBe('Halfway')
+    expect(SiteCore.milestoneAt(0.99)?.name).toBe('Nearly there')
+    // monotonic: every threshold is higher than the last
+    const ats = SiteCore.MILESTONES.map((m) => m.at)
+    expect([...ats].sort((a, b) => a - b)).toEqual(ats)
+  })
+})

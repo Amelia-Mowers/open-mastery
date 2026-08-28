@@ -201,6 +201,24 @@ export class SiteCore {
     return pts
   }
 
+  /** Milestones: named waypoints on the way to a stone. Interleaving moves
+   * a student off a skill mid-climb, which felt like being punted — these
+   * mark the ground actually gained, so leaving a skill is a checkpoint
+   * rather than an interruption. Thresholds are on the DISPLAY scale
+   * (masteryOf), so they read the same as the bar. */
+  static readonly MILESTONES: ReadonlyArray<{ at: number; name: string; blurb: string }> = [
+    { at: 0.25, name: 'Getting it', blurb: 'the idea is landing' },
+    { at: 0.5, name: 'Halfway', blurb: 'you can do this one with a little thought' },
+    { at: 0.75, name: 'Nearly there', blurb: 'one good run from the check' },
+  ]
+
+  /** the highest milestone reached at this mastery level (or null) */
+  static milestoneAt(pct: number): { at: number; name: string; blurb: string } | null {
+    let hit: { at: number; name: string; blurb: string } | null = null
+    for (const m of SiteCore.MILESTONES) if (pct >= m.at) hit = m
+    return hit
+  }
+
   /** the bar the student sees: progress from the skill's L0 toward the
    * mastery-grant floor (0.95) — a fresh skill reads 0, a mastered one 1.
    * Raw p is the model's number; this is the display's. */
@@ -333,6 +351,7 @@ export class SiteCore {
     const st = this.slot(studentId)
     const pending = st.pending
     if (pending?.kind !== 'serve_item') return err(409, 'no item pending')
+    const masteryBefore = this.masteryOf(studentId, pending.skillId)
     const result = recordAttempt(st.student, st.session, this.ctxFor(studentId), pending, {
       raw: body.raw ?? '',
       hintLevel: body.hintLevel ?? 0,
@@ -348,6 +367,21 @@ export class SiteCore {
       })),
       points: this.pointsFor(studentId),
       mastery: this.masteryOf(studentId, pending.skillId),
+      // a milestone CROSSED by this answer — the ground gained gets its own
+      // moment, so rotating away from a skill reads as a checkpoint
+      milestone: (() => {
+        const after = this.masteryOf(studentId, pending.skillId)
+        const reached = SiteCore.milestoneAt(after)
+        const had = SiteCore.milestoneAt(masteryBefore)
+        if (!reached || reached.at === had?.at) return undefined
+        return {
+          name: reached.name,
+          blurb: reached.blurb,
+          at: reached.at,
+          skillId: pending.skillId,
+          skillName: this.cur.skills.get(pending.skillId)?.name ?? pending.skillId,
+        }
+      })(),
       // the mastery moment must not be lost to interleaving: say so the
       // instant the qualifying PRACTICE answer lands, whatever skill serves
       // next (never for check items — that would re-offer mid-check)

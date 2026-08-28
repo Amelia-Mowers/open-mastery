@@ -62,9 +62,11 @@ rationale and literature live in memory + cairn/CLAUDE.md. What is LEFT:
 
 Blocking items and the front door were fixed 2026-08-27/28. Remaining:
 
-- [ ] S-01 mastery MOMENT: verify/restore the grant card in the demo flow
-      (report saw a silent skill transition); smooth the mastery-meter
-      curve (5%→67% on one answer reads arbitrary).
+- [ ] S-01 mastery MOMENT: the grant card exists and MILESTONES now mark
+      the climb (2026-08-28); still open — smooth the mastery-meter curve
+      (5%→67% on one answer reads arbitrary; BKT is genuinely that fast,
+      so this is a display-scale question) and check the grant card
+      actually shows in the demo flow.
 - [ ] S-02 guide roster shows stale skill/stones — read from the same
       projection as the student view; rows open a student detail (guide v2).
 - [ ] S-04 practice scaffolds must not print the answer (the number-line

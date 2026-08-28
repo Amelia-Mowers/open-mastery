@@ -32,7 +32,10 @@ export interface ExplainResult {
 }
 
 export interface AttemptOutcome {
-  verdict: { verdict: 'correct' } | { verdict: 'incorrect'; reason?: string } | { verdict: 'needs_llm'; reason: string }
+  verdict:
+    | { verdict: 'correct' }
+    | { verdict: 'incorrect'; reason?: string }
+    | { verdict: 'needs_llm'; reason: string }
   correct: boolean
   emitted: Array<{ kind: string; skillId?: string }>
   points: number
@@ -40,6 +43,8 @@ export interface AttemptOutcome {
   mastery?: number
   /** this answer unlocked the skill's mastery check — offer it NOW */
   checkUnlocked?: boolean
+  /** a milestone this answer crossed (a waypoint on the way to a stone) */
+  milestone?: { name: string; blurb: string; at: number; skillId: string; skillName: string }
 }
 
 export interface ZooDemoView {

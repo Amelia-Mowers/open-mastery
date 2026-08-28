@@ -204,6 +204,14 @@ function Header({
   onReset?: () => void
 }) {
   const [confirmReset, setConfirmReset] = useState(false)
+  // the confirm disarms itself, but generously: a 4s window used to swap the
+  // button back mid-click, so a slightly slow second click silently re-armed
+  // instead of resetting ("reset sometimes doesn't work")
+  useEffect(() => {
+    if (!confirmReset) return
+    const t = setTimeout(() => setConfirmReset(false), 15000)
+    return () => clearTimeout(t)
+  }, [confirmReset])
   return (
     <header className="topbar">
       <span className="cairn-mark" aria-hidden>
@@ -226,27 +234,20 @@ function Header({
           {view === 'dashboard' ? 'Back to work' : 'My cairn'}
         </button>
       )}
-      {onReset && !confirmReset && (
+      {onReset && (
         <button
-          className="btn btn-quiet"
+          className={confirmReset ? 'btn btn-quiet reset-confirm' : 'btn btn-quiet'}
           onClick={() => {
+            if (confirmReset) {
+              setConfirmReset(false)
+              onReset()
+              return
+            }
             setConfirmReset(true)
-            setTimeout(() => setConfirmReset(false), 4000)
           }}
-          title="Start this student over (demo)"
+          title={confirmReset ? 'Click again to erase' : 'Start this student over (demo)'}
         >
-          Reset demo
-        </button>
-      )}
-      {onReset && confirmReset && (
-        <button
-          className="btn btn-quiet reset-confirm"
-          onClick={() => {
-            setConfirmReset(false)
-            onReset()
-          }}
-        >
-          Really erase progress?
+          {confirmReset ? 'Really erase progress?' : 'Reset demo'}
         </button>
       )}
       {student && onLeave && (

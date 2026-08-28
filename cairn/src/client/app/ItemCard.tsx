@@ -48,6 +48,11 @@ interface InlinePlay {
  * the buttons; every other input widget gets a full-width row of its own */
 const TEXT_INPUTS = new Set(['numeric-input', 'expression-input', 'equation-input'])
 
+/** display-scale positions of the milestone waypoints (mirrors
+ * SiteCore.MILESTONES — the bar shows the same checkpoints the server
+ * announces) */
+const MILESTONE_MARKS = [0.25, 0.5, 0.75]
+
 const KICKERS: Record<ServeAction['itemKind'], string> = {
   faded: 'WORK IT OUT — STEP BY STEP',
   review: 'QUICK REVIEW',
@@ -285,6 +290,13 @@ export function ItemCard({
           <span className="mastery-label">MASTERY</span>
           <span className="m-bar" aria-hidden>
             <span className="m-fill" style={{ width: `${Math.round(shownMastery * 100)}%` }} />
+            {MILESTONE_MARKS.map((at) => (
+              <span
+                key={at}
+                className={shownMastery >= at ? 'm-tick m-tick-hit' : 'm-tick'}
+                style={{ left: `${at * 100}%` }}
+              />
+            ))}
           </span>
           <b data-testid="mastery-pct">{Math.round(shownMastery * 100)}%</b>
         </span>
@@ -409,6 +421,18 @@ export function ItemCard({
         <div className={outcome.correct ? 'feedback ok' : 'feedback bad'} role="status">
           {feedbackText}
           {delta > 0 && <span className="pts-delta">+{delta}</span>}
+        </div>
+      )}
+      {outcome?.milestone && !mastered && (
+        <div className="milestone" role="status">
+          <span className="milestone-pebble" aria-hidden />
+          <div>
+            <strong>{outcome.milestone.name}</strong> — {outcome.milestone.blurb} on{' '}
+            {outcome.milestone.skillName}.
+            <span className="milestone-sub">
+              Keep going here, or take the next thing that comes — this progress is saved.
+            </span>
+          </div>
         </div>
       )}
       {mastered && (

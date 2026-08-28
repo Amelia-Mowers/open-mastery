@@ -40,6 +40,37 @@ function loadEvents(storage: DemoStorage | null): CairnEvent[] {
   }
 }
 
+/** ONE core per storage, shared by every DemoApi in the page.
+ *
+ * Each DemoApi used to build its own SiteCore from a snapshot of the log
+ * and write that snapshot back on every event — so two live instances
+ * (the student's and the guide view's, or one left over from a previous
+ * name) each held a divergent copy and whichever persisted last won.
+ * That is what made "Reset demo" look flaky: the reset emptied one core,
+ * then the other instance's next write restored its stale log. */
+const CORES = new WeakMap<object, SiteCore>()
+/** storage-less (test) instances still get one shared core per bundle */
+const ANON_CORES = new WeakMap<Bundle, SiteCore>()
+
+function coreFor(bundle: Bundle, storage: DemoStorage | null): SiteCore {
+  const key: object = storage ?? bundle
+  const table = storage ? CORES : (ANON_CORES as unknown as WeakMap<object, SiteCore>)
+  const existing = table.get(key)
+  if (existing) return existing
+  const core = new SiteCore(bundle, { replay: loadEvents(storage) })
+  if (storage) {
+    core.onEvent = () => {
+      try {
+        storage.setItem(STORE_KEY, JSON.stringify(core.log))
+      } catch {
+        /* quota/unavailable: the session works, it just won't survive reload */
+      }
+    }
+  }
+  table.set(key, core)
+  return core
+}
+
 export class DemoApi implements CairnApi {
   private readonly core: SiteCore
   private readonly storage: DemoStorage | null
@@ -51,10 +82,11 @@ export class DemoApi implements CairnApi {
   ) {
     this.storage =
       storage !== undefined ? storage : typeof localStorage === 'undefined' ? null : localStorage
-    this.core = new SiteCore(bundle, { replay: loadEvents(this.storage) })
-    this.core.onEvent = () => this.persist()
+    this.core = coreFor(bundle, this.storage)
   }
 
+  /** the shared core persists on every event; reset/seed write immediately
+   * because they change the log without emitting one */
   private persist(): void {
     if (!this.storage) return
     try {

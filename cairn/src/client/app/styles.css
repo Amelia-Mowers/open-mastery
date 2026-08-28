@@ -327,6 +327,38 @@ body {
   animation: sw-fade 0.4s ease both;
   margin-bottom: 10px;
 }
+.m-bar { position: relative; }
+.m-tick {
+  position: absolute;
+  top: -1px;
+  bottom: -1px;
+  width: 2px;
+  margin-left: -1px;
+  background: #d8cdbb;
+  border-radius: 1px;
+}
+.m-tick-hit { background: #8a5320; }
+.milestone {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  background: linear-gradient(135deg, #f3e4d4, #faf1e4);
+  border: 1.5px solid #e8c9a8;
+  border-radius: 12px;
+  padding: 14px 16px;
+  margin: 14px 0;
+  animation: cairn-pop 0.4s ease;
+}
+.milestone-pebble {
+  width: 22px;
+  height: 15px;
+  border-radius: 7px;
+  background: #b05f28;
+  flex: none;
+  box-shadow: 0 -9px 0 -4px #d8a978;
+  margin-top: 8px;
+}
+.milestone-sub { display: block; font-size: 13.5px; color: #8b8070; margin-top: 3px; }
 .skip-divider {
   text-align: center;
   font: 700 12px 'Nunito Sans', sans-serif;
