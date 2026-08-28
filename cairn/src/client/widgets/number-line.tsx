@@ -94,13 +94,13 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
           }}
           style={{
             display: 'flex',
-            alignItems: 'flex-end',
+            alignItems: 'flex-start',
             gap: 0,
-            borderBottom: '3px solid #8b8070',
-            paddingBottom: 4,
+            borderTop: '2.5px solid #8b8070',
+            paddingTop: 0,
             outlineColor: '#b05f28',
             position: 'relative',
-            marginTop: 34,
+            marginTop: 40,
           }}
         >
           {state.arcs.length > 0 && (
@@ -108,11 +108,23 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
               aria-hidden
               viewBox="0 0 100 22"
               preserveAspectRatio="none"
-              style={{ position: 'absolute', left: 0, right: 0, bottom: '100%', width: '100%', height: 30 }}
+              style={{
+                position: 'absolute',
+                left: 0,
+                right: 0,
+                bottom: 'calc(100% - 2px)',
+                width: '100%',
+                height: 28,
+                overflow: 'visible',
+              }}
             >
               {state.arcs.map((a, i) => {
-                const at = (v: number) =>
-                  ticks.length < 2 ? 50 : (ticks.indexOf(v) / (ticks.length - 1)) * 100
+                // ticks are centred inside equal flex cells, so tick i sits
+                // at (i + 0.5)/n of the width — not i/(n-1)
+                const at = (v: number) => {
+                  const i = ticks.indexOf(v)
+                  return i < 0 ? -1 : ((i + 0.5) / ticks.length) * 100
+                }
                 const x1 = at(a.from)
                 const x2 = at(a.to)
                 if (x1 < 0 || x2 < 0) return null
@@ -120,7 +132,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   <path
                     key={i}
                     data-arc={`${a.from}-${a.to}`}
-                    d={`M ${x1} 20 Q ${(x1 + x2) / 2} 0 ${x2} 20`}
+                    d={`M ${x1} 24 Q ${(x1 + x2) / 2} 2 ${x2} 24`}
                     fill="none"
                     stroke="#b05f28"
                     strokeWidth="0.7"
@@ -140,11 +152,9 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   position: 'absolute',
                   bottom: '100%',
                   left: `${
-                    ticks.length < 2
-                      ? 50
-                      : ((ticks.indexOf(a.from) + ticks.indexOf(a.to)) / 2 / (ticks.length - 1)) * 100
+                    ((ticks.indexOf(a.from) + ticks.indexOf(a.to) + 1) / 2 / ticks.length) * 100
                   }%`,
-                  transform: 'translate(-50%, -14px)',
+                  transform: 'translate(-50%, -22px)',
                   font: "700 14px 'Lora', Georgia, serif",
                   color: '#b05f28',
                   whiteSpace: 'nowrap',
@@ -183,19 +193,49 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                 }}
                 style={{
                   flex: 1,
-                  border: 'none',
+                  // 'none' alone is dropped by the style serialiser here and
+                  // the UA's button border comes back, boxing every tick —
+                  // the line then reads as a table of cells
+                  borderWidth: 0,
+                  borderStyle: 'none',
+                  background: 'transparent',
+                  appearance: 'none',
+                  WebkitAppearance: 'none',
                   cursor: disabled ? 'default' : 'pointer',
-                  background: highlighted ? '#f3e4d4' : 'transparent',
-                  color: selected ? '#b05f28' : '#5c5245',
-                  fontWeight: selected || marked ? 700 : 600,
-                  fontSize: 14,
+                  padding: 0,
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  gap: 3,
                   fontFamily: "'Lora', serif",
-                  padding: '6px 4px',
-                  borderBottom: selected ? '4px solid #b05f28' : marked ? '4px solid #5c4a38' : '4px solid transparent',
-                  transition: 'background 0.25s ease, border-color 0.25s ease, color 0.25s ease',
                 }}
               >
-                {shows(t) ? t : ''}
+                {/* the tick itself: a mark ON the axis, so the numbers below
+                    are anchored to a place rather than floating in a row */}
+                <span
+                  aria-hidden
+                  style={{
+                    width: selected || marked ? 3 : 2,
+                    height: selected || marked ? 20 : 13,
+                    borderRadius: 2,
+                    background: selected ? '#b05f28' : marked ? '#5c4a38' : '#a89c88',
+                    transition: 'height 0.25s ease, background 0.25s ease, width 0.25s ease',
+                  }}
+                />
+                <span
+                  style={{
+                    fontSize: 15,
+                    fontWeight: selected || marked ? 700 : 600,
+                    color: selected ? '#b05f28' : marked ? '#2e2822' : '#5c5245',
+                    background: highlighted ? '#f3e4d4' : 'transparent',
+                    borderRadius: 5,
+                    padding: '1px 6px',
+                    minHeight: 21,
+                    transition: 'color 0.25s ease, background 0.25s ease',
+                  }}
+                >
+                  {shows(t) ? t : ''}
+                </span>
               </button>
             )
           })}
