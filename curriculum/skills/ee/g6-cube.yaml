@@ -11,6 +11,6 @@ fluency: false
 prereqs: [g6.ee.exponents]
 instruction:
   - g6.ee.cube.exp-cube
-  - g6.ee.cube.exp-tape
+  - g6.ee.cube.exp-area
   - g6.ee.cube.exp-numberline
   - g6.ee.cube.exp-worked

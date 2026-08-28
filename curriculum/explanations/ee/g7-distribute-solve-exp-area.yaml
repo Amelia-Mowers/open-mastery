@@ -4,7 +4,7 @@ representation: area-model
 widget: area-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "({variable} + {b})", " = ", "{a*(ans+b)}"], height: "{a}", parts: ["{variable}", "{b}"] }, caption: "{a} copies of ({variable} + {b}) make {a*(ans+b)} in total." }
+  - { t: 0, patch: { equation: ["{a}", "({variable} + {b})", " = ", "{a*(ans+b)}"], height: "{a}", parts: ["{variable}", "{b}"] , fillRows: "0"}, caption: "{a} copies of ({variable} + {b}) make {a*(ans+b)} in total." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], highlight: ["1", "2"] }, caption: "The rectangle: {a} tall, {variable} + {b} wide — total area {a*(ans+b)}.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation set how TALL the rectangle is?" } }
   - { t: 8.5, patch: { eqHighlight: [], products: ["{a}{variable}", "{a*b}"], highlight: [] }, caption: "Distribute: {a}{variable} + {a*b} = {a*(ans+b)}.", expect: { type: numeric, value: "{a*b}", prompt: "Distribute: the plain-number piece of area is {a} rows of {b} — how much?" } }
   - { t: 13, patch: { highlight: ["1"] }, caption: "So {a}{variable} = {a*(ans+b)} − {a*b} = {a*ans}, and {variable} = {ans}." }

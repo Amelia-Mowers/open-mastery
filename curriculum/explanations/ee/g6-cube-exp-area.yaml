@@ -1,0 +1,34 @@
+id: g6.ee.cube.exp-area
+skill: g6.ee.cube
+representation: area-model
+widget: area-model
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["{n}", "³"], height: "{n}", parts: ["{n}"], fillRows: "0" }, caption: "Before the cube, the square it is built from: an empty {n} × {n} grid." }
+  - t: 4
+    patch: { eqHighlight: ["0"], fillRows: "{n}" }
+    caption: "{n} rows of {n} fill it in."
+    expect:
+      type: pick
+      value: ["0"]
+      prompt: "Which piece — or pieces — says how wide and how tall this grid is?"
+      hint: "The big number is the one being multiplied by itself."
+  - t: 8
+    patch: { products: ["{n*n}"] }
+    caption: "That is {n}² = {n*n} small squares — ONE layer of the cube."
+    expect:
+      type: numeric
+      value: "{n*n}"
+      prompt: "How many small squares fill the grid?"
+      hint: "{n} rows with {n} in each."
+  - t: 12
+    patch: { eqHighlight: ["1"], products: ["{n*n} per layer"] }
+    caption: "So the question is: the little 3 asks for {n} layers of {n*n}. That is {n}³ = {n*n*n}."
+    expect:
+      type: pick
+      value: ["1"]
+      prompt: "Which piece — or pieces — says how many layers to stack?"
+      hint: "The small raised number counts the factors."
+  - { t: 16, patch: { products: ["{n*n*n} in all"] }, caption: "{n} layers of {n*n}: {n}³ = {n*n*n}." }
+  - { t: 19, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -262,6 +262,48 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           }
         })
       }
+      // CONSTRUCTION: the diagram is built FROM the equation, so its first
+      // frame must be empty (or nearly so). A timeline whose opening patch
+      // hands over a finished picture can only annotate it — the student
+      // watches rather than builds. Whiteboards are exempt: a board written
+      // line by line IS the construction.
+      const STAGING: Record<string, string[]> = {
+        'balance-scale': ['leftIn', 'rightIn'],
+        // for a tape the CELLS are the picture — hiding only the brace total
+        // still hands the student a finished bar
+        'tape-diagram': ['cellsIn'],
+        'hanger-diagram': ['shapesIn', 'weightIn'],
+        'envelope-model': ['envelopesIn', 'countersIn'],
+        'double-number-line': ['topIn', 'bottomIn'],
+        'ratio-table': ['reveal'],
+        'area-model': ['fillRows', 'products'],
+        'cube-model': ['slices'],
+        'number-line': ['labelled'],
+      }
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const keys = STAGING[e.widget]
+        if (!keys) continue
+        const open = e.timeline.find((st) => st.patch !== undefined)?.patch
+        if (!open) continue
+        // an OMITTED staging key means "everything present from frame one",
+        // which is exactly the fault — cube.exp-tape shipped with all four
+        // cells filled because `cellsIn` was simply absent
+        const staged = keys.some((k) => {
+          const v = open[k]
+          if (v === undefined) return false
+          if (Array.isArray(v)) return v.length === 0 || (k === 'reveal' && v.length <= 1)
+          if (typeof v === 'boolean') return v === false
+          const n = Number(v)
+          return Number.isFinite(n) ? n <= 1 : true
+        })
+        if (!staged)
+          push(
+            'warning',
+            'arrives_whole',
+            e.id,
+            `the ${e.widget} is fully drawn in its first frame — stage it (${keys.join('/')}) so the student builds it from the equation`,
+          )
+      }
       // A GATE MUST MOVE THE PICTURE. The patch on an expect step is the
       // confirmation the student's answer earns — if it only changes the
       // caption (or nothing but the equation highlight), the diagram sat

@@ -105,6 +105,16 @@ tagging (6.EE.B.7 is NONNEGATIVE-only — that's why negate is 6.NS.C.6a +
 Licensing, links, pipeline, and the state-crosswalk caveat:
 `sources/standards/SOURCES.md`.
 
+## Pick the representation that can SHOW the operation
+
+A bar of four squares does not show cubing — it shows four of something.
+When a picture cannot perform the operation, it is the wrong picture no
+matter how well it is built: cube's tape was replaced by the area model
+(the square as ONE layer, per the ee-slab's own "c² as a literal square"
+note), with the cube-model timeline carrying the stacking. Check the slab
+notes and the IM inventory below before authoring; queue a widget rather
+than forcing a representation that cannot move the way the maths does.
+
 ## Representation sourcing: mine Illustrative Mathematics FIRST
 
 OpenStax Prealgebra teaches through worked symbolic steps and has few
@@ -239,6 +249,12 @@ Then the LAST gate asks the question the built diagram makes obvious —
 "the bar is 21 across and 8 of it is the second piece, how long is the
 first?" — so the answer falls out of the construction rather than out of
 symbol manipulation. That is the whole point of the representation.
+
+The validator enforces the opening frame: `[arrives_whole]` warns when a
+timeline's FIRST patch hands over a finished diagram. Note that omitting a
+staging key counts as unstaged — a tape with `cells` but no `cellsIn`
+shows every section from frame one, which is how cube's bar model shipped
+fully drawn.
 
 Staging flags exist for this: `cellsIn` (tape sections),
 `leftIn`/`rightIn` (balance pans), `shapesIn`/`weightIn` (hanger),

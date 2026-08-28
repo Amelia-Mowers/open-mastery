@@ -4,7 +4,7 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], min: 0, max: "{b}", step: "{b/a}", labelled: ["0"], marker: 0 }, caption: "A bare line, starting at 0. The equation says how the jumps go." }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], min: 0, max: "{b}", step: "{b/a}", labelled: [], marker: 0 }, caption: "A bare line, starting at 0. The equation says how the jumps go." }
   - t: 3.5
     patch: { eqHighlight: ["0", "1"], labelled: ["0"] }
     caption: "{a}{variable} means {a} equal jumps, each one {variable} long."

@@ -4,7 +4,7 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], min: "{b}", max: "{a*ans+b}", step: "{ans}" }, caption: "Here is the problem in symbols. Watch it become a start and some jumps." }
+  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], min: "{b}", max: "{a*ans+b}", step: "{ans}" , labelled: []}, caption: "Here is the problem in symbols. Watch it become a start and some jumps." }
   - { t: 4, patch: { eqHighlight: ["1"], marker: "{b}", highlight: ["{b}"] }, caption: "The + {b} is the starting point.", expect: { type: numeric, value: "{b}", prompt: "Type the STARTING point." } }
   - { t: 8, patch: { eqHighlight: ["0", "3"], marker: "{ans+b}", highlight: ["{b}", "{ans+b}"] }, caption: "{a}{variable} must cover the rest: {a*ans+b} − {b} = {a*ans}, shared by {a} jumps — each is {ans}.", expect: { type: numeric, value: "{ans+b}", prompt: "One jump from the start: where does it land? Type the number." } }
   - { t: 12, patch: { eqHighlight: [], marker: "{a*ans+b}", highlight: [] }, caption: "{a} jumps of {ans} from {b} reach {a*ans+b}. So {variable} = {ans}.", expect: { type: numeric, value: "{a*ans+b}", prompt: "Where must the jumps FINISH? Type the number." } }

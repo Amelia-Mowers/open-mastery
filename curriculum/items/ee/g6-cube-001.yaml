@@ -2,7 +2,7 @@ id: g6.ee.cube.001
 skills: [g6.ee.cube]
 supersedes: g6.ee.exponents.002
 difficulty: 1
-representation: tape-diagram
+representation: area-model
 params: { n: 4 }
 generator: { n: { int: [2, 6] } }
 widget: { type: numeric-input, config: { stem: "Evaluate: {n}³." } }

@@ -4,8 +4,8 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{b}", totalIn: false }, caption: "Here is the problem in symbols. Watch it become a tape." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], highlight: ["1"] }, caption: "{a}{variable} means {a} equal parts — each part is one {variable}.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation tell how many equal parts the tape has?" } }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{b}", totalIn: false , cellsIn: 0}, caption: "Here is the problem in symbols. Watch it become a tape." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], highlight: ["1"] , cellsIn: "{a}"}, caption: "{a}{variable} means {a} equal parts — each part is one {variable}.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation tell how many equal parts the tape has?" } }
   - { t: 8, patch: { eqHighlight: ["3"], totalIn: true, highlight: [] }, caption: "= {b}: all the parts together make {b}.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation tell what ALL the parts add up to?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: ["1"] }, caption: "So the question the tape asks is: {b} split into {a} equal parts gives WHAT?", expect: { type: op, value: "divide {a}", prompt: "To find ONE part, what do you do to {b}?", hint: "The whole {b} is shared equally between {a} parts." } }
   - { t: 16, patch: { partLabel: "{b/a}", highlight: [] }, caption: "{b} ÷ {a} = {b/a}. Each part — each {variable} — is {b/a}." }

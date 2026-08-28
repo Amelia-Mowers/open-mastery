@@ -4,9 +4,9 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", "/{a}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{variable}", totalIn: false }, caption: "Here is the problem in symbols. Watch it become a tape." }
+  - { t: 0, patch: { equation: ["{variable}", "/{a}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{variable}", totalIn: false , cellsIn: 0}, caption: "Here is the problem in symbols. Watch it become a tape." }
   - { t: 4, patch: { eqHighlight: ["0"], totalIn: true }, caption: "{variable} is the WHOLE tape — the amount we want.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation is the WHOLE tape — the amount we want?" } }
-  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1"] }, caption: "/{a} cuts it into {a} equal parts.", expect: { type: pick, value: ["1"], prompt: "Which piece — or pieces — of the equation cut the tape into equal parts?" } }
+  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1"] , cellsIn: "{a}"}, caption: "/{a} cuts it into {a} equal parts.", expect: { type: pick, value: ["1"], prompt: "Which piece — or pieces — of the equation cut the tape into equal parts?" } }
   - { t: 12, patch: { eqHighlight: ["3"], partLabel: "{b}" }, caption: "= {b} says one part is {b}.", expect: { type: numeric, value: "{b}", prompt: "How big is each part?" } }
   - { t: 16, patch: { eqHighlight: [], highlight: [] }, caption: "So the question the tape asks is: {a} parts of {b} make WHAT?", expect: { type: op, value: "multiply {a}", prompt: "To find the whole tape, what do you do to {b}?", hint: "There are {a} equal parts, each one {b}." } }
   - { t: 19.5, patch: { total: "{variable} = {a*b}" }, caption: "{a} parts of {b} make {a*b}. {variable} = {a*b}." }
