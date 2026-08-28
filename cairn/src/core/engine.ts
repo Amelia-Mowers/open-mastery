@@ -55,6 +55,10 @@ export interface SessionState {
     | { kind: 'alt_explanation'; skillId: string; explanationId: string; representation: string }
     | { kind: 'probe'; skillId: string; prereqId: string }
   check: null | { skillId: string; baseItemsUsed: string[]; passedInstanceIds: string[] }
+  /** an item we interrupted to teach its representation — the very next
+   * serve for that skill MUST be this instance, or the student watches a
+   * tape lesson and then gets a balance problem */
+  promised: null | { skillId: string; instance: ItemInstance }
   /** monotonically counts served items (recency for interleaving) */
   serveSeq: number
   /** items served since the last spaced review (cadence, §5) */
@@ -68,6 +72,7 @@ export const freshSession = (): SessionState => ({
   pendingHint: {},
   overlay: null,
   check: null,
+  promised: null,
   serveSeq: 0,
   sinceReview: 0,
 })
@@ -225,17 +230,34 @@ export function nextAction(
   const seenReps = student.representationsViewed[skillId] ?? []
 
   if (phase === 'unseen' || phase === 'lesson') {
-    // the FIRST lesson is just the first unseen representation — instruction
-    // order is the authored teaching order, not a special case
+    // A lesson is always ABOUT the problem that follows it. Pick that
+    // problem first, then teach ITS representation — otherwise the student
+    // watches a tape lesson and gets a balance problem.
+    const lead = instantiateFor(practiceItems(skillId, ctx.cur), student, session, pol, skillId)
+    const leadRep = lead ? (ctx.cur.items.get(lead.itemId)?.representation ?? null) : null
+    const byRep =
+      leadRep !== null
+        ? (ctx.cur.explanationsBySkill.get(skillId) ?? []).find((e) => e.representation === leadRep)
+        : undefined
     const first =
+      byRep ??
       (ctx.cur.explanationsBySkill.get(skillId) ?? []).find((e) => !seenReps.includes(e.representation)) ??
       ctx.cur.explanations.get(skill.instruction[0]!)!
+    // hold the instance only when the lesson actually matches it
+    if (lead && byRep) session.promised = { skillId, instance: lead }
     return { kind: 'lesson', skillId, explanationId: first.id, representation: first.representation }
   }
 
   const pool = practiceItems(skillId, ctx.cur)
   const wantFresh = phase === 'faded'
+  // an item we already promised (we interrupted it to teach its picture)
+  // is served now, before any fresh pick — the lesson was ABOUT this item
+  const promised = session.promised?.skillId === skillId ? session.promised.instance : null
+  if (promised) session.promised = null
+  // the faded phase normally wants a FRESH isomorph, but a promised item was
+  // the subject of the lesson just watched — honouring it matters more
   const inst =
+    promised ??
     (wantFresh ? instantiateFor(pool, student, session, pol, skillId, true) : null) ??
     instantiateFor(pool, student, session, pol, skillId)
   if (!inst) return { kind: 'session_done' } // out of items (bundle bug)
@@ -250,8 +272,11 @@ export function nextAction(
     const teach = (ctx.cur.explanationsBySkill.get(skillId) ?? []).find(
       (e) => e.representation === itemRep,
     )
-    if (teach)
+    if (teach) {
+      // hold the instance so the lesson's own problem is what follows
+      session.promised = { skillId, instance: inst }
       return { kind: 'lesson', skillId, explanationId: teach.id, representation: teach.representation }
+    }
   }
   // the faded phase is a normal instance served as 'faded': the client plays
   // the skill's explanation up to just before the resolution with THIS

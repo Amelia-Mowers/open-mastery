@@ -512,8 +512,13 @@ export class SiteCore {
       .filter((e) => !exclude.includes(e.representation))
       .map((e) => ({ e, params: feedableParams(e, [instanceParams, familyParams]) }))
       .filter((x): x is { e: Explanation; params: Record<string, number | string> } => x.params !== null)
-    const firstRep =
-      q.viewedFirst === true ? (st.student.representationsViewed[q.skill]?.[0] ?? null) : null
+    // The faded lead replays the representation the student was JUST taught,
+    // not the first one they ever saw — after rotating to the tape lesson,
+    // leading with the balance is exactly the "tape lesson, scale practice"
+    // mismatch. (Both are "the representation of their lesson"; which lesson
+    // is the point.)
+    const seenList = st.student.representationsViewed[q.skill] ?? []
+    const firstRep = q.viewedFirst === true ? (seenList[seenList.length - 1] ?? null) : null
     const chosen =
       (firstRep ? eligible.find((x) => x.e.representation === firstRep) : undefined) ??
       (q.prefer ? eligible.find((x) => x.e.representation === q.prefer) : undefined) ??

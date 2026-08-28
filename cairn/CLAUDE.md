@@ -39,6 +39,13 @@
   expertise-reversal guard). Autoplay lessons ignore expects. Author
   expects on the steps that ARE moves (decompositions, both-sides ops,
   next lines), never on pure scene-setting.
+- **The picture taught is the picture practised.** Two halves: the faded
+  lead replays the representation of the lesson JUST watched (the LAST
+  entry in representationsViewed, not the first — leading with the
+  original balance after rotating to the tape is the "tape lesson, scale
+  practice" bug), and a lesson served to teach an unseen representation
+  reserves the item that triggered it (`session.promised`) so the very
+  next serve for that skill is the problem the lesson was about.
 - **A representation is never met cold.** Items declare
   `representation`; the engine serves that representation's LESSON before
   the first item framed in it (engine.ts, `itemRep` check), and the

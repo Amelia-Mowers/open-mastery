@@ -357,4 +357,61 @@ describe('representations are taught before they are tested', () => {
     // and BOTH representations got taught, not just the first
     expect(taught.size).toBeGreaterThanOrEqual(2)
   })
+
+  it('the lesson that interrupts an item is followed by THAT item', () => {
+    // teaching the tape and then serving a balance problem is the bug: the
+    // lesson was about a specific instance, so that instance must come next
+    const bundle: Bundle = { skills: [], items: [], explanations: [] }
+    const sid = 't.reps.s2'
+    for (const rep of ['balance-scale', 'tape-diagram']) {
+      bundle.explanations.push(
+        explanationSchema.parse({
+          id: `${sid}.exp-${rep}`,
+          skill: sid,
+          representation: rep,
+          widget: rep,
+          params_from: 'item',
+          timeline: [{ t: 0, caption: 'Watch.' }, { t: 2, handoff: { prompt: 'Now you try.' } }],
+          review,
+        }),
+      )
+      bundle.items.push(
+        itemSchema.parse({
+          id: `${sid}.${rep === 'balance-scale' ? '001' : '002'}`,
+          skills: [sid],
+          difficulty: rep === 'balance-scale' ? 1 : 2,
+          representation: rep,
+          params: { a: 3, b: 12 },
+          generator: { a: { int: [2, 9] }, b: { int: [4, 40] } },
+          widget: { type: 'numeric-input', config: { stem: 'What is {b} over {a}?' } },
+          answer: { type: 'expr', value: '{b/a}' },
+          review,
+        }),
+      )
+    }
+    bundle.skills.push(
+      skillSchema.parse({
+        id: sid,
+        name: 'Reps2',
+        prereqs: [],
+        bkt_defaults: BKT,
+        instruction: [`${sid}.exp-balance-scale`, `${sid}.exp-tape-diagram`],
+      }),
+    )
+    const { stamp, clock } = makeStamper()
+    const ctx = { cur: buildIndex(bundle), bkt: () => BKT, policy: policyV1, stamp, now: () => clock.t }
+    const { actions } = runSession(ctx as never, alwaysCorrect, 40)
+    let pendingRep: string | null = null
+    let checked = 0
+    for (const a of actions) {
+      if (a.kind === 'lesson') pendingRep = a.representation
+      else if (a.kind === 'serve_item' && pendingRep !== null) {
+        const rep = ctx.cur.items.get(a.instance.itemId)?.representation ?? null
+        expect(rep, 'the lesson taught a rep and then served a different one').toBe(pendingRep)
+        pendingRep = null
+        checked++
+      }
+    }
+    expect(checked).toBeGreaterThanOrEqual(2) // both lessons were honoured
+  })
 })
