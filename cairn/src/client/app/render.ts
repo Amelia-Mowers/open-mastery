@@ -28,8 +28,18 @@ export function evalNumber(v: unknown, params: Params): number | null {
 export function adaptNumberLinePatch(
   patch: Record<string, unknown>,
   params: Params,
-): { highlight?: number[]; marker?: number | null } {
-  const out: { highlight?: number[]; marker?: number | null } = {}
+): {
+  highlight?: number[]
+  marker?: number | null
+  arcs?: Array<{ from: number; to: number; label?: string }> | null
+  labelled?: number[] | null
+} {
+  const out: {
+    highlight?: number[]
+    marker?: number | null
+    arcs?: Array<{ from: number; to: number; label?: string }> | null
+    labelled?: number[] | null
+  } = {}
   if ('highlight' in patch) {
     const raw = patch['highlight']
     out.highlight = Array.isArray(raw)
@@ -38,6 +48,28 @@ export function adaptNumberLinePatch(
   }
   if ('marker' in patch) {
     out.marker = patch['marker'] == null ? null : evalNumber(patch['marker'], params)
+  }
+  if ('labelled' in patch) {
+    const raw = patch['labelled']
+    out.labelled = Array.isArray(raw)
+      ? raw.map((v) => evalNumber(v, params)).filter((n): n is number => n !== null)
+      : null
+  }
+  if ('arcs' in patch) {
+    const raw = patch['arcs']
+    out.arcs = Array.isArray(raw)
+      ? raw
+          .map((a) => {
+            const o = a as { from?: unknown; to?: unknown; label?: unknown }
+            const from = evalNumber(o.from, params)
+            const to = evalNumber(o.to, params)
+            if (from === null || to === null) return null
+            return o.label === undefined
+              ? { from, to }
+              : { from, to, label: renderText(String(o.label), params) }
+          })
+          .filter((a): a is { from: number; to: number; label?: string } => a !== null)
+      : null
   }
   return out
 }

@@ -19,12 +19,21 @@ export interface NumberLineAnswer {
 export interface NumberLineView {
   highlight?: number[]
   marker?: number | null
+  /** the MOVE: an arc from → to with its label above ("+ 4"), so a jump is
+   * shown happening instead of a landing spot merely being highlighted */
+  arcs?: Array<{ from: number; to: number; label?: string }> | null
+  /** progressive labelling: only these ticks show their number (plus any
+   * marked/arc endpoints). Without it a line that spans the answer PRINTS
+   * the answer before the student has done anything. */
+  labelled?: number[] | null
 }
 
 type NumberLineState = {
   value: number | null
   highlight: number[]
   marker: number | null
+  arcs: Array<{ from: number; to: number; label?: string }>
+  labelled: number[] | null
 }
 
 const label = (params: NumberLineParams): string =>
@@ -41,7 +50,7 @@ function ticksOf(config: NumberLineConfig): number[] {
 export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer, NumberLineView, NumberLineConfig> = (
   config,
 ): WidgetInstance<NumberLineParams, NumberLineAnswer, NumberLineView> => {
-  const store = new WidgetStore<NumberLineState>({ value: null, highlight: [], marker: null })
+  const store = new WidgetStore<NumberLineState>({ value: null, highlight: [], marker: null, arcs: [], labelled: null })
   const ticks = ticksOf(config)
 
   const clamp = (v: number) => Math.min(config.max, Math.max(config.min, v))
@@ -90,12 +99,74 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
             borderBottom: '3px solid #8b8070',
             paddingBottom: 4,
             outlineColor: '#b05f28',
+            position: 'relative',
+            marginTop: 34,
           }}
         >
+          {state.arcs.length > 0 && (
+            <svg
+              aria-hidden
+              viewBox="0 0 100 22"
+              preserveAspectRatio="none"
+              style={{ position: 'absolute', left: 0, right: 0, bottom: '100%', width: '100%', height: 30 }}
+            >
+              {state.arcs.map((a, i) => {
+                const at = (v: number) =>
+                  ticks.length < 2 ? 50 : (ticks.indexOf(v) / (ticks.length - 1)) * 100
+                const x1 = at(a.from)
+                const x2 = at(a.to)
+                if (x1 < 0 || x2 < 0) return null
+                return (
+                  <path
+                    key={i}
+                    data-arc={`${a.from}-${a.to}`}
+                    d={`M ${x1} 20 Q ${(x1 + x2) / 2} 0 ${x2} 20`}
+                    fill="none"
+                    stroke="#b05f28"
+                    strokeWidth="0.7"
+                    vectorEffect="non-scaling-stroke"
+                    style={{ animation: 'cairn-rise 0.4s ease both' }}
+                  />
+                )
+              })}
+            </svg>
+          )}
+          {state.arcs.map((a, i) =>
+            a.label === undefined ? null : (
+              <span
+                key={`l${i}`}
+                data-arc-label
+                style={{
+                  position: 'absolute',
+                  bottom: '100%',
+                  left: `${
+                    ticks.length < 2
+                      ? 50
+                      : ((ticks.indexOf(a.from) + ticks.indexOf(a.to)) / 2 / (ticks.length - 1)) * 100
+                  }%`,
+                  transform: 'translate(-50%, -14px)',
+                  font: "700 14px 'Lora', Georgia, serif",
+                  color: '#b05f28',
+                  whiteSpace: 'nowrap',
+                  animation: 'cairn-pop 0.35s ease both',
+                }}
+              >
+                {a.label}
+              </span>
+            ),
+          )}
           {ticks.map((t) => {
             const selected = state.value === t
             const highlighted = state.highlight.includes(t)
             const marked = state.marker === t
+            // a tick shows its number once it has been reached; before the
+            // walk starts, an unlabelled line cannot give the answer away
+            const shows = (v: number): boolean =>
+              state.labelled === null ||
+              state.labelled.includes(v) ||
+              state.marker === v ||
+              state.value === v ||
+              state.arcs.some((a) => a.from === v || a.to === v)
             return (
               <button
                 key={t}
@@ -124,7 +195,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   transition: 'background 0.25s ease, border-color 0.25s ease, color 0.25s ease',
                 }}
               >
-                {t}
+                {shows(t) ? t : ''}
               </button>
             )
           })}
@@ -142,6 +213,8 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
       const next: Partial<NumberLineState> = {}
       if (patch.highlight !== undefined) next.highlight = patch.highlight ?? []
       if (patch.marker !== undefined) next.marker = patch.marker ?? null
+      if (patch.arcs !== undefined) next.arcs = patch.arcs ?? []
+      if (patch.labelled !== undefined) next.labelled = patch.labelled ?? null
       store.setState(next)
     },
     a11y: { role: 'slider', label },

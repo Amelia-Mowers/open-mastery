@@ -27,11 +27,24 @@ export function buildIndex(bundle: Bundle): CurriculumIndex {
   // orders items within a skill in v1)
   for (const list of itemsBySkill.values())
     list.sort((a, b) => a.difficulty - b.difficulty || a.id.localeCompare(b.id))
+  // PRIORITY ORDER: a skill's `instruction` list is the authored teaching
+  // order — best representation first — and everything that picks an
+  // explanation (first lesson, "show me differently", the corrective
+  // ladder) reads this list in order. Explanations absent from
+  // `instruction` follow, in file order.
   const explanationsBySkill = new Map<string, Explanation[]>()
   for (const e of bundle.explanations) {
     const list = explanationsBySkill.get(e.skill) ?? []
     list.push(e)
     explanationsBySkill.set(e.skill, list)
+  }
+  for (const [skillId, list] of explanationsBySkill) {
+    const order = skills.get(skillId)?.instruction ?? []
+    const rank = (e: Explanation): number => {
+      const i = order.indexOf(e.id)
+      return i === -1 ? order.length : i
+    }
+    list.sort((a, b) => rank(a) - rank(b))
   }
   return {
     skills,

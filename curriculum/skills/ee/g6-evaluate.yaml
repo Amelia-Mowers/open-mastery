@@ -10,7 +10,9 @@ source: { book: ccss-ee-progression, section: "6.EE.A.2c" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: []
+# priority order: the table shows the machine most plainly, the whiteboard
+# is the symbolic form they fade toward, the line is the concrete walk
 instruction:
-  - g6.ee.evaluate.exp-numberline
   - g6.ee.evaluate.exp-table
   - g6.ee.evaluate.exp-worked
+  - g6.ee.evaluate.exp-numberline

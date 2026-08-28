@@ -182,6 +182,24 @@ moving the dot on a number line; `min`/`max`/`step` config values may be
 cairn-expr templates evaluated per instance). Direct text entry is the
 fallback, not the default.
 
+## `instruction:` IS the priority order
+
+A skill's `instruction` list ranks its representations best-first, and
+every chooser reads it in order: the first lesson, "show me differently",
+the corrective ladder. Put the representation that explains the idea most
+plainly first; the whiteboard is never first (it is what the concrete
+models fade toward, [worked_primary]); the weakest fit goes last. Loading
+order is NOT priority — buildIndex sorts by this list.
+
+## A representation must not print the answer
+
+If the picture already shows the result, the student reads it instead of
+reasoning — the evaluate number line was labelled 0…{a*c+b}, so the
+answer sat on the axis before anything happened. Reveal progressively
+(`labelled` on the number line, `cellsIn` on the tape, `reveal` on the
+tables) and show each step as a MOVE (`arcs` with their size above the
+line, the tape's `removed`, the balance's op badges).
+
 ## Decomposition BUILDS the diagram, then asks what it makes obvious
 
 A decomposition step is construction, not annotation. The diagram starts

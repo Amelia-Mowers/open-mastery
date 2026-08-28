@@ -112,8 +112,14 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
     case 'explanation_viewed': {
       const s = skillState(state, ev.skillId, params)
       if (ev.completed) {
+        // MOST-RECENT-LAST: the tail is "the representation they were just
+        // taught", which the faded lead replays and the next practice item
+        // is chosen to match. Re-viewing an earlier one moves it to the end,
+        // so "show me differently" actually changes what comes next.
         const reps = (state.representationsViewed[ev.skillId] ??= [])
-        if (!reps.includes(ev.representation)) reps.push(ev.representation)
+        const at = reps.indexOf(ev.representation)
+        if (at !== -1) reps.splice(at, 1)
+        reps.push(ev.representation)
         if (s.phase === 'unseen' || s.phase === 'lesson') s.phase = 'faded'
       } else if (s.phase === 'unseen') {
         s.phase = 'lesson'

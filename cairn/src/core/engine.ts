@@ -256,8 +256,25 @@ export function nextAction(
   if (promised) session.promised = null
   // the faded phase normally wants a FRESH isomorph, but a promised item was
   // the subject of the lesson just watched — honouring it matters more
+  // Straight after a lesson (the FADED serve), the problem must be framed in
+  // the representation just taught — including after "show me differently",
+  // where the promise made for the earlier lesson is stale. Later practice
+  // serves rotate freely, which is how the next representation gets its turn.
+  const lastRep = seenReps[seenReps.length - 1] ?? null
+  const matching =
+    wantFresh && lastRep !== null
+      ? pool.filter((it) => (it.representation ?? null) === lastRep)
+      : []
+  const promisedMatches =
+    promised !== null &&
+    (!wantFresh ||
+      lastRep === null ||
+      (ctx.cur.items.get(promised.itemId)?.representation ?? null) === lastRep)
   const inst =
-    promised ??
+    (promisedMatches ? promised : null) ??
+    (matching.length > 0
+      ? instantiateFor(matching, student, session, pol, skillId, true)
+      : null) ??
     (wantFresh ? instantiateFor(pool, student, session, pol, skillId, true) : null) ??
     instantiateFor(pool, student, session, pol, skillId)
   if (!inst) return { kind: 'session_done' } // out of items (bundle bug)
