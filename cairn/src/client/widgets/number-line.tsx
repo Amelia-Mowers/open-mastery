@@ -103,77 +103,88 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
             marginTop: 70,
           }}
         >
-          {state.arcs.length > 0 && (
-            <svg
-              aria-hidden
-              viewBox="0 0 100 22"
-              preserveAspectRatio="none"
-              style={{
-                position: 'absolute',
-                left: 0,
-                right: 0,
-                bottom: 'calc(100% - 3px)',
-                width: '100%',
-                height: 44,
-                overflow: 'visible',
-              }}
-            >
-              {state.arcs.map((a, i) => {
-                // ticks are centred inside equal flex cells, so tick i sits
-                // at (i + 0.5)/n of the width — not i/(n-1)
-                const at = (v: number) => {
-                  const i = ticks.indexOf(v)
-                  return i < 0 ? -1 : ((i + 0.5) / ticks.length) * 100
-                }
-                const x1 = at(a.from)
-                const x2 = at(a.to)
-                if (x1 < 0 || x2 < 0) return null
-                const dir = x2 >= x1 ? 1 : -1
-                return (
-                  <g key={i} data-arc={`${a.from}-${a.to}`} style={{ animation: 'cairn-pop 0.45s ease both' }}>
-                    <path
-                      d={`M ${x1} 26 Q ${(x1 + x2) / 2} -6 ${x2} 26`}
-                      fill="none"
-                      stroke="#b05f28"
-                      strokeWidth="3"
-                      strokeDasharray="7 6"
-                      strokeLinecap="round"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                    {/* the head sits AT the landing tick, pointing the way the
-                        arc is travelling: down and forward */}
-                    <path
-                      d={`M ${x2} 27 L ${x2 - dir * 2.6} 17 L ${x2 + dir * 1.1} 18.5 Z`}
-                      fill="#b05f28"
-                      vectorEffect="non-scaling-stroke"
-                    />
-                  </g>
-                )
-              })}
-            </svg>
-          )}
-          {state.arcs.map((a, i) =>
-            a.label === undefined ? null : (
-              <span
-                key={`l${i}`}
-                data-arc-label
+          {/* Jumps are drawn per-arc in their own box. A single stretched
+              SVG (preserveAspectRatio="none") squashes every triangle
+              horizontally and puts nothing where the geometry says, which is
+              why the head looked like a wedge. The curve keeps the stretch
+              (it only needs to span the gap); the head is an HTML triangle
+              that cannot be distorted; the label sits above the box. */}
+          {state.arcs.map((a, i) => {
+            // ticks are centred inside equal flex cells, so tick i sits at
+            // (i + 0.5)/n of the width — not i/(n-1)
+            const at = (v: number) => {
+              const k = ticks.indexOf(v)
+              return k < 0 ? -1 : (k + 0.5) / ticks.length
+            }
+            const p1 = at(a.from)
+            const p2 = at(a.to)
+            if (p1 < 0 || p2 < 0) return null
+            const left = Math.min(p1, p2)
+            const width = Math.abs(p2 - p1)
+            const forward = p2 >= p1
+            return (
+              <div
+                key={i}
+                data-arc={`${a.from}-${a.to}`}
                 style={{
                   position: 'absolute',
-                  bottom: '100%',
-                  left: `${
-                    ((ticks.indexOf(a.from) + ticks.indexOf(a.to) + 1) / 2 / ticks.length) * 100
-                  }%`,
-                  transform: 'translate(-50%, -52px)',
-                  font: "700 16px 'Lora', Georgia, serif",
-                  color: '#b05f28',
-                  whiteSpace: 'nowrap',
-                  animation: 'cairn-pop 0.35s ease both',
+                  left: `${left * 100}%`,
+                  width: `${width * 100}%`,
+                  bottom: 'calc(100% - 4px)',
+                  height: 44,
+                  animation: 'cairn-pop 0.45s ease both',
                 }}
               >
-                {a.label}
-              </span>
-            ),
-          )}
+                {a.label !== undefined && (
+                  <span
+                    data-arc-label
+                    style={{
+                      position: 'absolute',
+                      left: '50%',
+                      bottom: '100%',
+                      transform: 'translate(-50%, 6px)',
+                      font: "700 16px 'Lora', Georgia, serif",
+                      color: '#b05f28',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {a.label}
+                  </span>
+                )}
+                <svg
+                  aria-hidden
+                  viewBox="0 0 100 44"
+                  preserveAspectRatio="none"
+                  style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}
+                >
+                  <path
+                    d={`M ${forward ? 0 : 100} 42 Q 50 -10 ${forward ? 100 : 0} 42`}
+                    fill="none"
+                    stroke="#b05f28"
+                    strokeWidth="3"
+                    strokeDasharray="7 6"
+                    strokeLinecap="round"
+                    vectorEffect="non-scaling-stroke"
+                  />
+                </svg>
+                <span
+                  aria-hidden
+                  data-arc-head
+                  style={{
+                    position: 'absolute',
+                    left: forward ? '100%' : 0,
+                    bottom: 0,
+                    transform: `translate(-50%, 6px) rotate(${forward ? 34 : -34}deg)`,
+                    width: 0,
+                    height: 0,
+                    borderLeft: '5px solid transparent',
+                    borderRight: '5px solid transparent',
+                    borderTop: '10px solid #b05f28',
+                  }}
+                />
+              </div>
+            )
+          })}
           {ticks.map((t) => {
             const selected = state.value === t
             const highlighted = state.highlight.includes(t)
