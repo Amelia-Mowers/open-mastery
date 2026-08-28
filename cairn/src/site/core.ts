@@ -404,7 +404,12 @@ export class SiteCore {
         explanation: this.cur.explanations.get(action.explanationId),
         params,
         skillName: skill?.name ?? action.skillId,
-        preamble: skill?.preamble,
+        // the preamble introduces a SKILL, so it rides only the first lesson
+        // of that skill — later representation lessons are mid-skill teaching
+        preamble:
+          (st.student.representationsViewed[action.skillId] ?? []).length === 0
+            ? skill?.preamble
+            : undefined,
         totalReps: new Set(
           (this.cur.explanationsBySkill.get(action.skillId) ?? []).map((e) => e.representation),
         ).size,

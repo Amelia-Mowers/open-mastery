@@ -1,11 +1,11 @@
 id: g7.rp.test-proportional.004
 skills: [g7.rp.test-proportional]
 difficulty: 3
-representation: ratio-table
+representation: double-number-line
 params: { k: 3, a: 2, c: 6, d: 4 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 9] }, d: { int: [1, 5] } }
 widget: { type: numeric-input, config: { stem: "x: {a} → y: {a*k}.   x: {c} → y: {c*k+d}.   The second row breaks the proportion. How much too BIG is its y?" } }
-answer: { type: expr, value: "{d}", integer: true }
+answer: { type: expr, value: "{d}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-y-value
     when: "{c*k+d}"

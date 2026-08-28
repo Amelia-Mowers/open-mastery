@@ -1,11 +1,11 @@
 id: g7.rp.percent-multistep.002
 skills: [g7.rp.percent-multistep]
 difficulty: 2
-representation: double-number-line
+representation: ratio-table
 params: { f: 7, g: 12 }
 generator: { f: { int: [2, 9] }, g: { int: [10, 20] } }
 widget: { type: numeric-input, config: { stem: "A ${20*g} console is on sale at {5*f}% off. What is the sale price?" } }
-answer: { type: expr, value: "{20*g - f*g}", integer: true }
+answer: { type: expr, value: "{20*g - f*g}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-discount
     when: "{f*g}"

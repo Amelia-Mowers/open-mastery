@@ -114,6 +114,21 @@ describe('form guards (echo-proofing symbolic equivalence)', () => {
     expect(gradeItem(item() as never, params, '3(x+2)').verdict).toBe('correct')
   })
 
+  it("'evaluated' demands a finished number, not pending arithmetic", () => {
+    const ev = {
+      answer: { type: 'expr' as const, value: '{variable} = {d}', equivalence: 'symbolic' as const, form: 'evaluated' as const },
+      rubric: null,
+    }
+    const P4 = { d: 34, variable: 'x' }
+    expect(gradeItem(ev as never, P4, 'x = 34').verdict).toBe('correct')
+    expect(gradeItem(ev as never, P4, '34').verdict).toBe('correct')
+    expect(gradeItem(ev as never, P4, 'x = 59 - 25').verdict).toBe('incorrect') // owes arithmetic
+    expect(gradeItem(ev as never, P4, '59 - 25').verdict).toBe('incorrect')
+    // without the guard, the unevaluated form passes on equivalence alone
+    const loose = { answer: { ...ev.answer, form: undefined }, rubric: null }
+    expect(gradeItem(loose as never, P4, '59 - 25').verdict).toBe('correct')
+  })
+
   it("'combined' rejects answers where the variable appears twice", () => {
     const combined = {
       answer: { type: 'expr' as const, value: '{a}{variable} + {b}', equivalence: 'symbolic' as const, form: 'combined' as const },

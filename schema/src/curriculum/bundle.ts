@@ -253,6 +253,22 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           }
         })
       }
+      // EVERY timeline must be workable: the faded/stepwise lead drops the
+      // final content step (the resolution), so a timeline whose only gates
+      // sit there plays as a passive movie. Count the gates that SURVIVE.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const content = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        const playable = content.slice(0, -1).filter((st) => st.expect !== undefined).length
+        if (content.length >= 2 && playable === 0)
+          push(
+            'warning',
+            'no_stepwise',
+            e.id,
+            'no gate survives the faded truncation — this timeline plays as a movie; gate a step before the resolution',
+          )
+      }
       // stepwise migration (2026-08-27): passive timelines are DEPRECATED —
       // every explanation should gate its move steps with `expect`
       for (const e of explBySkill.get(s.id) ?? []) {

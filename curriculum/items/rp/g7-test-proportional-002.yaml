@@ -1,7 +1,7 @@
 id: g7.rp.test-proportional.002
 skills: [g7.rp.test-proportional]
 difficulty: 2
-representation: ratio-table
+representation: worked-equation
 params: { q: 3, r: 2, s: 5, t: 10, u: 2 }
 generator: { q: { int: [2, 9] }, r: { int: [2, 4] }, s: { int: [5, 7] }, t: { int: [8, 12] }, u: { int: [1, 5] } }
 widget:
@@ -12,7 +12,7 @@ widget:
     noneLabel: "All rows agree"
     cols: ["x", "y"]
     rows: [["{r}", "{r*q}"], ["{s}", "{s*q+u}"], ["{t}", "{t*q}"]]
-answer: { type: expr, value: "2", integer: true }
+answer: { type: expr, value: "2", form: evaluated, integer: true }
 misconceptions:
   - id: said-all-rows-agree
     when: "0"

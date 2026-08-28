@@ -1,7 +1,7 @@
 id: g7.rp.test-proportional.001
 skills: [g7.rp.test-proportional]
 difficulty: 1
-representation: ratio-table
+representation: double-number-line
 params: { k: 3, a: 2, c: 5, e: 8 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 7] }, e: { int: [8, 12] } }
 widget:
@@ -12,7 +12,7 @@ widget:
     noneLabel: "All rows agree"
     cols: ["x", "y"]
     rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]]
-answer: { type: expr, value: "0", integer: true }
+answer: { type: expr, value: "0", form: evaluated, integer: true }
 misconceptions:
   - id: flagged-a-row-that-fits
     when: "1"

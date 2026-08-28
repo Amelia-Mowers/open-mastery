@@ -1,7 +1,7 @@
 id: g6.rp.equiv-table.002
 skills: [g6.rp.equiv-table]
 difficulty: 2
-representation: ratio-table
+representation: worked-equation
 params: { a: 3, b: 8, m: 4 }
 generator: { a: { int: [1, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
 widget:
@@ -10,7 +10,7 @@ widget:
     stem: "This table shows equivalent ratios. Fill in the missing cups value."
     cols: ["cups", "muffins"]
     rows: [["{a}", "{b}"], ["?", "{b*m}"]]
-answer: { type: expr, value: "{a*m}", integer: true }
+answer: { type: expr, value: "{a*m}", form: evaluated, integer: true }
 misconceptions:
   - id: added-instead-of-scaling
     when: "{a+m}"

@@ -5,7 +5,7 @@ representation: worked-equation
 params: { f: 5, g: 8 }
 generator: { f: { int: [2, 9] }, g: { int: [2, 9] } }
 widget: { type: numeric-input, config: { stem: "A ${20*g} game is on sale at {5*f}% off. What is the sale price?" } }
-answer: { type: expr, value: "{20*g - f*g}", integer: true }
+answer: { type: expr, value: "{20*g - f*g}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-discount
     when: "{f*g}"

@@ -1,11 +1,11 @@
 id: g6.ee.sub-solve.002
 skills: [g6.ee.sub-solve]
 difficulty: 2
-representation: balance-scale
+representation: worked-equation
 params: { p: 34, d: 29, variable: y }
 generator: { p: { int: [20, 80] }, d: { int: [20, 90] } }
 widget: { type: equation-input, config: { stem: "Solve: {variable} − {p} = {d}." } }
-answer: { type: expr, value: "{variable} = {p+d}", equivalence: symbolic, integer: true }
+answer: { type: expr, value: "{variable} = {p+d}", equivalence: symbolic, form: evaluated, integer: true }
 misconceptions:
   - id: subtracted-instead-of-added
     when: "{d-p}"

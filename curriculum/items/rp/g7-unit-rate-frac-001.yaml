@@ -5,7 +5,7 @@ representation: worked-equation
 params: { p: 1, q: 2, r: 8 }
 generator: { q: { int: [2, 6] }, p: { int: [1, 5], coprime: q }, r: { mult_of: q, range: [7, 12] } }
 widget: { type: numeric-input, config: { stem: "You walk {p}/{q} of a mile in 1/{r} of an hour. How many miles per hour is that?" } }
-answer: { type: expr, value: "{p*r/q}", integer: true }
+answer: { type: expr, value: "{p*r/q}", form: evaluated, integer: true }
 misconceptions:
   - id: multiplied-by-the-fraction
     when: "{p/(q*r)}"

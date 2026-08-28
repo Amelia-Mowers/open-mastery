@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{n}³" }, caption: "The small 3 counts factors: three of them." }
   - { t: 4, patch: { line: "{n}³ = {n} × {n} × {n}", note: "three factors of {n}" }, caption: "{n} used as a factor three times." }
-  - { t: 8, patch: { line: "= {n*n} × {n}", note: "the square first" }, caption: "Two of the factors make {n}² = {n*n}." }
+  - { t: 8, patch: { line: "= {n*n} × {n}", note: "the square first" }, caption: "Two of the factors make {n}² = {n*n}.", expect: { type: numeric, value: "{n*n}", prompt: "Take two of the three factors first: {n} × {n} is what?" } }
   - { t: 12, patch: { line: "= {n*n*n}", note: "one more factor" }, caption: "{n}³ = {n*n*n}.", expect: { type: numeric, value: "{n*n*n}", prompt: "What number finishes this line?" } }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

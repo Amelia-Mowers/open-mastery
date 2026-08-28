@@ -47,6 +47,31 @@ as "divided the wrong way" equals `{b/a}` whenever a = b, which the
 seed sweep caught. Prefer an error that is structurally distinct from
 the answer.
 
+## Every timeline is workable, and items rotate through the reps
+
+Two invariants keep the stepwise promise honest:
+
+- `[no_stepwise]` — the faded/stepwise lead DROPS the final content step
+  (it is the resolution the student supplies), so a timeline whose only
+  gate sits there plays as a movie. Gate a step BEFORE the resolution.
+- Items carry `representation`, and the engine teaches an unseen
+  representation before serving an item framed in it. So a skill's items
+  should ROTATE across its explanations — if every item declares the same
+  rep, the student sees one picture forever no matter how many the skill
+  teaches. (24 of 26 skills rotate; the two that don't have only one
+  item family each.) Watch `[form_mismatch]` when re-pointing: a rep
+  whose banner phrasing doesn't match the item's stem is a wrong-form
+  risk, not a rotation.
+
+## Answers must be FINISHED (form: evaluated)
+
+`59 − 25` evaluates to the right number but is arithmetic the student
+still owes. Any item whose answer is a computed value carries
+`form: evaluated`, which requires the submission's value side to be a
+literal number. Use it wherever carrying out the computation IS the
+skill; leave it off where an expression is the legitimate answer
+(expand, combine, write-expression).
+
 ## Stepwise gates (2026-08-27)
 
 Passive timelines are DEPRECATED — the validator warns `[no_expects]`

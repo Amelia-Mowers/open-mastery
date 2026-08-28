@@ -1,14 +1,14 @@
 id: prealg.lineq.reciprocal.002
 skills: [prealg.lineq.reciprocal]
 difficulty: 2
-representation: null
+representation: number-line
 params: { p: 5, q: 6, b: 15, variable: y }
 generator:
   q: { int: [2, 9] }
   p: { int: [2, 9], coprime: q, distinct: q }
   b: { mult_of: p, range: [10, 60] }
 widget: { type: equation-input, config: { stem: "Solve: {p}/{q} {variable} = {b}." } }
-answer: { type: expr, value: "{variable} = {q*b/p}", equivalence: symbolic, integer: true }
+answer: { type: expr, value: "{variable} = {q*b/p}", equivalence: symbolic, form: evaluated, integer: true }
 misconceptions:
   - id: multiplied-by-the-fraction
     when: "{p*b/q}"

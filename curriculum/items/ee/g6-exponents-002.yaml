@@ -5,7 +5,7 @@ representation: worked-equation
 params: { c: 9 }
 generator: { c: { int: [7, 14] } }
 widget: { type: numeric-input, config: { stem: "Evaluate: {c}²." } }
-answer: { type: expr, value: "{c*c}", integer: true }
+answer: { type: expr, value: "{c*c}", form: evaluated, integer: true }
 misconceptions:
   - id: multiplied-by-two
     when: "{2*c}"

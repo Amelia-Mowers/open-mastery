@@ -1,11 +1,11 @@
 id: g6.rp.equiv-table.003
 skills: [g6.rp.equiv-table]
 difficulty: 3
-representation: null
+representation: ratio-table
 params: { a: 3, b: 10, m: 4 }
 generator: { a: { int: [1, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
 widget: { type: numeric-input, config: { stem: "A recipe uses {a} cups of flour to make {b} muffins. How many muffins do {a*m} cups make?" } }
-answer: { type: expr, value: "{b*m}", integer: true }
+answer: { type: expr, value: "{b*m}", form: evaluated, integer: true }
 misconceptions:
   - id: added-instead-of-scaling
     when: "{b+m}"

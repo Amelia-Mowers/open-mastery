@@ -1,7 +1,7 @@
 id: g7.rp.constant-k.001
 skills: [g7.rp.constant-k]
 difficulty: 1
-representation: ratio-table
+representation: worked-equation
 params: { k: 3, a: 4, c: 7 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 5] }, c: { int: [6, 12] } }
 widget:
@@ -10,7 +10,7 @@ widget:
     stem: "This table is proportional. Fill in y when x = 1 — that value is the constant of proportionality k."
     cols: ["x", "y"]
     rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["1", "?"]]
-answer: { type: expr, value: "{k}", integer: true }
+answer: { type: expr, value: "{k}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-a-y-value
     when: "{a*k}"

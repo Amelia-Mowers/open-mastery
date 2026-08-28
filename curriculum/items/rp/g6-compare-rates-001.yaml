@@ -1,7 +1,7 @@
 id: g6.rp.compare-rates.001
 skills: [g6.rp.compare-rates]
 difficulty: 1
-representation: worked-equation
+representation: ratio-table
 params: { u: 2, d: 1, a1: 4, a2: 7 }
 generator: { u: { int: [2, 6] }, d: { int: [1, 4] }, a1: { int: [3, 9] }, a2: { int: [3, 9], distinct: a1 } }
 widget:

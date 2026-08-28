@@ -1,11 +1,11 @@
 id: prealg.lineq.negate.003
 skills: [prealg.lineq.negate]
 difficulty: 3
-representation: null
+representation: opposite-flip
 params: { b: 7, variable: r }
 generator: { b: { int: [-20, 20] } }
 widget: { type: equation-input, config: { stem: "Solve: -{variable} = {b}." } }
-answer: { type: expr, value: "{variable} = {-b}", equivalence: symbolic, integer: true }
+answer: { type: expr, value: "{variable} = {-b}", equivalence: symbolic, form: evaluated, integer: true }
 misconceptions:
   - id: kept-the-sign
     when: "{b}"

@@ -1,11 +1,11 @@
 id: g7.ee.two-step.002
 skills: [g7.ee.two-step]
 difficulty: 2
-representation: balance-scale
+representation: worked-equation
 params: { a: 6, b: 17, ans: 9, variable: y }
 generator: { a: { int: [4, 12] }, b: { int: [10, 40] }, ans: { int: [5, 15] } }
 widget: { type: equation-input, config: { stem: "Solve: {a}{variable} + {b} = {a*ans+b}." } }
-answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
+answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, form: evaluated, integer: true }
 misconceptions:
   - id: divided-before-clearing
     when: "{(a*ans+b)/a}"

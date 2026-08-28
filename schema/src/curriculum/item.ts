@@ -55,7 +55,11 @@ export const answerSchema = z
      * equivalence would otherwise accept an echo of the stem):
      * 'expanded' = no parentheses in the submission; 'combined' = the
      * variable appears at most once */
-    form: z.enum(['expanded', 'combined']).optional(),
+    /** 'evaluated' additionally requires the submission to be a FINISHED
+     * value: "59 − 25" is arithmetic the student still owes, even though it
+     * evaluates correctly. Use it wherever the point of the item is to
+     * carry the computation out. */
+    form: z.enum(['expanded', 'combined', 'evaluated']).optional(),
     tolerance: z.number().nonnegative().optional(),
     units: z.string().optional(),
     /** per-item display flag for non-integer rationals (§4.3a) */

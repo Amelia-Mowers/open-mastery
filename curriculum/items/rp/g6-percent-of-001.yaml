@@ -1,11 +1,11 @@
 id: g6.rp.percent-of.001
 skills: [g6.rp.percent-of]
 difficulty: 1
-representation: double-number-line
+representation: worked-equation
 params: { f: 7, g: 3 }
 generator: { f: { int: [2, 19] }, g: { int: [1, 4] } }
 widget: { type: numeric-input, config: { stem: "What is {5*f}% of {20*g}?" } }
-answer: { type: expr, value: "{f*g}", integer: true }
+answer: { type: expr, value: "{f*g}", form: evaluated, integer: true }
 misconceptions:
   - id: used-the-percent-as-the-answer
     when: "{5*f}"

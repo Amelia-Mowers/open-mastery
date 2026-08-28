@@ -1,7 +1,7 @@
 id: g6.rp.missing-value.001
 skills: [g6.rp.missing-value]
 difficulty: 1
-representation: double-number-line
+representation: worked-equation
 params: { a: 3, b: 12, c: 7 }
 generator: { a: { int: [2, 4] }, b: { mult_of: a, range: [6, 36] }, c: { int: [5, 12] } }
 widget:
@@ -12,7 +12,7 @@ widget:
     bottomLabel: "dollars"
     top: ["0", "{a}", "{c}"]
     bottom: ["0", "{b}", "?"]
-answer: { type: expr, value: "{c*b/a}", integer: true }
+answer: { type: expr, value: "{c*b/a}", form: evaluated, integer: true }
 misconceptions:
   - id: added-instead-of-scaling
     when: "{b+c-a}"

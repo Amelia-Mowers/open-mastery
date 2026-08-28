@@ -6,7 +6,7 @@ representation: balance-scale
 params: { p: 9, d: 12, variable: x }
 generator: { p: { int: [2, 30] }, d: { int: [2, 40] } }
 widget: { type: equation-input, config: { stem: "Solve: {variable} − {p} = {d}." } }
-answer: { type: expr, value: "{variable} = {p+d}", equivalence: symbolic, integer: true }
+answer: { type: expr, value: "{variable} = {p+d}", equivalence: symbolic, form: evaluated, integer: true }
 misconceptions:
   - id: subtracted-instead-of-added
     when: "{d-p}"

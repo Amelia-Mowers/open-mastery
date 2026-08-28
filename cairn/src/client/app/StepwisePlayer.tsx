@@ -232,16 +232,19 @@ export function StepwisePlayer({
             ? 'Not those pieces.'
             : 'Not that piece.'
     }
-    if (tries === 0) {
-      setTries(1)
-      setFeedback(
-        waitingOn.hint !== undefined
-          ? `${missLead} ${renderText(waitingOn.hint, params)}`
-          : `${missLead} Look at the equation and try again.`,
-      )
-      return
-    }
-    reveal(waitingOn.type === 'pick' ? 'It was' : 'The move:')
+    // The gate NEVER solves itself: a second miss repeats the hint and points
+    // at "Show me", which the student chooses. Taking the step away is the
+    // one thing that turns a problem back into a lesson against their will.
+    setTries(tries + 1)
+    const hint =
+      waitingOn.hint !== undefined
+        ? renderText(waitingOn.hint, params)
+        : 'Look at the equation and try again.'
+    setFeedback(
+      tries === 0
+        ? `${missLead} ${hint}`
+        : `${missLead} ${hint} — or tap “Show me” and I'll walk this step.`,
+    )
   }
 
   const gatePrompt = (e: StepExpect): string =>

@@ -11,7 +11,7 @@ widget:
     height: "{a}"
     parts: ["{variable}", "{b}"]
     products: ["{a}{variable}", "?"]
-answer: { type: expr, value: "{a*b}", integer: true }
+answer: { type: expr, value: "{a*b}", form: evaluated, integer: true }
 misconceptions:
   - id: added-instead-of-multiplied
     when: "{a+b}"

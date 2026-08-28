@@ -1,7 +1,7 @@
 id: g7.ee.combine.002
 skills: [g7.ee.combine]
 difficulty: 2
-representation: worked-equation
+representation: ratio-table
 params: { a: 9, b: 8, c: 3, d: 2, variable: y }
 generator: { a: { int: [6, 12] }, b: { int: [6, 12] }, c: { int: [2, 5] }, d: { int: [1, 5] } }
 widget: { type: expression-input, config: { stem: "Simplify: {a}{variable} − {b} − {c}{variable} − {d}." } }

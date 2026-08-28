@@ -5,7 +5,7 @@ representation: worked-equation
 params: { n: 5 }
 generator: { n: { int: [3, 9] } }
 widget: { type: numeric-input, config: { stem: "Evaluate: {n}³." } }
-answer: { type: expr, value: "{n*n*n}", integer: true }
+answer: { type: expr, value: "{n*n*n}", form: evaluated, integer: true }
 misconceptions:
   - id: multiplied-by-three
     when: "{3*n}"

@@ -1,11 +1,11 @@
 id: g6.rp.find-whole.002
 skills: [g6.rp.find-whole]
 difficulty: 2
-representation: worked-equation
+representation: ratio-table
 params: { m: 6, h: 5 }
 generator: { m: { int: [2, 9] }, h: { int: [3, 9] } }
 widget: { type: numeric-input, config: { stem: "{10*m}% of a number is {m*h}. What is the number?" } }
-answer: { type: expr, value: "{10*h}", integer: true }
+answer: { type: expr, value: "{10*h}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-part
     when: "{m*h}"

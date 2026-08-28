@@ -1,11 +1,11 @@
 id: g6.rp.compare-rates.004
 skills: [g6.rp.compare-rates]
 difficulty: 3
-representation: worked-equation
+representation: ratio-table
 params: { r: 4, d: 3, t1: 5, t2: 7 }
 generator: { r: { int: [2, 6] }, d: { int: [1, 4] }, t1: { int: [3, 8] }, t2: { int: [3, 8], distinct: t1 } }
 widget: { type: numeric-input, config: { stem: "Printer A prints {r*t1} pages in {t1} minutes. Printer B prints {(r+d)*t2} pages in {t2} minutes. How many pages per minute does the FASTER printer print?" } }
-answer: { type: expr, value: "{r+d}", integer: true }
+answer: { type: expr, value: "{r+d}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-other-printer
     when: "{r}"

@@ -279,6 +279,16 @@ function gradeExpr(spec: AnswerSpec, params: Env, raw: string): Verdict {
   // stem ("3(x+2)" ≡ "3x+6"), so expansion/combination items constrain shape
   if (spec.form === 'expanded' && /[()]/.test(raw))
     return incorrect('give the expanded form — no parentheses')
+  if (spec.form === 'evaluated') {
+    // the value side must be a literal number (optionally signed/decimal or
+    // a single fraction) — no pending arithmetic
+    const rhs = (() => {
+      const parts = raw.split(/(?<![=<>!])=(?!=)/)
+      return (parts.length === 2 ? parts[1]! : raw).trim()
+    })()
+    if (!/^-?\d+(\.\d+)?(\s*\/\s*-?\d+(\.\d+)?)?$/.test(rhs))
+      return incorrect('finish the arithmetic — give the number itself')
+  }
   if (spec.form === 'combined') {
     const v = typeof params['variable'] === 'string' ? params['variable'] : null
     if (v !== null) {

@@ -359,6 +359,29 @@ body {
   margin-top: 8px;
 }
 .milestone-sub { display: block; font-size: 13.5px; color: #8b8070; margin-top: 3px; }
+.milestone-overlay { z-index: 40; }
+.milestone-moment {
+  max-width: 420px;
+  text-align: center;
+  padding: 34px 30px 26px;
+  animation: cairn-pop 0.4s ease;
+}
+.milestone-moment h1 {
+  font: 700 30px 'Lora', Georgia, serif;
+  color: #8a4d1d;
+  margin: 14px 0 4px;
+}
+.milestone-skill { font: 700 14px 'Nunito Sans', sans-serif; color: #5c5245; margin: 0 0 10px; }
+.milestone-blurb { font: 600 17px 'Lora', Georgia, serif; color: #5c5245; margin: 0 0 20px; }
+.milestone-pebble-big {
+  display: block;
+  width: 46px;
+  height: 30px;
+  border-radius: 14px;
+  background: #b05f28;
+  margin: 0 auto;
+  box-shadow: 0 -15px 0 -6px #d8a978, 0 -27px 0 -11px #e8c9a8;
+}
 .milestone-card { border-color: #e8c9a8; }
 .review-held {
   display: flex;

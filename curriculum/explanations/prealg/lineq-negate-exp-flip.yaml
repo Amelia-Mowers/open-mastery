@@ -5,7 +5,7 @@ widget: opposite-flip
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["-", "{variable}", " = ", "{b}"], eqHighlight: ["3"], value: "{b}" }, caption: "-{variable} = {b} says: the OPPOSITE of {variable} sits at {b}." }
-  - { t: 4, patch: { eqHighlight: ["0"], flip: true }, caption: "That minus sign means mirror twin — same distance from 0, other side." }
+  - { t: 4, patch: { eqHighlight: ["0"], flip: true }, caption: "That minus sign means mirror twin — same distance from 0, other side.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation says \"the opposite of\"?" } }
   - { t: 8, patch: { eqHighlight: ["1"], resolve: true }, caption: "So {variable} lands at {-b}. {variable} = {-b}.", expect: { type: numeric, value: "{-b}", prompt: "Where does it land? Type the number." } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

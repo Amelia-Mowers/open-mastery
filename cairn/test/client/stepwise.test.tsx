@@ -110,7 +110,7 @@ describe('stepwise player', () => {
     expect(done).toHaveBeenCalledWith({ misses: 2, reveals: 0 })
   })
 
-  it('two wrong tries reveal the move and keep the run going (tallied)', async () => {
+  it('repeated misses NEVER solve the step — the hint returns and points at Show me', async () => {
     const user = userEvent.setup()
     const done = vi.fn()
     const { container } = render(
@@ -121,22 +121,26 @@ describe('stepwise player', () => {
     await user.click(container.querySelector('[data-pick-seg="1"]')!)
     await user.click(screen.getByTestId('stepwise-check'))
     await waitFor(() => expect(container.querySelector('[data-op-sym="add"]')).toBeInTheDocument())
-    for (let i = 0; i < 2; i++) {
+    // three wrong tries in a row: the gate STAYS, no confirmation plays
+    for (let i = 0; i < 3; i++) {
       await user.click(container.querySelector('[data-op-sym="add"]')!)
       const by = container.querySelector('[data-op-by]')! as HTMLInputElement
       await user.clear(by)
       await user.type(by, '9')
       await user.click(screen.getByTestId('stepwise-check'))
     }
-    // revealed: the move is named and its confirmation plays anyway
-    expect(screen.getByTestId('stepwise-feedback').textContent).toContain('subtract 5')
-    await waitFor(() => expect(container.querySelector('[data-op-badge="right"]')).toBeInTheDocument())
-    // finish gate 2 correctly (wait for ITS inputs — the panel never unmounts)
+    expect(container.querySelector('[data-op-badge="left"]')).toBeNull() // never auto-solved
+    expect(screen.getByTestId('stepwise-gate')).toBeInTheDocument()
+    expect(screen.getByTestId('stepwise-feedback').textContent).toContain('Show me')
+    expect(done).not.toHaveBeenCalled()
+    // the student chooses the reveal
+    await user.click(screen.getByTestId('stepwise-showme'))
+    await waitFor(() => expect(container.querySelector('[data-op-badge="left"]')).toBeInTheDocument())
     await waitFor(() => expect(container.querySelector('[data-op-sym="divide"]')).toBeInTheDocument())
     await user.click(container.querySelector('[data-op-sym="divide"]')!)
     await user.type(container.querySelector('[data-op-by]')!, '3')
     await user.click(screen.getByTestId('stepwise-check'))
-    await waitFor(() => expect(done).toHaveBeenCalledWith({ misses: 2, reveals: 1 }))
+    await waitFor(() => expect(done).toHaveBeenCalledWith({ misses: 3, reveals: 1 }))
   })
 })
 

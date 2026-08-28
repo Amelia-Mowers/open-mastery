@@ -8,7 +8,7 @@ generator:
   p: { int: [2, 9], coprime: q, distinct: q }
   b: { mult_of: p, range: [10, 60] }
 widget: { type: equation-input, config: { stem: "Solve: {p}/{q} {variable} = {b}." } }
-answer: { type: expr, value: "{variable} = {q*b/p}", equivalence: symbolic, integer: true }
+answer: { type: expr, value: "{variable} = {q*b/p}", equivalence: symbolic, form: evaluated, integer: true }
 viz: { template: balance-scale, bind: { left: "{p}/{q} {variable}", right: "{b}" } }
 misconceptions:
   - id: multiplied-by-the-fraction

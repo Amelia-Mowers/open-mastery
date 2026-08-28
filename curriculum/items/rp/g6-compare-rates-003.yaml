@@ -1,11 +1,11 @@
 id: g6.rp.compare-rates.003
 skills: [g6.rp.compare-rates]
 difficulty: 2
-representation: worked-equation
+representation: number-line
 params: { u: 3, d: 2, a1: 5, a2: 8 }
 generator: { u: { int: [2, 6] }, d: { int: [1, 4] }, a1: { int: [3, 9] }, a2: { int: [3, 9], distinct: a1 } }
 widget: { type: numeric-input, config: { stem: "Pack A: {a1} pencils for ${u*a1}. Pack B: {a2} pencils for ${(u+d)*a2}. In the BETTER buy, how many dollars does one pencil cost?" } }
-answer: { type: expr, value: "{u}", integer: true }
+answer: { type: expr, value: "{u}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-other-pack
     when: "{u+d}"

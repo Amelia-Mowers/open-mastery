@@ -61,6 +61,9 @@
   gates) and the named sentence replaces the generic "not quite" in both
   the item card and the stepwise gate. Authoring rules and invariants:
   `../curriculum/CLAUDE.md`.
+- **Gates never solve themselves.** A miss re-offers the hint and points
+  at "Show me"; the student chooses the reveal. Taking the step away
+  turns their problem back into a movie against their will.
 - **`GOLDEN_WIDGET.md` is the widget standard** — trinity roles, staged
   decomposition entrances paired with `eqHighlight`, semantic (never
   numeric) widget fit, review-mode inertness, keyboard operation, motion,
