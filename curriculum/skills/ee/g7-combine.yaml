@@ -6,7 +6,7 @@ preamble:
     - { term: like terms, meaning: "terms with the same letter part — they can be added together" }
 standards: [CCSS.MATH.CONTENT.7.EE.A.1]
 source: { book: ccss-ee-progression, section: "7.EE.A.1" }
-bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: [g6.ee.equivalent]
 instruction:

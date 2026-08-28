@@ -222,10 +222,15 @@ export function nextAction(
   const st = student.skills[skillId]
   const phase = st?.phase ?? 'unseen'
 
+  const seenReps = student.representationsViewed[skillId] ?? []
+
   if (phase === 'unseen' || phase === 'lesson') {
-    const explanationId = skill.instruction[0]!
-    const rep = ctx.cur.explanations.get(explanationId)?.representation ?? 'unknown'
-    return { kind: 'lesson', skillId, explanationId, representation: rep }
+    // the FIRST lesson is just the first unseen representation — instruction
+    // order is the authored teaching order, not a special case
+    const first =
+      (ctx.cur.explanationsBySkill.get(skillId) ?? []).find((e) => !seenReps.includes(e.representation)) ??
+      ctx.cur.explanations.get(skill.instruction[0]!)!
+    return { kind: 'lesson', skillId, explanationId: first.id, representation: first.representation }
   }
 
   const pool = practiceItems(skillId, ctx.cur)
@@ -234,6 +239,20 @@ export function nextAction(
     (wantFresh ? instantiateFor(pool, student, session, pol, skillId, true) : null) ??
     instantiateFor(pool, student, session, pol, skillId)
   if (!inst) return { kind: 'session_done' } // out of items (bundle bug)
+
+  // A REPRESENTATION IS NEVER MET COLD: if the item we are about to serve is
+  // framed in a representation this student has not been taught, teach it
+  // first. Cycling representations through practice is the point (varied
+  // encoding beats repetition of one picture) — but an unseen picture is
+  // instruction, not a test of it.
+  const itemRep = ctx.cur.items.get(inst.itemId)?.representation ?? null
+  if (itemRep !== null && !seenReps.includes(itemRep) && phase !== 'faded') {
+    const teach = (ctx.cur.explanationsBySkill.get(skillId) ?? []).find(
+      (e) => e.representation === itemRep,
+    )
+    if (teach)
+      return { kind: 'lesson', skillId, explanationId: teach.id, representation: teach.representation }
+  }
   // the faded phase is a normal instance served as 'faded': the client plays
   // the skill's explanation up to just before the resolution with THIS
   // instance's numbers, and the student finishes it — no separate

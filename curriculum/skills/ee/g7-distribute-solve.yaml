@@ -6,7 +6,7 @@ preamble:
     - { term: expand, meaning: "rewrite p(x + q) as px + pq using the distributive property" }
 standards: [CCSS.MATH.CONTENT.7.EE.B.4.A]
 source: { book: ccss-ee-progression, section: "7.EE.B.4a" }
-bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: [g6.ee.equivalent, g7.ee.two-step]
 instruction:

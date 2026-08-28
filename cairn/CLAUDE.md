@@ -39,6 +39,22 @@
   expertise-reversal guard). Autoplay lessons ignore expects. Author
   expects on the steps that ARE moves (decompositions, both-sides ops,
   next lines), never on pure scene-setting.
+- **A representation is never met cold.** Items declare
+  `representation`; the engine serves that representation's LESSON before
+  the first item framed in it (engine.ts, `itemRep` check), and the
+  first lesson is simply the first UNSEEN representation rather than a
+  hardcoded `instruction[0]`. Cycling representations through practice
+  is intended (varied encoding beats one picture repeated) — teaching
+  each one first is what makes the variety instruction rather than a
+  surprise.
+- **BKT defaults are a stated prior, not a fit.** L0 0.2 / T 0.08 /
+  S 0.12 / G 0.25 across the catalog: ~3 unassisted corrects to the
+  check gate, from a bar that starts near 40%. Validator guards:
+  [bkt_degenerate] (S+G ≥ 1 errors; S or G ≥ 0.5 warns — Beck & Chang's
+  identifiability region) and [bkt_fast] (high L0 with high T "masters"
+  a skill in two answers). Retune `scaffolding.fadeAtP` and
+  `check.pThreshold` together with these; per-skill fitting waits for
+  pilot data.
 - **`GOLDEN_WIDGET.md` is the widget standard** — trinity roles, staged
   decomposition entrances paired with `eqHighlight`, semantic (never
   numeric) widget fit, review-mode inertness, keyboard operation, motion,

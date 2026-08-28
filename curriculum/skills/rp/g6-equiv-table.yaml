@@ -7,7 +7,7 @@ preamble:
     - { term: equivalent ratios, meaning: "two ratios that describe the same relationship" }
 standards: [CCSS.MATH.CONTENT.6.RP.A.3.A]
 source: { book: ccss-rp-progression, section: "6.RP.A.3a" }
-bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: []
 instruction:

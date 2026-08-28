@@ -6,7 +6,7 @@ preamble:
     - { term: equation of a proportional relationship, meaning: "y = kx — multiply any x by k to get its y" }
 standards: [CCSS.MATH.CONTENT.7.RP.A.2.C]
 source: { book: ccss-rp-progression, section: "7.RP.A.2c" }
-bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: [g7.rp.constant-k]
 instruction:

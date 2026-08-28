@@ -133,6 +133,14 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
 - [ ] percent-error / chained percent changes (7.RP.A.3).
 - [ ] Granularity watchlist: split skills when mastery data says so
       (rp-slab.md — unit-rate direction choice is the likeliest first).
+- [ ] BKT: fit per-skill parameters once pilot data exists (today all 26
+      skills share one stated prior — L0 .2/T .08/S .12/G .25, ~3 corrects
+      to the gate). Empirical-probability or brute-force grid fitting per
+      Baker/Corbett; watch the [bkt_fast]/[bkt_degenerate] guards.
+- [ ] Per-skill LOAD for the working-set cap (Mia's idea): a `load`
+      field defaulting to 1, budget ~3, so a heavy skill (write-from-words)
+      costs 2 and crowds out less — needs an authoring rubric (how many new
+      elements must be held at once) before it is worth the curriculum cost.
 - [ ] Human vetting of ALL draft content (release CI refuses unvetted);
       the zoo's ✓/◌ chips are the progress board.
 

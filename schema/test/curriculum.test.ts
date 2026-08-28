@@ -13,7 +13,7 @@ const docSkill = {
   prereqs: ['alg1.arith.inverse-ops', 'alg1.expr.evaluate'],
   standards: ['CCSS.MATH.CONTENT.6.EE.B.7'],
   source: { book: 'openstax-prealgebra', section: '3.3' },
-  bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 },
+  bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 },
   fluency: false,
   instruction: [
     'alg1.linear.solve-one-step.exp-balance',
@@ -80,7 +80,7 @@ describe('file-level schemas', () => {
     expect(skillSchema.safeParse({ ...docSkill, id: 'Alg1.Linear' }).success).toBe(false)
     expect(skillSchema.safeParse({ ...docSkill, id: 'single-segment' }).success).toBe(false)
     expect(
-      skillSchema.safeParse({ ...docSkill, bkt_defaults: { L0: 0.3, T: 0.15, S: 0, G: 0.2 } })
+      skillSchema.safeParse({ ...docSkill, bkt_defaults: { L0: 0.2, T: 0.08, S: 0, G: 0.25 } })
         .success,
     ).toBe(false)
     expect(skillSchema.safeParse({ ...docSkill, instruction: [] }).success).toBe(false)
@@ -288,11 +288,21 @@ describe('bundle validation (release gates)', () => {
     expect(issues.some((i) => i.code === 'duplicate_id')).toBe(true)
   })
 
-  it('warns on degenerate BKT defaults (S + G ≥ 1)', () => {
+  it('rejects degenerate BKT defaults, and warns before the model stops being identifiable', () => {
     const b = goodBundle()
-    b.skills[0]!.bkt_defaults = { L0: 0.3, T: 0.15, S: 0.6, G: 0.5 }
-    const issues = validateBundle(b)
-    expect(issues.some((i) => i.code === 'bkt_degenerate' && i.severity === 'warning')).toBe(true)
+    // S + G ≥ 1 inverts the evidence outright
+    b.skills[0]!.bkt_defaults = { L0: 0.3, T: 0.1, S: 0.6, G: 0.5 }
+    expect(
+      validateBundle(b).some((i) => i.code === 'bkt_degenerate' && i.severity === 'error'),
+    ).toBe(true)
+    // a guess ≥ 0.5 is the practical bound (Beck & Chang degenerate region)
+    b.skills[0]!.bkt_defaults = { L0: 0.3, T: 0.1, S: 0.1, G: 0.55 }
+    expect(
+      validateBundle(b).some((i) => i.code === 'bkt_degenerate' && i.severity === 'warning'),
+    ).toBe(true)
+    // a high prior with a high learn rate "masters" a skill in two answers
+    b.skills[0]!.bkt_defaults = { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+    expect(validateBundle(b).some((i) => i.code === 'bkt_fast')).toBe(true)
   })
 })
 
@@ -303,7 +313,7 @@ describe('open-expression answers: verify is the alternate form', () => {
         id: 't.open.skill',
         name: 'T',
         prereqs: [],
-        bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 },
+        bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 },
         instruction: ['t.open.skill.exp'],
       },
     ],

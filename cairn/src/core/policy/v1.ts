@@ -35,7 +35,11 @@ export const policyV1 = {
     /** offer the check when p ≥ this, or after this many consecutive
      * unassisted correct answers */
     pThreshold: 0.9,
-    consecUnassisted: 3,
+    /** the streak path is deliberately LONGER than the p path: p can be
+     * reached with three clean answers, so the streak exists to catch the
+     * student whose p is dragged down by early misses but who has since
+     * strung together real unassisted work */
+    consecUnassisted: 4,
     /** passing this many unassisted isomorphs from distinct base items
      * grants mastery regardless of p */
     itemsRequired: 2,
@@ -55,9 +59,10 @@ export const policyV1 = {
     /** concreteness fading: below this mastery estimate a practice item is
      * served WITH its representation scaffold (viz); at or above it the
      * problem stands alone — the raw symbolic form is the goal, and checks
-     * are always raw. (BKT moves fast: one unassisted correct from L0 0.3
-     * already lands ~0.71, so this keeps the scaffold for roughly the first
-     * two practice wins — and brings it back when p drops on misses.) */
+     * are always raw. From L0 0.2 the retuned BKT reaches ~0.71 after two
+     * unassisted corrects and ~0.88 after three, so this keeps the scaffold
+     * for roughly the first three practice wins — and brings it back when p
+     * drops on misses. Retune together with bkt_defaults. */
     fadeAtP: 0.85,
   },
 

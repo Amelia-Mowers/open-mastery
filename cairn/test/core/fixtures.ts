@@ -14,7 +14,7 @@ import { policyV1 } from '../../src/core/policy/v1'
 import type { EngineCtx } from '../../src/core/engine'
 
 const review = { status: 'vetted' as const }
-const BKT: BktParams = { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+const BKT: BktParams = { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 
 export function fixtureBundle(): Bundle {
   const skills = [

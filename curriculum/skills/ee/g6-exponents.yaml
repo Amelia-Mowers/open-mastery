@@ -6,7 +6,7 @@ preamble:
     - { term: exponent, meaning: "the small raised number counting how many times the base is a factor" }
 standards: [CCSS.MATH.CONTENT.6.EE.A.1]
 source: { book: ccss-ee-progression, section: "6.EE.A.1" }
-bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: []
 instruction:

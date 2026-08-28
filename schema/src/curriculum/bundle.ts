@@ -101,11 +101,30 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     for (const s of bundle.skills) visit(s.id, [])
   }
 
-  // ---- BKT sanity ----
+  // ---- BKT sanity: the degenerate-parameter guard (Beck & Chang 2007) ----
+  // S + G ≥ 1 inverts the evidence entirely, but the practical bound is
+  // tighter: a guess or slip at or above 0.5 makes an answer say more about
+  // luck than knowledge, and the model stops being identifiable.
   for (const s of bundle.skills) {
-    const { S, G } = s.bkt_defaults
+    const { S, G, T, L0 } = s.bkt_defaults
     if (S + G >= 1)
-      push('warning', 'bkt_degenerate', `${s.id}.bkt_defaults`, `S + G = ${S + G} ≥ 1 makes evidence uninformative`)
+      push('error', 'bkt_degenerate', `${s.id}.bkt_defaults`, `S + G = ${S + G} ≥ 1 inverts the evidence`)
+    else if (S >= 0.5 || G >= 0.5)
+      push(
+        'warning',
+        'bkt_degenerate',
+        `${s.id}.bkt_defaults`,
+        `S=${S} G=${G}: a slip or guess ≥ 0.5 makes answers uninformative (Beck & Chang degenerate region)`,
+      )
+    // a high learn rate from a high prior means two answers "master" a skill;
+    // flag the combination that produces implausibly fast mastery
+    if (T >= 0.12 && L0 >= 0.3)
+      push(
+        'warning',
+        'bkt_fast',
+        `${s.id}.bkt_defaults`,
+        `L0=${L0} with T=${T} reaches the check gate in ~2 correct answers — evidence that thin is not mastery`,
+      )
   }
 
   // ---- release gates (§8 CI, §4.1 CI rule) ----

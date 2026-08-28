@@ -6,7 +6,7 @@ preamble:
     - { term: percent, meaning: "out of every 100 — 35% means 35 out of every 100" }
 standards: [CCSS.MATH.CONTENT.6.RP.A.3.C]
 source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
-bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: [g6.rp.unit-rate]
 instruction:

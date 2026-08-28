@@ -7,7 +7,7 @@ preamble:
     - { term: constant of proportionality, meaning: "the number k that every x is multiplied by to get y" }
 standards: [CCSS.MATH.CONTENT.7.RP.A.2.B]
 source: { book: ccss-rp-progression, section: "7.RP.A.2b" }
-bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: [g6.rp.unit-rate]
 instruction:

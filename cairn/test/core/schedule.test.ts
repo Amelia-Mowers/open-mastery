@@ -20,7 +20,7 @@ import { bktUpdate, type BktParams } from '../../src/core/bkt'
 import { makeStamper } from './fixtures'
 import { runLoop, runSession, alwaysCorrect, type StudentModel } from './students'
 
-const BKT: BktParams = { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+const BKT: BktParams = { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 const review = { status: 'vetted' as const }
 
 /** n independent single-layer skills, 2 check-eligible items each. */
@@ -297,5 +297,64 @@ describe('milestones (earned by leaving with ground gained)', () => {
     // thresholds descend, so the FIRST match is the highest earned rank
     const mins = SiteCore.MILESTONE_RANKS.map((r) => r.min)
     expect([...mins].sort((a, b) => b - a)).toEqual(mins)
+  })
+})
+
+describe('representations are taught before they are tested', () => {
+  it('an item framed in an unseen representation is preceded by its lesson', () => {
+    // the real curriculum: items carry `representation`, and a skill has
+    // several explanations — a student must never meet a picture cold
+    const skills: string[] = []
+    const bundle: Bundle = { skills: [], items: [], explanations: [] }
+    const sid = 't.reps.s1'
+    for (const rep of ['balance-scale', 'tape-diagram']) {
+      bundle.explanations.push(
+        explanationSchema.parse({
+          id: `${sid}.exp-${rep}`,
+          skill: sid,
+          representation: rep,
+          widget: rep,
+          params_from: 'item',
+          timeline: [{ t: 0, caption: 'Watch.' }, { t: 2, handoff: { prompt: 'Now you try.' } }],
+          review,
+        }),
+      )
+      bundle.items.push(
+        itemSchema.parse({
+          id: `${sid}.${rep === 'balance-scale' ? '001' : '002'}`,
+          skills: [sid],
+          difficulty: rep === 'balance-scale' ? 1 : 2,
+          representation: rep,
+          params: { a: 3, b: 12 },
+          generator: { a: { int: [2, 9] }, b: { int: [4, 40] } },
+          widget: { type: 'numeric-input', config: { stem: 'What is {b} over {a}?' } },
+          answer: { type: 'expr', value: '{b/a}' },
+          review,
+        }),
+      )
+    }
+    skills.push(sid)
+    bundle.skills.push(
+      skillSchema.parse({
+        id: sid,
+        name: 'Reps',
+        prereqs: [],
+        bkt_defaults: BKT,
+        instruction: [`${sid}.exp-balance-scale`, `${sid}.exp-tape-diagram`],
+      }),
+    )
+    const { stamp, clock } = makeStamper()
+    const ctx = { cur: buildIndex(bundle), bkt: () => BKT, policy: policyV1, stamp, now: () => clock.t }
+    const { actions } = runSession(ctx as never, alwaysCorrect, 40)
+    const taught = new Set<string>()
+    for (const a of actions) {
+      if (a.kind === 'lesson' || a.kind === 'alt_explanation') taught.add(a.representation)
+      if (a.kind === 'serve_item' && a.itemKind === 'practice') {
+        const rep = ctx.cur.items.get(a.instance.itemId)?.representation
+        if (rep) expect(taught.has(rep), `served ${rep} before teaching it`).toBe(true)
+      }
+    }
+    // and BOTH representations got taught, not just the first
+    expect(taught.size).toBeGreaterThanOrEqual(2)
   })
 })

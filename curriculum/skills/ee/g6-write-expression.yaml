@@ -6,7 +6,7 @@ preamble:
     - { term: expression, meaning: "numbers, letters, and operations — a phrase in math symbols (no equals sign)" }
 standards: [CCSS.MATH.CONTENT.6.EE.A.2.A]
 source: { book: ccss-ee-progression, section: "6.EE.A.2a" }
-bkt_defaults: { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
 fluency: false
 prereqs: [g6.ee.evaluate]
 instruction:
