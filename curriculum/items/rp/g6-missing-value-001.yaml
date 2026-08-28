@@ -13,6 +13,10 @@ widget:
     top: ["0", "{a}", "{c}"]
     bottom: ["0", "{b}", "?"]
 answer: { type: expr, value: "{c*b/a}", integer: true }
+misconceptions:
+  - id: added-instead-of-scaling
+    when: "{b+c-a}"
+    says: "Ratios scale by MULTIPLYING, not by adding the difference. Find the cost of one, then multiply by {c}."
 hints:
   - "First find the cost of ONE pound: {b} ÷ {a}."
   - "One pound costs ${b/a}. Multiply by {c}: {c} × {b/a} = {c*b/a}."

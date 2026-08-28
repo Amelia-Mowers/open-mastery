@@ -6,7 +6,7 @@ import { parseExpr, parseExprLoose } from '../expr/parse.ts'
 import type { Expr } from '../expr/ast.ts'
 import { eq as ratEq } from '../expr/rational.ts'
 import { evaluate } from '../expr/eval.ts'
-import { isInt, type Rational } from '../expr/rational.ts'
+import { isInt, rat, type Rational } from '../expr/rational.ts'
 import { generateParams, type GeneratorSpec } from '../expr/generate.ts'
 import type { Env } from '../expr/eval.ts'
 
@@ -30,6 +30,43 @@ export interface ValidateOptions {
   profile?: 'authoring' | 'release'
   /** seeds used to smoke-test each item generator */
   generatorSeeds?: number[]
+}
+
+/** Are two rendered expressions the same function of their free variables?
+ * Sampled exact-rational comparison — the same technique the runtime grader
+ * uses, kept local so the validator has no engine dependency. */
+function exprEquivalentStrings(aSrc: string, bSrc: string): boolean {
+  const pa = parseExprLoose(aSrc)
+  const pb = parseExprLoose(bSrc)
+  if (!pa.ok || !pb.ok) return false
+  const vars = new Set<string>()
+  const walk = (x: Expr): void => {
+    if (x.k === 'var') vars.add(x.name)
+    else if (x.k === 'neg') walk(x.e)
+    else if (x.k === 'bin' || x.k === 'cmp') {
+      walk(x.l)
+      walk(x.r)
+    } else if (x.k === 'call') x.args.forEach(walk)
+  }
+  walk(pa.value)
+  walk(pb.value)
+  const names = [...vars].sort()
+  const SAMPLES = [2, -3, 5, 7, 11]
+  let valid = 0
+  for (let t = 0; t < SAMPLES.length; t++) {
+    const env: Env = {}
+    names.forEach((n, j) => {
+      const r = rat(SAMPLES[(t + j) % SAMPLES.length]!)
+      if (r) env[n] = r
+    })
+    const va = evaluate(pa.value, env)
+    const vb = evaluate(pb.value, env)
+    if (!va.ok || !vb.ok) continue
+    if (va.value.t !== 'num' || vb.value.t !== 'num') return false
+    if (!ratEq(va.value.v, vb.value.v)) return false
+    valid++
+  }
+  return valid >= 2
 }
 
 /** Cross-file validation. File-level shape is assumed already checked by the
@@ -539,24 +576,41 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             push('error', 'misconception_shape', `${where} [${m.id}]`, `'${m.when}' does not render`)
             continue
           }
+          // a `when` may be a NUMBER (most items) or a symbolic expression
+          // (expand/combine/write-expression, where the wrong answer is a
+          // different expression, not a different value) — both must parse
           const parsed = parseExprLoose(rendered.value)
-          const v = parsed.ok ? evaluate(parsed.value, {}) : null
-          if (!v || !v.ok || v.value.t !== 'num') {
+          if (!parsed.ok) {
             push(
               'error',
               'misconception_shape',
               `${where} [${m.id}]`,
-              `'${m.when}' does not evaluate to a number`,
+              `'${m.when}' does not parse as an expression`,
             )
             continue
           }
-          if (truth && ratEq(v.value.v, truth))
-            push(
-              'error',
-              'misconception_correct',
-              `${where} [${m.id}]`,
-              `'${m.when}' equals the right answer — a correct student would be told they erred`,
-            )
+          const v = evaluate(parsed.value, {})
+          const closed = v.ok && v.value.t === 'num' ? v.value.v : null
+          if (closed !== null) {
+            if (truth && ratEq(closed, truth))
+              push(
+                'error',
+                'misconception_correct',
+                `${where} [${m.id}]`,
+                `'${m.when}' equals the right answer — a correct student would be told they erred`,
+              )
+          } else if (typeof it.answer.value === 'string') {
+            // symbolic: the collision check is equivalence of the rendered
+            // forms, not equality of values
+            const key = renderTemplate(it.answer.value, env, { numberStyle: 'fraction' })
+            if (key.ok && exprEquivalentStrings(rendered.value, key.value))
+              push(
+                'error',
+                'misconception_correct',
+                `${where} [${m.id}]`,
+                `'${m.when}' is equivalent to the right answer — a correct student would be told they erred`,
+              )
+          }
         }
       }
       checkMis(it.params as Env, it.id)
@@ -570,6 +624,18 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         }
       }
     }
+
+    // COVERAGE: an item with no named wrong answers gives every miss the
+    // same generic line. Not every item can be diagnosed (open expressions,
+    // selection sentinels), but the default should be "diagnosed" — this
+    // warning is the authoring backlog, the way [no_expects] is for gates.
+    if (!it.misconceptions || it.misconceptions.length === 0)
+      push(
+        'warning',
+        'no_misconceptions',
+        it.id,
+        'no named wrong answers: every miss falls back to the generic line — author the predictable errors',
+      )
 
     const exprIdentifiers = (e: Expr): Set<string> => {
       const out = new Set<string>()

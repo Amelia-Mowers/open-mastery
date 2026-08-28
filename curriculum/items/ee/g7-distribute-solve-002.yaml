@@ -6,6 +6,10 @@ params: { a: 4, b: 3, ans: -2, variable: x }
 generator: { a: { int: [2, 9] }, b: { int: [1, 9] }, ans: { int: [-9, -2] } }
 widget: { type: equation-input, config: { stem: "Solve: {a}({variable} + {b}) = {a*(ans+b)}." } }
 answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: forgot-to-distribute
+    when: "{a*(ans+b)-b}"
+    says: "The {b} is inside the parentheses, so it is multiplied by {a} too. Divide both sides by {a} first, or distribute before subtracting."
 hints:
   - "Divide both sides by {a}: {variable} + {b} = {ans+b}."
   - "Subtract {b} — the answer can be negative: {variable} = {ans}."

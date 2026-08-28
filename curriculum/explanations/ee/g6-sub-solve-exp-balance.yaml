@@ -8,7 +8,16 @@ timeline:
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{variable} − {p} goes on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{d} on the right — balanced.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - { t: 12, patch: { eqHighlight: ["1"], highlight: left }, caption: "{variable} had {p} TAKEN AWAY. Which move puts it back?" }
-  - { t: 15.5, patch: { op: add, by: "{p}", highlight: null, eqHighlight: [] }, caption: "Add {p} to BOTH pans — the scale stays balanced.", expect: { type: op, value: "add {p}" } }
+  - t: 15.5
+    patch: { op: add, by: "{p}", highlight: null, eqHighlight: [] }
+    caption: "Add {p} to BOTH pans — the scale stays balanced."
+    expect:
+      type: op
+      value: "add {p}"
+      misconceptions:
+        - id: subtracted-instead-of-added
+          when: "subtract {p}"
+          says: "The {p} was already taken away — taking away more leaves even less. Put it back: add {p} to both pans."
   - { t: 19, patch: { left: "{variable}", right: "{p+d}", op: null }, caption: "{variable} = {p+d}." }
   - { t: 21, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

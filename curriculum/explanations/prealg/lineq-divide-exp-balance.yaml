@@ -8,7 +8,19 @@ timeline:
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{a}{variable} goes on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} goes on the right pan — and the scale balances.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "{variable} is multiplied by {a}. Which move un-does multiplying?" }
-  - { t: 15.5, patch: { op: divide, by: "{a}", highlight: null }, caption: "Divide both sides by {a} — the scale stays balanced.", expect: { type: op, value: "divide {a}" } }
+  - t: 15.5
+    patch: { op: divide, by: "{a}", highlight: null }
+    caption: "Divide both sides by {a} — the scale stays balanced."
+    expect:
+      type: op
+      value: "divide {a}"
+      misconceptions:
+        - id: subtracted-the-coefficient
+          when: "subtract {a}"
+          says: "{a}{variable} means {a} TIMES {variable}, not {a} plus {variable} — subtracting {a} will not free it. Undo a multiply with a divide."
+        - id: multiplied-instead-of-divided
+          when: "multiply {a}"
+          says: "Multiplying by {a} makes it {a} times bigger still. To undo × {a}, divide."
   - { t: 19, patch: { left: "{variable}", right: "{b/a}", op: null }, caption: "{variable} = {b/a}." }
   - { t: 21, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

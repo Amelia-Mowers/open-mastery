@@ -6,6 +6,10 @@ params: { m: 6, h: 5 }
 generator: { m: { int: [2, 9] }, h: { int: [3, 9] } }
 widget: { type: numeric-input, config: { stem: "{10*m}% of a number is {m*h}. What is the number?" } }
 answer: { type: expr, value: "{10*h}", integer: true }
+misconceptions:
+  - id: answered-the-part
+    when: "{m*h}"
+    says: "{m*h} is the PART you were given. The question asks for the whole number that {10*m}% of it makes {m*h}."
 hints:
   - "{10*m}% is {m} tens, so 10% of the number is {m*h} ÷ {m} = {h}."
   - "10% is {h}, and 100% is ten tens: {h} × 10 = {10*h}."

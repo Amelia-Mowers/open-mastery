@@ -6,6 +6,10 @@ params: { k: 4, a: 3, c: 8 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 6] }, c: { int: [7, 12] } }
 widget: { type: numeric-input, config: { stem: "y is proportional to x. When x = {a}, y = {a*k}. What is y when x = {c}?" } }
 answer: { type: expr, value: "{k*c}", integer: true }
+misconceptions:
+  - id: added-k-instead-of-multiplying
+    when: "{k+c}"
+    says: "y = {k}x means {k} TIMES x. At x = {c} that is {k}·{c}, not {k} + {c}."
 hints:
   - "First find k: {a*k} ÷ {a} = {k}. The rule is y = {k}x."
   - "Use the rule at x = {c}: y = {k} × {c} = {k*c}."

@@ -6,6 +6,10 @@ params: { k: 4, a: 3, c: 7 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 9] } }
 widget: { type: numeric-input, config: { stem: "x: {a} → y: {a*k}.   x: {c} → y: ?.   What must y be for the table to be proportional?" } }
 answer: { type: expr, value: "{c*k}", integer: true }
+misconceptions:
+  - id: added-the-difference
+    when: "{a*k + c - a}"
+    says: "Proportional pairs scale by MULTIPLYING. Find k = {a*k} ÷ {a} = {k}, then y = {k}·{c}."
 hints:
   - "Proportional means y ÷ x is the same in every row. The first row gives {a*k} ÷ {a} = {k}."
   - "So y = {k} × {c} = {c*k}."

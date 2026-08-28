@@ -134,7 +134,7 @@ function goodBundle(): Bundle {
 
 describe('bundle validation (release gates)', () => {
   it('a consistent bundle has no issues', () => {
-    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects'])
+    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects', 'no_misconceptions'])
     expect(validateBundle(goodBundle()).filter((i) => !advisory.has(i.code))).toEqual([])
   })
 
@@ -174,7 +174,7 @@ describe('bundle validation (release gates)', () => {
     const tl = b.explanations[0]!.timeline
     // a well-formed op expect on a patch step validates clean
     tl[0]!.expect = { type: 'op', value: 'subtract {b}' }
-    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects', 'form_mismatch'])
+    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects', 'no_misconceptions', 'form_mismatch'])
     expect(validateBundle(b).filter((i) => !advisory.has(i.code))).toEqual([])
     // a move word outside add/subtract/multiply/divide is an error
     tl[0]!.expect = { type: 'op', value: 'banish {b}' }
@@ -194,7 +194,7 @@ describe('bundle validation (release gates)', () => {
     tl2[0]!.expect = undefined
     tl2[0]!.patch = { ...tl2[0]!.patch, equation: ['{a}{variable}', ' = ', '{b}'] }
     tl2[1]!.expect = { type: 'pick', value: ['0'] }
-    const advisory2 = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects', 'form_mismatch'])
+    const advisory2 = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects', 'no_misconceptions', 'form_mismatch'])
     expect(validateBundle(b2).filter((i) => !advisory2.has(i.code))).toEqual([])
     tl2[1]!.expect = { type: 'pick', value: ['7'] } // out of range
     expect(validateBundle(b2).some((i) => i.code === 'expect_shape')).toBe(true)
@@ -204,7 +204,7 @@ describe('bundle validation (release gates)', () => {
     const b = goodBundle()
     b.items[1]!.answer = { type: 'op', value: 'subtract {b}' } as (typeof b.items)[number]['answer']
     b.items[1]!.widget = { type: 'balance-scale', config: { left: '{a}{variable} + {b}', right: '{a*3+b}', entry: true } }
-    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects', 'form_mismatch'])
+    const advisory = new Set(['representation_count', 'worked_missing', 'missing_banner', 'no_expects', 'no_misconceptions', 'form_mismatch'])
     expect(validateBundle(b).filter((i) => !advisory.has(i.code))).toEqual([])
     // missing the entry answer space is an error, not a silent MC fallback
     b.items[1]!.widget = { type: 'balance-scale', config: { left: 'x', right: '3' } }

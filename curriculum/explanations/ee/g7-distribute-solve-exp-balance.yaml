@@ -9,7 +9,16 @@ timeline:
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{a*(ans+b)} on the right — balanced.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - { t: 12, patch: { eqHighlight: ["0"], highlight: left, op: divide, by: "{a}" }, caption: "Undo the OUTER × {a} first: divide both pans by {a}.", expect: { type: op, value: "divide {a}" } }
   - { t: 16, patch: { left: "{variable} + {b}", right: "{ans+b}", op: null, eqHighlight: [], highlight: null }, caption: "One copy each side: {variable} + {b} = {ans+b} — a problem you already know." }
-  - { t: 20, patch: { op: subtract, by: "{b}" }, caption: "Subtract {b} from both pans.", expect: { type: op, value: "subtract {b}" } }
+  - t: 20
+    patch: { op: subtract, by: "{b}" }
+    caption: "Subtract {b} from both pans."
+    expect:
+      type: op
+      value: "subtract {b}"
+      misconceptions:
+        - id: multiplied-back
+          when: "multiply {a}"
+          says: "The × {a} is already undone. What is left is + {b} — take it off both pans."
   - { t: 23.5, patch: { left: "{variable}", right: "{ans}", op: null }, caption: "{variable} = {ans}." }
   - { t: 26, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

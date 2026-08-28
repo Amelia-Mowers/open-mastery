@@ -12,6 +12,13 @@ widget:
     right: "{a*ans+b}"
     entry: true
 answer: { type: op, value: "subtract {b}" }
+misconceptions:
+  - id: divided-before-clearing
+    when: "divide {a}"
+    says: "Dividing now would split the + {b} as well. Clear the {b} off both pans FIRST, then divide."
+  - id: added-instead-of-subtracted
+    when: "add {b}"
+    says: "Adding {b} puts MORE on the left. The {b} is already there — take it away from both pans."
 hints:
   - "Undo in REVERSE order — the + {b} was applied last, so it goes first."
   - "Subtract {b} from both sides; the ÷ {a} comes after."

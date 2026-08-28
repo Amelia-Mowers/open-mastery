@@ -12,6 +12,10 @@ widget:
     total: "{b}"
     fill: part
 answer: { type: expr, value: "{variable} = {b/a}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: subtracted-the-coefficient
+    when: "{b-a}"
+    says: "{a}{variable} means {a} TIMES {variable}, not {a} plus {variable} — so subtracting {a} won't free it. Undo a multiply with a divide."
 hints:
   - "All {a} parts are equal and together they make {b}."
   - "{b} ÷ {a} = {b/a}."

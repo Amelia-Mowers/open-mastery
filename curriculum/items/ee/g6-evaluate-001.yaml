@@ -6,6 +6,13 @@ params: { a: 3, b: 5, c: 4, variable: x }
 generator: { a: { int: [2, 9] }, b: { int: [1, 20] }, c: { int: [2, 9] } }
 widget: { type: numeric-input, config: { stem: "Evaluate {a}{variable} + {b} when {variable} = {c}." } }
 answer: { type: expr, value: "{a*c+b}", integer: true }
+misconceptions:
+  - id: added-before-multiplying
+    when: "{a*(c+b)}"
+    says: "The multiply comes first: {a}·{c} is {a*c}, and THEN add {b}. Adding first gives a different number."
+  - id: multiplied-the-whole-thing
+    when: "{a*c*b}"
+    says: "The {b} is added on, not multiplied. {a}·{c} = {a*c}, then + {b}."
 hints:
   - "Substitute: replace {variable} with {c}."
   - "{a} × {c} + {b} = {a*c} + {b} = {a*c+b}."

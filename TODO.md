@@ -85,11 +85,12 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
 - [ ] compare-rates "pick with work" upgrade: two offer cards each with a
       unit-rate fill-in, then click the winner — constructed response where
       today's choice items are the d1 entry point.
-- [ ] Wrong-answer DIAGNOSIS: the STANDARD shipped 2026-08-28
-      (misconceptions on items + gates, diagnose(), validator guards —
-      curriculum/CLAUDE.md). What's left is AUTHORING: 4 items and 1 gate
-      carry them so far; work through the catalog family by family, and
-      aggregate ids in the guide view ("keeps inverting operations").
+- [x] Wrong-answer DIAGNOSIS: standard + CATALOG AUTHORING done
+      2026-08-28 — all 62 items and every op gate carry named
+      misconceptions ([no_misconceptions] warns on any that don't;
+      diagnosis-coverage.test proves each fires on its own wrong answer).
+      Remaining: numeric/pick/expr gates are still generic (169 gates,
+      11 op ones done) — author as the vetting pass reaches them.
 - [ ] Skill map phone REFLOW: horizontal scroll + hyphenation shipped; a
       true stacked-list layout under 560px is the real fix.
 - [ ] ENGAGEMENT batch (family playtest): sounds (correct/mastery chimes),

@@ -6,6 +6,10 @@ params: { k: 5, a: 6 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 9] } }
 widget: { type: numeric-input, config: { stem: "y is proportional to x. When x = {a}, y = {a*k}. What is the constant of proportionality?" } }
 answer: { type: expr, value: "{k}", integer: true }
+misconceptions:
+  - id: answered-a-y-value
+    when: "{a*k}"
+    says: "{a*k} is y when x = {a}. The constant k is y when x is ONE: {a*k} ÷ {a}."
 hints:
   - "k is what x is multiplied by to get y."
   - "k = y ÷ x = {a*k} ÷ {a} = {k}."

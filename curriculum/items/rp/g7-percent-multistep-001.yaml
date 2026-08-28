@@ -6,6 +6,10 @@ params: { f: 5, g: 8 }
 generator: { f: { int: [2, 9] }, g: { int: [2, 9] } }
 widget: { type: numeric-input, config: { stem: "A ${20*g} game is on sale at {5*f}% off. What is the sale price?" } }
 answer: { type: expr, value: "{20*g - f*g}", integer: true }
+misconceptions:
+  - id: answered-the-discount
+    when: "{f*g}"
+    says: "{f*g} is the DISCOUNT — what you save. The question asks what you PAY: {20*g} minus the discount."
 hints:
   - "First find the discount: {5*f}% of ${20*g}. (5% is ${g}.)"
   - "The discount is ${f*g}. Subtract: {20*g} − {f*g} = {20*g - f*g}."

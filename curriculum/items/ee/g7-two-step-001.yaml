@@ -6,6 +6,13 @@ params: { a: 3, b: 5, ans: 4, variable: x }
 generator: { a: { int: [2, 9] }, b: { int: [2, 20] }, ans: { int: [2, 12] } }
 widget: { type: equation-input, config: { stem: "Solve: {a}{variable} + {b} = {a*ans+b}." } }
 answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: divided-before-clearing
+    when: "{(a*ans+b)/a}"
+    says: "Dividing first splits the + {b} too. Take the {b} off both sides FIRST, then divide by {a}."
+  - id: forgot-to-divide
+    when: "{a*ans}"
+    says: "{a*ans} is what's left after clearing the {b} — but that's {a}{variable}, not {variable}. One more step: divide by {a}."
 hints:
   - "Undo the OUTSIDE operation first: subtract {b} from both sides."
   - "That leaves {a}{variable} = {a*ans}. Now divide both sides by {a}."

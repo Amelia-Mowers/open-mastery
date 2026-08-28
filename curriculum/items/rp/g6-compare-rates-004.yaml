@@ -6,6 +6,13 @@ params: { r: 4, d: 3, t1: 5, t2: 7 }
 generator: { r: { int: [2, 6] }, d: { int: [1, 4] }, t1: { int: [3, 8] }, t2: { int: [3, 8], distinct: t1 } }
 widget: { type: numeric-input, config: { stem: "Printer A prints {r*t1} pages in {t1} minutes. Printer B prints {(r+d)*t2} pages in {t2} minutes. How many pages per minute does the FASTER printer print?" } }
 answer: { type: expr, value: "{r+d}", integer: true }
+misconceptions:
+  - id: answered-the-other-printer
+    when: "{r}"
+    says: "That's the other printer's rate. Read the one the question names."
+  - id: answered-the-total
+    when: "{(r+d)*t2}"
+    says: "That's the whole job. Pages per MINUTE means splitting it across {t2} minutes."
 hints:
   - "Find each printer's pages per ONE minute, then keep the larger."
   - "A: {r*t1} ÷ {t1} = {r}. B: {(r+d)*t2} ÷ {t2} = {r+d}. The faster one prints {r+d}."

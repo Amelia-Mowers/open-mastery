@@ -6,6 +6,10 @@ params: { c: 9 }
 generator: { c: { int: [7, 14] } }
 widget: { type: numeric-input, config: { stem: "Evaluate: {c}²." } }
 answer: { type: expr, value: "{c*c}", integer: true }
+misconceptions:
+  - id: multiplied-by-two
+    when: "{2*c}"
+    says: "{c}² means {c} used as a FACTOR twice — {c} × {c} — not {c} × 2."
 hints:
   - "{c}² means {c} used as a factor twice."
   - "{c} × {c} = {c*c}."

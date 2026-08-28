@@ -6,6 +6,10 @@ params: { a: 4, b: 28 }
 generator: { a: { int: [2, 12] }, b: { mult_of: a, range: [8, 96] } }
 widget: { type: numeric-input, config: { stem: "{a} pounds of apples cost ${b}. How many dollars does 1 pound cost?" } }
 answer: { type: expr, value: "{b/a}", integer: true }
+misconceptions:
+  - id: answered-the-total
+    when: "{b}"
+    says: "{b} is the total for all {a}. A unit rate is what ONE costs: {b} split into {a} equal parts."
 hints:
   - "Share ${b} equally across the {a} pounds."
   - "{b} ÷ {a} = {b/a} dollars per pound."

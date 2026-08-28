@@ -6,6 +6,10 @@ params: { a: 3, b: 2, variable: x }
 generator: { a: { int: [2, 9] }, b: { int: [1, 9] } }
 widget: { type: expression-input, config: { stem: "Expand: {a}({variable} + {b})." } }
 answer: { type: expr, value: "{a}{variable} + {a*b}", equivalence: symbolic, form: expanded }
+misconceptions:
+  - id: distributed-to-first-term-only
+    when: "{a}{variable} + {b}"
+    says: "The {a} multiplies EVERY part inside: {a}·{variable} AND {a}·{b}. The {b} was left untouched."
 hints:
   - "Multiply {a} by EACH part inside the parentheses."
   - "{a}·{variable} + {a}·{b} = {a}{variable} + {a*b}."

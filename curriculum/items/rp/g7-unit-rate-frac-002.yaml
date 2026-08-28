@@ -6,6 +6,10 @@ params: { p: 3, q: 4, r: 8 }
 generator: { q: { int: [2, 6] }, p: { int: [1, 5], coprime: q }, r: { mult_of: q, range: [7, 12] } }
 widget: { type: numeric-input, config: { stem: "A faucet fills {p}/{q} of a tub in 1/{r} of a minute. How many tubs does it fill per minute?" } }
 answer: { type: expr, value: "{p*r/q}", integer: true }
+misconceptions:
+  - id: multiplied-by-the-fraction
+    when: "{p/(q*r)}"
+    says: "1/{r} of an hour fits into a whole hour {r} times, so the distance is multiplied by {r}, not divided."
 hints:
   - "A whole minute is {r} chunks of 1/{r} minute."
   - "{p}/{q} × {r} = {p*r/q} tubs each minute."

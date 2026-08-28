@@ -7,7 +7,16 @@ timeline:
   - { t: 0, patch: { equation: ["-", "{variable}", " = ", "{b}"], left: "-{variable}", right: "{b}", leftIn: false, rightIn: false }, caption: "The OPPOSITE of {variable} sits on the scale." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "-{variable} goes on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} on the right — balanced.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
-  - { t: 12, patch: { eqHighlight: ["0"], highlight: left, op: multiply, by: "-1" }, caption: "Flip BOTH sides to their opposites — multiply both pans by −1. Balance keeps.", expect: { type: op, value: "multiply -1" } }
+  - t: 12
+    patch: { eqHighlight: ["0"], highlight: left, op: multiply, by: "-1" }
+    caption: "Flip BOTH sides to their opposites — multiply both pans by −1. Balance keeps."
+    expect:
+      type: op
+      value: "multiply -1"
+      misconceptions:
+        - id: divided-by-the-value
+          when: "divide {b}"
+          says: "Dividing by {b} does not touch the minus sign. Flipping the sign is a multiply by −1."
   - { t: 16, patch: { left: "{variable}", right: "{-b}", op: null, eqHighlight: [], highlight: null }, caption: "{variable} = {-b}." }
   - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

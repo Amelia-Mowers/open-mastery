@@ -10,7 +10,16 @@ timeline:
   - { t: 14, patch: { eqHighlight: ["4", "5"], highlight: right }, caption: "The plain numbers belong together on the right pan.", expect: { type: pick, value: ["4", "5"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - { t: 19, patch: { rightIn: true }, caption: "{d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans} lands on the right pan.", expect: { type: numeric, value: "{(c1+c2-c3)*ans}", prompt: "Combine the numbers: {d1} + {(c1+c2-c3)*ans - d1} makes what?" } }
   - { t: 24, patch: { eqHighlight: [], highlight: null }, caption: "Now it is a one-step equation." }
-  - { t: 28, patch: { op: divide, by: "{c1+c2-c3}" }, caption: "Divide both pans by {c1+c2-c3}.", expect: { type: op, value: "divide {c1+c2-c3}" } }
+  - t: 28
+    patch: { op: divide, by: "{c1+c2-c3}" }
+    caption: "Divide both pans by {c1+c2-c3}."
+    expect:
+      type: op
+      value: "divide {c1+c2-c3}"
+      misconceptions:
+        - id: divided-by-one-coefficient
+          when: "divide {c1}"
+          says: "Divide by the COMBINED coefficient — {c1} + {c2} − {c3} = {c1+c2-c3}, not by {c1} alone."
   - { t: 31, patch: { left: "{variable}", right: "{ans}", op: null }, caption: "{variable} = {ans}." }
   - { t: 33, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

@@ -6,6 +6,10 @@ params: { m: 9, h: 4 }
 generator: { m: { int: [2, 19] }, h: { int: [2, 5] } }
 widget: { type: numeric-input, config: { stem: "What is {5*m}% of {40*h}?" } }
 answer: { type: expr, value: "{2*m*h}", integer: true }
+misconceptions:
+  - id: used-the-percent-as-the-answer
+    when: "{5*m}"
+    says: "{5*m} is the PERCENT, not the amount. {5*m}% of {40*h} means {5*m} hundredths OF {40*h}."
 hints:
   - "5% of {40*h} is {40*h} ÷ 20 = {2*h}."
   - "{5*m}% is {m} fives: {m} × {2*h} = {2*m*h}."

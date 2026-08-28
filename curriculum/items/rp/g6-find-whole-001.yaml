@@ -6,6 +6,10 @@ params: { f: 4, k: 6 }
 generator: { f: { int: [2, 19] }, k: { int: [2, 8] } }
 widget: { type: numeric-input, config: { stem: "{5*f}% of a number is {f*k}. What is the number?" } }
 answer: { type: expr, value: "{20*k}", integer: true }
+misconceptions:
+  - id: answered-the-part
+    when: "{f*k}"
+    says: "{f*k} is the PART you were given. The question asks for the whole — the number that {5*f}% of it makes {f*k}."
 hints:
   - "{5*f}% is {f} fives, so 5% of the number is {f*k} ÷ {f} = {k}."
   - "5% is {k}, and 100% is 20 fives: {k} × 20 = {20*k}."

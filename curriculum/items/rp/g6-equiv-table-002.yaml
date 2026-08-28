@@ -11,6 +11,10 @@ widget:
     cols: ["cups", "muffins"]
     rows: [["{a}", "{b}"], ["?", "{b*m}"]]
 answer: { type: expr, value: "{a*m}", integer: true }
+misconceptions:
+  - id: added-instead-of-scaling
+    when: "{a+m}"
+    says: "Equivalent ratios scale by multiplying BOTH quantities by the same number — here ×{m} — not by adding."
 hints:
   - "The muffins went from {b} to {b*m}. What were they multiplied by?"
   - "Multiply the cups by {m} too: {a} × {m} = {a*m}."

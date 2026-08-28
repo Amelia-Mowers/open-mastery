@@ -6,6 +6,10 @@ params: { u: 3, v: 4, w: 8 }
 generator: { u: { int: [2, 4] }, v: { int: [2, 6] }, w: { mult_of: v, range: [8, 24] } }
 widget: { type: numeric-input, config: { stem: "A recipe uses {u} cups of rice to serve {v} people. How many cups serve {w} people?" } }
 answer: { type: expr, value: "{u*w/v}", integer: true }
+misconceptions:
+  - id: added-instead-of-scaling
+    when: "{v+w-u}"
+    says: "Ratios scale by MULTIPLYING, not by adding the difference. Find the amount for one, then multiply."
 hints:
   - "{w} people is {w} ÷ {v} = {w/v} times the recipe."
   - "Scale the cups the same way: {u} × {w/v} = {u*w/v}."

@@ -14,6 +14,10 @@ widget:
   config:
     stem: "Solve: {c1}{variable} + {c2}{variable} - {c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}."
 answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: divided-before-combining
+    when: "{((c1+c2-c3)*ans)/c1}"
+    says: "There are three {variable}-terms — combine them into {c1+c2-c3}{variable} FIRST, then divide by that."
 hints:
   - "Combine the like terms on each side first."
   - "The left side becomes {c1+c2-c3}{variable}."

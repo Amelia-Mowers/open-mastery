@@ -13,6 +13,13 @@ widget:
     cols: ["x", "y"]
     rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]]
 answer: { type: expr, value: "0", integer: true }
+misconceptions:
+  - id: flagged-a-row-that-fits
+    when: "1"
+    says: "Row 1 fits: {a*k} ÷ {a} = {k}, the same as every other row. Check each quotient before picking a breaker."
+  - id: flagged-the-last-row
+    when: "3"
+    says: "Row 3 fits too: {e*k} ÷ {e} = {k}. When every quotient matches, nothing breaks the pattern."
 hints:
   - "Divide y by x in each row. Do you get the same number every time?"
   - "{a*k} ÷ {a} = {k}, {c*k} ÷ {c} = {k}, {e*k} ÷ {e} = {k} — no row breaks it."

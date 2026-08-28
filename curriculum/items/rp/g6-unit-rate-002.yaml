@@ -6,6 +6,10 @@ params: { a: 6, b: 90 }
 generator: { a: { int: [3, 12] }, b: { mult_of: a, range: [36, 144] } }
 widget: { type: numeric-input, config: { stem: "A printer prints {b} pages in {a} minutes. How many pages per minute is that?" } }
 answer: { type: expr, value: "{b/a}", integer: true }
+misconceptions:
+  - id: answered-the-total
+    when: "{b}"
+    says: "{b} is the total for all {a}. A unit rate is what ONE costs: {b} split into {a} equal parts."
 hints:
   - "One minute is an equal share of the {a} minutes."
   - "{b} ÷ {a} = {b/a} pages each minute."

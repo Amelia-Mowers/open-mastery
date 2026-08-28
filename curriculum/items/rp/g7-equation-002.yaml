@@ -11,6 +11,10 @@ widget:
     cols: ["x", "y"]
     rows: [["1", "{k}"], ["{a}", "{a*k}"], ["{c}", "?"]]
 answer: { type: expr, value: "{k*c}", integer: true }
+misconceptions:
+  - id: added-k-instead-of-multiplying
+    when: "{k+c}"
+    says: "y = {k}x means {k} TIMES x. At x = {c} that is {k}·{c}, not {k} + {c}."
 hints:
   - "Every y is its x multiplied by {k}."
   - "y = {k} × {c} = {k*c}."

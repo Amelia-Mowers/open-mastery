@@ -6,6 +6,10 @@ params: { p: 38, d: 47, variable: y }
 generator: { p: { int: [20, 80] }, d: { int: [20, 90] } }
 widget: { type: equation-input, config: { stem: "Solve: {variable} + {p} = {p+d}." } }
 answer: { type: expr, value: "{variable} = {d}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: added-instead-of-subtracted
+    when: "{2*p+d}"
+    says: "That's {p+d} PLUS {p}. The {p} is already on the left — to peel it off, take it AWAY from both sides."
 hints:
   - "What operation undoes adding {p}?"
   - "Subtract {p} from both sides."

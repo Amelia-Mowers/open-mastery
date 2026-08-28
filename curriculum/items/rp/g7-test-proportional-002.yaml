@@ -13,6 +13,13 @@ widget:
     cols: ["x", "y"]
     rows: [["{r}", "{r*q}"], ["{s}", "{s*q+u}"], ["{t}", "{t*q}"]]
 answer: { type: expr, value: "2", integer: true }
+misconceptions:
+  - id: said-all-rows-agree
+    when: "0"
+    says: "One row does break it: {s*q+u} ÷ {s} is not {q}, while the others are. Compare every quotient."
+  - id: flagged-a-row-that-fits
+    when: "1"
+    says: "Row 1 fits: {r*q} ÷ {r} = {q}. Look for the row whose quotient is different."
 hints:
   - "Divide y by x in each row. Which quotient is different?"
   - "{r*q} ÷ {r} = {q} and {t*q} ÷ {t} = {q}, but {s*q+u} ÷ {s} is NOT {q} — row 2 breaks it."

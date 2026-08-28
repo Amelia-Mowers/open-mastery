@@ -6,6 +6,10 @@ params: { f: 7, g: 3 }
 generator: { f: { int: [2, 19] }, g: { int: [1, 4] } }
 widget: { type: numeric-input, config: { stem: "What is {5*f}% of {20*g}?" } }
 answer: { type: expr, value: "{f*g}", integer: true }
+misconceptions:
+  - id: used-the-percent-as-the-answer
+    when: "{5*f}"
+    says: "{5*f} is the PERCENT, not the amount. {5*f}% of {20*g} means {5*f} hundredths OF {20*g}."
 hints:
   - "5% of {20*g} is {20*g} ÷ 20 = {g}."
   - "{5*f}% is {f} fives: {f} × {g} = {f*g}."

@@ -28,11 +28,24 @@ only, dividing before clearing a term. Do not invent exotic ones: an
 unanticipated miss falls back to the generic line, which is correct
 behaviour, not a gap.
 
+A `when` may be a NUMBER (most items) or a SYMBOLIC expression — for
+expand/combine/write-expression the wrong answer is a different
+expression, not a different value, and both are matched by equivalence.
+
 **Invariants:** `[misconception_correct]` errors if a `when` ever equals
-the real answer under the authored params or any generator seed — a
-diagnosis that fires on a correct answer is the one thing this system
-must never do — and `[misconception_shape]`/`[misconception_dup]` catch
-templates that don't evaluate and duplicate ids.
+(or is equivalent to) the real answer under the authored params or any
+generator seed — a diagnosis that fires on a correct answer is the one
+thing this system must never do; `[misconception_shape]` and
+`[misconception_dup]` catch unparseable templates and duplicate ids; and
+`[no_misconceptions]` warns on any item with none, so the coverage gap
+is always visible. cairn's `diagnosis-coverage.test.tsx` additionally
+replays every authored misconception through the grader — one that
+doesn't match its own wrong answer is decorative and fails the build.
+
+Watch for templates that can COLLIDE on some generator seeds: `{a/b}`
+as "divided the wrong way" equals `{b/a}` whenever a = b, which the
+seed sweep caught. Prefer an error that is structurally distinct from
+the answer.
 
 ## Stepwise gates (2026-08-27)
 

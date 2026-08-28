@@ -7,6 +7,13 @@ params: { n: 4 }
 generator: { n: { int: [2, 6] } }
 widget: { type: numeric-input, config: { stem: "Evaluate: {n}³." } }
 answer: { type: expr, value: "{n*n*n}", integer: true }
+misconceptions:
+  - id: multiplied-by-three
+    when: "{3*n}"
+    says: "{n}³ means {n} used as a FACTOR three times — {n} × {n} × {n} — not {n} × 3."
+  - id: squared-instead-of-cubed
+    when: "{n*n}"
+    says: "That's {n}², two factors. The small 3 asks for one more: {n} × {n} × {n}."
 hints:
   - "{n}³ means {n} used as a factor three times."
   - "{n} × {n} = {n*n}, and {n*n} × {n} = {n*n*n}."

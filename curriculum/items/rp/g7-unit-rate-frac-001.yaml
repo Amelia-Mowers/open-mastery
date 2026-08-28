@@ -6,6 +6,10 @@ params: { p: 1, q: 2, r: 8 }
 generator: { q: { int: [2, 6] }, p: { int: [1, 5], coprime: q }, r: { mult_of: q, range: [7, 12] } }
 widget: { type: numeric-input, config: { stem: "You walk {p}/{q} of a mile in 1/{r} of an hour. How many miles per hour is that?" } }
 answer: { type: expr, value: "{p*r/q}", integer: true }
+misconceptions:
+  - id: multiplied-by-the-fraction
+    when: "{p/(q*r)}"
+    says: "1/{r} of an hour fits into a whole hour {r} times, so the distance is multiplied by {r}, not divided."
 hints:
   - "One hour holds {r} chunks of 1/{r} hour."
   - "Walk that distance {r} times: {p}/{q} × {r} = {p*r/q} miles."

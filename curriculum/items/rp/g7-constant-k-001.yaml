@@ -11,6 +11,10 @@ widget:
     cols: ["x", "y"]
     rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["1", "?"]]
 answer: { type: expr, value: "{k}", integer: true }
+misconceptions:
+  - id: answered-a-y-value
+    when: "{a*k}"
+    says: "{a*k} is y when x = {a}. The constant k is y when x is ONE: {a*k} ÷ {a}."
 hints:
   - "In every row, y ÷ x gives the same number."
   - "{a*k} ÷ {a} = {k} — and that is y when x is 1."

@@ -6,6 +6,10 @@ params: { a: 4, b: -9, variable: m }
 generator: { a: { int: [2, 9] }, b: { int: [-15, -2] } }
 widget: { type: equation-input, config: { stem: "Solve: {variable}/{a} = {b}." } }
 answer: { type: expr, value: "{variable} = {a*b}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: divided-instead-of-multiplied
+    when: "{b/a}"
+    says: "{variable} was already cut into {a} parts — dividing again makes the pieces smaller still. To rebuild the whole, multiply both sides by {a}."
 hints:
   - "{variable} is divided by {a}. What operation undoes division?"
   - "Multiply both sides by {a}."

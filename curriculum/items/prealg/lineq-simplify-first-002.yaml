@@ -13,6 +13,13 @@ widget:
   config:
     stem: "Solve: -{a}({variable} - {b}) - {c} = {-a*(ans-b)-c}."
 answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: dropped-the-outer-negative
+    when: "{(-a*(ans-b)-c-c)/(-a)+b}"
+    says: "The minus in front of the parentheses multiplies EVERYTHING inside by −1 — both the {variable} and the −{b}."
+  - id: forgot-the-constant
+    when: "{ans+c}"
+    says: "The −{c} sits outside the parentheses, so it has to be cleared from both sides too."
 hints:
   - "Distribute -{a} first."
   - "-{a}({variable} - {b}) = {-a}{variable} + {a*b}."

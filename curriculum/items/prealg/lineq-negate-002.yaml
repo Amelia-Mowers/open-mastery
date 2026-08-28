@@ -10,6 +10,10 @@ widget:
     stem: "Solve: -{variable} = {b}.  Move the dot to {variable}."
     value: "{b}"
 answer: { type: expr, value: "{variable} = {-b}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: kept-the-sign
+    when: "{b}"
+    says: "-{variable} = {b} says the OPPOSITE of {variable} is {b}. So {variable} itself sits on the other side of zero: {-b}."
 hints:
   - "-{variable} means the opposite of {variable}."
   - "The opposite of {b} is {-b}."

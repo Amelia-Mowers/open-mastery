@@ -6,6 +6,10 @@ params: { k: 3, a: 2, c: 6, d: 4 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 9] }, d: { int: [1, 5] } }
 widget: { type: numeric-input, config: { stem: "x: {a} → y: {a*k}.   x: {c} → y: {c*k+d}.   The second row breaks the proportion. How much too BIG is its y?" } }
 answer: { type: expr, value: "{d}", integer: true }
+misconceptions:
+  - id: answered-the-y-value
+    when: "{c*k+d}"
+    says: "That's the y the table shows. The question asks how far OFF it is: {c*k+d} − {c*k}."
 hints:
   - "The first row's rule is y = {k}x. What SHOULD y be when x = {c}?"
   - "It should be {k} × {c} = {c*k}; it is {c*k+d}. The excess is {c*k+d} − {c*k}."

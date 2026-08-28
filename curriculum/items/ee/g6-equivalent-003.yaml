@@ -12,6 +12,10 @@ widget:
     parts: ["{variable}", "{b}"]
     products: ["{a}{variable}", "?"]
 answer: { type: expr, value: "{a*b}", integer: true }
+misconceptions:
+  - id: added-instead-of-multiplied
+    when: "{a+b}"
+    says: "Each piece of area is a MULTIPLY: this one is {a} rows of {b}, so {a}·{b}."
 hints:
   - "The missing piece is {a} tall and {b} wide."
   - "{a} × {b} = {a*b}."

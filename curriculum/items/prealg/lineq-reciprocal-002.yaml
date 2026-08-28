@@ -9,6 +9,10 @@ generator:
   b: { mult_of: p, range: [10, 60] }
 widget: { type: equation-input, config: { stem: "Solve: {p}/{q} {variable} = {b}." } }
 answer: { type: expr, value: "{variable} = {q*b/p}", equivalence: symbolic, integer: true }
+misconceptions:
+  - id: multiplied-by-the-fraction
+    when: "{p*b/q}"
+    says: "Multiplying by {p}/{q} again makes it smaller. To undo {p}/{q}, multiply by its RECIPROCAL, {q}/{p}."
 hints:
   - "Multiply both sides by {q} first — that clears the fraction: {p}{variable} = {q*b}."
   - "Now divide both sides by {p}. (Shortcut: multiplying by the reciprocal {q}/{p} does both at once.)"
