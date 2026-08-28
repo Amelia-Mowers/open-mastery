@@ -45,6 +45,9 @@ export interface AttemptOutcome {
   mastery?: number
   /** this answer unlocked the skill's mastery check — offer it NOW */
   checkUnlocked?: boolean
+  /** a REVIEW the student held: the memory survived the gap, and the next
+   * one is `days` away (FSRS stability, in the student's own terms) */
+  reviewHeld?: { skillName: string; days: number; kept: number }
 }
 
 export interface ZooDemoView {

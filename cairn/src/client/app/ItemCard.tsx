@@ -422,6 +422,21 @@ export function ItemCard({
           {delta > 0 && <span className="pts-delta">+{delta}</span>}
         </div>
       )}
+      {outcome?.reviewHeld && (
+        <div className="review-held" role="status">
+          <span className="review-spark" aria-hidden />
+          <div>
+            <strong>Still got it.</strong> You remembered {outcome.reviewHeld.skillName} after time
+            away
+            {outcome.reviewHeld.kept > 1 ? ` — ${outcome.reviewHeld.kept} reviews in a row` : ''}.
+            <span className="milestone-sub">
+              Next check-in in about {outcome.reviewHeld.days}{' '}
+              {outcome.reviewHeld.days === 1 ? 'day' : 'days'} — the better you hold it, the longer
+              the gap.
+            </span>
+          </div>
+        </div>
+      )}
       {mastered && (
         <div className="grant" role="status">
           <span className="grant-stone" aria-hidden />

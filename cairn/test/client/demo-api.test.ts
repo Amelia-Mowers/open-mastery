@@ -5,6 +5,7 @@
 import { describe, it, expect } from 'vitest'
 import { renderTemplate, type Env } from '@openmastery/schema'
 import { DemoApi, type DemoStorage } from '../../src/client/demo/DemoApi'
+import { SiteCore } from '../../src/site/core'
 import { fixtureBundle } from '../core/fixtures'
 
 const memStorage = (): DemoStorage & { data: Map<string, string> } => {
@@ -153,5 +154,54 @@ describe('milestones recognise being moved off a skill', () => {
     // never the same recognition twice for the same skill
     const keys = seen.map((m) => `${m.skillId}:${m.name}`)
     expect(new Set(keys).size).toBe(keys.length)
+  })
+})
+
+describe('a held review is recognised', () => {
+  it('reports the streak and the widening gap when a review lands correct', async () => {
+    const bundle = fixtureBundle()
+    const items = new Map(bundle.items.map((i) => [i.id, i]))
+    // a controllable clock: master everything, then jump a month so the
+    // FSRS reviews come due
+    let t = Date.UTC(2026, 0, 1)
+    const core = new SiteCore(bundle, { now: () => t })
+    const answer = (a: { instance: { itemId: string; params: unknown } }) => {
+      const full = items.get(a.instance.itemId)!
+      const r = renderTemplate(String(full.answer.value), a.instance.params as Env, {
+        numberStyle: 'fraction',
+      })
+      return r.ok ? r.value : ''
+    }
+    let held: { skillName: string; days: number; kept: number } | undefined
+    let jumped = false
+    for (let step = 0; step < 500 && !held; step++) {
+      const n = core.next('rv').body as { action: { kind: string; [k: string]: unknown } }
+      const a = n.action
+      if (a.kind === 'session_done') {
+        if (jumped) break
+        t += 40 * 24 * 3600 * 1000 // a month on: reviews fall due
+        jumped = true
+        continue
+      }
+      if (a.kind === 'lesson' || a.kind === 'alt_explanation') {
+        core.explanationViewed('rv')
+        continue
+      }
+      if (a.kind !== 'serve_item') break
+      if (a['checkAvailable'] === true) {
+        core.startCheck('rv', a['forSkillId'] as string)
+        continue
+      }
+      const out = core.attempt('rv', {
+        raw: answer(a as never),
+        hintLevel: 0,
+        latencyMs: 800,
+      }).body as { reviewHeld?: { skillName: string; days: number; kept: number } }
+      if (out.reviewHeld) held = out.reviewHeld
+    }
+    expect(held, 'a review should have come due and been held').toBeDefined()
+    expect(held!.days).toBeGreaterThanOrEqual(1)
+    expect(held!.kept).toBeGreaterThanOrEqual(1)
+    expect(held!.skillName.length).toBeGreaterThan(0)
   })
 })

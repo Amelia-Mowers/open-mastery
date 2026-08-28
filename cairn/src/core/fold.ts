@@ -34,6 +34,9 @@ export interface SkillState {
   fsrs?: FsrsState
   /** running latency estimate (EMA) — the §5 rating's "skill median" proxy */
   latencyEmaMs?: number
+  /** reviews this skill has HELD (correct at review time) — the streak the
+   * student is shown; a lapse resets it, because the memory did not hold */
+  reviewsHeld?: number
 }
 
 export interface StudentState {
@@ -95,6 +98,7 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
         s.latencyEmaMs === undefined ? ev.latencyMs : 0.7 * s.latencyEmaMs + 0.3 * ev.latencyMs
       if (ev.itemKind === 'review' && ev.rating !== undefined && s.fsrs !== undefined)
         s.fsrs = fsrsReview(s.fsrs, ev.rating, ev.t)
+      if (ev.itemKind === 'review') s.reviewsHeld = ev.correct ? (s.reviewsHeld ?? 0) + 1 : 0
       if (ev.correct) s.lastCorrect = ev.t
       s.consecUnassistedCorrect = ev.correct && !ev.assisted ? s.consecUnassistedCorrect + 1 : 0
       if (ev.assisted) state.assisted.add(instanceKey(ev.itemId, ev.paramHash))

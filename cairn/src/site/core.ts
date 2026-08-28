@@ -12,6 +12,7 @@
  * server-side.
  */
 import { parseTemplate, templateIdentifiers, type Bundle, type Explanation } from '@openmastery/schema'
+import { DAY_MS } from '../core/fsrs'
 import {
   applyEvent,
   bktUpdate,
@@ -222,6 +223,25 @@ export class SiteCore {
     return SiteCore.MILESTONE_RANKS.find((r) => pct >= r.min) ?? SiteCore.MILESTONE_RANKS[3]!
   }
 
+  /** A held review is its own accomplishment: the student proved a memory
+   * survived a gap, and the gap to the NEXT one just grew. FSRS already
+   * knows both numbers — say them, so spaced repetition reads as strength
+   * rather than as the app nagging. */
+  private reviewHeld(
+    studentId: string,
+    skillId: string,
+  ): { skillName: string; days: number; kept: number } | null {
+    const st = this.slot(studentId)
+    const sk = st.student.skills[skillId]
+    if (!sk?.fsrs) return null
+    const days = Math.max(1, Math.round((sk.fsrs.due - this.now()) / DAY_MS))
+    return {
+      skillName: this.cur.skills.get(skillId)?.name ?? skillId,
+      days,
+      kept: sk.reviewsHeld ?? 1,
+    }
+  }
+
   /** did this serve move the student OFF a skill they had made progress on?
    * If so, name what they earned there. Mastery has its own moment (the
    * stone), so a grant is never also a milestone. */
@@ -413,6 +433,13 @@ export class SiteCore {
       })),
       points: this.pointsFor(studentId),
       mastery: this.masteryOf(studentId, pending.skillId),
+      // a review the student HELD — the memory survived the gap
+      ...(pending.itemKind === 'review' && result.correct
+        ? (() => {
+            const held = this.reviewHeld(studentId, pending.skillId)
+            return held ? { reviewHeld: held } : {}
+          })()
+        : {}),
       // the mastery moment must not be lost to interleaving: say so the
       // instant the qualifying PRACTICE answer lands, whatever skill serves
       // next (never for check items — that would re-offer mid-check)
