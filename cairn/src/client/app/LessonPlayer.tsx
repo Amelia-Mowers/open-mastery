@@ -235,10 +235,18 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
     return {
       element: w.render(setup, 'lesson'),
       apply: (patch) => {
-        const view: { partLabel?: string; total?: string; highlight?: number[]; totalIn?: boolean } = {}
+        const view: {
+          partLabel?: string
+          total?: string
+          highlight?: number[]
+          totalIn?: boolean
+          cellsIn?: number | null
+        } = {}
         if ('partLabel' in patch) view.partLabel = renderText(String(patch['partLabel']), params)
         if ('total' in patch) view.total = renderText(String(patch['total']), params)
         if ('totalIn' in patch) view.totalIn = patch['totalIn'] === true
+        if ('cellsIn' in patch)
+          view.cellsIn = patch['cellsIn'] === null ? null : evalNumber(patch['cellsIn'], params)
         if ('highlight' in patch) {
           const raw = patch['highlight']
           view.highlight = Array.isArray(raw)

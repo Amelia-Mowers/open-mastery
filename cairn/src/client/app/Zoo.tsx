@@ -22,7 +22,9 @@ function DemoCard({ demo }: { demo: ZooDemo }) {
   return (
     <section className="card zoo-card">
       <div className="card-kicker">
-        <span className="kicker">{demo.title.toUpperCase()}</span>
+        <span className={demo.title.includes(' ') ? 'kicker' : 'kicker kicker-id'}>
+          {demo.title.includes(' ') ? demo.title.toUpperCase() : demo.title}
+        </span>
         <span className="mono-chip">{roleBadge(demo.widget)}</span>
         <span className="mono-chip">{JSON.stringify(demo.params)}</span>
         <span
@@ -248,7 +250,7 @@ export function Zoo({ api }: { api: CairnApi }) {
       void api.demoFor(only).then((d) =>
         setDemos([
           {
-            title: `${d.widget} — ${d.skillName}`,
+            title: d.explanation.id,
             widget: d.widget,
             params: d.params as Params,
             explanation: d.explanation,

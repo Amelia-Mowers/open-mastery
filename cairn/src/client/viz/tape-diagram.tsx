@@ -36,6 +36,10 @@ export interface TapeDiagramView {
   highlight?: number[]
   /** staged decomposition: show the brace total once its symbol is explained */
   totalIn?: boolean
+  /** staged construction: how many CELLS have arrived (bar-model mode).
+   * The bar is built piece by piece as the student names each one, so the
+   * diagram is CONSTRUCTED from the equation rather than presented whole. */
+  cellsIn?: number | null
 }
 
 export interface TapeDiagramAnswer {
@@ -49,6 +53,7 @@ type TapeState = {
   highlight: number[]
   raw: string
   totalIn: boolean
+  cellsIn: number | null
 }
 
 const label = (p: TapeDiagramParams): string =>
@@ -72,7 +77,7 @@ const cellStyle = (highlighted: boolean, last: boolean): CSSProperties => ({
 export function createTapeDiagram(
   config: TapeDiagramConfig = {},
 ): WidgetInstance<TapeDiagramParams, TapeDiagramAnswer, TapeDiagramView> {
-  const store = new WidgetStore<TapeState>({ partLabel: null, total: null, highlight: [], raw: '', totalIn: true })
+  const store = new WidgetStore<TapeState>({ partLabel: null, total: null, highlight: [], raw: '', totalIn: true, cellsIn: null })
 
   function Brace() {
     return (
@@ -188,20 +193,25 @@ export function createTapeDiagram(
             background: '#fffdf9',
           }}
         >
-          {Array.from({ length: n }, (_, i) => (
-            <div
-              key={i}
-              data-part
-              data-highlighted={state.highlight.includes(i + 1) || undefined}
-              style={{
-                ...cellStyle(state.highlight.includes(i + 1), i === n - 1),
-                animation: 'cairn-rise 0.3s ease both',
-                animationDelay: `${i * 0.05}s`,
-              }}
-            >
-              {cells ? cells[i] : partLabel}
-            </div>
-          ))}
+          {Array.from({ length: n }, (_, i) => {
+            const arrived = state.cellsIn === null || i < state.cellsIn
+            return (
+              <div
+                key={i}
+                data-part
+                data-empty={!arrived || undefined}
+                data-highlighted={(arrived && state.highlight.includes(i + 1)) || undefined}
+                style={{
+                  ...cellStyle(arrived && state.highlight.includes(i + 1), i === n - 1),
+                  ...(arrived ? {} : { background: '#f6f1e7', color: 'transparent' }),
+                  animation: 'cairn-rise 0.3s ease both',
+                  animationDelay: `${i * 0.05}s`,
+                }}
+              >
+                {arrived ? (cells ? cells[i] : partLabel) : ''}
+              </div>
+            )
+          })}
         </div>
         <Brace />
         <div
@@ -236,6 +246,8 @@ export function createTapeDiagram(
       if (patch.total !== undefined) next.total = patch.total ?? null
       if (patch.highlight !== undefined) next.highlight = patch.highlight ?? []
       if (patch.totalIn !== undefined) next.totalIn = patch.totalIn === true
+      if (patch.cellsIn !== undefined)
+        next.cellsIn = patch.cellsIn === null ? null : Number(patch.cellsIn)
       store.setState(next)
     },
     a11y: { role: 'img', label },

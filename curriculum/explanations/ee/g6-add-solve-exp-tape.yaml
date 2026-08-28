@@ -4,10 +4,38 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", " + {p}", " = ", "{p+d}"], cells: ["{variable}", "{p}"], total: "{p+d}", totalIn: false }, caption: "A bar in two pieces: the unknown piece and the {p} piece." }
-  - { t: 4, patch: { eqHighlight: ["0"], highlight: ["1"] }, caption: "This piece is {variable} — the part we want.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation is the tape piece we WANT to find?" } }
-  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["2"] }, caption: "This piece is {p}.", expect: { type: pick, value: ["1"], prompt: "Which piece — or pieces — is the other piece of the bar?" } }
-  - { t: 12, patch: { eqHighlight: ["3"], totalIn: true, highlight: [] }, caption: "Together they make {p+d}.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation shows the TOTAL — the number the whole bar adds up to?" } }
-  - { t: 16, patch: { eqHighlight: [], highlight: ["1"] }, caption: "Take the {p} piece away from the whole: {variable} = {p+d} − {p} = {d}." }
-  - { t: 19, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { equation: ["{variable}", " + {p}", " = ", "{p+d}"], cells: ["{variable}", "{p}"], total: "{p+d}", cellsIn: 0, totalIn: false }, caption: "An empty bar. Watch the equation build it, piece by piece." }
+  - t: 4
+    patch: { eqHighlight: ["0"], cellsIn: 1, highlight: ["1"] }
+    caption: "{variable} is the first piece of the bar — the part we are looking for."
+    expect:
+      type: pick
+      value: ["0"]
+      prompt: "Which piece — or pieces — of the equation goes in the FIRST section of the bar?"
+      hint: "The bar is {variable} and {p} laid end to end. Which one is the unknown part?"
+  - t: 8
+    patch: { eqHighlight: ["1"], cellsIn: 2, highlight: ["2"] }
+    caption: "{p} joins it — the two pieces sit end to end."
+    expect:
+      type: pick
+      value: ["1"]
+      prompt: "Which piece — or pieces — goes in the SECOND section, right next to it?"
+      hint: "The + {p} is added ON to {variable}, so it sits alongside it in the bar."
+  - t: 12
+    patch: { eqHighlight: ["3"], totalIn: true, highlight: [] }
+    caption: "Both pieces together measure {p+d} — that is the whole bar."
+    expect:
+      type: pick
+      value: ["3"]
+      prompt: "Which piece — or pieces — of the equation measures the WHOLE bar?"
+      hint: "The = tells you what everything adds up to."
+  - t: 16
+    patch: { eqHighlight: [], highlight: ["1"] }
+    caption: "The bar is {p+d} long and {p} of it is the second piece — so the first piece is {p+d} − {p} = {d}."
+    expect:
+      type: numeric
+      value: "{d}"
+      prompt: "Look at the bar: {p+d} across, and {p} of it is the second piece. How long is the first piece?"
+      hint: "Cover the {p} section. What is left of the {p+d}?"
+  - { t: 20, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

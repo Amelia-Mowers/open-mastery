@@ -33,6 +33,7 @@ body {
 .card-kicker { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
 .kicker { font: 700 11px 'Nunito Sans', sans-serif; letter-spacing: 0.08em; color: #b05f28; }
 .kicker-alt { color: #8a5320; }
+.kicker-id { font-family: ui-monospace, Menlo, monospace; font-size: 12px; letter-spacing: 0; text-transform: none; }
 .kicker-check { color: #fff; background: #5c4a38; padding: 4px 10px; border-radius: 5px; }
 .card-kicker .mono-chip { margin-left: auto; background: #f2ede4; }
 

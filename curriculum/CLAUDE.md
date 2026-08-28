@@ -182,6 +182,28 @@ moving the dot on a number line; `min`/`max`/`step` config values may be
 cairn-expr templates evaluated per instance). Direct text entry is the
 fallback, not the default.
 
+## Decomposition BUILDS the diagram, then asks what it makes obvious
+
+A decomposition step is construction, not annotation. The diagram starts
+EMPTY and each gate places a piece of the equation into it — "which piece
+goes in the FIRST section of the bar?" fills that section; the next gate
+fills the next; a later one supplies the total. Pointing at a finished
+picture ("this piece is x") teaches nothing the picture didn't already
+say, and gives the student nothing to do.
+
+Then the LAST gate asks the question the built diagram makes obvious —
+"the bar is 21 across and 8 of it is the second piece, how long is the
+first?" — so the answer falls out of the construction rather than out of
+symbol manipulation. That is the whole point of the representation.
+
+Staging flags exist for this: `cellsIn` (tape sections),
+`leftIn`/`rightIn` (balance pans), `shapesIn`/`weightIn` (hanger),
+`totalIn` (tape total), `topIn`/`bottomIn` (double number line),
+`envelopesIn`/`countersIn`, `fillRows`/`products` (area), `reveal`
+(tables), `slices` (cube). Whiteboards (`worked-equation`) are exempt —
+a board written line by line IS the construction — and the number line's
+jumps play the same role.
+
 ## Decomposition steps pair the symbol with its region
 
 Lessons open on the raw symbolic equation (`equation` segments) and

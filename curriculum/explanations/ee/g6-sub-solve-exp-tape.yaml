@@ -4,10 +4,38 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{p}", "{d}"], total: "{variable}", totalIn: false }, caption: "Here {variable} is the WHOLE bar — {p} was taken from it, {d} remained." }
-  - { t: 4, patch: { eqHighlight: ["1"], highlight: ["1"] }, caption: "The piece that was taken away: {p}.", expect: { type: pick, value: ["1"], prompt: "Which piece — or pieces — of the equation was TAKEN AWAY from the bar?" } }
-  - { t: 8, patch: { eqHighlight: ["3"], highlight: ["2"] }, caption: "The piece that is left: {d}.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — is what REMAINED after the taking-away?" } }
-  - { t: 12, patch: { eqHighlight: ["0"], totalIn: true, highlight: [] }, caption: "The whole bar is {variable} — put the pieces back together.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation is the WHOLE bar?" } }
-  - { t: 16, patch: { eqHighlight: [], highlight: ["1", "2"] }, caption: "{variable} = {p} + {d} = {p+d}." }
-  - { t: 19, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{p}", "{d}"], total: "{variable}", cellsIn: 0, totalIn: false }, caption: "An empty bar. Here {variable} is the WHOLE thing — watch the pieces arrive." }
+  - t: 4
+    patch: { eqHighlight: ["1"], cellsIn: 1, highlight: ["1"] }
+    caption: "{p} was taken away — that is one piece of the bar."
+    expect:
+      type: pick
+      value: ["1"]
+      prompt: "Which piece — or pieces — of the equation goes in the FIRST section — the part taken away?"
+      hint: "Something was subtracted. That amount is still part of the whole bar."
+  - t: 8
+    patch: { eqHighlight: ["3"], cellsIn: 2, highlight: ["2"] }
+    caption: "{d} is what remained — the second piece."
+    expect:
+      type: pick
+      value: ["3"]
+      prompt: "Which piece — or pieces — goes in the SECOND section — what was left over?"
+      hint: "After the subtraction, this is the amount still there."
+  - t: 12
+    patch: { eqHighlight: ["0"], totalIn: true, highlight: [] }
+    caption: "Both pieces together are the whole bar: {variable}."
+    expect:
+      type: pick
+      value: ["0"]
+      prompt: "Which piece — or pieces — of the equation is the WHOLE bar?"
+      hint: "The bar started as one thing before anything was taken from it."
+  - t: 16
+    patch: { eqHighlight: [], highlight: ["1", "2"] }
+    caption: "The two pieces are {p} and {d}, so the whole bar is {p} + {d} = {p+d}."
+    expect:
+      type: numeric
+      value: "{p+d}"
+      prompt: "Look at the bar: {p} in one section, {d} in the other. How long is the whole bar?"
+      hint: "Put the two pieces back together."
+  - { t: 20, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
