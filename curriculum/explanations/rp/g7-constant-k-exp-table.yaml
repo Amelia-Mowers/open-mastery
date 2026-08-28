@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["y", " = k · ", "x"], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["1", "{k}"]], reveal: "0" }, caption: "A proportional table hides one number: k. Let's find it." }
   - { t: 4, patch: { eqHighlight: ["2", "0"], reveal: "2" }, caption: "Every row pairs an x with its y.", expect: { type: numeric, value: "{c*k}", prompt: "What goes in the next row?" } }
   - { t: 8, patch: { eqHighlight: ["1"], highlight: "1" }, caption: "Row 1: {a*k} ÷ {a} = {k}." }
-  - { t: 12, patch: { highlight: "2" }, caption: "Row 2: {c*k} ÷ {c} — the SAME quotient again. So what is k?" }
+  - { t: 12, patch: { highlight: "2" }, caption: "So the question the table asks is: every row divides to the SAME number — which one?", expect: { type: numeric, value: "{c*k}", prompt: "What is the y-value in row 2?", hint: "Read it straight off the table." } }
   - { t: 16, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "k = {k}: the y when x is 1 — the unit rate with its grown-up name.", expect: { type: numeric, value: "{k}", prompt: "What goes in the next row?" } }
   - { t: 19.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

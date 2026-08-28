@@ -191,6 +191,15 @@ fills the next; a later one supplies the total. Pointing at a finished
 picture ("this piece is x") teaches nothing the picture didn't already
 say, and gives the student nothing to do.
 
+The lead must END BY ASKING. It stops one step short of the resolution,
+so the last SURVIVING step has to be a gate — otherwise the student is
+left staring at a finished diagram with nothing to do, and the answer box
+below has to carry a leap the lesson never set up. Validator:
+`[lead_ends_quiet]`. In practice this means the penultimate step poses
+the question in the diagram's own terms ("the bar is 21 across and 8 is
+the second piece — what do you do to 21?") and the final, dropped step
+states the resolution.
+
 Then the LAST gate asks the question the built diagram makes obvious —
 "the bar is 21 across and 8 of it is the second piece, how long is the
 first?" — so the answer falls out of the construction rather than out of

@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["y", " = ", "{k}", "x"], topLabel: "x", bottomLabel: "y", top: ["0", "1", "{a}", "{c}"], bottom: ["0", "{k}", "{a*k}", "{k*c}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "One rule stretches the whole line." }
   - { t: 4, patch: { eqHighlight: ["2"], topIn: true, bottomIn: true, reveal: ["0", "1"] }, caption: "At x = 1, y = {k} — the rule is y = {k}x.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — of the ratio pair up across the two lines?" } }
-  - { t: 8, patch: { eqHighlight: [], reveal: ["0", "1", "2"], highlight: "2" }, caption: "x = {a}: y = {k}·{a} = {a*k}." }
+  - { t: 8, patch: { eqHighlight: [], reveal: ["0", "1", "2"], highlight: "2" }, caption: "So the question the lines ask is: the rule multiplies every x by {k} — what does x = {c} give?", expect: { type: numeric, value: "{a*k}", prompt: "At x = {a}, where does y land?", hint: "{k} for every one x, and there are {a} of them." } }
   - { t: 12, patch: { reveal: ["0", "1", "2", "3"], highlight: "3" }, caption: "x = {c}: y = {k}·{c} = {k*c}. The rule answers every x." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

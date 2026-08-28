@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{c}²" }, caption: "The small 2 counts FACTORS: {c} multiplied by itself." }
-  - { t: 4, patch: { line: "{c}² = {c} × {c}", note: "two factors of {c}" }, caption: "{c} used as a factor twice.", expect: { type: numeric, value: "{c}", prompt: "The board shows {c} × {c}. What is the FACTOR being repeated?" } }
+  - { t: 4, patch: { line: "{c}² = {c} × {c}", note: "two factors of {c}" }, caption: "The board shows the base written twice — that is what the small 2 counts.", expect: { type: numeric, value: "{c}", prompt: "The board shows {c} × {c}. What is the FACTOR being repeated?" } }
   - { t: 8, patch: { line: "= {c*c}", note: "multiply" }, caption: "{c}² = {c*c}.", expect: { type: numeric, value: "{c*c}", prompt: "What number finishes this line?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

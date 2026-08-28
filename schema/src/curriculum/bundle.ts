@@ -242,8 +242,17 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
               )
           } else if (st.expect.type === 'numeric') {
             const v = String(st.expect.value)
+            // Exempt, same as op DO-gates: a prompt that shows the working
+            // ("{c} × {c} — what is the repeated factor?") or that names the
+            // value's source is asking the student to READ the diagram, so
+            // the caption carrying it is the teaching, not a leak.
+            const enactment = st.expect.prompt !== undefined && st.expect.prompt.includes(v)
             // values readable off the equation banner are fair game
-            if (prior.caption.includes(v) && ![...bannerSegs].some((seg) => seg.includes(v)))
+            if (
+              !enactment &&
+              prior.caption.includes(v) &&
+              ![...bannerSegs].some((seg) => seg.includes(v))
+            )
               push(
                 'warning',
                 'gate_telegraph',
@@ -252,6 +261,24 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
               )
           }
         })
+      }
+      // …and it must END BY ASKING. The lead stops one step short of the
+      // resolution, so if its LAST surviving step is a statement, the
+      // student is left staring at a finished diagram with no question —
+      // the answer box below has to carry a leap the lesson never set up.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const content = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        const survivors = content.slice(0, -1)
+        const last = survivors[survivors.length - 1]
+        if (survivors.length > 0 && last?.expect === undefined)
+          push(
+            'warning',
+            'lead_ends_quiet',
+            e.id,
+            'the faded lead ends on a statement — gate its last surviving step so the student is left with the question, not a finished picture',
+          )
       }
       // EVERY timeline must be workable: the faded/stepwise lead drops the
       // final content step (the resolution), so a timeline whose only gates

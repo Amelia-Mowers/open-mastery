@@ -31,11 +31,23 @@ timeline:
       hint: "The bar started as one thing before anything was taken from it."
   - t: 16
     patch: { eqHighlight: [], highlight: ["1", "2"] }
-    caption: "The two pieces are {p} and {d}, so the whole bar is {p} + {d} = {p+d}."
+    caption: "So the question the bar asks is: {p} and {d} together make WHAT?"
+    expect:
+      type: op
+      value: "add {p}"
+      prompt: "To rebuild the whole bar, what do you do to {d}?"
+      hint: "The two sections sit end to end — put them back together."
+      misconceptions:
+        - id: subtracted-instead-of-added
+          when: "subtract {p}"
+          says: "Taking {p} away again makes the bar shorter. The {p} section is part of the whole — put it back."
+  - t: 20
+    patch: { eqHighlight: [], highlight: ["1", "2"] }
+    caption: "{p} + {d} = {p+d}. The whole bar — {variable} — is {p+d}."
     expect:
       type: numeric
       value: "{p+d}"
       prompt: "Look at the bar: {p} in one section, {d} in the other. How long is the whole bar?"
       hint: "Put the two pieces back together."
-  - { t: 20, handoff: { prompt: "Now you try." } }
+  - { t: 24, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -31,11 +31,23 @@ timeline:
       hint: "The = tells you what everything adds up to."
   - t: 16
     patch: { eqHighlight: [], highlight: ["1"] }
-    caption: "The bar is {p+d} long and {p} of it is the second piece — so the first piece is {p+d} − {p} = {d}."
+    caption: "So the question the bar asks is: WHAT plus {p} makes {p+d}?"
+    expect:
+      type: op
+      value: "subtract {p}"
+      prompt: "To uncover the first piece, what do you do to {p+d}?"
+      hint: "Cover the {p} section with your finger. What is left of the {p+d}?"
+      misconceptions:
+        - id: added-instead-of-subtracted
+          when: "add {p}"
+          says: "Adding {p} makes the bar longer. The {p} piece is already inside the {p+d} — take it off to see what's left."
+  - t: 20
+    patch: { eqHighlight: [], highlight: ["1", "2"] }
+    caption: "{p+d} − {p} = {d}. The first piece — {variable} — is {d}."
     expect:
       type: numeric
       value: "{d}"
       prompt: "Look at the bar: {p+d} across, and {p} of it is the second piece. How long is the first piece?"
       hint: "Cover the {p} section. What is left of the {p+d}?"
-  - { t: 20, handoff: { prompt: "Now you try." } }
+  - { t: 24, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
