@@ -331,11 +331,16 @@ function Session({
   }
 
   const reset = () => {
-    focusSkill.current = null
-    setFocusedOn(false)
-    setCheckDismissed(new Set())
-    setOverlay(null)
-    void api.reset().then(refresh)
+    // a reset deletes the student: wipe their progress, forget the stored
+    // name, and land back on the front door
+    void api.reset().then(() => {
+      try {
+        localStorage.removeItem('cairn.student')
+      } catch {
+        /* storage unavailable is fine */
+      }
+      onLeave()
+    })
   }
 
   /** chain into the next representation (api.explain loops when exhausted) */
