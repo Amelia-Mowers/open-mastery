@@ -168,6 +168,8 @@ judgment can be expressed in the representation itself.
 
 - **Future work is tracked centrally in `../TODO.md`** — don't scatter
   queued-work notes across docs; leave context, move the task.
+  Check items off in the SAME commit that finishes them and re-read it
+  when picking up work — a stale queue hides what's actually left.
 - **MONOREPO (2026-08-27)**: this directory is part of the single git repo
   at the workspace root (github.com/Amelia-Mowers/open-mastery). Commit at
   the ROOT — the old per-directory repos are archived as .git-local-archive

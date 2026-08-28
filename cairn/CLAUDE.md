@@ -59,6 +59,10 @@
   content via `/api/explain` curl BEFORE screenshotting.
 - **Future work is tracked centrally in `../TODO.md`** (flow gaps,
   planned inputs, build steps) — leave context in docs, move the task.
+  KEEP IT CURRENT: check items off in the SAME commit that finishes
+  them, and re-read it when picking up work. A stale queue is worse
+  than none — it hides what's actually left and re-proposes finished
+  work. Shipped narratives go in memory/commit messages, not here.
 - **Browser demo** (`npm run build:demo` → `dist-demo/`): the app with the
   backend rolled into the browser — `src/site/core.ts` (SiteCore) is ALL
   site behavior, shared by the HTTP dev server and `src/client/demo/DemoApi`
