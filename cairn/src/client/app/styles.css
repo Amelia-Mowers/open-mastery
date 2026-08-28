@@ -360,9 +360,7 @@ body {
   margin-top: 8px;
 }
 .milestone-sub { display: block; font-size: 13.5px; color: #8b8070; margin-top: 3px; }
-.milestone-overlay { z-index: 40; }
 .milestone-moment {
-  max-width: 420px;
   text-align: center;
   padding: 34px 30px 26px;
   animation: cairn-pop 0.4s ease;
@@ -372,7 +370,6 @@ body {
   color: #8a4d1d;
   margin: 14px 0 4px;
 }
-.milestone-skill { font: 700 14px 'Nunito Sans', sans-serif; color: #5c5245; margin: 0 0 10px; }
 .milestone-blurb { font: 600 17px 'Lora', Georgia, serif; color: #5c5245; margin: 0 0 20px; }
 .milestone-pebble-big {
   display: block;

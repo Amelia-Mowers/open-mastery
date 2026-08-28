@@ -476,6 +476,33 @@ function Session({
         }
       />
     )
+  } else if (milestone) {
+    body = (
+      <section className="card milestone-moment" aria-label={`Milestone on ${milestone.skillName}`}>
+        <span className="milestone-pebble-big" aria-hidden />
+        <h1>Milestone!</h1>
+        <p className="milestone-blurb">
+          You&rsquo;re doing great on {milestone.skillName}.
+        </p>
+        <div className="answer-row" style={{ justifyContent: 'center' }}>
+          <button
+            className="btn"
+            onClick={() => {
+              const id = milestone.skillId
+              setMilestone(null)
+              focusSkill.current = id
+              setFocusedOn(true)
+              refresh()
+            }}
+          >
+            Keep going on this
+          </button>
+          <button className="btn btn-primary" autoFocus onClick={() => setMilestone(null)}>
+            Try another skill
+          </button>
+        </div>
+      </section>
+    )
   } else if (
     (unlockOffer !== null && !checkDismissed.has(unlockOffer)) ||
     (next.action.checkAvailable === true && !checkDismissed.has(next.action.forSkillId))
@@ -564,41 +591,6 @@ function Session({
         onLeave={onLeave}
         onReset={reset}
       />
-      {/* A milestone is a MOMENT, not a banner: it takes the screen, is
-          celebrated on its own terms, and never mentions how far there is
-          left to go — "you're 58% there" reads as a shortfall. */}
-      {milestone && view === 'work' && (
-        <div
-          className="peek-overlay milestone-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-label={`${milestone.name} on ${milestone.skillName}`}
-        >
-          <section className="card milestone-moment">
-            <span className="milestone-pebble-big" aria-hidden />
-            <h1>{milestone.name}!</h1>
-            <p className="milestone-skill">{milestone.skillName}</p>
-            <p className="milestone-blurb">{milestone.blurb}.</p>
-            <div className="answer-row" style={{ justifyContent: 'center' }}>
-              <button
-                className="btn"
-                onClick={() => {
-                  const id = milestone.skillId
-                  setMilestone(null)
-                  focusSkill.current = id
-                  setFocusedOn(true)
-                  refresh()
-                }}
-              >
-                Keep going on this
-              </button>
-              <button className="btn btn-primary" autoFocus onClick={() => setMilestone(null)}>
-                Next thing
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
       <SmoothHeight dim={fetching && next !== null && view !== 'dashboard'}>{body}</SmoothHeight>
     </main>
   )
