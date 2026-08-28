@@ -191,6 +191,15 @@ plainly first; the whiteboard is never first (it is what the concrete
 models fade toward, [worked_primary]); the weakest fit goes last. Loading
 order is NOT priority — buildIndex sorts by this list.
 
+## Number lines: the axis must contain the walk
+
+`min`/`max`/`step` define the ticks, and a number line can only mark,
+label or arc to a value that IS a tick. A walk starting at {b} and
+stepping by {c} needs `min: "{b}"` — anchoring at 0 makes every value the
+timeline names fall between ticks, and the line renders utterly blank.
+cairn's lesson-coverage test checks every marker, `labelled` entry and
+arc endpoint against the axis it declares.
+
 ## A representation must not print the answer
 
 If the picture already shows the result, the student reads it instead of

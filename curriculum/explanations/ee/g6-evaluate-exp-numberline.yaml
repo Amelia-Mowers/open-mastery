@@ -4,7 +4,7 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}"], min: 0, max: "{a*c+b}", step: "{c}", labelled: [] }, caption: "A bare line. The expression tells us where to start and how far to jump." }
+  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}"], min: "{b}", max: "{a*c+b}", step: "{c}", labelled: [] }, caption: "A bare line. The expression tells us where to start and how far to jump." }
   - t: 4
     patch: { eqHighlight: ["1"], marker: "{b}", labelled: ["{b}"] }
     caption: "The + {b} is the starting point — that is where we stand before any jumps."
