@@ -203,7 +203,7 @@ export function createTapeDiagram(
       <div role="img" aria-label={label(params)} style={{ maxWidth: 560, margin: '0 auto' }}>
         <div
           data-bar-wrap
-          style={{ width: barWidth, transition: 'width 0.55s ease' }}
+          style={{ width: barWidth, margin: '0 auto', transition: 'width 0.55s ease' }}
         >
         <div
           data-bar
@@ -227,6 +227,8 @@ export function createTapeDiagram(
                 data-highlighted={(arrived && state.highlight.includes(i + 1)) || undefined}
                 style={{
                   ...cellStyle(arrived && !gone && state.highlight.includes(i + 1), i === n - 1),
+                  // not yet placed: the label is invisible but still there, so
+                  // the empty bar has the same height as the filled one
                   ...(arrived ? {} : { background: '#f6f1e7', color: 'transparent' }),
                   // a removed section collapses away and the bar shrinks
                   transition: 'flex 0.55s ease, padding 0.55s ease, opacity 0.4s ease',
@@ -244,7 +246,7 @@ export function createTapeDiagram(
                   animationDelay: `${i * 0.05}s`,
                 }}
               >
-                {arrived ? (cells ? cells[i] : partLabel) : ''}
+                {cells ? cells[i] : partLabel}
               </div>
             )
           })}

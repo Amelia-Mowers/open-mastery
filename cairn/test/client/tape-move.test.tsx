@@ -32,6 +32,8 @@ describe('tape: a move changes the bar', () => {
     const wrap = container.querySelector('[data-bar-wrap]') as HTMLElement
     expect(wrap.style.width).toBe('50%')
     expect(wrap.style.transition).toContain('width')
+    // …and it shrinks toward the CENTRE, not off to the left
+    expect(wrap.style.margin).toBe('0px auto')
     // …and the move is named on the total, like the balance's op badge
     expect(container.querySelector('[data-total-op]')?.textContent).toContain('8')
     expect(container.querySelector('[data-total-op]')?.textContent).toContain('−')
@@ -46,5 +48,22 @@ describe('tape: a move changes the bar', () => {
       <>{w.render({ parts: 3, partLabel: '7', total: '21' }, 'lesson')}</>,
     )
     expect((container.querySelector('[data-bar-wrap]') as HTMLElement).style.width).toBe('100%')
+  })
+
+  it('an unplaced section keeps its label invisibly, so the bar keeps its height', () => {
+    const w = createTapeDiagram()
+    const { container } = render(
+      <>{w.render({ parts: 2, partLabel: '', total: '21', cells: ['x', '8'] }, 'lesson')}</>,
+    )
+    w.applyPatch({ cellsIn: 0 })
+    const { container: empty } = render(
+      <>{w.render({ parts: 2, partLabel: '', total: '21', cells: ['x', '8'] }, 'lesson')}</>,
+    )
+    const cell = empty.querySelectorAll('[data-part]')[0] as HTMLElement
+    expect(cell.getAttribute('data-empty')).toBe('true')
+    expect(cell.style.color).toBe('transparent') // hidden, not removed
+    // the text is still in the box, so the row cannot collapse
+    expect(cell.textContent).toBe('x')
+    expect(container).toBeTruthy()
   })
 })
