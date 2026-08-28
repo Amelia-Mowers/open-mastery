@@ -359,6 +359,8 @@ body {
   margin-top: 8px;
 }
 .milestone-sub { display: block; font-size: 13.5px; color: #8b8070; margin-top: 3px; }
+.milestone-card { border-color: #e8c9a8; }
+.milestone-card .milestone { margin: 0; }
 .skip-divider {
   text-align: center;
   font: 700 12px 'Nunito Sans', sans-serif;

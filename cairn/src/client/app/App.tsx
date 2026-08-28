@@ -299,6 +299,8 @@ function Session({
   const [focusedOn, setFocusedOn] = useState(false)
   /** skills whose check-unlocked interstitial was dismissed for now */
   const [checkDismissed, setCheckDismissed] = useState<ReadonlySet<string>>(new Set())
+  /** the serve that just arrived moved off a skill with ground gained */
+  const [milestone, setMilestone] = useState<ServerNext['milestone'] | null>(null)
   /** the just-answered skill unlocked its check — offer before moving on */
   const [unlockOffer, setUnlockOffer] = useState<string | null>(null)
   /** an alternative explanation playing in the lesson slot */
@@ -311,6 +313,7 @@ function Session({
       .then((n) => {
         setNext(n)
         setPoints(n.points)
+        if (n.milestone) setMilestone(n.milestone)
       })
       .catch((e: unknown) => setError(String(e)))
       .finally(() => setFetching(false))
@@ -332,13 +335,21 @@ function Session({
   }
 
   const reset = () => {
-    // a reset deletes the student: wipe their progress, forget the stored
-    // name, and land back on the front door
+    // Reset = start over from a blank browser: the api scrubs its stored
+    // state, we forget the name, then RELOAD so nothing in memory (cores,
+    // component state, in-flight fetches) can survive and repopulate it.
     void api.reset().then(() => {
       try {
         localStorage.removeItem('cairn.student')
       } catch {
         /* storage unavailable is fine */
+      }
+      try {
+        // drop ?student=/?seed= etc so the reload lands on the front door
+        window.location.replace(window.location.pathname)
+        return
+      } catch {
+        /* no navigation available (tests): fall back to unmounting */
       }
       onLeave()
     })
@@ -549,6 +560,37 @@ function Session({
         onLeave={onLeave}
         onReset={reset}
       />
+      {milestone && view === 'work' && (
+        <section className="card milestone-card" role="status">
+          <div className="milestone">
+            <span className="milestone-pebble" aria-hidden />
+            <div>
+              <strong>{milestone.name}</strong> — {milestone.blurb} on {milestone.skillName}.
+              <span className="milestone-sub">
+                {Math.round(milestone.pct * 100)}% of the way to mastering it. That progress is
+                saved — you&rsquo;ll come back to it.
+              </span>
+            </div>
+          </div>
+          <div className="answer-row" style={{ justifyContent: 'flex-end' }}>
+            <button className="btn btn-quiet" onClick={() => setMilestone(null)}>
+              Got it
+            </button>
+            <button
+              className="btn"
+              onClick={() => {
+                const id = milestone.skillId
+                setMilestone(null)
+                focusSkill.current = id
+                setFocusedOn(true)
+                refresh()
+              }}
+            >
+              Keep working on it
+            </button>
+          </div>
+        </section>
+      )}
       <SmoothHeight dim={fetching && next !== null && view !== 'dashboard'}>{body}</SmoothHeight>
     </main>
   )

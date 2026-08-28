@@ -48,10 +48,9 @@ interface InlinePlay {
  * the buttons; every other input widget gets a full-width row of its own */
 const TEXT_INPUTS = new Set(['numeric-input', 'expression-input', 'equation-input'])
 
-/** display-scale positions of the milestone waypoints (mirrors
- * SiteCore.MILESTONES — the bar shows the same checkpoints the server
- * announces) */
-const MILESTONE_MARKS = [0.25, 0.5, 0.75]
+/** the rank boundaries a departure milestone is named for (mirrors
+ * SiteCore.MILESTONE_RANKS) — the bar shows how far along the climb is */
+const MILESTONE_MARKS = [0.2, 0.45, 0.7]
 
 const KICKERS: Record<ServeAction['itemKind'], string> = {
   faded: 'WORK IT OUT — STEP BY STEP',
@@ -421,18 +420,6 @@ export function ItemCard({
         <div className={outcome.correct ? 'feedback ok' : 'feedback bad'} role="status">
           {feedbackText}
           {delta > 0 && <span className="pts-delta">+{delta}</span>}
-        </div>
-      )}
-      {outcome?.milestone && !mastered && (
-        <div className="milestone" role="status">
-          <span className="milestone-pebble" aria-hidden />
-          <div>
-            <strong>{outcome.milestone.name}</strong> — {outcome.milestone.blurb} on{' '}
-            {outcome.milestone.skillName}.
-            <span className="milestone-sub">
-              Keep going here, or take the next thing that comes — this progress is saved.
-            </span>
-          </div>
         </div>
       )}
       {mastered && (

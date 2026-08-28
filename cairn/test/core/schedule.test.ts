@@ -288,15 +288,14 @@ function correctFor(ctx: EngineCtx, a: Extract<NextAction, { kind: 'serve_item' 
   return r.value
 }
 
-describe('milestones (waypoints between stones)', () => {
-  it('the display scale crosses named checkpoints on the way to mastery', () => {
-    // the thresholds are display-scale, so they read like the bar does
-    expect(SiteCore.milestoneAt(0.1)).toBeNull()
-    expect(SiteCore.milestoneAt(0.25)?.name).toBe('Getting it')
-    expect(SiteCore.milestoneAt(0.6)?.name).toBe('Halfway')
-    expect(SiteCore.milestoneAt(0.99)?.name).toBe('Nearly there')
-    // monotonic: every threshold is higher than the last
-    const ats = SiteCore.MILESTONES.map((m) => m.at)
-    expect([...ats].sort((a, b) => a - b)).toEqual(ats)
+describe('milestones (earned by leaving with ground gained)', () => {
+  it('ranks name how far the climb got, highest first', () => {
+    expect(SiteCore.milestoneRank(0.85).name).toBe('Nearly there')
+    expect(SiteCore.milestoneRank(0.5).name).toBe('Real progress')
+    expect(SiteCore.milestoneRank(0.3).name).toBe('Getting it')
+    expect(SiteCore.milestoneRank(0.05).name).toBe('Started')
+    // thresholds descend, so the FIRST match is the highest earned rank
+    const mins = SiteCore.MILESTONE_RANKS.map((r) => r.min)
+    expect([...mins].sort((a, b) => b - a)).toEqual(mins)
   })
 })

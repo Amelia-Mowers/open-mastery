@@ -6,6 +6,8 @@ import type { NextAction } from '../../core/engine'
 export type ClientItem = Omit<Item, 'answer'>
 
 export interface ServerNext {
+  /** the serve moved off a skill with ground gained — recognise it */
+  milestone?: { name: string; blurb: string; pct: number; skillId: string; skillName: string }
   action: NextAction
   item?: ClientItem
   explanation?: Explanation
@@ -43,8 +45,6 @@ export interface AttemptOutcome {
   mastery?: number
   /** this answer unlocked the skill's mastery check — offer it NOW */
   checkUnlocked?: boolean
-  /** a milestone this answer crossed (a waypoint on the way to a stone) */
-  milestone?: { name: string; blurb: string; at: number; skillId: string; skillName: string }
 }
 
 export interface ZooDemoView {

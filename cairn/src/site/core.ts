@@ -44,6 +44,10 @@ interface StudentSlot {
   session: SessionState
   /** last action served to this student; attempts must resolve against it */
   pending: NextAction | null
+  /** the skill the last serve worked on — departures are detected against it */
+  lastSkill?: string | null
+  /** "<skillId>:<rank>" milestones already announced (never repeat one) */
+  milestonesShown?: Set<string>
 }
 
 /** Every identifier an explanation timeline's templates reference. */
@@ -201,22 +205,51 @@ export class SiteCore {
     return pts
   }
 
-  /** Milestones: named waypoints on the way to a stone. Interleaving moves
-   * a student off a skill mid-climb, which felt like being punted — these
-   * mark the ground actually gained, so leaving a skill is a checkpoint
-   * rather than an interruption. Thresholds are on the DISPLAY scale
-   * (masteryOf), so they read the same as the bar. */
-  static readonly MILESTONES: ReadonlyArray<{ at: number; name: string; blurb: string }> = [
-    { at: 0.25, name: 'Getting it', blurb: 'the idea is landing' },
-    { at: 0.5, name: 'Halfway', blurb: 'you can do this one with a little thought' },
-    { at: 0.75, name: 'Nearly there', blurb: 'one good run from the check' },
+  /** A milestone is earned by LEAVING a skill with ground gained, not by
+   * crossing a fixed number. The scheduler interleaves — it moves a student
+   * off a skill mid-climb by design — and being moved should never feel
+   * like a punt, so the departure itself is the trigger. The rank names how
+   * far they got; the count per skill is whatever the student's path
+   * produces (leave at 40%, return, leave at 70% → two milestones). */
+  static readonly MILESTONE_RANKS: ReadonlyArray<{ min: number; name: string; blurb: string }> = [
+    { min: 0.7, name: 'Nearly there', blurb: 'one good run from the check' },
+    { min: 0.45, name: 'Real progress', blurb: 'you can do these with a little thought' },
+    { min: 0.2, name: 'Getting it', blurb: 'the idea is landing' },
+    { min: 0.0, name: 'Started', blurb: 'first steps on this one' },
   ]
 
-  /** the highest milestone reached at this mastery level (or null) */
-  static milestoneAt(pct: number): { at: number; name: string; blurb: string } | null {
-    let hit: { at: number; name: string; blurb: string } | null = null
-    for (const m of SiteCore.MILESTONES) if (pct >= m.at) hit = m
-    return hit
+  static milestoneRank(pct: number): { min: number; name: string; blurb: string } {
+    return SiteCore.MILESTONE_RANKS.find((r) => pct >= r.min) ?? SiteCore.MILESTONE_RANKS[3]!
+  }
+
+  /** did this serve move the student OFF a skill they had made progress on?
+   * If so, name what they earned there. Mastery has its own moment (the
+   * stone), so a grant is never also a milestone. */
+  private departureMilestone(
+    studentId: string,
+    leaving: string | null,
+    arrivingAt: string | null,
+  ): { name: string; blurb: string; pct: number; skillId: string; skillName: string } | null {
+    if (leaving === null || arrivingAt === null || leaving === arrivingAt) return null
+    const st = this.slot(studentId)
+    const skill = st.student.skills[leaving]
+    if (!skill || skill.phase === 'mastered') return null
+    const pct = this.masteryOf(studentId, leaving)
+    // only recognise real ground: a skill glanced at and left teaches nothing
+    if (pct < 0.12) return null
+    const already = st.milestonesShown ?? new Set<string>()
+    const rank = SiteCore.milestoneRank(pct)
+    const key = `${leaving}:${rank.name}`
+    if (already.has(key)) return null
+    already.add(key)
+    st.milestonesShown = already
+    return {
+      name: rank.name,
+      blurb: rank.blurb,
+      pct,
+      skillId: leaving,
+      skillName: this.cur.skills.get(leaving)?.name ?? leaving,
+    }
   }
 
   /** the bar the student sees: progress from the skill's L0 toward the
@@ -324,16 +357,30 @@ export class SiteCore {
     )
     st.pending = action
     const points = this.pointsFor(studentId)
+    // did this serve move them off a skill they'd built something on?
+    const arriving =
+      action.kind === 'serve_item' || action.kind === 'lesson' || action.kind === 'alt_explanation'
+        ? action.skillId
+        : null
+    const milestone = this.departureMilestone(studentId, st.lastSkill ?? null, arriving)
+    if (arriving !== null) st.lastSkill = arriving
     if (action.kind === 'serve_item') {
       const item = this.cur.items.get(action.instance.itemId)!
       const { answer: _answer, ...safe } = item
-      return ok({ action, item: safe, points, mastery: this.masteryOf(studentId, action.skillId) })
+      return ok({
+        action,
+        item: safe,
+        points,
+        mastery: this.masteryOf(studentId, action.skillId),
+        ...(milestone ? { milestone } : {}),
+      })
     }
     if (action.kind === 'lesson' || action.kind === 'alt_explanation') {
       const params = practiceItems(action.skillId, this.cur)[0]?.params ?? {}
       const skill = this.cur.skills.get(action.skillId)
       return ok({
         action,
+        ...(milestone ? { milestone } : {}),
         explanation: this.cur.explanations.get(action.explanationId),
         params,
         skillName: skill?.name ?? action.skillId,
@@ -351,7 +398,6 @@ export class SiteCore {
     const st = this.slot(studentId)
     const pending = st.pending
     if (pending?.kind !== 'serve_item') return err(409, 'no item pending')
-    const masteryBefore = this.masteryOf(studentId, pending.skillId)
     const result = recordAttempt(st.student, st.session, this.ctxFor(studentId), pending, {
       raw: body.raw ?? '',
       hintLevel: body.hintLevel ?? 0,
@@ -367,21 +413,6 @@ export class SiteCore {
       })),
       points: this.pointsFor(studentId),
       mastery: this.masteryOf(studentId, pending.skillId),
-      // a milestone CROSSED by this answer — the ground gained gets its own
-      // moment, so rotating away from a skill reads as a checkpoint
-      milestone: (() => {
-        const after = this.masteryOf(studentId, pending.skillId)
-        const reached = SiteCore.milestoneAt(after)
-        const had = SiteCore.milestoneAt(masteryBefore)
-        if (!reached || reached.at === had?.at) return undefined
-        return {
-          name: reached.name,
-          blurb: reached.blurb,
-          at: reached.at,
-          skillId: pending.skillId,
-          skillName: this.cur.skills.get(pending.skillId)?.name ?? pending.skillId,
-        }
-      })(),
       // the mastery moment must not be lost to interleaving: say so the
       // instant the qualifying PRACTICE answer lands, whatever skill serves
       // next (never for check items — that would re-offer mid-check)
@@ -523,8 +554,15 @@ export class SiteCore {
     return ok({ students, totalSkills: this.bundle.skills.length })
   }
 
+  /** wipe EVERY student — the demo's "start over", where there are no
+   * accounts to preserve and per-student surgery only invites drift */
+  clear(): void {
+    this.slots.clear()
+    this.log.length = 0
+  }
+
   reset(studentId: string): SiteResult {
-    this.slots.delete(studentId)
+    this.slots.delete(studentId) // takes lastSkill + milestonesShown with it
     for (let i = this.log.length - 1; i >= 0; i--)
       if (this.log[i]!.studentId === studentId) this.log.splice(i, 1)
     return ok({ ok: true })

@@ -116,16 +116,25 @@ describe('reset races an in-flight serve', () => {
   })
 })
 
-describe('milestones arrive with the answer that earns them', () => {
-  it('a climbing student crosses named waypoints before any stone', async () => {
+describe('milestones recognise being moved off a skill', () => {
+  it('the serve that rotates away names what was earned, once per rank', async () => {
     const bundle = fixtureBundle()
     const items = new Map(bundle.items.map((i) => [i.id, i]))
-    const api = new DemoApi('climber', bundle, null)
-    const seen: string[] = []
-    let mastered = false
-    for (let step = 0; step < 60 && !mastered; step++) {
+    const api = new DemoApi('rotator', bundle, null)
+    const seen: Array<{ name: string; skillId: string }> = []
+    let served: string | null = null
+    const skillOf = (a: { kind: string; skillId?: string }) => a.skillId ?? null
+
+    for (let step = 0; step < 80; step++) {
       const n = await api.next()
+      if (n.milestone) {
+        // a milestone always names the skill we LEFT, never the new one
+        expect(n.milestone.skillId).not.toBe(skillOf(n.action as never))
+        expect(n.milestone.skillId).toBe(served)
+        seen.push({ name: n.milestone.name, skillId: n.milestone.skillId })
+      }
       if (n.action.kind === 'session_done') break
+      served = skillOf(n.action as never) ?? served
       if (n.action.kind === 'lesson' || n.action.kind === 'alt_explanation') {
         await api.explanationViewed()
         continue
@@ -139,14 +148,10 @@ describe('milestones arrive with the answer that earns them', () => {
       const rendered = renderTemplate(String(full.answer.value), n.action.instance.params as Env, {
         numberStyle: 'fraction',
       })
-      const out = await api.attempt(rendered.ok ? rendered.value : '', 0, 800)
-      if (out.milestone) seen.push(out.milestone.name)
-      mastered = out.emitted.some((e) => e.kind === 'mastery_granted')
+      await api.attempt(rendered.ok ? rendered.value : '', 0, 800)
     }
-    // waypoints land before the stone, each announced once, in order
-    expect(seen.length).toBeGreaterThan(0)
-    expect(new Set(seen).size).toBe(seen.length)
-    const order = ['Getting it', 'Halfway', 'Nearly there']
-    expect(seen).toEqual(order.filter((n) => seen.includes(n)))
+    // never the same recognition twice for the same skill
+    const keys = seen.map((m) => `${m.skillId}:${m.name}`)
+    expect(new Set(keys).size).toBe(keys.length)
   })
 })

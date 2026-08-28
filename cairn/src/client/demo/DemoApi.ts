@@ -20,7 +20,27 @@ import type {
   ZooDemoView,
 } from '../app/api.ts'
 
-const STORE_KEY = 'cairn.demo.events'
+export const STORE_KEY = 'cairn.demo.events'
+
+/** Wipe the demo completely: every student's events, the remembered name,
+ * and the in-memory core behind them. The demo has no accounts to keep, so
+ * "reset" means "put this browser back to a first visit" — a full scrub is
+ * both what a visitor expects and far less to get wrong than per-student
+ * surgery across live instances. */
+export function scrubDemo(storage: DemoStorage | null, core?: SiteCore): void {
+  if (storage) {
+    try {
+      storage.removeItem(STORE_KEY)
+      storage.removeItem('cairn.student')
+    } catch {
+      /* storage unavailable: the in-memory clear below still applies */
+    }
+    CORES.delete(storage)
+  }
+  // the caller normally reloads onto the front door, but any instance still
+  // holding this core must see an empty world rather than stale state
+  core?.clear()
+}
 
 export interface DemoStorage {
   getItem(key: string): string | null
@@ -165,9 +185,11 @@ export class DemoApi implements CairnApi {
     return Promise.resolve(this.unwrap(this.core.state(this.studentId)))
   }
 
+  /** In the demo, reset means START OVER: scrub every student's events and
+   * the remembered name. The caller reloads onto the front door, so this
+   * instance's core is deliberately discarded rather than reused. */
   reset(): Promise<void> {
-    this.core.reset(this.studentId)
-    this.persist()
+    scrubDemo(this.storage, this.core)
     return Promise.resolve()
   }
 
