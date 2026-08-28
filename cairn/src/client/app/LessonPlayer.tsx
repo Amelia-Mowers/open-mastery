@@ -241,12 +241,29 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
           highlight?: number[]
           totalIn?: boolean
           cellsIn?: number | null
+          removed?: number[]
+          totalOp?: { op: 'add' | 'subtract' | 'multiply' | 'divide'; by: string } | null
         } = {}
         if ('partLabel' in patch) view.partLabel = renderText(String(patch['partLabel']), params)
         if ('total' in patch) view.total = renderText(String(patch['total']), params)
         if ('totalIn' in patch) view.totalIn = patch['totalIn'] === true
         if ('cellsIn' in patch)
           view.cellsIn = patch['cellsIn'] === null ? null : evalNumber(patch['cellsIn'], params)
+        if ('removed' in patch) {
+          const raw = patch['removed']
+          view.removed = Array.isArray(raw)
+            ? raw.map((v) => evalNumber(v, params)).filter((x): x is number => x !== null)
+            : []
+        }
+        if ('totalOp' in patch) {
+          const o = patch['totalOp'] as { op?: unknown; by?: unknown } | null
+          view.totalOp = o
+            ? {
+                op: String(o.op) as 'add' | 'subtract' | 'multiply' | 'divide',
+                by: renderText(String(o.by), params),
+              }
+            : null
+        }
         if ('highlight' in patch) {
           const raw = patch['highlight']
           view.highlight = Array.isArray(raw)

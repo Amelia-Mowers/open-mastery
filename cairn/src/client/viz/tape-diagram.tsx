@@ -40,6 +40,13 @@ export interface TapeDiagramView {
    * The bar is built piece by piece as the student names each one, so the
    * diagram is CONSTRUCTED from the equation rather than presented whole. */
   cellsIn?: number | null
+  /** the MOVE, shown on the bar: 1-based indices of sections taken away.
+   * The section COLLAPSES (width → 0) and the bar shrinks, because that is
+   * what taking a piece off actually looks like — the tape's equivalent of
+   * the balance's op badge, so a step that asks for a move shows it. */
+  removed?: number[]
+  /** an operation applied to the total, e.g. { op: 'subtract', by: '8' } */
+  totalOp?: { op: 'add' | 'subtract' | 'multiply' | 'divide'; by: string } | null
 }
 
 export interface TapeDiagramAnswer {
@@ -54,6 +61,8 @@ type TapeState = {
   raw: string
   totalIn: boolean
   cellsIn: number | null
+  removed: number[]
+  totalOp: { op: string; by: string } | null
 }
 
 const label = (p: TapeDiagramParams): string =>
@@ -77,7 +86,7 @@ const cellStyle = (highlighted: boolean, last: boolean): CSSProperties => ({
 export function createTapeDiagram(
   config: TapeDiagramConfig = {},
 ): WidgetInstance<TapeDiagramParams, TapeDiagramAnswer, TapeDiagramView> {
-  const store = new WidgetStore<TapeState>({ partLabel: null, total: null, highlight: [], raw: '', totalIn: true, cellsIn: null })
+  const store = new WidgetStore<TapeState>({ partLabel: null, total: null, highlight: [], raw: '', totalIn: true, cellsIn: null, removed: [], totalOp: null })
 
   function Brace() {
     return (
@@ -195,16 +204,30 @@ export function createTapeDiagram(
         >
           {Array.from({ length: n }, (_, i) => {
             const arrived = state.cellsIn === null || i < state.cellsIn
+            const gone = state.removed.includes(i + 1)
             return (
               <div
                 key={i}
                 data-part
                 data-empty={!arrived || undefined}
+                data-removed={gone || undefined}
                 data-highlighted={(arrived && state.highlight.includes(i + 1)) || undefined}
                 style={{
-                  ...cellStyle(arrived && state.highlight.includes(i + 1), i === n - 1),
+                  ...cellStyle(arrived && !gone && state.highlight.includes(i + 1), i === n - 1),
                   ...(arrived ? {} : { background: '#f6f1e7', color: 'transparent' }),
-                  animation: 'cairn-rise 0.3s ease both',
+                  // a removed section collapses away and the bar shrinks
+                  transition: 'flex 0.55s ease, padding 0.55s ease, opacity 0.4s ease',
+                  ...(gone
+                    ? {
+                        flex: '0 0 0px',
+                        paddingLeft: 0,
+                        paddingRight: 0,
+                        opacity: 0,
+                        overflow: 'hidden',
+                        borderRightWidth: 0,
+                      }
+                    : {}),
+                  ...(gone ? {} : { animation: 'cairn-rise 0.3s ease both' }),
                   animationDelay: `${i * 0.05}s`,
                 }}
               >
@@ -225,6 +248,31 @@ export function createTapeDiagram(
           }}
         >
           {state.totalIn ? total : ''}
+          {state.totalIn && state.totalOp && (
+            <span
+              data-total-op
+              style={{
+                marginLeft: 10,
+                font: "700 16px 'Lora', Georgia, serif",
+                color: '#b05f28',
+                background: '#f7e6d4',
+                border: '1.5px solid #e8c9a8',
+                padding: '2px 12px',
+                borderRadius: 14,
+                whiteSpace: 'nowrap',
+                animation: 'cairn-pop 0.3s ease',
+              }}
+            >
+              {state.totalOp.op === 'subtract'
+                ? '−'
+                : state.totalOp.op === 'add'
+                  ? '+'
+                  : state.totalOp.op === 'multiply'
+                    ? '×'
+                    : '÷'}{' '}
+              {state.totalOp.by}
+            </span>
+          )}
         </div>
       </div>
     )
@@ -248,6 +296,9 @@ export function createTapeDiagram(
       if (patch.totalIn !== undefined) next.totalIn = patch.totalIn === true
       if (patch.cellsIn !== undefined)
         next.cellsIn = patch.cellsIn === null ? null : Number(patch.cellsIn)
+      if (patch.removed !== undefined)
+        next.removed = Array.isArray(patch.removed) ? patch.removed.map(Number) : []
+      if (patch.totalOp !== undefined) next.totalOp = patch.totalOp ?? null
       store.setState(next)
     },
     a11y: { role: 'img', label },

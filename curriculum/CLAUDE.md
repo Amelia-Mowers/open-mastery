@@ -191,6 +191,14 @@ fills the next; a later one supplies the total. Pointing at a finished
 picture ("this piece is x") teaches nothing the picture didn't already
 say, and gives the student nothing to do.
 
+**A gate must MOVE the picture.** The patch on an expect step is the
+confirmation the student's answer earns, so it has to change the diagram
+— a section leaves and the bar shrinks, a badge lands on both pans, a
+row fills, the rectangle grows to its height. A gate that only changes
+the caption (or only the equation highlight) means the diagram sat still
+while the student worked, and the representation taught nothing.
+Validator: `[gate_moves_nothing]`.
+
 The lead must END BY ASKING. It stops one step short of the resolution,
 so the last SURVIVING step has to be a gate — otherwise the student is
 left staring at a finished diagram with nothing to do, and the answer box

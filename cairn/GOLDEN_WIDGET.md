@@ -27,6 +27,13 @@ What every Cairn widget must satisfy. The §4.4 contract is one interface —
 - **review**: inert — `disabled` + `aria-disabled`, no pointer or keyboard
   mutation, single tab stop removed (`tabIndex -1`).
 
+Every widget needs a patch vocabulary for the MOVES its representation
+can make, not just for what it displays: the balance has op badges, the
+tape has `removed` (a section collapses and the bar shrinks) plus
+`totalOp`, the area model has `fillRows`. Without one, a gate asking
+"what do you do?" has no way to show it happening, and the validator
+([gate_moves_nothing]) will say so.
+
 ## 2. Programmatic, always
 
 Everything renders from the actual instance's params/config. Config values

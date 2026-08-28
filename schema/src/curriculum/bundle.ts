@@ -262,6 +262,25 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           }
         })
       }
+      // A GATE MUST MOVE THE PICTURE. The patch on an expect step is the
+      // confirmation the student's answer earns — if it only changes the
+      // caption (or nothing but the equation highlight), the diagram sat
+      // still while they worked, and the representation taught nothing.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        e.timeline.forEach((st, i) => {
+          if (st.expect === undefined) return
+          const keys = Object.keys(st.patch ?? {}).filter(
+            (k) => k !== 'eqHighlight' && k !== 'equation' && k !== 'caption',
+          )
+          if (keys.length === 0)
+            push(
+              'warning',
+              'gate_moves_nothing',
+              `${e.id}.timeline[${i}]`,
+              'this gate changes nothing in the diagram — the answer should visibly DO something to the representation',
+            )
+        })
+      }
       // …and it must END BY ASKING. The lead stops one step short of the
       // resolution, so if its LAST surviving step is a statement, the
       // student is left staring at a finished diagram with no question —

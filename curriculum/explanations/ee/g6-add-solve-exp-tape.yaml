@@ -30,8 +30,8 @@ timeline:
       prompt: "Which piece — or pieces — of the equation measures the WHOLE bar?"
       hint: "The = tells you what everything adds up to."
   - t: 16
-    patch: { eqHighlight: [], highlight: ["1"] }
-    caption: "So the question the bar asks is: WHAT plus {p} makes {p+d}?"
+    patch: { eqHighlight: [], highlight: ["1"], removed: ["2"], totalOp: { op: subtract, by: "{p}" } }
+    caption: "Take the {p} section off — and take {p} off the total too. What is left is the {variable} piece."
     expect:
       type: op
       value: "subtract {p}"

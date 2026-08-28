@@ -30,8 +30,8 @@ timeline:
       prompt: "Which piece — or pieces — of the equation is the WHOLE bar?"
       hint: "The bar started as one thing before anything was taken from it."
   - t: 16
-    patch: { eqHighlight: [], highlight: ["1", "2"] }
-    caption: "So the question the bar asks is: {p} and {d} together make WHAT?"
+    patch: { eqHighlight: [], highlight: ["1", "2"], totalOp: { op: add, by: "{p}" } }
+    caption: "Put the {p} section back onto the {d} — the whole bar is both together."
     expect:
       type: op
       value: "add {p}"
