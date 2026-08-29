@@ -79,15 +79,27 @@ const renderCard = (scaffolded: boolean, onSubmit: ReturnType<typeof vi.fn>) =>
 const ok = { verdict: { verdict: 'correct' }, correct: true, points: 5, emitted: [] }
 
 describe('practice serves on the assistance spectrum', () => {
-  it('scaffolded practice gets the stepwise lead; engaging a gate marks the try assisted', async () => {
+  it('working the steps CORRECTLY is the primary path, not assistance', async () => {
     const user = userEvent.setup()
     const onSubmit = vi.fn().mockResolvedValue(ok)
     const { container } = renderCard(true, onSubmit)
     await waitFor(() => expect(container.querySelector('[data-op-sym="subtract"]')).toBeInTheDocument())
-    // work the gate correctly — constructing steps is still assistance
+    // work the gate correctly — stepwise IS the intended way to solve,
+    // so it must not be charged as help
     await user.click(container.querySelector('[data-op-sym="subtract"]')!)
     await user.type(container.querySelector('[data-op-by]')!, '5')
     await user.click(screen.getByTestId('stepwise-check'))
+    await user.type(screen.getByLabelText(/answer/i), 'x = 4')
+    await user.click(screen.getByRole('button', { name: 'Check answer' }))
+    expect(onSubmit).toHaveBeenCalledWith('x = 4', 0, expect.any(Number))
+  })
+
+  it('taking help at a gate ("Show me") does mark the try assisted', async () => {
+    const user = userEvent.setup()
+    const onSubmit = vi.fn().mockResolvedValue(ok)
+    renderCard(true, onSubmit)
+    await waitFor(() => expect(screen.getByTestId('stepwise-showme')).toBeInTheDocument())
+    await user.click(screen.getByTestId('stepwise-showme'))
     await user.type(screen.getByLabelText(/answer/i), 'x = 4')
     await user.click(screen.getByRole('button', { name: 'Check answer' }))
     expect(onSubmit).toHaveBeenCalledWith('x = 4', 1, expect.any(Number))
@@ -123,5 +135,29 @@ describe('practice serves on the assistance spectrum', () => {
     await waitFor(() => expect(screen.getByRole('button', { name: 'Check answer' })).toBeInTheDocument())
     expect(fetchExplanation).not.toHaveBeenCalled()
     expect(screen.queryByTestId('stepwise')).toBeNull()
+  })
+})
+
+describe('recognition goes to unaided work', () => {
+  it('praises solving it alone, and stays warm when help was taken', async () => {
+    const user = userEvent.setup()
+    // unaided: skip the lead entirely and answer
+    const solo = vi.fn().mockResolvedValue(ok)
+    const { unmount } = renderCard(true, solo)
+    await user.type(await screen.findByLabelText(/answer/i), 'x = 4')
+    await user.click(screen.getByRole('button', { name: 'Check answer' }))
+    expect((await screen.findByRole('status')).textContent).toMatch(/on your own/)
+    unmount()
+
+    // helped: take "Show me" at a gate, then answer
+    const helped = vi.fn().mockResolvedValue(ok)
+    renderCard(true, helped)
+    await user.click(await screen.findByTestId('stepwise-showme'))
+    await user.type(screen.getByLabelText(/answer/i), 'x = 4')
+    await user.click(screen.getByRole('button', { name: 'Check answer' }))
+    const fb = await screen.findByRole('status')
+    expect(fb.textContent).toMatch(/You got it/)
+    // no penalty framing on the primary path
+    expect(fb.textContent).not.toMatch(/on your own|helped try|counts as/)
   })
 })

@@ -119,7 +119,10 @@ describe('PWA client against the site server', () => {
     await user.type(screen.getByRole('textbox'), answerFor(stem))
     await user.click(screen.getByRole('button', { name: 'Check answer' }))
     const fb = await screen.findByRole('status')
-    expect(fb.textContent).toMatch(/the hint helped/)
+    // warm, and never a reminder that the answer "counted less" — the
+    // extra recognition is reserved for unaided work
+    expect(fb.textContent).toMatch(/You got it/)
+    expect(fb.textContent).not.toMatch(/on your own/)
 
     const { events } = (await (await fetch(`${base}/api/events?student=hint-kid`)).json()) as {
       events: Array<{ kind: string; hintLevel?: number; assisted?: boolean }>
@@ -150,9 +153,12 @@ describe('PWA client against the site server', () => {
     fireEvent.click(segs[segs.length - 1]!)
     await user.click(await screen.findByRole('button', { name: 'Now you try.' }))
 
-    // back on the SAME problem, now marked as a helped try
+    // back on the SAME problem. No "this counts as a helped try" warning:
+    // announcing a penalty before the student has answered discourages
+    // exactly the paths we want them taking. The help is still RECORDED —
+    // the event assertions below are what guard that.
     await waitFor(() => expect(screen.getByTestId('stem').textContent).toBe(stem))
-    expect(screen.getByText(/counts as a helped try/)).toBeInTheDocument()
+    expect(screen.queryByText(/counts as a helped try/)).toBeNull()
     await user.type(screen.getByRole('textbox'), answerFor(stem))
     await user.click(screen.getByRole('button', { name: 'Check answer' }))
     await screen.findByRole('status')

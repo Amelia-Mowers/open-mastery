@@ -65,8 +65,10 @@ export function StepwisePlayer({
   explanation: Explanation
   params: Params
   onReachedEnd?: (result: StepwiseResult) => void
-  /** first interaction with any gate (a submit or "Show me") — the host
-   * marks the try as assisted; skipping straight to the answer never fires */
+  /** the student TOOK HELP at a gate — a missed step or a "Show me"
+   * reveal. Working the steps correctly is the primary path, not
+   * assistance, so a right answer never fires this; nor does skipping
+   * straight to the answer box. */
   onEngaged?: () => void
   stepDelayMs?: number
 }) {
@@ -195,7 +197,6 @@ export function StepwisePlayer({
 
   const submitStep = (raw: string) => {
     if (waitingOn === null) return
-    engage()
     const correct =
       waitingOn.type === 'pick'
         ? // set equality: exactly the expected segments, no more, no fewer
@@ -214,6 +215,10 @@ export function StepwisePlayer({
       return
     }
     tallies.current.misses += 1
+    // help starts HERE, on a missed step — not on engaging the gate at
+    // all. Working the steps correctly is the primary path and must not
+    // be charged as assistance.
+    engage()
     // a wrong set clears itself: leaving it lit turned "click x instead"
     // into {x, 21} — one mistake charged as two misses
     if (waitingOn.type === 'pick') setPicked(new Set())

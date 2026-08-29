@@ -87,8 +87,10 @@ export function ItemCard({
   /** watched the walk-through → this try counts as helped */
   const [explained, setExplained] = useState(false)
   /** watched a full walk-through end to end — maximal assistance, and
-   * distinct from merely engaging a stepwise gate (which is level 1) */
+   * distinct from taking help at a stepwise gate (which is level 1) */
   const [watchedFull, setWatchedFull] = useState(false)
+  /** took help at a stepwise gate (missed a step, or asked "Show me") */
+  const [gateHelped, setGateHelped] = useState(false)
   /** the student CLICKED for help (vs help offered/served) — copy only */
   const [askedForHelp, setAskedForHelp] = useState(false)
   /** the bar the student sees; jumps to the server's post-attempt value */
@@ -199,7 +201,11 @@ export function ItemCard({
       // watching the full walk-through is maximal assistance even though
       // it reveals no hint text; grading must not depend on what happens
       // to be rendered
-      const assistLevel = watchedFull ? Math.max(revealedHints, 2) : revealedHints
+      const assistLevel = watchedFull
+        ? Math.max(revealedHints, 2)
+        : gateHelped
+          ? Math.max(revealedHints, 1)
+          : revealedHints
       const out = await onSubmit(raw, assistLevel, Math.round(performance.now() - startedAt))
       setOutcome(out)
       if (out.mastery !== undefined) setShownMastery(out.mastery)
@@ -294,9 +300,12 @@ export function ItemCard({
   const feedbackText = !outcome
     ? ''
     : outcome.correct
-      ? revealedHints > 0 && askedForHelp
-        ? 'You got it — the hint helped. Try the next one on your own!'
-        : 'Correct!'
+      ? watchedFull || gateHelped || revealedHints > 0
+        ? // help was taken: warm, never a scolding, and never a reminder
+          // that this one "counted less"
+          'You got it — nice work.'
+        : // unaided: THIS is what earns the extra recognition
+          'Correct — all on your own!'
       : // a named misconception speaks for itself — the generic line would
         // only bury it
         outcome.verdict.verdict === 'incorrect' && outcome.verdict.reason
@@ -349,8 +358,10 @@ export function ItemCard({
             onEngaged={
               action.itemKind === 'practice'
                 ? () => {
+                    // records the help (assistLevel), but never opens hint
+                    // text — the gate already gave its own feedback
                     setExplained(true)
-                    setRevealedHints((h) => Math.max(h, 1))
+                    setGateHelped(true)
                   }
                 : undefined
             }
@@ -441,11 +452,11 @@ export function ItemCard({
           </form>
         </>
       )}
-      {explained && outcome === null && !inline && (
-        <p className="muted explained-note">
-          You watched the full walk-through, so this one counts as a helped try.
-        </p>
-      )}
+      {/* No "this counts as a helped try" warning. Announcing a penalty
+          before the student has even answered discourages the very paths
+          — working the steps, asking to see it done — that we want them
+          taking. Credit still reflects the help (assistLevel); the
+          RECOGNITION goes to unaided work instead, below. */}
       {!inline && item.hints.slice(0, revealedHints).map((h, i) => (
         <p key={i} className="hint" data-testid={`hint-${i + 1}`}>
           {renderText(h, params)}
