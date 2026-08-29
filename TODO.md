@@ -134,9 +134,35 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       last 2 representation_count warnings.
 - [ ] cube-model counting input — the ONE remaining planned-input debt
       (GOLDEN §1: audits must list it as debt, never as conformance).
-- [ ] Flow gaps still open: check-unlock dismissal resets on reload;
-      parked-vs-done framing on session_done; offered-hint auto-reveal
-      lacks framing copy. (Reset-demo and the focus-mode indicator: done.)
+- [ ] Flow gaps still open: parked-vs-done framing on session_done;
+      offered-hint auto-reveal lacks framing copy. (Reset-demo, the
+      focus-mode indicator, and the check-unlock dismissal: done — the
+      dismissal is a countdown now, CHECK_DEFER_SERVES.)
+- [ ] SESSION STATE IS NOT DURABLE (flow review, 2026-08-28). SiteCore
+      replay rebuilds `student` from the log but hands back a fresh
+      SessionState, and the demo reconstructs SiteCore on EVERY page
+      load. The credit-destroying case is fixed (see reload-credit.test
+      .ts) by removing the 'led' discount, but these remain, worst first:
+      - `session.promised` lost ⇒ the lesson just watched is discarded and
+        a different skill in a different representation is served next —
+        the exact failure "the picture taught is the picture practised"
+        exists to prevent. Reproduced on 3 mid-skill lessons in a
+        247-step run.
+      - `session.check` lost ⇒ a check in progress restarts and passed
+        items are thrown away; conversely a FAILED check can be re-taken
+        by reloading, since the gate is event-derived but the failure
+        consequence is session-only. A weakened gate, not a forged grant.
+      - miss counters / `parked` / pendingHint lost ⇒ the corrective
+        ladder (hint → alt explanation → prereq probe) is unreachable for
+        a student who reloads, i.e. exactly the struggling student.
+      - `session.served` lost ⇒ the same instance with the same numbers
+        can be served twice.
+      Fix shape: derive the counters from `attempt` events at replay;
+      make `check` and `promised` events rather than memory. `pending` is
+      correctly non-durable (it 409s, which is right).
+- [ ] `SiteApi` never checks `r.ok`, so an HTTP error body is cast to the
+      success type — `attempt` can hand ItemCard `{error}` and render a
+      NaN point delta. Same shape in DemoApi.unwrap for 409s.
 
 ## Engine / server
 
