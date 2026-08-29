@@ -479,6 +479,17 @@ body {
 .awaiting-answer .viz-answer input:placeholder-shown {
   animation: guide-pulse 1.6s ease-in-out 3;
 }
+/* Help that has been OFFERED points at itself. The corrective ladder used
+   to reveal the hint text outright and play an alternative lesson over the
+   student's problem; both now surface as buttons, so the pulse is what
+   carries "there is help here if you want it". */
+.btn.pulse {
+  animation: guide-pulse 1.6s ease-in-out 3;
+}
+@media (prefers-reduced-motion: reduce) {
+  .btn.pulse { animation: none; box-shadow: 0 0 0 3px rgba(176, 95, 40, 0.22); }
+}
+
 /* a new problem announces itself (playtest: "unclear it was a new problem") */
 @keyframes stem-in {
   from { opacity: 0; transform: translateX(-14px); background: #f7e6d4; }

@@ -117,8 +117,12 @@ export class DemoApi implements CairnApi {
   }
 
   private unwrap<T>(r: { status: number; body: unknown }): T {
-    // transports surface errors as thrown strings; the app already handles them
-    if (r.status >= 400 && r.status !== 409) throw new Error(String((r.body as { error?: string }).error))
+    // An error body is NOT the success type. Letting 409s through cast an
+    // {error} object into the caller's shape, where every field reads
+    // undefined — "Show me how" saw no explanation and silently did
+    // nothing, and a stale attempt rendered a NaN point delta. Callers
+    // that legitimately expect a 409 (startCheck) handle it themselves.
+    if (r.status >= 400) throw new Error(String((r.body as { error?: string }).error ?? r.status))
     return r.body as T
   }
 

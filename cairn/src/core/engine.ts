@@ -178,6 +178,9 @@ export type NextAction =
        * and always false for checks) */
       scaffolded: boolean
       offeredHintLevel?: number
+      /** the ladder found a representation this skill has not taught yet.
+       * OFFERED on the card, never played over the student's problem. */
+      altOffer?: { explanationId: string; representation: string }
       checkAvailable?: boolean
       checkIndex?: number
     }
@@ -201,15 +204,11 @@ export function nextAction(
 ): NextAction {
   const pol = ctx.policy
 
-  if (session.overlay?.kind === 'alt_explanation') {
-    const o = session.overlay
-    return {
-      kind: 'alt_explanation',
-      skillId: o.skillId,
-      explanationId: o.explanationId,
-      representation: o.representation,
-    }
-  }
+  // NOTE: an alt_explanation overlay is NOT returned as its own action.
+  // Taking over the screen with a different representation the student
+  // never asked for reads as a hijack mid-problem; it rides the next serve
+  // as an OFFER instead (see `altOffer` below), which the card presents
+  // next to the answer box. The student decides whether to take it.
 
   if (session.overlay?.kind === 'probe') {
     const o = session.overlay
@@ -461,12 +460,21 @@ function serveWorkItem(
   if (itemKind === 'practice') sess.practiceServes += 1
   session.sinceReview = itemKind === 'review' ? 0 : session.sinceReview + 1
   const p = student.skills[skillId]?.p ?? ctx.bkt(skillId).L0
+  const alt =
+    session.overlay?.kind === 'alt_explanation' && session.overlay.skillId === skillId
+      ? session.overlay
+      : null
   const action: NextAction = {
     kind: 'serve_item',
     itemKind,
     skillId,
     forSkillId: skillId,
     instance,
+    // the corrective ladder found a representation this skill has not
+    // taught yet — offered, never forced
+    ...(alt
+      ? { altOffer: { explanationId: alt.explanationId, representation: alt.representation } }
+      : {}),
     // Scaffolding is a SPECTRUM, not a category: the lesson replays above
     // the problem while the estimate is low and fades as it climbs. The
     // first problem after a lesson is simply the low-estimate end of it.
@@ -697,6 +705,10 @@ export function recordAttempt(
       break
     }
     case 'practice': {
+      // the offer stood for one problem; answering moves past it. Taking
+      // it clears the overlay via recordExplanationViewed instead.
+      if (session.overlay?.kind === 'alt_explanation' && session.overlay.skillId === action.skillId)
+        session.overlay = null
       const sess = skillSession(session, action.skillId)
       session.bySkill[action.skillId] = applySkillAttempt(sess, correct, assisted)
       // soft parking: opt-in practice on a parked skill escalates nothing —

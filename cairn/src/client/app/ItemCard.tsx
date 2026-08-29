@@ -73,7 +73,13 @@ export function ItemCard({
 }: ItemCardProps) {
   const params = action.instance.params as Params
   const isCheck = action.itemKind === 'check'
-  const [revealedHints, setRevealedHints] = useState(isCheck ? 0 : (action.offeredHintLevel ?? 0))
+  // An OFFER is not a reveal. The corrective ladder offers help after a
+  // miss, but pre-opening the hint hands the student text they never
+  // asked for — and, because revealedHints is submitted as the hint
+  // level, DISCOUNTS their mastery credit for help they did not take.
+  // The offer surfaces the button (and pulses it); the student decides.
+  const [revealedHints, setRevealedHints] = useState(0)
+  const hintOffered = !isCheck && (action.offeredHintLevel ?? 0) > 0
   const [outcome, setOutcome] = useState<AttemptOutcome | null>(null)
   const [busy, setBusy] = useState(false)
   /** the walk-through playing inside this card */
@@ -393,14 +399,20 @@ export function ItemCard({
               Check answer
             </button>
             {maxHints > revealedHints && outcome === null && (
-              <button type="button" className="btn" onClick={() => {
-                setAskedForHelp(true)
-                setRevealedHints((h) => h + 1)
-              }}>
+              <button
+                type="button"
+                // the ladder OFFERED help — point at the button, don't
+                // open the hint for them
+                className={hintOffered && revealedHints === 0 ? 'btn pulse' : 'btn'}
+                onClick={() => {
+                  setAskedForHelp(true)
+                  setRevealedHints((h) => h + 1)
+                }}
+              >
                 Hint
               </button>
             )}
-            {!isCheck && (outcome === null || !outcome.correct) && (
+            {!isCheck && outcome === null && (
               <button type="button" className="btn btn-quiet" onClick={() => void openWalkthrough([])}>
                 Show me how
               </button>
@@ -466,10 +478,37 @@ export function ItemCard({
             </button>
           </div>
         ) : (
-          <button className="btn btn-primary" onClick={() => onContinue()}>
-            Continue
-          </button>
+          // After a MISS the next move is to see it worked, not to move on:
+          // "Show me how" is the primary and Continue steps back to quiet,
+          // so the default path is understanding this problem before
+          // meeting another one.
+          <div className="answer-row">
+            {!outcome.correct && !isCheck && (
+              <button
+                className="btn btn-primary pulse"
+                onClick={() => void openWalkthrough([])}
+              >
+                Show me how
+              </button>
+            )}
+            <button
+              className={outcome.correct || isCheck ? 'btn btn-primary' : 'btn btn-quiet'}
+              onClick={() => onContinue()}
+            >
+              Continue
+            </button>
+          </div>
         ))}
+      {/* The ladder found a representation this skill has not taught yet.
+          It used to play over the student's problem uninvited; now it asks. */}
+      {action.altOffer && !inline && !explained && (
+        <div className="check-offer">
+          <span>Want to see this a different way?</span>
+          <button className="btn btn-quiet" onClick={() => void openWalkthrough([])}>
+            Show me another way
+          </button>
+        </div>
+      )}
       {showInlineCheckOffer && outcome === null && !inline && (
         <div className="check-offer">
           <span>The mastery check is ready when you are.</span>

@@ -4,6 +4,7 @@ import { applyEvent, foldStudent, initialStudentState, type StudentState } from 
 import { instanceKey, type CairnEvent } from '../../src/core/events'
 import {
   freshSession,
+  type NextAction,
   nextAction,
   recordLlmHelp,
   startCheck,
@@ -77,15 +78,21 @@ describe('synthetic students (§10): the fast executable spec', () => {
     expect(snap(foldStudent(events, bktFor()))).toEqual(snap(student))
   })
 
-  it('always-wrong: hint offer → unseen-representation explanation → park + attempt_cap flag; dependents stay locked', () => {
+  it('always-wrong: hint offer → unseen-representation OFFER → park + attempt_cap flag; dependents stay locked', () => {
     const { ctx, all } = makeCtx()
     const { student, actions } = runSession(ctx, alwaysWrong)
     const serves = actions.filter((a) => a.kind === 'serve_item')
     // miss 1 → hint level 1 offered on the next item
     expect(serves[1]).toMatchObject({ offeredHintLevel: 1 })
-    // miss 2 → alternative explanation with a representation not yet viewed
-    const alt = actions.find((a) => a.kind === 'alt_explanation')
-    expect(alt).toMatchObject({ skillId: SKILL_A, representation: 'area-model' })
+    // miss 2 → an unseen representation is OFFERED on the next problem.
+    // It used to be served as its own full-screen action; playing a
+    // different picture over the student's problem uninvited reads as a
+    // hijack, so it rides the serve as an offer the student can take.
+    const altOffer = actions
+      .filter((a): a is Extract<NextAction, { kind: 'serve_item' }> => a.kind === 'serve_item')
+      .find((a) => a.altOffer !== undefined)
+    expect(altOffer?.altOffer).toMatchObject({ representation: 'area-model' })
+    expect(altOffer?.forSkillId).toBe(SKILL_A)
     // miss ladder ends in park + guide_flag(attempt_cap)
     const flags = all().filter((e) => e.kind === 'guide_flag')
     expect(flags).toHaveLength(1)

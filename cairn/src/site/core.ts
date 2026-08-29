@@ -46,6 +46,12 @@ interface StudentSlot {
   session: SessionState
   /** last action served to this student; attempts must resolve against it */
   pending: NextAction | null
+  /** the serve the student JUST answered. `pending` is cleared when the
+   * answer is graded, which left "Show me how" with no instance to render
+   * — so after a wrong answer it either 409'd or fell back to the family's
+   * numbers. Seeing the problem you just missed worked through, with YOUR
+   * numbers, is the whole point of asking. */
+  answered?: NextAction | null
   /** the skill the last serve worked on — departures are detected against it */
   lastSkill?: string | null
   /** "<skillId>:<rank>" milestones already announced (never repeat one) */
@@ -395,6 +401,9 @@ export class SiteCore {
       focusSkill ? { focusSkill, ...(forceFocus ? { forceFocus: true } : {}) } : {},
     )
     st.pending = action
+    // a new serve retires the previous problem — the walkthrough fallback
+    // must never answer with the numbers of a problem already left behind
+    st.answered = null
     const points = this.pointsFor(studentId)
     // did this serve move them off a skill they'd built something on?
     const arriving =
@@ -447,6 +456,7 @@ export class SiteCore {
       hintLevel: body.hintLevel ?? 0,
       latencyMs: body.latencyMs ?? 0,
     })
+    st.answered = pending
     st.pending = null
     return ok({
       verdict: result.verdict,
@@ -532,7 +542,11 @@ export class SiteCore {
       ...skill.instruction.map((id) => all.find((e) => e.id === id)).filter((e) => e !== undefined),
       ...all.filter((e) => !skill.instruction.includes(e.id)),
     ]
-    const pending = st.pending
+    // the problem on screen is the pending serve, or — once it has been
+    // graded — the one just answered, so a post-miss walkthrough still
+    // renders with the numbers the student actually saw
+    const pending =
+      st.pending?.kind === 'serve_item' ? st.pending : (st.answered ?? st.pending)
     if (
       q.forParamHash !== undefined &&
       (pending?.kind !== 'serve_item' || pending.instance.paramHash !== q.forParamHash)

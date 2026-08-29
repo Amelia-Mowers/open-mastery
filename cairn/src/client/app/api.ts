@@ -131,18 +131,35 @@ export class SiteApi implements CairnApi {
     return `${this.base}${path}?${q.toString()}`
   }
 
+  /** An HTTP error body is NOT the success type. Casting it through gave
+   * every caller a plausible-looking object with undefined fields: a 409
+   * on /api/explain read as "no explanation" and "Show me how" silently
+   * did nothing; a 409 on /api/attempt reached the card as
+   * {error} and rendered a NaN point delta. Fail loudly instead. */
+  private async json<T>(r: Response, what: string): Promise<T> {
+    const body: unknown = await r.json().catch(() => null)
+    if (!r.ok) {
+      const detail =
+        body !== null && typeof body === 'object' && 'error' in body
+          ? String((body as { error: unknown }).error)
+          : `HTTP ${r.status}`
+      throw new Error(`${what}: ${detail}`)
+    }
+    return body as T
+  }
+
   private async post<T>(path: string, body: unknown): Promise<T> {
     const r = await fetch(this.url(path), {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify(body),
     })
-    return (await r.json()) as T
+    return this.json<T>(r, `POST ${path}`)
   }
 
   async next(focusSkill?: string): Promise<ServerNext> {
     const r = await fetch(this.url('/api/next', focusSkill ? { skill: focusSkill } : {}))
-    return (await r.json()) as ServerNext
+    return this.json<ServerNext>(r, 'next')
   }
 
   attempt(raw: string, hintLevel: number, latencyMs: number): Promise<AttemptOutcome> {
@@ -173,8 +190,8 @@ export class SiteApi implements CairnApi {
     if (sameAsLesson) extra['viewedFirst'] = '1'
     if (forParamHash !== undefined) extra['forParamHash'] = forParamHash
     const r = await fetch(this.url('/api/explain', extra))
-    const result = (await r.json()) as ExplainResult
-    if (result.explanation === null && excludeReps.length > 0) {
+    const result = await this.json<ExplainResult>(r, 'explain')
+    if (result.explanation == null && excludeReps.length > 0) {
       // loop: everything is fresh again except what's on screen right now
       const again = await fetch(
         this.url('/api/explain', { skill: skillId, exclude: excludeReps[excludeReps.length - 1]! }),
