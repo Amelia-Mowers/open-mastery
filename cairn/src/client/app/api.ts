@@ -50,6 +50,20 @@ export interface AttemptOutcome {
   reviewHeld?: { skillName: string; days: number; kept: number }
 }
 
+export interface StepAttemptBody {
+  itemId: string
+  paramHash: string
+  skillId: string
+  explanationId: string
+  stepIndex: number
+  expectType: string
+  answer: unknown
+  correct: boolean
+  revealed: boolean
+  misconceptionId?: string
+  latencyMs: number
+}
+
 export interface ZooDemoView {
   widget: string
   skillName: string
@@ -101,6 +115,8 @@ export interface CairnApi {
   next(focusSkill?: string): Promise<ServerNext>
   attempt(raw: string, hintLevel: number, latencyMs: number): Promise<AttemptOutcome>
   explanationViewed(): Promise<void>
+  /** one MOVE inside a stepwise problem (which step, what they did) */
+  stepAttempt(move: StepAttemptBody): Promise<void>
   startCheck(skillId: string): Promise<void>
   explain(
     skillId: string,
@@ -172,6 +188,10 @@ export class SiteApi implements CairnApi {
 
   async explanationViewed(): Promise<void> {
     await this.post('/api/explanation-viewed', {})
+  }
+
+  async stepAttempt(move: StepAttemptBody): Promise<void> {
+    await this.post('/api/step-attempt', move)
   }
 
   async startCheck(skillId: string): Promise<void> {

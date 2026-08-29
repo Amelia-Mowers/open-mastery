@@ -12,6 +12,7 @@ import { seedDemoClass } from '../../site/simulate.ts'
 import type {
   AttemptOutcome,
   BundleView,
+  StepAttemptBody,
   CairnApi,
   ExplainResult,
   GuideView,
@@ -201,6 +202,12 @@ export class DemoApi implements CairnApi {
 
   guide(): Promise<GuideView> {
     return Promise.resolve(this.unwrap(this.core.guideView()))
+  }
+
+  stepAttempt(move: StepAttemptBody): Promise<void> {
+    this.unwrap(this.core.stepAttempt(this.studentId, move as unknown as Record<string, unknown>))
+    this.persist()
+    return Promise.resolve()
   }
 
   grades(): Promise<{ available: number[] }> {

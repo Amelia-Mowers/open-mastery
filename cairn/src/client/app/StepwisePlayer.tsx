@@ -60,6 +60,7 @@ export function StepwisePlayer({
   params,
   onReachedEnd,
   onEngaged,
+  onStep,
   stepDelayMs = STEP_DELAY_MS,
 }: {
   explanation: Explanation
@@ -70,6 +71,18 @@ export function StepwisePlayer({
    * assistance, so a right answer never fires this; nor does skipping
    * straight to the answer box. */
   onEngaged?: () => void
+  /** every MOVE the student makes at a gate — right, wrong, or revealed.
+   * The host turns these into step_attempt events, which is what lets the
+   * engine say WHICH step broke rather than only that the problem did. */
+  onStep?: (move: {
+    stepIndex: number
+    expectType: string
+    answer: unknown
+    correct: boolean
+    revealed: boolean
+    misconceptionId?: string
+    latencyMs: number
+  }) => void
   stepDelayMs?: number
 }) {
   const steps = useMemo(
@@ -92,6 +105,8 @@ export function StepwisePlayer({
   /** reviewing an earlier step (index into steps), or null = live frontier */
   const [scrub, setScrub] = useState<number | null>(null)
   const tallies = useRef<StepwiseResult>({ misses: 0, reveals: 0 })
+  /** when the current gate opened, for per-move latency */
+  const gateShownAt = useRef(performance.now())
   const endNotified = useRef(false)
   const engagedNotified = useRef(false)
   /** last active gate content height — the between-gates state holds this
@@ -123,7 +138,12 @@ export function StepwisePlayer({
   // a reveal note lingers while its move plays; clear it once the NEXT
   // gate's input is open (waitingOn non-null at a fresh frontier)
   useEffect(() => {
-    if (waitingOn !== null) setFeedback(null)
+    if (waitingOn !== null) {
+      setFeedback(null)
+      // time each MOVE from the moment its gate opened — a per-problem
+      // clock would just measure how long the lead took to play
+      gateShownAt.current = performance.now()
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waitingOn !== null ? applied : -1])
 
@@ -180,6 +200,14 @@ export function StepwisePlayer({
   const reveal = (lead: string) => {
     if (waitingOn === null) return
     tallies.current.reveals += 1
+    onStep?.({
+      stepIndex: applied,
+      expectType: waitingOn.type,
+      answer: null,
+      correct: false,
+      revealed: true,
+      latencyMs: Math.round(performance.now() - gateShownAt.current),
+    })
     const shown =
       waitingOn.type === 'pick'
         ? (live.equation ?? [])
@@ -210,6 +238,14 @@ export function StepwisePlayer({
             raw,
           ).verdict === 'correct'
     if (correct) {
+      onStep?.({
+        stepIndex: applied,
+        expectType: waitingOn.type,
+        answer: waitingOn.type === 'pick' ? [...picked] : raw,
+        correct: true,
+        revealed: false,
+        latencyMs: Math.round(performance.now() - gateShownAt.current),
+      })
       setFeedback(null)
       unlock()
       return
@@ -224,6 +260,15 @@ export function StepwisePlayer({
     if (waitingOn.type === 'pick') setPicked(new Set())
     // the same diagnosis standard as final answers, applied to this move
     const named = diagnose(waitingOn.misconceptions, params as never, raw)
+    onStep?.({
+      stepIndex: applied,
+      expectType: waitingOn.type,
+      answer: waitingOn.type === 'pick' ? [...picked] : raw,
+      correct: false,
+      revealed: false,
+      ...(named ? { misconceptionId: named.id } : {}),
+      latencyMs: Math.round(performance.now() - gateShownAt.current),
+    })
     if (named) {
       setTries(1)
       setFeedback(named.says)

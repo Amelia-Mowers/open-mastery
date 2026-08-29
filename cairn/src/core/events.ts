@@ -71,6 +71,31 @@ export type EventBody =
   | { kind: 'guide_flag'; reason: FlagReason; skillId?: string }
   | { kind: 'guide_intervention'; note?: string }
   | { kind: 'session'; phase: 'start' | 'end' }
+  /** One MOVE inside a stepwise problem: which gate, what they did, and
+   * whether it was right. Without this the engine can only say a problem
+   * was missed, never which step broke — which is the entire reason to
+   * decompose a problem into steps, and what the guide view needs before
+   * it can point at anything. Not a mastery signal in v1: the item's own
+   * `attempt` still carries the BKT evidence, so replaying these changes
+   * no estimate. */
+  | {
+      kind: 'step_attempt'
+      itemId: string
+      paramHash: string
+      skillId: string
+      explanationId: string
+      /** index of the gated step within the explanation's timeline */
+      stepIndex: number
+      /** what the gate asked for (op | expr | numeric | pick) */
+      expectType: string
+      answer: unknown
+      correct: boolean
+      /** the student asked the gate to solve itself */
+      revealed: boolean
+      /** id of the misconception this miss matched, when one did */
+      misconceptionId?: string
+      latencyMs: number
+    }
   /** The student declared a grade at sign-in, so everything below it is
    * assumed known. This is NOT mastery: it carries no check evidence and
    * must never be confused with it (mastery_granted asserts two clean

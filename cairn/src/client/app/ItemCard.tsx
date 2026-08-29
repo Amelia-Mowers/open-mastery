@@ -34,6 +34,20 @@ export interface ItemCardProps {
   onExplained: (explanationId: string) => void
   /** the check is unlocked but the student chose more practice first */
   showInlineCheckOffer: boolean
+  /** report one stepwise MOVE so the engine can say which step broke */
+  onStepAttempt?: (move: {
+    itemId: string
+    paramHash: string
+    skillId: string
+    explanationId: string
+    stepIndex: number
+    expectType: string
+    answer: unknown
+    correct: boolean
+    revealed: boolean
+    misconceptionId?: string
+    latencyMs: number
+  }) => void
 }
 
 interface InlinePlay {
@@ -70,6 +84,7 @@ export function ItemCard({
   fetchExplanation,
   onExplained,
   showInlineCheckOffer,
+  onStepAttempt,
 }: ItemCardProps) {
   const params = action.instance.params as Params
   const isCheck = action.itemKind === 'check'
@@ -355,6 +370,15 @@ export function ItemCard({
             explanation={fadedLead.explanation}
             params={fadedLead.params}
             onReachedEnd={() => setLeadDone(true)}
+            onStep={(move) =>
+              onStepAttempt?.({
+                ...move,
+                itemId: action.instance.itemId,
+                paramHash: action.instance.paramHash,
+                skillId: action.forSkillId,
+                explanationId: fadedLead.explanation.id,
+              })
+            }
             onEngaged={
               action.itemKind === 'practice'
                 ? () => {

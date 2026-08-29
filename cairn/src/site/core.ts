@@ -497,6 +497,33 @@ export class SiteCore {
     return ok({ ok: true })
   }
 
+  /** Record one move inside a stepwise problem. Telemetry, not mastery
+   * evidence — the item's own attempt still carries that — so this never
+   * touches the estimate and is safe to record freely. */
+  stepAttempt(studentId: string, body: Record<string, unknown>): SiteResult {
+    const need = ['itemId', 'paramHash', 'skillId', 'explanationId']
+    for (const k of need) if (typeof body[k] !== 'string') return err(400, `${k} required`)
+    if (typeof body['stepIndex'] !== 'number') return err(400, 'stepIndex required')
+    const ev = this.ctxFor(studentId).stamp({
+      kind: 'step_attempt',
+      itemId: body['itemId'] as string,
+      paramHash: body['paramHash'] as string,
+      skillId: body['skillId'] as string,
+      explanationId: body['explanationId'] as string,
+      stepIndex: body['stepIndex'] as number,
+      expectType: String(body['expectType'] ?? ''),
+      answer: body['answer'] ?? null,
+      correct: body['correct'] === true,
+      revealed: body['revealed'] === true,
+      ...(typeof body['misconceptionId'] === 'string'
+        ? { misconceptionId: body['misconceptionId'] }
+        : {}),
+      latencyMs: typeof body['latencyMs'] === 'number' ? body['latencyMs'] : 0,
+    })
+    applyEvent(this.slot(studentId).student, ev, this.bktFor())
+    return ok({ ok: true })
+  }
+
   startCheck(studentId: string, skillId: unknown): SiteResult {
     const st = this.slot(studentId)
     const okStart =

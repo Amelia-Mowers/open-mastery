@@ -702,6 +702,10 @@ function Session({
             paramHash,
           )
         }
+        onStepAttempt={(move) => {
+          // fire-and-forget: telemetry must never block the student
+          void api.stepAttempt(move).catch(() => {})
+        }}
         onExplained={(explanationId) => {
           void api.explained(explanationId, skillId)
         }}

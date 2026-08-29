@@ -192,6 +192,11 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       state.deleted = true
       break
     }
+    // step_attempt is TELEMETRY in v1: the item's own `attempt` already
+    // carries this problem's evidence, and folding the steps too would
+    // count one problem several times. Per-step BKT is a deliberate
+    // later decision (TODO), not an oversight.
+    case 'step_attempt':
     // hint (free — never consumes an attempt), signal, guide_intervention,
     // session, clock_set: no mastery-model effect
     case 'hint':
