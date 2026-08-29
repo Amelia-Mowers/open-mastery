@@ -53,6 +53,40 @@ export function seedStudent(core: SiteCore, studentId: string, kind: keyof typeo
     }
     const item = core.cur.items.get(action.instance.itemId)!
     const correct = rng() < a.pCorrect
+    // Work the STEPS as well as the answer, so the seeded class exercises
+    // the telemetry the guide view reads. A student who misses the problem
+    // usually fumbled one of its moves first — that is the whole reason
+    // the guide can name a step instead of only a skill.
+    const lead = (core.cur.explanationsBySkill.get(action.forSkillId) ?? []).find((e) =>
+      e.timeline.some((st) => st.expect !== undefined),
+    )
+    if (lead) {
+      const gates = lead.timeline
+        .map((st, i) => ({ st, i }))
+        .filter((g) => g.st.expect !== undefined)
+      for (const g of gates) {
+        const gotIt = rng() < a.pCorrect
+        core.stepAttempt(studentId, {
+          itemId: action.instance.itemId,
+          paramHash: action.instance.paramHash,
+          skillId: action.forSkillId,
+          explanationId: lead.id,
+          stepIndex: g.i,
+          expectType: String(g.st.expect?.type ?? ''),
+          answer: gotIt ? 'ok' : '999999',
+          correct: gotIt,
+          revealed: !gotIt && a.usesHints && rng() < 0.4,
+          ...(gotIt
+            ? {}
+            : {
+                misconceptionId:
+                  g.st.expect?.misconceptions?.[0]?.id ?? undefined,
+              }),
+          latencyMs: 1500 + Math.floor(rng() * 7000),
+        })
+        if (!gotIt) break // a fumbled move ends the run at that step
+      }
+    }
     let raw = '999999'
     if (correct) {
       const rendered = renderTemplate(item.answer.value as string, action.instance.params as Env, {

@@ -88,6 +88,49 @@ export interface GuideStudent {
   lastActive: number
 }
 
+export interface GuideStudentDetail {
+  id: string
+  points: number
+  placedGrade: number | null
+  totals: {
+    attempts: number
+    correct: number
+    assisted: number
+    stepMoves: number
+    lessonsWatched: number
+  }
+  skills: Array<{
+    skillId: string
+    name: string
+    phase: string
+    masteryPct: number
+    attempts: number
+    lapsed: boolean
+    placed: boolean
+  }>
+  /** where the MOVES break — the point of logging stepwise attempts */
+  stuck: Array<{
+    skillId: string
+    skillName: string
+    explanationId: string
+    stepIndex: number
+    misses: number
+    reveals: number
+    misconceptions: Record<string, number>
+  }>
+  recent: Array<{
+    t: number
+    skillId: string
+    skillName: string
+    itemKind: string
+    correct: boolean
+    assisted: boolean
+    hintLevel: number
+    latencyMs: number
+  }>
+  flags: Array<{ reason: string; skillId: string | null; skillName: string | null; t: number }>
+}
+
 export interface GuideView {
   students: GuideStudent[]
   totalSkills: number
@@ -131,6 +174,8 @@ export interface CairnApi {
   demoFor(explanationId: string): Promise<ZooDemoView>
   bundle(): Promise<BundleView>
   guide(): Promise<GuideView>
+  /** one student's detail — what they worked on and which moves break */
+  guideStudentDetail(id: string): Promise<GuideStudentDetail>
   seedClass(): Promise<void>
   /** grades the catalog can teach, for the sign-in grade picker */
   grades(): Promise<{ available: number[] }>
@@ -246,7 +291,12 @@ export class SiteApi implements CairnApi {
 
   async guide(): Promise<GuideView> {
     const r = await fetch(`${this.base}/api/guide`)
-    return (await r.json()) as GuideView
+    return this.json<GuideView>(r, 'guide')
+  }
+
+  async guideStudentDetail(id: string): Promise<GuideStudentDetail> {
+    const r = await fetch(`${this.base}/api/guide-student?id=${encodeURIComponent(id)}`)
+    return this.json<GuideStudentDetail>(r, 'guide student')
   }
 
   async grades(): Promise<{ available: number[] }> {

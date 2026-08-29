@@ -241,6 +241,20 @@ body {
 .smooth-inner { transition: opacity 0.18s ease; display: flow-root; }
 .smooth-inner.dim { opacity: 0.55; pointer-events: none; }
 
+/* ---- guide: per-student detail ---- */
+.guide-open { padding: 2px 4px; font-weight: 700; text-decoration: underline; }
+.guide-detail-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.guide-detail-totals { margin: 0 0 14px; }
+.guide-detail-h {
+  margin: 16px 0 6px; font: 700 12px 'Nunito Sans', sans-serif;
+  letter-spacing: 0.08em; text-transform: uppercase; color: #8a5320;
+}
+.guide-stuck, .guide-detail-skills, .guide-recent { margin: 0; padding-left: 18px; }
+.guide-stuck li, .guide-detail-skills li, .guide-recent li { margin-bottom: 4px; }
+.guide-misc { font-size: 13px; color: #8a5320; }
+.guide-ok { color: #3f6a4d; font-weight: 700; }
+.guide-bad { color: #b04528; font-weight: 700; }
+
 /* ---- grade picker (sign-in) ---- */
 .grade-picker { margin-top: 18px; }
 .grade-picker-label { margin: 0 0 8px; font-weight: 600; color: #5c5245; }

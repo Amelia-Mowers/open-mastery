@@ -671,6 +671,105 @@ export class SiteCore {
    * and open flags — for guides, never shown to students (invariant 3 bans
    * student-visible comparisons; the real server gates this behind guide
    * auth in step 5's successor). */
+  /** One student, in the detail a guide actually needs: what they worked
+   * on, where the time went, and — from step_attempt — WHICH MOVES break.
+   * The roster row was a dead end without this; "no open flags" was the
+   * only thing the guide could ever be told. */
+  guideStudent(studentId: string): SiteResult {
+    const st = this.slots.get(studentId)
+    if (!st) return err(404, `unknown student '${studentId}'`)
+    const mine = this.log.filter((e) => e.studentId === studentId)
+    if (mine.length === 0 && Object.keys(st.student.skills).length === 0)
+      return err(404, `unknown student '${studentId}'`)
+    const skillName = (id: string): string => this.cur.skills.get(id)?.name ?? id
+
+    // recent work, newest first — the guide reads this like a timeline
+    const recent = mine
+      .filter((e) => e.kind === 'attempt')
+      .slice(-25)
+      .reverse()
+      .map((e) => {
+        if (e.kind !== 'attempt') return null
+        return {
+          t: e.t,
+          skillId: e.skillId,
+          skillName: skillName(e.skillId),
+          itemKind: e.itemKind,
+          correct: e.correct,
+          assisted: e.assisted,
+          hintLevel: e.hintLevel,
+          latencyMs: e.latencyMs,
+        }
+      })
+      .filter((r) => r !== null)
+
+    // WHERE THE MOVES BREAK: step misses grouped by skill + step, with the
+    // named misconception when one matched. This is the answer to "what
+    // is this child actually stuck on".
+    const stuckBy = new Map<
+      string,
+      { skillId: string; skillName: string; explanationId: string; stepIndex: number; misses: number; reveals: number; misconceptions: Record<string, number> }
+    >()
+    for (const e of mine) {
+      if (e.kind !== 'step_attempt' || (e.correct && !e.revealed)) continue
+      const key = `${e.explanationId}#${e.stepIndex}`
+      const row =
+        stuckBy.get(key) ??
+        {
+          skillId: e.skillId,
+          skillName: skillName(e.skillId),
+          explanationId: e.explanationId,
+          stepIndex: e.stepIndex,
+          misses: 0,
+          reveals: 0,
+          misconceptions: {} as Record<string, number>,
+        }
+      if (e.revealed) row.reveals += 1
+      else row.misses += 1
+      if (e.misconceptionId !== undefined)
+        row.misconceptions[e.misconceptionId] = (row.misconceptions[e.misconceptionId] ?? 0) + 1
+      stuckBy.set(key, row)
+    }
+    const stuck = [...stuckBy.values()].sort((a, b) => b.misses + b.reveals - (a.misses + a.reveals))
+
+    const skills = Object.entries(st.student.skills)
+      .filter(([, sk]) => sk.phase !== 'unseen')
+      .map(([sid, sk]) => ({
+        skillId: sid,
+        name: skillName(sid),
+        phase: sk.phase,
+        masteryPct: this.masteryOf(studentId, sid),
+        attempts: sk.attempts,
+        lapsed: sk.lapsed === true,
+        // never present a declared grade as earned mastery
+        placed: sk.placed === true,
+      }))
+
+    const attempts = mine.filter((e) => e.kind === 'attempt')
+    const correct = attempts.filter((e) => e.kind === 'attempt' && e.correct).length
+    return ok({
+      id: studentId,
+      points: this.pointsFor(studentId),
+      placedGrade: st.student.placedGrade ?? null,
+      totals: {
+        attempts: attempts.length,
+        correct,
+        assisted: attempts.filter((e) => e.kind === 'attempt' && e.assisted).length,
+        stepMoves: mine.filter((e) => e.kind === 'step_attempt').length,
+        lessonsWatched: mine.filter((e) => e.kind === 'explanation_viewed' && e.completed).length,
+      },
+      skills,
+      stuck,
+      recent,
+      flags: st.student.openFlags.map((f) => ({
+        reason: f.reason,
+        skillId: f.skillId ?? null,
+        skillName: f.skillId ? skillName(f.skillId) : null,
+        t: f.t,
+      })),
+    })
+  }
+
   guideView(): SiteResult {
     const skillName = (id: string): string => this.cur.skills.get(id)?.name ?? id
     const lastActive = new Map<string, number>()
