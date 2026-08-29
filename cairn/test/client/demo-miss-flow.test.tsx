@@ -62,3 +62,49 @@ describe('demo backend: after a wrong answer', () => {
     )
   })
 })
+
+describe('the walk-through owns the screen while it plays', () => {
+  it('no competing continue and no stale verdict under an open walk-through', { timeout: 25000 }, async () => {
+    const user = userEvent.setup()
+    const bundle = fixtureBundle()
+    render(
+      <App apiFactory={(_b, student) => new DemoApi(student, bundle, null)} initialStudent="tidy" />,
+    )
+    await waitFor(
+      async () => {
+        for (let i = 0; i < 40; i++) {
+          if (screen.queryByTestId('stem') && screen.queryByRole('button', { name: 'Check answer' }))
+            return
+          const handoff =
+            screen.queryByRole('button', { name: 'Now you try.' }) ??
+            screen.queryByRole('button', { name: 'Start the lesson' })
+          const segs = screen.queryAllByRole('button', { name: /Go to step/ })
+          const cont = screen.queryByRole('button', { name: 'Continue' })
+          if (handoff) await user.click(handoff)
+          else if (segs.length > 0) fireEvent.click(segs[segs.length - 1]!)
+          else if (cont) await user.click(cont)
+          else await new Promise((r) => setTimeout(r, 50))
+        }
+        throw new Error('never reached a problem')
+      },
+      { timeout: 15000 },
+    )
+    const input = screen.getByRole('textbox')
+    await user.clear(input)
+    await user.type(input, '99999')
+    await user.click(screen.getByRole('button', { name: 'Check answer' }))
+    await waitFor(() => expect(screen.getByRole('status')).toBeTruthy(), { timeout: 8000 })
+
+    await user.click(await screen.findByRole('button', { name: /show me how/i }))
+    await waitFor(
+      () => expect(screen.queryAllByRole('button', { name: /Go to step/ }).length).toBeGreaterThan(0),
+      { timeout: 8000 },
+    )
+
+    // the walk-through's own "Now you try." is the ONLY exit on screen
+    expect(screen.queryByRole('button', { name: /^continue$/i })).toBeNull()
+    expect(screen.queryAllByRole('button', { name: /show me how/i })).toHaveLength(0)
+    // and the verdict banner has stood down
+    expect(screen.queryByText(/not quite/i)).toBeNull()
+  })
+})

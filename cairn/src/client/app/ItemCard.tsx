@@ -261,10 +261,18 @@ export function ItemCard({
   const finishWalkthrough = () => {
     if (!inline) return
     onExplained(inline.explanation.id)
+    setInline(null)
+    // This problem is already graded, so "Now you try." means the NEXT
+    // one — landing back on a card whose answer box is spent (and whose
+    // verdict is still on screen) is the dead end the two-continues
+    // layout came from.
+    if (outcome !== null) {
+      onContinue()
+      return
+    }
     setExplained(true)
     setAskedForHelp(true)
     setRevealedHints((h) => Math.max(h, 1, Math.min(item.hints.length, 2)))
-    setInline(null)
   }
 
   const mastered = outcome?.emitted.some((e) => e.kind === 'mastery_granted') ?? false
@@ -431,7 +439,7 @@ export function ItemCard({
           {renderText(h, params)}
         </p>
       ))}
-      {outcome && !mastered && (
+      {outcome && !mastered && !inline && (
         <div className={outcome.correct ? 'feedback ok' : 'feedback bad'} role="status">
           {feedbackText}
           {delta > 0 && <span className="pts-delta">+{delta}</span>}
@@ -467,7 +475,11 @@ export function ItemCard({
           though.
         </div>
       )}
+      {/* While the walk-through plays it OWNS the exit — its own
+          "Now you try." is the way out. Rendering the outcome row
+          underneath gave two competing continues. */}
       {outcome &&
+        !inline &&
         (flagged ? (
           <div className="answer-row">
             <button className="btn btn-primary" onClick={() => onContinue(action.forSkillId)}>
