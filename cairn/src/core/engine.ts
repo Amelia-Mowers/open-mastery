@@ -348,8 +348,15 @@ export function nextAction(
     // watches a tape lesson and gets a balance problem.
     const lead = instantiateFor(practiceItems(skillId, ctx.cur), student, session, pol, skillId)
     const leadRep = lead ? (ctx.cur.items.get(lead.itemId)?.representation ?? null) : null
+    // THE WHITEBOARD NEVER LEADS INSTRUCTION. It is what the concrete
+    // models fade TOWARD, so a skill whose items happen to be framed on
+    // the board must still open on a concrete picture — otherwise
+    // matching the item's representation quietly overrides the
+    // instruction order, which is the skill's authored priority.
+    // (`evaluate` lists the table first, but both its items declare
+    // worked-equation, so every student met the whiteboard first.)
     const byRep =
-      leadRep !== null
+      leadRep !== null && leadRep !== 'worked-equation'
         ? (ctx.cur.explanationsBySkill.get(skillId) ?? []).find((e) => e.representation === leadRep)
         : undefined
     const first =

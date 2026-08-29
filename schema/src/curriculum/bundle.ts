@@ -390,6 +390,24 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           s.id,
           'the whiteboard must never LEAD instruction — a concrete representation goes first, worked-equation is what they fade toward',
         )
+      // instruction[0] being concrete is not enough: the engine teaches an
+      // item's OWN representation before serving it, so a skill whose every
+      // item is framed on the whiteboard still opened on the whiteboard —
+      // the item representations quietly outrank the authored priority.
+      // (The engine now refuses to lead with worked-equation; this keeps
+      // the authoring visible rather than silently corrected.)
+      const skillItems = (bundle.items ?? []).filter((it) => it.skills?.[0] === s.id)
+      if (
+        skillItems.length > 0 &&
+        primary?.widget !== 'worked-equation' &&
+        skillItems.every((it) => it.representation === 'worked-equation')
+      )
+        push(
+          'warning',
+          'worked_only_items',
+          s.id,
+          'every item is framed on the whiteboard, so the concrete representations this skill teaches are never the picture practised — point at least one item at a concrete rep',
+        )
       const widgets = new Set((explBySkill.get(s.id) ?? []).map((e) => e.widget))
       if (!widgets.has('worked-equation'))
         push(

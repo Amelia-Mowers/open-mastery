@@ -44,6 +44,7 @@ import { loadBundleDir } from '@openmastery/schema/load'
 import { buildIndex } from '../../src/core/curriculum'
 import { practiceItems } from '../../src/core/select'
 import { createLessonWidget } from '../../src/client/app/LessonPlayer'
+import { renderTemplate } from '@openmastery/schema'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'curriculum')
 it('steps', () => {
   const b = { skills: [], items: [], explanations: [] }
@@ -63,7 +64,13 @@ it('steps', () => {
     if (!st.patch) continue
     w.apply(st.patch)
     rerender(<>{w.element}</>)
-    frames.push({ t: st.t, html: container.innerHTML, caption: st.caption ?? '' })
+    // captions MUST go through the template engine, exactly as
+    // LessonPlayer does (renderText). Dumping them raw made correct
+    // lessons read as broken ("{a}·1 + {b}") in every review strip, and
+    // would equally have hidden a real templating fault.
+    const raw = st.caption ?? ''
+    const r = raw ? renderTemplate(raw, params, { numberStyle: 'fraction' }) : null
+    frames.push({ t: st.t, html: container.innerHTML, caption: r?.ok ? r.value : raw })
   }
   writeFileSync(${JSON.stringify(join(tmp, 'frames.json'))}, JSON.stringify(frames))
 })
