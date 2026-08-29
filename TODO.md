@@ -145,6 +145,29 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       last 2 representation_count warnings.
 - [ ] cube-model counting input — the ONE remaining planned-input debt
       (GOLDEN §1: audits must list it as debt, never as conformance).
+- [ ] First-run report 3 (29 Aug), still open. DONE: the K–8 overclaim
+      (copy now "grades 6–7 today, 3–12 in progress") and the missing
+      placement (grade picker on sign-in, 3–12 with unbuilt grades
+      disabled; picking a grade marks everything below it known via a
+      `placement` event — NOT mastery, no check evidence, no stone).
+      Remaining, roughly by the report's own ordering:
+      - surface the event log in the UI (its "highest-leverage half-day":
+        the log is the proof the engine is real, and no visitor sees it)
+      - log stepwise moves (`step_attempt` with step id + choice), without
+        which the guide view has nothing to show and the differentiator
+        cannot be demonstrated
+      - guide view is a dead end: make the roster row open a detail panel
+      - Enter-to-submit on the answer box
+      - hints are keyed to the problem, not the current step, so they
+        describe a step already finished
+      - skill map clipped at 390px (fixed 560px, no overflow-x)
+      - no routing: Back exits the app, nothing is linkable
+      - mastery bar reads 100% before the check is passed
+      - 4 text styles fail WCAG AA contrast (3.15:1 worst)
+      - sign-in should list existing local profiles
+      - points vs stones: two currencies, neither explained
+      - lesson's own numbers reused as a practice problem
+      - reset-demo confirm never disarms
 - [ ] Flow gaps still open: parked-vs-done framing on session_done;
       offered-hint auto-reveal lacks framing copy. (Reset-demo, the
       focus-mode indicator, and the check-unlock dismissal: done — the

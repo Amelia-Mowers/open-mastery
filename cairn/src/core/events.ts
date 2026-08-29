@@ -71,6 +71,13 @@ export type EventBody =
   | { kind: 'guide_flag'; reason: FlagReason; skillId?: string }
   | { kind: 'guide_intervention'; note?: string }
   | { kind: 'session'; phase: 'start' | 'end' }
+  /** The student declared a grade at sign-in, so everything below it is
+   * assumed known. This is NOT mastery: it carries no check evidence and
+   * must never be confused with it (mastery_granted asserts two clean
+   * unassisted isomorphs; this asserts only that the student said so).
+   * Placed skills are skipped, and a lapse or a failed probe can still
+   * pull them back into practice like any other skill. */
+  | { kind: 'placement'; grade: number; skillIds: string[] }
   /** site-time corrections; govern only future stamps (§7) */
   | { kind: 'clock_set'; wallclock: number; source: 'rtc' | 'ntp' | 'guide' }
   /** audit marker; rows removed locally and, on sync, at the replica */

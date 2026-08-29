@@ -77,7 +77,29 @@ export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: Ap
     return (
       <>
         {banner}
-        <JoinCard onJoin={setStudent} onGuide={() => setGuideMode(true)} about={demoBanner === true} />
+        <JoinCard
+          // a throwaway instance just to read which grades exist; the
+          // student's own api is created by <Session> once they join
+          api={apiFactory ? apiFactory(apiBase, 'grade-picker') : new SiteApi(apiBase, 'grade-picker')}
+          onJoin={(id, grade) => {
+            if (grade === null) {
+              setStudent(id)
+              return
+            }
+            // AWAIT the placement: mounting <Session> immediately would let
+            // it fetch its first problem before the placement landed, and
+            // the student would still open on the bottom of the graph.
+            const api = apiFactory ? apiFactory(apiBase, id) : new SiteApi(apiBase, id)
+            void api
+              .place(grade)
+              .catch(() => {
+                /* placement is a convenience; never block entry on it */
+              })
+              .finally(() => setStudent(id))
+          }}
+          onGuide={() => setGuideMode(true)}
+          about={demoBanner === true}
+        />
       </>
     )
   return (
@@ -119,7 +141,8 @@ function AboutPanel() {
     <section className="card about">
       <h1>Cairn</h1>
       <p>
-        An open-source, self-hostable <b>mastery-learning engine</b> for K-8 math. Every skill is
+        An open-source, self-hostable <b>mastery-learning engine</b> for school math —{' '}
+        <b>grades 6–7 today, 3–12 in progress</b>. Every skill is
         taught with animated lessons in several representations — a balance scale, a bar model, a
         number line, the worked symbols — and practiced as <b>stepwise problems</b> you work move
         by move, with an answer box always open if you can already solve it. Skills unlock along a
@@ -138,8 +161,42 @@ function AboutPanel() {
   )
 }
 
-function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; onGuide?: () => void; about?: boolean }) {
+/** Grades the product intends to cover. Ones the catalog cannot teach yet
+ * are shown but disabled — the roadmap stays visible without dropping a
+ * 4th-grader into grade-6 algebra, which is what the demo used to do. */
+const GRADE_RANGE = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+
+function JoinCard({
+  onJoin,
+  onGuide,
+  about,
+  api,
+}: {
+  onJoin: (id: string, grade: number | null) => void
+  onGuide?: () => void
+  about?: boolean
+  api?: CairnApi
+}) {
   const [name, setName] = useState('')
+  const [grade, setGrade] = useState<number | null>(null)
+  const [available, setAvailable] = useState<number[] | null>(null)
+
+  useEffect(() => {
+    if (!api) return
+    let live = true
+    api
+      .grades()
+      .then((g) => {
+        if (live) setAvailable(g.available)
+      })
+      .catch(() => {
+        if (live) setAvailable([])
+      })
+    return () => {
+      live = false
+    }
+  }, [api])
+
   const join = () => {
     const id = name.trim().toLowerCase()
     if (id === '') return
@@ -148,7 +205,7 @@ function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; on
     } catch {
       /* storage unavailable is fine */
     }
-    onJoin(id)
+    onJoin(id, grade)
   }
   return (
     <main className="shell">
@@ -171,10 +228,39 @@ function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; on
               if (e.key === 'Enter') join()
             }}
           />
-          <button className="btn btn-primary" onClick={join}>
+          <button className="btn btn-primary" onClick={join} disabled={name.trim() === ''}>
             Start
           </button>
         </div>
+        {available !== null && available.length > 0 && (
+          <div className="grade-picker">
+            <p className="muted grade-picker-label" id="grade-picker-label">
+              What grade are you in? <span>Optional — it just sets where you start.</span>
+            </p>
+            <div className="grade-row" role="group" aria-labelledby="grade-picker-label">
+              {GRADE_RANGE.map((g) => {
+                const ready = available.includes(g)
+                return (
+                  <button
+                    key={g}
+                    type="button"
+                    className={grade === g ? 'grade-chip on' : 'grade-chip'}
+                    disabled={!ready}
+                    aria-pressed={grade === g}
+                    title={ready ? `Grade ${g}` : `Grade ${g} — coming soon`}
+                    onClick={() => setGrade(grade === g ? null : g)}
+                  >
+                    {g}
+                  </button>
+                )
+              })}
+            </div>
+            <p className="muted grade-picker-note">
+              Grades {available[0]}–{available[available.length - 1]} are built today; the rest are
+              on the way.
+            </p>
+          </div>
+        )}
         {onGuide && (
           <p className="muted join-guide-link">
             Running the room?{' '}

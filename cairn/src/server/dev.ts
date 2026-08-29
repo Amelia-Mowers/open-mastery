@@ -91,6 +91,8 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       return send(res, { status: 404, body: { error: 'not found (no staticDir configured)' } })
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/grades')
+      return send(res, { status: 200, body: { available: core.gradesAvailable() } })
     if (req.method === 'GET' && url.pathname === '/api/bundle') return send(res, core.bundleView())
     if (req.method === 'GET' && url.pathname === '/api/guide') return send(res, core.guideView())
     if (req.method === 'POST' && url.pathname === '/api/seed-class') {
@@ -110,6 +112,8 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       return send(res, core.attempt(studentId, (await readBody(req)) as Record<string, never>))
     if (req.method === 'POST' && url.pathname === '/api/explanation-viewed')
       return send(res, core.explanationViewed(studentId))
+    if (req.method === 'POST' && url.pathname === '/api/place')
+      return send(res, core.place(studentId, ((await readBody(req)) as { grade?: unknown }).grade))
     if (req.method === 'POST' && url.pathname === '/api/start-check')
       return send(res, core.startCheck(studentId, ((await readBody(req)) as { skillId?: string }).skillId))
     if (req.method === 'GET' && url.pathname === '/api/state') return send(res, core.state(studentId))

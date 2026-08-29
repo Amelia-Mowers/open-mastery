@@ -41,6 +41,10 @@ export interface SkillState {
   /** reviews this skill has HELD (correct at review time) — the streak the
    * student is shown; a lapse resets it, because the memory did not hold */
   reviewsHeld?: number
+  /** reached 'mastered' by PLACEMENT (the student declared a grade), not
+   * by passing a check. No stone is awarded for these, and nothing may
+   * present them as evidence of mastery. */
+  placed?: boolean
 }
 
 export interface StudentState {
@@ -54,6 +58,8 @@ export interface StudentState {
   assisted: Set<string>
   /** representations of completed explanations, per skill (corrective variety) */
   representationsViewed: Record<string, string[]>
+  /** the grade the student placed into at sign-in, if any */
+  placedGrade?: number
   /** open guide flags (read model for the dashboard) */
   openFlags: Array<{ reason: string; skillId?: string; t: number }>
   deleted: boolean
@@ -146,6 +152,24 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       // the skill enters spaced review (a re-grant after a lapse re-enters
       // fresh — v1 does not carry pre-lapse stability across)
       s.fsrs = fsrsInit('good', ev.t)
+      break
+    }
+    case 'placement': {
+      // A declared starting point, not earned mastery. `placed` marks how
+      // the phase was reached so the UI never shows a stone the student
+      // did not earn, and masteredAt satisfies the prereq gate in
+      // eligibleSkills so the grade's own skills are actually reachable.
+      // p sits at the grant floor because the assumption IS "you know
+      // this"; a review or prereq probe can still disconfirm it.
+      for (const skillId of ev.skillIds) {
+        const s = skillState(state, skillId, params)
+        if (s.phase === 'mastered' || s.attempts > 0) continue
+        s.phase = 'mastered'
+        s.p = Math.max(s.p, GRANT_P_FLOOR)
+        s.masteredAt = ev.t
+        s.placed = true
+      }
+      state.placedGrade = ev.grade
       break
     }
     case 'mastery_lapsed': {

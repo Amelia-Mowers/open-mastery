@@ -116,6 +116,10 @@ export interface CairnApi {
   bundle(): Promise<BundleView>
   guide(): Promise<GuideView>
   seedClass(): Promise<void>
+  /** grades the catalog can teach, for the sign-in grade picker */
+  grades(): Promise<{ available: number[] }>
+  /** place the student at a grade (everything below is assumed known) */
+  place(grade: number): Promise<void>
   state(): Promise<StateView>
   reset(): Promise<void>
 }
@@ -223,6 +227,15 @@ export class SiteApi implements CairnApi {
   async guide(): Promise<GuideView> {
     const r = await fetch(`${this.base}/api/guide`)
     return (await r.json()) as GuideView
+  }
+
+  async grades(): Promise<{ available: number[] }> {
+    const r = await fetch(`${this.base}/api/grades`)
+    return this.json<{ available: number[] }>(r, 'grades')
+  }
+
+  async place(grade: number): Promise<void> {
+    await this.post('/api/place', { grade })
   }
 
   async seedClass(): Promise<void> {

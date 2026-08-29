@@ -241,6 +241,25 @@ body {
 .smooth-inner { transition: opacity 0.18s ease; display: flow-root; }
 .smooth-inner.dim { opacity: 0.55; pointer-events: none; }
 
+/* ---- grade picker (sign-in) ---- */
+.grade-picker { margin-top: 18px; }
+.grade-picker-label { margin: 0 0 8px; font-weight: 600; color: #5c5245; }
+.grade-picker-label span { font-weight: 400; }
+.grade-row { display: flex; flex-wrap: wrap; gap: 6px; }
+.grade-chip {
+  min-width: 44px; min-height: 44px; padding: 0 12px;
+  font: 600 15px 'Nunito Sans', sans-serif;
+  color: #6b5a33; background: #fffdf9;
+  border: 1px solid #e6ddd0; border-radius: 10px; cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+.grade-chip:hover:not(:disabled) { background: #f7efe3; border-color: #d8c9b2; }
+.grade-chip.on { background: #b05f28; border-color: #b05f28; color: #fffdf9; }
+/* not-yet-built grades stay VISIBLE (the roadmap is the point) but must
+   read as unavailable rather than merely low-contrast */
+.grade-chip:disabled { opacity: 0.45; cursor: not-allowed; text-decoration: line-through; }
+.grade-picker-note { margin: 8px 0 0; font-size: 13px; }
+
 /* ---- micro-interactions ---- */
 .btn { transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }
 .btn:hover { border-color: #b6a88f; }

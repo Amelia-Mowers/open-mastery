@@ -505,6 +505,47 @@ export class SiteCore {
     return { status: okStart ? 200 : 409, body: { ok: okStart } }
   }
 
+  /** The grade a skill belongs to, from its CCSS standard ids
+   * ("CCSS.MATH.CONTENT.6.EE.B.7" → 6). Null when untagged or K/HS. */
+  static gradeOf(standards: readonly string[]): number | null {
+    for (const std of standards) {
+      const m = /CCSS\.MATH\.CONTENT\.(\d)\./.exec(std)
+      if (m) return Number(m[1])
+    }
+    return null
+  }
+
+  /** Grades the catalog can actually teach — what the picker may offer. */
+  gradesAvailable(): number[] {
+    const out = new Set<number>()
+    for (const skill of this.cur.skills.values()) {
+      const g = SiteCore.gradeOf(skill.standards ?? [])
+      if (g !== null) out.add(g)
+    }
+    return [...out].sort((a, b) => a - b)
+  }
+
+  /** Place a student at a grade: everything BELOW it is assumed known, so
+   * they start on their own grade instead of the bottom of the graph.
+   * Not mastery — see the `placement` event. Skills they have already
+   * worked are left alone. */
+  place(studentId: string, grade: unknown): SiteResult {
+    if (typeof grade !== 'number' || !Number.isInteger(grade) || grade < 1 || grade > 12)
+      return err(400, 'grade must be an integer 1-12')
+    const st = this.slot(studentId)
+    const below: string[] = []
+    for (const [id, skill] of this.cur.skills) {
+      const g = SiteCore.gradeOf(skill.standards ?? [])
+      if (g === null || g >= grade) continue
+      const existing = st.student.skills[id]
+      if (existing?.phase === 'mastered' || (existing?.attempts ?? 0) > 0) continue
+      below.push(id)
+    }
+    const ev = this.ctxFor(studentId).stamp({ kind: 'placement', grade, skillIds: below })
+    applyEvent(st.student, ev, this.bktFor())
+    return ok({ grade, placed: below.length })
+  }
+
   state(studentId: string): SiteResult {
     const st = this.slot(studentId)
     return ok({

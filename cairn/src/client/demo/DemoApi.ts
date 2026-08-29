@@ -203,6 +203,16 @@ export class DemoApi implements CairnApi {
     return Promise.resolve(this.unwrap(this.core.guideView()))
   }
 
+  grades(): Promise<{ available: number[] }> {
+    return Promise.resolve({ available: this.core.gradesAvailable() })
+  }
+
+  place(grade: number): Promise<void> {
+    this.unwrap(this.core.place(this.studentId, grade))
+    this.persist()
+    return Promise.resolve()
+  }
+
   seedClass(): Promise<void> {
     seedDemoClass(this.core)
     this.persist()
