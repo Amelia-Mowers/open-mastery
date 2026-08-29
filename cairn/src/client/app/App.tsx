@@ -47,6 +47,10 @@ const urlParam = (name: string): string | null => {
   }
 }
 
+/** how many more serves of a skill to wait before re-offering its check
+ * after the student chose "More practice first" */
+const CHECK_DEFER_SERVES = 3
+
 export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppProps) {
   const [student, setStudent] = useState(
     initialStudent ?? urlParam('student') ?? readStoredStudent(),
@@ -297,10 +301,23 @@ function Session({
   const skipIntroFor = useRef<string | null>(null)
   /** display mirror of focusSkill (the header chip) */
   const [focusedOn, setFocusedOn] = useState(false)
-  /** skills whose check-unlocked interstitial was dismissed for now */
-  const [checkDismissed, setCheckDismissed] = useState<ReadonlySet<string>>(new Set())
-  /** the serve that just arrived moved off a skill with ground gained */
-  const [milestone, setMilestone] = useState<ServerNext['milestone'] | null>(null)
+  /** skills whose check-unlocked interstitial was deferred, and how many
+   * more serves to wait. "More practice first" means LATER, not never —
+   * as a permanent set it silently retired the check card for the rest of
+   * the session the first time a student chose the encouraged option. */
+  const [checkDeferred, setCheckDeferred] = useState<ReadonlyMap<string, number>>(new Map())
+  const checkDismissed = useMemo(
+    () => new Set([...checkDeferred].filter(([, n]) => n > 0).map(([id]) => id)),
+    [checkDeferred],
+  )
+  const deferCheck = useCallback((skillId: string) => {
+    setCheckDeferred((m) => new Map(m).set(skillId, CHECK_DEFER_SERVES))
+  }, [])
+  /** serves that moved off a skill with ground gained, oldest first. A
+   * queue because milestones are one-shot server-side (see refresh). */
+  const [milestones, setMilestones] = useState<Array<NonNullable<ServerNext['milestone']>>>([])
+  const milestone = milestones[0] ?? null
+  const dismissMilestone = useCallback(() => setMilestones((q) => q.slice(1)), [])
   /** the just-answered skill unlocked its check — offer before moving on */
   const [unlockOffer, setUnlockOffer] = useState<string | null>(null)
   /** an alternative explanation playing in the lesson slot */
@@ -308,12 +325,34 @@ function Session({
 
   const refresh = useCallback(() => {
     setFetching(true)
+    // a previous failure must not outrank a successful serve — the error
+    // card sits above everything, so leaving it set made Retry look dead
+    // while each click really did burn a serve (and a milestone with it)
+    setError(null)
     api
       .next(focusSkill.current ?? undefined)
       .then((n) => {
         setNext(n)
         setPoints(n.points)
-        if (n.milestone) setMilestone(n.milestone)
+        // QUEUE, never overwrite. The server marks a milestone shown when it
+        // GENERATES it, so one dropped here is destroyed for good: a second
+        // refresh landing before the student dismissed the first used to
+        // silently eat an award they had earned.
+        if (n.milestone) setMilestones((q) => [...q, n.milestone!])
+        // each further serve of a deferred skill burns down its deferral,
+        // so the check comes back on offer after a little more practice
+        const served =
+          n.action.kind === 'serve_item'
+            ? n.action.forSkillId
+            : n.action.kind === 'lesson' || n.action.kind === 'alt_explanation'
+              ? n.action.skillId
+              : null
+        if (served !== null)
+          setCheckDeferred((m) => {
+            const left = m.get(served)
+            if (left === undefined || left <= 0) return m
+            return new Map(m).set(served, left - 1)
+          })
       })
       .catch((e: unknown) => setError(String(e)))
       .finally(() => setFetching(false))
@@ -442,6 +481,33 @@ function Session({
         </button>
       </section>
     )
+  } else if (milestone) {
+    body = (
+      <section className="card milestone-moment" aria-label={`Milestone on ${milestone.skillName}`}>
+        <span className="milestone-pebble-big" aria-hidden />
+        <h1>Milestone!</h1>
+        <p className="milestone-blurb">
+          You&rsquo;re doing great on {milestone.skillName}.
+        </p>
+        <div className="answer-row" style={{ justifyContent: 'center' }}>
+          <button
+            className="btn"
+            onClick={() => {
+              const id = milestone.skillId
+              dismissMilestone()
+              focusSkill.current = id
+              setFocusedOn(true)
+              refresh()
+            }}
+          >
+            Keep going on this
+          </button>
+          <button className="btn btn-primary" autoFocus onClick={dismissMilestone}>
+            Try another skill
+          </button>
+        </div>
+      </section>
+    )
   } else if (next.action.kind === 'lesson' || next.action.kind === 'alt_explanation') {
     const { skillId } = next.action
     const rep = next.explanation!.representation
@@ -479,33 +545,6 @@ function Session({
         }
       />
     )
-  } else if (milestone) {
-    body = (
-      <section className="card milestone-moment" aria-label={`Milestone on ${milestone.skillName}`}>
-        <span className="milestone-pebble-big" aria-hidden />
-        <h1>Milestone!</h1>
-        <p className="milestone-blurb">
-          You&rsquo;re doing great on {milestone.skillName}.
-        </p>
-        <div className="answer-row" style={{ justifyContent: 'center' }}>
-          <button
-            className="btn"
-            onClick={() => {
-              const id = milestone.skillId
-              setMilestone(null)
-              focusSkill.current = id
-              setFocusedOn(true)
-              refresh()
-            }}
-          >
-            Keep going on this
-          </button>
-          <button className="btn btn-primary" autoFocus onClick={() => setMilestone(null)}>
-            Try another skill
-          </button>
-        </div>
-      </section>
-    )
   } else if (
     (unlockOffer !== null && !checkDismissed.has(unlockOffer)) ||
     (next.action.checkAvailable === true && !checkDismissed.has(next.action.forSkillId))
@@ -535,7 +574,7 @@ function Session({
             className="btn"
             onClick={() => {
               setUnlockOffer(null)
-              setCheckDismissed(new Set([...checkDismissed, skillId]))
+              deferCheck(skillId)
             }}
           >
             More practice first
