@@ -94,12 +94,12 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       s.attempts += 1
       // a faded completion is heavily assisted by construction — the
       // walkthrough played every step but the last — so a correct one
-      // replays at the maximal-assistance discount (hint level 2). Like
-      // grantP and the 0.5 halving, a fold/model constant, not policy.
-      // a heavily-led attempt replays at the maximal-assistance discount:
-      // the walkthrough played every step but the last
-      const k = ev.itemKind === 'led' ? 2 : ev.hintLevel
-      s.p = bktUpdate(s.p, ev.correct, ev.correct ? k : 0, params(ev.skillId))
+      // Assistance is measured by hints TAKEN, nothing else. The old
+      // maximal-assistance discount for a "led" serve assumed the
+      // walkthrough played every step but the last — true of the retired
+      // faded examples, false of stepwise, where the student constructs
+      // each step. Discounting that penalised the work they did.
+      s.p = bktUpdate(s.p, ev.correct, ev.correct ? ev.hintLevel : 0, params(ev.skillId))
       s.latencyEmaMs =
         s.latencyEmaMs === undefined ? ev.latencyMs : 0.7 * s.latencyEmaMs + 0.3 * ev.latencyMs
       if (ev.itemKind === 'review' && ev.rating !== undefined && s.fsrs !== undefined)
@@ -108,10 +108,8 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       if (ev.correct) s.lastCorrect = ev.t
       s.consecUnassistedCorrect = ev.correct && !ev.assisted ? s.consecUnassistedCorrect + 1 : 0
       if (ev.assisted) state.assisted.add(instanceKey(ev.itemId, ev.paramHash))
-      if (s.phase !== 'mastered') {
-        if (ev.itemKind === 'led') s.phase = atLeastPhase(s.phase, 'practice')
-        else if (ev.itemKind !== 'probe') s.phase = atLeastPhase(s.phase, 'practice')
-      }
+      if (s.phase !== 'mastered' && ev.itemKind !== 'probe')
+        s.phase = atLeastPhase(s.phase, 'practice')
       break
     }
     case 'explanation_viewed': {

@@ -28,9 +28,11 @@ export interface Envelope {
  * curriculum-free. (Additive over §4.7, as are skillId/paramHash: the doc's
  * accounting rules — probe attempts scope to the prereq, assistance scopes to
  * (itemId, paramHash) — need them explicit on the event.) */
-/** 'led' = a problem served with its lesson playing above it (what used to
- * be the 'faded' phase). It is a serving MODE, not a life stage. */
-export type AttemptItemKind = 'led' | 'practice' | 'check' | 'probe' | 'review'
+/** How a problem was served. There is no separate "worked example" kind:
+ * stepwise made EVERY problem one the student works step by step, so the
+ * lesson flows straight into ordinary practice. What varies is how much
+ * scaffolding rides along, which is a matter of degree, not of category. */
+export type AttemptItemKind = 'practice' | 'check' | 'probe' | 'review'
 
 export type EventBody =
   | {

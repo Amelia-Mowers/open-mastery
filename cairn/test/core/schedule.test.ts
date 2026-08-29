@@ -145,12 +145,12 @@ describe('forceFocus (demo/testing) bypasses the eligibility gate', () => {
   })
 })
 
-describe('the faded phase poses a DIFFERENT problem than the lesson', () => {
-  it('the first faded serve never uses the authored (lesson-example) params', () => {
+describe('the first problem poses DIFFERENT numbers than the lesson', () => {
+  it('the first serve after a lesson never uses the authored (lesson-example) params', () => {
     const { ctx } = miniCtx(1)
     const student = initialStudentState()
     const session = freshSession()
-    // lesson → faded
+    // lesson → its first problem
     const lesson = nextAction(student, session, ctx)
     if (lesson.kind !== 'lesson') throw new Error('expected lesson')
     recordExplanationViewed(student, session, ctx, {
@@ -158,11 +158,11 @@ describe('the faded phase poses a DIFFERENT problem than the lesson', () => {
       explanationId: lesson.explanationId,
       completed: true,
     })
-    const faded = nextAction(student, session, ctx)
-    if (faded.kind !== 'serve_item') throw new Error('expected faded serve')
-    expect(faded.itemKind).toBe('led')
-    const authored = ctx.cur.items.get(faded.instance.itemId)!.params
-    expect(faded.instance.params).not.toEqual(authored)
+    const first = nextAction(student, session, ctx)
+    if (first.kind !== 'serve_item') throw new Error('expected a serve')
+    expect(first).toMatchObject({ itemKind: 'practice', scaffolded: true })
+    const authored = ctx.cur.items.get(first.instance.itemId)!.params
+    expect(first.instance.params).not.toEqual(authored)
   })
 })
 

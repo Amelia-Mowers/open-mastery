@@ -32,18 +32,20 @@
   confirmation. `pick` = decomposition gates (click the equation-banner
   piece; value = acceptable segment indices; needs an earlier `equation`
   patch). Every gate has "Show me" (the widget solves that step,
-  tallied); completed steps scrub via dots. THE SPECTRUM: there is no
-  'faded' PHASE any more (stepwise made every problem a worked lead, so
-  it duplicated practice) — what remains is the serving mode
-  `itemKind: 'led'`, the first serve of a skill, which always leads
-  stepwise; scaffolded PRACTICE serves lead stepwise too
-  when expects exist (engaging any gate → hintLevel ≥1 via onEngaged;
+  tallied); completed steps scrub via dots. THE SPECTRUM IS THE WHOLE MODEL: there
+  are no discrete kinds of problem left. The 'faded' phase is gone and so
+  is the 'led' item kind — stepwise made EVERY problem one the student
+  works step by step, so the lesson flows straight into ordinary
+  practice. `itemKind` is now practice | check | probe | review, and the
+  only thing that varies is how much support rides along: a PRACTICE
+  serve leads stepwise while `scaffolded` (p below fadeAtP) and expects
+  exist (engaging any gate → hintLevel ≥1 via onEngaged;
   skipping straight to the answer box keeps full credit — the
   expertise-reversal guard). Autoplay lessons ignore expects. Author
   expects on the steps that ARE moves (decompositions, both-sides ops,
   next lines), never on pure scene-setting.
-- **The picture taught is the picture practised.** Two halves: the led
-  lead replays the representation of the lesson JUST watched (the LAST
+- **The picture taught is the picture practised.** Two halves: the
+  scaffolded lead replays the representation of the lesson JUST watched (the LAST
   entry in representationsViewed, not the first — leading with the
   original balance after rotating to the tape is the "tape lesson, scale
   practice" bug), and a lesson served to teach an unseen representation

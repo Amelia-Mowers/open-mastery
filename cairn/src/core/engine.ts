@@ -85,7 +85,7 @@ export type NextAction =
   | { kind: 'alt_explanation'; skillId: string; explanationId: string; representation: string }
   | {
       kind: 'serve_item'
-      itemKind: 'led' | 'practice' | 'check' | 'probe' | 'review'
+      itemKind: 'practice' | 'check' | 'probe' | 'review'
       /** the skill the attempt will count against (prereq for probes) */
       skillId: string
       /** the skill being worked on (differs from skillId for probes) */
@@ -278,8 +278,21 @@ export function nextAction(
   // above (the student finishes the last step). It is the first problem after
   // any lesson — including one reached via "show me another way".
   const sess0 = skillSession(session, skillId)
-  const led = sess0.practiceServes === 0
-  const wantFresh = led
+  // FIRST PROBLEM OF THE SKILL: the lesson has just played, so this
+  // problem must pose DIFFERENT numbers than the walkthrough used, and the
+  // representation it just taught must not be re-taught.
+  //
+  // This must not be session-only. practiceServes resets on every page
+  // load, so a reloading student counted as first-time forever — and while
+  // this drove the retired 'led' item kind, that meant every one of their
+  // attempts was folded at the maximal-assistance discount and written to
+  // the DURABLE log. Measured on add-solve with identical correct answers:
+  // straight through reached p = 1.00 and mastery; reloading between
+  // serves topped out at p = 0.71, never reaching the check. Attempts are
+  // event-derived, so they survive the reload.
+  const firstProblem =
+    sess0.practiceServes === 0 && (student.skills[skillId]?.attempts ?? 0) === 0
+  const wantFresh = firstProblem
   // an item we already promised (we interrupted it to teach its picture)
   // is served now, before any fresh pick — the lesson was ABOUT this item
   const promised = session.promised?.skillId === skillId ? session.promised.instance : null
@@ -320,7 +333,7 @@ export function nextAction(
   // encoding beats repetition of one picture) — but an unseen picture is
   // instruction, not a test of it.
   const itemRep = ctx.cur.items.get(inst.itemId)?.representation ?? null
-  if (itemRep !== null && !seenReps.includes(itemRep) && !led) {
+  if (itemRep !== null && !seenReps.includes(itemRep) && !firstProblem) {
     const teach = (ctx.cur.explanationsBySkill.get(skillId) ?? []).find(
       (e) => e.representation === itemRep,
     )
@@ -334,11 +347,11 @@ export function nextAction(
   }
   // the client plays the skill's explanation up to just before the
   // resolution with THIS instance's numbers, and the student finishes it
-  return serveWorkItem(led ? 'led' : 'practice', skillId, inst, student, session, ctx)
+  return serveWorkItem('practice', skillId, inst, student, session, ctx)
 }
 
 function serveWorkItem(
-  itemKind: 'led' | 'practice' | 'review',
+  itemKind: 'practice' | 'review',
   skillId: string,
   instance: ItemInstance,
   student: StudentState,
@@ -348,9 +361,9 @@ function serveWorkItem(
   session.serveSeq += 1
   const sess = skillSession(session, skillId)
   sess.lastServedSeq = session.serveSeq
-  // counts every WORK serve on this skill (led or plain) — it drives both
-  // the blocked-acquisition run and whether the next one still gets a lead
-  if (itemKind === 'led' || itemKind === 'practice') sess.practiceServes += 1
+  // counts every WORK serve on this skill — it drives the blocked
+  // acquisition run and the representation-matching window
+  if (itemKind === 'practice') sess.practiceServes += 1
   session.sinceReview = itemKind === 'review' ? 0 : session.sinceReview + 1
   const p = student.skills[skillId]?.p ?? ctx.bkt(skillId).L0
   const action: NextAction = {
@@ -359,9 +372,11 @@ function serveWorkItem(
     skillId,
     forSkillId: skillId,
     instance,
-    // faded examples always keep their scaffolding; practice fades it out;
-    // reviews are always raw (retrieval of the mastered, unscaffolded form)
-    scaffolded: itemKind === 'led' || (itemKind === 'practice' && p < ctx.policy.scaffolding.fadeAtP),
+    // Scaffolding is a SPECTRUM, not a category: the lesson replays above
+    // the problem while the estimate is low and fades as it climbs. The
+    // first problem after a lesson is simply the low-estimate end of it.
+    // Reviews are always raw (retrieval of the mastered, unscaffolded form).
+    scaffolded: itemKind === 'practice' && p < ctx.policy.scaffolding.fadeAtP,
   }
   const offered = session.pendingHint[skillId]
   if (offered !== undefined) action.offeredHintLevel = offered
@@ -586,7 +601,6 @@ export function recordAttempt(
       if (!correct) emit({ kind: 'mastery_lapsed', skillId: action.skillId })
       break
     }
-    case 'led':
     case 'practice': {
       const sess = skillSession(session, action.skillId)
       session.bySkill[action.skillId] = applySkillAttempt(sess, correct, assisted)

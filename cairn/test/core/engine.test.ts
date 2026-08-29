@@ -51,7 +51,7 @@ const snap = (s: StudentState) => ({
 })
 
 describe('synthetic students (§10): the fast executable spec', () => {
-  it('always-correct: lesson → faded → practice → 2-item unassisted check → mastered, prereq order respected', () => {
+  it('always-correct: lesson → scaffolded practice → practice → 2-item unassisted check → mastered, prereq order respected', () => {
     const { ctx, all } = makeCtx()
     const { student, actions, steps } = runSession(ctx, alwaysCorrect)
     expect(steps).toBeLessThan(60)
@@ -65,9 +65,9 @@ describe('synthetic students (§10): the fast executable spec', () => {
     // p floors at 0.95 on grant
     expect(student.skills[SKILL_A]!.p).toBeGreaterThanOrEqual(0.95)
     expect(student.skills[SKILL_B]!.p).toBeGreaterThanOrEqual(0.95)
-    // B's flow included its faded example before practice
+    // B's first problem came scaffolded — the lesson replays above it
     const bServes = actions.filter((a) => a.kind === 'serve_item' && a.forSkillId === SKILL_B)
-    expect(bServes[0]).toMatchObject({ itemKind: 'led' })
+    expect(bServes[0]).toMatchObject({ itemKind: 'practice', scaffolded: true })
     // no lesson attempt before the lesson explanation
     const firstLessonIdx = actions.findIndex((a) => a.kind === 'lesson')
     const firstServeIdx = actions.findIndex((a) => a.kind === 'serve_item')
