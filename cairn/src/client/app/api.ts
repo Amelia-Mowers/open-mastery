@@ -107,6 +107,8 @@ export interface CairnApi {
     excludeReps?: string[],
     prefer?: string,
     sameAsLesson?: boolean,
+    /** the instance on screen — the server refuses a stale lead */
+    forParamHash?: string,
   ): Promise<ExplainResult>
   explained(explanationId: string, skillId: string): Promise<void>
   demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> }>
@@ -163,11 +165,13 @@ export class SiteApi implements CairnApi {
     excludeReps: string[] = [],
     prefer?: string,
     sameAsLesson?: boolean,
+    forParamHash?: string,
   ): Promise<ExplainResult> {
     const extra: Record<string, string> = { skill: skillId }
     if (excludeReps.length > 0) extra['exclude'] = excludeReps.join(',')
     if (prefer) extra['prefer'] = prefer
     if (sameAsLesson) extra['viewedFirst'] = '1'
+    if (forParamHash !== undefined) extra['forParamHash'] = forParamHash
     const r = await fetch(this.url('/api/explain', extra))
     const result = (await r.json()) as ExplainResult
     if (result.explanation === null && excludeReps.length > 0) {

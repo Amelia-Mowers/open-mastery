@@ -58,6 +58,31 @@ rationale and literature live in memory + cairn/CLAUDE.md. What is LEFT:
       the SAME instance stepwise instead of re-serving a different one.
 - [ ] Scrub parity for LessonPlayer (step dots exist only in stepwise).
 
+## First-run report #2 (artifact 920e438d, 2026-08-29)
+
+Fixed: stale-problem state sync (01), finish-what-you-start so skills
+reach mastery instead of stranding at ~88% (02/03 root cause), picker
+clears on a wrong pick (05), step box gets inputMode (04 half).
+Remaining, roughly in the report's order:
+
+- [ ] 02/03 the stone: verify a milestone/grant now lands in-band and a
+      demo session can actually place a stone inside five minutes.
+- [ ] 04 merge the two answer boxes — the step box should ACCEPT the final
+      answer ("you jumped ahead — that's the answer") instead of failing it.
+- [ ] 06 unparseable input ("eight") must be a format nudge, not a
+      misconception, and must not log an attempt.
+- [ ] 07 guide view off the event log: per-skill mastery, last attempts,
+      the misconception names we already compute (= S-02 below).
+- [ ] 08 hints are scoped to the current step; clear hint state on change.
+- [ ] 09 locked skills: either gate them or drop the lock language.
+- [ ] 10 one noun for points/stones/mastery, with a sentence saying what
+      earns it.
+- [ ] 11 hash routes so screens are linkable and Back works.
+- [ ] 13 switch-student shows existing names; keep typed capitalisation.
+- [ ] 14 aria-live on feedback, an h1, and per-step SVG labels.
+- [ ] 15 exponents lesson narrates "6 + 6 = 12" in a lesson about not
+      doing that — narrate as area, not repeated addition.
+
 ## First-run report follow-ups (artifact 14a3480f, 2026-08-27)
 
 Blocking items and the front door were fixed 2026-08-27/28. Remaining:

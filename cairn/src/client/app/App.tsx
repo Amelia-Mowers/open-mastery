@@ -541,7 +541,8 @@ function Session({
       </section>
     )
   } else {
-    const instanceKey = `${next.action.instance.itemId}#${next.action.instance.paramHash}`
+    const paramHash = next.action.instance.paramHash
+    const instanceKey = `${next.action.instance.itemId}#${paramHash}`
     const { skillId, forSkillId } = next.action
     const itemRep = next.item?.representation ?? undefined
     body = (
@@ -565,7 +566,13 @@ function Session({
         }}
         onStartCheck={startCheck}
         fetchExplanation={(exclude, sameAsLesson) =>
-          api.explain(skillId, exclude, itemRep ?? undefined, sameAsLesson)
+          api.explain(
+            skillId,
+            exclude,
+            itemRep ?? undefined,
+            sameAsLesson,
+            paramHash,
+          )
         }
         onExplained={(explanationId) => {
           void api.explained(explanationId, skillId)

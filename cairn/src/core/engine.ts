@@ -183,6 +183,19 @@ export function nextAction(
   // least recently served skill, which interleaves the working set. ----
   const allEligible = eligibleSkills(student, ctx.cur)
   const unparked = allEligible.filter((id) => !skillSession(session, id).parked)
+  // A skill close to mastery holds the floor until it is finished — but
+  // only while finishing is actually available. A student who declines the
+  // check would otherwise be pinned on one skill forever, so the hold
+  // releases as soon as the check is on the table (the offer is the
+  // student's to take) or the skill is parked.
+  const nearlyDone = (id: string): boolean => {
+    const st = student.skills[id]
+    if (!st || st.phase === 'mastered') return false
+    const L0 = ctx.bkt(id).L0
+    const shown = (st.p - L0) / (0.95 - L0)
+    if (shown < pol.selector.finishAtP) return false
+    return !checkAvailable(student, session, ctx, id)
+  }
   const inAcquisition = (id: string): boolean => {
     const phase = student.skills[id]?.phase ?? 'unseen'
     return (
@@ -208,7 +221,7 @@ export function nextAction(
       ? opts.focusSkill
       : session.currentSkill !== null &&
           unparked.includes(session.currentSkill) &&
-          inAcquisition(session.currentSkill)
+          (inAcquisition(session.currentSkill) || nearlyDone(session.currentSkill))
         ? session.currentSkill
         : (rankSkills(pickPool, student, ctx.cur, ctx.bkt, pol, (id) =>
             skillSession(session, id).lastServedSeq,

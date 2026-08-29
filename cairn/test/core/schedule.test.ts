@@ -89,12 +89,21 @@ describe('blocked acquisition, interleaved consolidation', () => {
     const { actions } = runSession(ctx, neverChecks, 24)
     const serves = workSkills(actions)
     const run = 1 + policyV1.selector.acquisitionRun // faded + first practice serves
-    // blocked: each skill's acquisition is a contiguous run
-    expect(serves.slice(0, run)).toEqual(Array(run).fill('t.sched.s1'))
-    expect(serves.slice(run, 2 * run)).toEqual(Array(run).fill('t.sched.s2'))
-    expect(serves.slice(2 * run, 3 * run)).toEqual(Array(run).fill('t.sched.s3'))
-    // interleaved: once all three are past acquisition, no immediate repeats
-    const tail = serves.slice(3 * run)
+    // blocked: each skill's acquisition is a contiguous run. It may run
+    // LONGER than acquisitionRun — a skill that climbs past finishAtP holds
+    // the floor until its check is on the table (finish what you start), so
+    // assert contiguity rather than an exact length.
+    const firstRun = serves.findIndex((s) => s !== 't.sched.s1')
+    expect(firstRun).toBeGreaterThanOrEqual(run)
+    expect(serves.slice(0, firstRun)).toEqual(Array(firstRun).fill('t.sched.s1'))
+    expect(serves[firstRun]).toBe('t.sched.s2')
+    // interleaved: once every skill has had its blocked run, no immediate
+    // repeats. Each run may extend past acquisitionRun (finish what you
+    // start), so find where the LAST skill's contiguous run ends.
+    const s3start = serves.indexOf('t.sched.s3')
+    let s3end = s3start
+    while (serves[s3end + 1] === 't.sched.s3') s3end++
+    const tail = serves.slice(s3end + 1)
     expect(tail.length).toBeGreaterThanOrEqual(6)
     for (let i = 1; i < tail.length; i++) expect(tail[i], `position ${i}`).not.toBe(tail[i - 1])
   })
@@ -413,5 +422,33 @@ describe('representations are taught before they are tested', () => {
       }
     }
     expect(checked).toBeGreaterThanOrEqual(2) // both lessons were honoured
+  })
+})
+
+describe('finish what you start', () => {
+  it('a skill past finishAtP is not abandoned mid-climb', () => {
+    // the reported symptom: a session ends with several skills at ~88% and
+    // no stone placed, because interleaving rotated away from each one just
+    // before its check
+    const { ctx } = miniCtx(3)
+    const { actions, student } = runSession(ctx, alwaysCorrect, 200)
+    const serves = workSkills(actions)
+    // every skill that got worked on reached mastery — nothing stranded high
+    for (const [id, st] of Object.entries(student.skills)) {
+      const L0 = BKT.L0
+      const shown = (st.p - L0) / (0.95 - L0)
+      if (shown >= policyV1.selector.finishAtP)
+        expect(st.phase, `${id} stranded at ${Math.round(shown * 100)}%`).toBe('mastered')
+    }
+    expect(serves.length).toBeGreaterThan(6)
+  })
+
+  it('but a student who declines the check is not pinned forever', () => {
+    // nearlyDone releases once the check is ON OFFER — otherwise declining it
+    // would trap the student on one skill for the rest of the session
+    const { ctx } = miniCtx(3)
+    const { actions } = runSession(ctx, neverChecks, 40)
+    const serves = workSkills(actions)
+    expect(new Set(serves).size).toBeGreaterThanOrEqual(2)
   })
 })

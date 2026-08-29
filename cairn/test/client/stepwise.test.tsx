@@ -70,11 +70,12 @@ describe('stepwise player', () => {
     await user.click(container.querySelector('[data-pick-seg="2"]')!) // '=' selected too
     await user.click(screen.getByTestId('stepwise-check'))
     expect(screen.getByTestId('stepwise-feedback').textContent).toContain('Not those pieces')
-    // the wrong set STAYS selected for adjusting: drop '=', add '+ 5'
-    await user.click(container.querySelector('[data-pick-seg="2"]')!) // deselect '='
-    await user.click(container.querySelector('[data-pick-seg="1"]')!)
-    expect(container.querySelector('[data-pick-seg="0"]')!.getAttribute('aria-pressed')).toBe('true')
+    // a wrong set CLEARS, so changing your mind costs one click, not two:
+    // leaving it lit turned "click the other piece" into a second miss
+    expect(container.querySelector('[data-pick-seg="0"]')!.getAttribute('aria-pressed')).toBe('false')
     expect(container.querySelector('[data-pick-seg="2"]')!.getAttribute('aria-pressed')).toBe('false')
+    await user.click(container.querySelector('[data-pick-seg="0"]')!)
+    await user.click(container.querySelector('[data-pick-seg="1"]')!)
     await user.click(screen.getByTestId('stepwise-check'))
 
     // op gate opens with its authored prompt; the confirmation has NOT played

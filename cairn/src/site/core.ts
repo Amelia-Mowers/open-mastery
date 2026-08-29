@@ -493,7 +493,17 @@ export class SiteCore {
 
   explain(
     studentId: string,
-    q: { skill: string; exclude?: string[]; prefer?: string | null; viewedFirst?: boolean },
+    q: {
+      skill: string
+      exclude?: string[]
+      prefer?: string | null
+      viewedFirst?: boolean
+      /** the instance the CLIENT is showing; a lead fetched for an earlier
+       * problem must not answer with that problem's numbers after the
+       * student has moved on (the heading said one problem, the widget
+       * another) */
+      forParamHash?: string
+    },
   ): SiteResult {
     const st = this.slot(studentId)
     const skill = this.cur.skills.get(q.skill)
@@ -504,6 +514,11 @@ export class SiteCore {
       ...all.filter((e) => !skill.instruction.includes(e.id)),
     ]
     const pending = st.pending
+    if (
+      q.forParamHash !== undefined &&
+      (pending?.kind !== 'serve_item' || pending.instance.paramHash !== q.forParamHash)
+    )
+      return err(409, 'that problem is no longer on screen')
     const instanceParams =
       pending?.kind === 'serve_item' && pending.skillId === q.skill ? pending.instance.params : null
     const familyParams = practiceItems(q.skill, this.cur)[0]?.params ?? {}

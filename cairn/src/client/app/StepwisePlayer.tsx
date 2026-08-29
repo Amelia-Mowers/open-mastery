@@ -214,6 +214,9 @@ export function StepwisePlayer({
       return
     }
     tallies.current.misses += 1
+    // a wrong set clears itself: leaving it lit turned "click x instead"
+    // into {x, 21} — one mistake charged as two misses
+    if (waitingOn.type === 'pick') setPicked(new Set())
     // the same diagnosis standard as final answers, applied to this move
     const named = diagnose(waitingOn.misconceptions, params as never, raw)
     if (named) {
@@ -417,6 +420,7 @@ export function StepwisePlayer({
                 key={`typed-${nudge.seq}`}
                 className={nudge.parts.includes('by') ? 'answer-input sw-nudge' : 'answer-input'}
                 aria-label="Your next step"
+                inputMode="decimal"
                 value={typed}
                 autoFocus
                 onChange={(e) => setTyped(e.target.value)}

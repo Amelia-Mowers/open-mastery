@@ -146,6 +146,7 @@ export class DemoApi implements CairnApi {
     excludeReps: string[] = [],
     prefer?: string,
     sameAsLesson?: boolean,
+    forParamHash?: string,
   ): Promise<ExplainResult> {
     const q = (exclude: string[]) =>
       this.unwrap<ExplainResult>(
@@ -154,6 +155,7 @@ export class DemoApi implements CairnApi {
           exclude,
           prefer: prefer ?? null,
           viewedFirst: sameAsLesson === true,
+          ...(forParamHash !== undefined ? { forParamHash } : {}),
         }),
       )
     const result = q(excludeReps)

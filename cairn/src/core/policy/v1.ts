@@ -73,6 +73,12 @@ export const policyV1 = {
      * in lesson/faded/practice — breadth with breathing room, not a lesson
      * avalanche after every unlock */
     maxActiveSkills: 3,
+    /** FINISH WHAT YOU START: once the mastery estimate clears this, the
+     * skill stays current until it is mastered (or parked). Interleaving
+     * buys discrimination between problem types, but rotating away from a
+     * skill that is two answers from its check just strands the work —
+     * a student ends a session with several 88%s and no stone. */
+    finishAtP: 0.75,
     /** blocked acquisition: stay on a skill through its lesson, faded phase,
      * and this many practice serves — THEN it joins the interleaved rotation
      * (novices benefit from a short blocked run; interleave after) */
