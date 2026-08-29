@@ -13,6 +13,7 @@ import type {
   AttemptOutcome,
   BundleView,
   GuideStudentDetail,
+  RecentEvents,
   StepAttemptBody,
   CairnApi,
   ExplainResult,
@@ -203,6 +204,10 @@ export class DemoApi implements CairnApi {
 
   guide(): Promise<GuideView> {
     return Promise.resolve(this.unwrap(this.core.guideView()))
+  }
+
+  recentEvents(limit = 40): Promise<RecentEvents> {
+    return Promise.resolve(this.unwrap(this.core.recentEvents(limit)))
   }
 
   guideStudentDetail(id: string): Promise<GuideStudentDetail> {

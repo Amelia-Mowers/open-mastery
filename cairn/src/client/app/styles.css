@@ -241,6 +241,28 @@ body {
 .smooth-inner { transition: opacity 0.18s ease; display: flow-root; }
 .smooth-inner.dim { opacity: 0.55; pointer-events: none; }
 
+/* ---- guide: live event log ---- */
+.event-stream {
+  max-height: 340px; overflow-y: auto; overflow-x: auto;
+  border: 1px solid #e6ddd0; border-radius: 10px; background: #fffdf9;
+  font: 12px/1.7 'IBM Plex Mono', ui-monospace, Menlo, monospace;
+}
+.event-row {
+  display: flex; gap: 8px; padding: 3px 10px; white-space: nowrap;
+  border-bottom: 1px solid #f2ece2;
+}
+.event-row:last-child { border-bottom: 0; }
+.event-seq { color: #8b8070; min-width: 44px; }
+.event-kind { font-weight: 600; min-width: 124px; color: #6b5a33; }
+.event-kind.kind-attempt { color: #8a5320; }
+.event-kind.kind-step_attempt { color: #1c5d69; }
+.event-kind.kind-mastery_granted { color: #3f6a4d; }
+.event-kind.kind-guide_flag { color: #b04528; }
+.event-who { min-width: 70px; color: #5c5245; }
+.event-detail { color: #5c5245; overflow: hidden; text-overflow: ellipsis; }
+/* the skill name is context, not signal — it yields first when space runs out */
+.event-skill { color: #8b8070; }
+
 /* ---- guide: per-student detail ---- */
 .guide-open { padding: 2px 4px; font-weight: 700; text-decoration: underline; }
 .guide-detail-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }

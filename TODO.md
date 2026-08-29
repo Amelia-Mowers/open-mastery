@@ -150,13 +150,12 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       placement (grade picker on sign-in, 3–12 with unbuilt grades
       disabled; picking a grade marks everything below it known via a
       `placement` event — NOT mastery, no check evidence, no stone).
+      DONE since: the event log is live in the guide view ("Watch it
+      live", polling, signals first); step_attempt logs every stepwise
+      move (step index, gate type, answer, correct, revealed,
+      misconception, per-gate latency); the roster row opens a per-child
+      detail panel whose "Where the moves break" names the STEP.
       Remaining, roughly by the report's own ordering:
-      - surface the event log in the UI (its "highest-leverage half-day":
-        the log is the proof the engine is real, and no visitor sees it)
-      - log stepwise moves (`step_attempt` with step id + choice), without
-        which the guide view has nothing to show and the differentiator
-        cannot be demonstrated
-      - guide view is a dead end: make the roster row open a detail panel
       - Enter-to-submit on the answer box
       - hints are keyed to the problem, not the current step, so they
         describe a step already finished

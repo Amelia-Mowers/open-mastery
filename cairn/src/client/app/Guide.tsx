@@ -3,7 +3,7 @@
  * never linked from the student UI (invariant 3: students see only their own
  * progress). The dev/demo surface has no auth; the real server gates this. */
 import { useCallback, useEffect, useState } from 'react'
-import type { CairnApi, GuideStudentDetail, GuideView } from './api'
+import type { CairnApi, GuideStudentDetail, GuideView, RecentEvents } from './api'
 
 /** guide-facing (not child-facing) reason copy */
 const FLAG_COPY: Record<string, string> = {
@@ -109,6 +109,8 @@ export function Guide({ api }: { api: CairnApi }) {
       {openStudent !== null && (
         <StudentDetail api={api} id={openStudent} onClose={() => setOpenStudent(null)} />
       )}
+
+      <EventStream api={api} />
 
       {view.students.length > 0 && (
         <section className="card">
@@ -279,6 +281,96 @@ function StudentDetail({
             ))}
           </ul>
         </>
+      )}
+    </section>
+  )
+}
+
+/** The event log, live. Every serve, move and grade lands here as a
+ * versioned, doubly-sequenced row — it is what separates an engine from a
+ * nicely animated worksheet, and it was previously only visible from the
+ * browser console. Rows are read-only; the log is the source of truth
+ * that every view above is folded from. */
+function EventStream({ api }: { api: CairnApi }) {
+  const [data, setData] = useState<RecentEvents | null>(null)
+  const [open, setOpen] = useState(false)
+
+  useEffect(() => {
+    if (!open) return
+    let live = true
+    const pull = () => {
+      api
+        .recentEvents(40)
+        .then((r) => {
+          if (live) setData(r)
+        })
+        .catch(() => {
+          /* the stream is an extra; never break the guide over it */
+        })
+    }
+    pull()
+    const h = setInterval(pull, 2000)
+    return () => {
+      live = false
+      clearInterval(h)
+    }
+  }, [api, open])
+
+  return (
+    <section className="card">
+      <div className="guide-detail-head">
+        <h2 className="dash-h">
+          Event log{data !== null && <span className="muted"> · {data.total} events</span>}
+        </h2>
+        <button className="btn btn-quiet" onClick={() => setOpen(!open)}>
+          {open ? 'Hide' : 'Watch it live'}
+        </button>
+      </div>
+      {!open ? (
+        <p className="muted">
+          Every serve, answer and step lands here as a versioned, sequenced row. This log is the
+          source of truth — the map, the roster and every mastery estimate are folded from it.
+        </p>
+      ) : data === null ? (
+        <p className="muted">Loading…</p>
+      ) : data.events.length === 0 ? (
+        <p className="muted">Nothing yet — work a problem and rows will appear here.</p>
+      ) : (
+        <div className="event-stream" role="log" aria-label="Live event log">
+          {data.events.map((e, i) => (
+            <div className="event-row" key={`${String(e['siteSeq'])}-${i}`}>
+              <span className="event-seq">#{String(e['siteSeq'])}</span>
+              <span className={`event-kind kind-${String(e['kind'])}`}>{String(e['kind'])}</span>
+              <span className="event-who">{String(e['studentId'])}</span>
+              <span className="event-detail">
+                {/* the SIGNALS come first — a long skill name must not push
+                    correctness and latency off the end of the row */}
+                {e['correct'] !== undefined && (
+                  <span className={e['correct'] === true ? 'guide-ok' : 'guide-bad'}>
+                    {e['correct'] === true ? '✓' : '✗'}{' '}
+                  </span>
+                )}
+                {e['stepIndex'] !== undefined && (
+                  <span className="muted">step {Number(e['stepIndex']) + 1} </span>
+                )}
+                {e['latencyMs'] !== undefined && (
+                  <span className="muted">{(Number(e['latencyMs']) / 1000).toFixed(1)}s </span>
+                )}
+                {e['revealed'] === true && <span className="muted">shown </span>}
+                {e['assisted'] === true && <span className="muted">assisted </span>}
+                {e['hintLevel'] !== undefined && Number(e['hintLevel']) > 0 && (
+                  <span className="muted">hint {String(e['hintLevel'])} </span>
+                )}
+                {e['misconceptionId'] !== undefined && (
+                  <span className="guide-misc">{String(e['misconceptionId'])} </span>
+                )}
+                {e['skillName'] !== undefined && (
+                  <span className="event-skill">{String(e['skillName'])}</span>
+                )}
+              </span>
+            </div>
+          ))}
+        </div>
       )}
     </section>
   )

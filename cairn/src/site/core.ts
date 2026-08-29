@@ -820,6 +820,60 @@ export class SiteCore {
     return ok({ ok: true })
   }
 
+  /** The most recent events across everyone, newest first. The log IS the
+   * argument that this is an engine rather than an animated worksheet —
+   * it was only visible from the browser console, so no visitor ever saw
+   * the one component that makes the claim. */
+  recentEvents(limit = 40): SiteResult {
+    const n = Math.max(1, Math.min(200, Math.floor(limit)))
+    const rows = this.log.slice(-n).reverse().map((e) => {
+      const base = {
+        t: e.t,
+        siteSeq: e.siteSeq,
+        deviceSeq: e.deviceSeq,
+        kind: e.kind,
+        studentId: e.studentId,
+        coreVersion: e.coreVersion,
+        bundleVersion: e.bundleVersion,
+      }
+      if (e.kind === 'attempt')
+        return {
+          ...base,
+          skillId: e.skillId,
+          skillName: this.cur.skills.get(e.skillId)?.name ?? e.skillId,
+          itemKind: e.itemKind,
+          correct: e.correct,
+          assisted: e.assisted,
+          hintLevel: e.hintLevel,
+          latencyMs: e.latencyMs,
+        }
+      if (e.kind === 'step_attempt')
+        return {
+          ...base,
+          skillId: e.skillId,
+          skillName: this.cur.skills.get(e.skillId)?.name ?? e.skillId,
+          stepIndex: e.stepIndex,
+          expectType: e.expectType,
+          correct: e.correct,
+          revealed: e.revealed,
+          ...(e.misconceptionId !== undefined ? { misconceptionId: e.misconceptionId } : {}),
+          latencyMs: e.latencyMs,
+        }
+      if (e.kind === 'explanation_viewed')
+        return { ...base, skillId: e.skillId, explanationId: e.explanationId, completed: e.completed }
+      if (e.kind === 'mastery_granted' || e.kind === 'mastery_lapsed')
+        return {
+          ...base,
+          skillId: e.skillId,
+          skillName: this.cur.skills.get(e.skillId)?.name ?? e.skillId,
+        }
+      if (e.kind === 'placement') return { ...base, grade: e.grade, placed: e.skillIds.length }
+      if (e.kind === 'guide_flag') return { ...base, reason: e.reason, skillId: e.skillId ?? null }
+      return base
+    })
+    return ok({ events: rows, total: this.log.length })
+  }
+
   events(studentId: string): SiteResult {
     return ok({ events: this.log.filter((e) => e.studentId === studentId) })
   }

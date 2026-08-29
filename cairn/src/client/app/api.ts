@@ -131,6 +131,11 @@ export interface GuideStudentDetail {
   flags: Array<{ reason: string; skillId: string | null; skillName: string | null; t: number }>
 }
 
+export interface RecentEvents {
+  events: Array<Record<string, unknown>>
+  total: number
+}
+
 export interface GuideView {
   students: GuideStudent[]
   totalSkills: number
@@ -176,6 +181,8 @@ export interface CairnApi {
   guide(): Promise<GuideView>
   /** one student's detail — what they worked on and which moves break */
   guideStudentDetail(id: string): Promise<GuideStudentDetail>
+  /** the live event log — the proof this is an engine */
+  recentEvents(limit?: number): Promise<RecentEvents>
   seedClass(): Promise<void>
   /** grades the catalog can teach, for the sign-in grade picker */
   grades(): Promise<{ available: number[] }>
@@ -292,6 +299,11 @@ export class SiteApi implements CairnApi {
   async guide(): Promise<GuideView> {
     const r = await fetch(`${this.base}/api/guide`)
     return this.json<GuideView>(r, 'guide')
+  }
+
+  async recentEvents(limit = 40): Promise<RecentEvents> {
+    const r = await fetch(`${this.base}/api/recent-events?limit=${limit}`)
+    return this.json<RecentEvents>(r, 'recent events')
   }
 
   async guideStudentDetail(id: string): Promise<GuideStudentDetail> {
