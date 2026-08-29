@@ -77,6 +77,88 @@ export const freshSession = (): SessionState => ({
   sinceReview: 0,
 })
 
+/** Rebuild the corrective counters from the durable log.
+ *
+ * The ladder (offer a hint → teach an alternative representation → probe
+ * the prereq → park) is driven entirely by SkillSession counters, which
+ * are session-only. SiteCore replay hands back a fresh session, and the
+ * browser demo rebuilds SiteCore on EVERY page load — so a student who
+ * reloaded lost the whole ladder and was served plain practice with no
+ * hint, no alternative explanation, no probe. That is precisely the
+ * STRUGGLING student, i.e. the one the ladder exists for.
+ *
+ * A reload continues the same sitting, so counters are rebuilt from the
+ * attempts after the last `session: start` boundary — restoring them
+ * across all time would re-park a returning student the moment they
+ * arrived. Replaying through applySkillAttempt keeps ONE definition of
+ * how a miss counts; `parked` follows from the same directive the live
+ * path would have taken, and `altShown` from the explanations actually
+ * viewed after that boundary.
+ */
+export function restoreSession(
+  session: SessionState,
+  events: readonly CairnEvent[],
+  pol: PolicyV1,
+  /** needed to rebuild a pending alternative-explanation overlay */
+  ctx?: { cur: CurriculumIndex; student: StudentState },
+): void {
+  const ordered = [...events].sort((a, b) => a.siteSeq - b.siteSeq)
+  let from = 0
+  for (let i = 0; i < ordered.length; i++) {
+    const ev = ordered[i]!
+    if (ev.kind === 'session' && ev.phase === 'start') from = i + 1
+  }
+  for (const ev of ordered.slice(from)) {
+    if (ev.kind === 'attempt') {
+      // probe attempts belong to the PREREQ's own counters, exactly as the
+      // live path scopes them
+      const sess = session.bySkill[ev.skillId] ?? freshSkillSession()
+      const next = applySkillAttempt(sess, ev.correct, ev.assisted)
+      session.bySkill[ev.skillId] = next
+      if (ev.itemKind === 'practice' || ev.itemKind === 'check')
+        session.served.add(instanceKey(ev.itemId, ev.paramHash))
+      // the rung the live path would have taken. `park` is a state; a hint
+      // offer is the standing consequence of the miss run, and the overlay
+      // rungs (alternative explanation, prereq probe) fall back to a hint
+      // here — they are one-shot presentations that the student either
+      // already saw before the reload or can reach on the next miss.
+      const directive = nextDirective(next, pol)
+      session.overlay = null
+      if (directive.kind === 'park') {
+        session.bySkill[ev.skillId] = { ...next, parked: true }
+        delete session.pendingHint[ev.skillId]
+      } else if (directive.kind === 'alt_explanation' && ctx) {
+        // the same rung the live path picks: the first representation this
+        // skill has NOT taught yet
+        const seen = ctx.student.representationsViewed[ev.skillId] ?? []
+        const alt = (ctx.cur.explanationsBySkill.get(ev.skillId) ?? []).find(
+          (e) => !seen.includes(e.representation),
+        )
+        if (alt) {
+          session.overlay = {
+            kind: 'alt_explanation',
+            skillId: ev.skillId,
+            explanationId: alt.id,
+            representation: alt.representation,
+          }
+          delete session.pendingHint[ev.skillId]
+        } else {
+          session.pendingHint[ev.skillId] = Math.min(next.consecMisses, pol.hints.maxLevel)
+        }
+      } else if (next.consecMisses >= pol.corrective.offerHintAtMisses) {
+        session.pendingHint[ev.skillId] = Math.min(next.consecMisses, pol.hints.maxLevel)
+      } else {
+        delete session.pendingHint[ev.skillId]
+      }
+    } else if (ev.kind === 'explanation_viewed' && ev.completed) {
+      const sess = session.bySkill[ev.skillId] ?? freshSkillSession()
+      // an alternative explanation is one viewed after the skill already
+      // had attempts against it — the corrective rung, not the lesson
+      if (sess.attempts > 0) session.bySkill[ev.skillId] = { ...sess, altShown: true }
+    }
+  }
+}
+
 const skillSession = (session: SessionState, skillId: string): SkillSession =>
   (session.bySkill[skillId] ??= freshSkillSession())
 

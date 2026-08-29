@@ -25,6 +25,7 @@ import {
   practiceItems,
   recordAttempt,
   recordExplanationViewed,
+  restoreSession,
   startCheck,
   type BktParams,
   type CairnEvent,
@@ -115,14 +116,27 @@ export class SiteCore {
     this.cur = buildIndex(bundle)
     this.bktDefaults = new Map(bundle.skills.map((s) => [s.id, s.bkt_defaults as BktParams]))
     this.wallClock = opts.now ?? (() => Date.now())
-    // resume from a persisted event log (the demo's localStorage): the fold
-    // rebuilds student state; sessions start fresh, like any new visit
+    // Resume from a persisted event log (the demo's localStorage). The fold
+    // rebuilds student state; the SESSION is then rebuilt from the same log,
+    // because a reload continues the sitting rather than starting a new one
+    // — without it the corrective ladder (hint → alternative representation
+    // → prereq probe → park) was lost on every page load, so the struggling
+    // student got plain practice with no help at all.
+    const touched = new Set<string>()
     for (const ev of opts.replay ?? []) {
       this.log.push(ev)
       this.siteSeq = Math.max(this.siteSeq, ev.siteSeq)
       this.siteTime = Math.max(this.siteTime, ev.t)
       applyEvent(this.slot(ev.studentId).student, ev, this.bktFor())
+      touched.add(ev.studentId)
     }
+    for (const studentId of touched)
+      restoreSession(
+        this.slot(studentId).session,
+        this.log.filter((e) => e.studentId === studentId),
+        policyV1,
+        { cur: this.cur, student: this.slot(studentId).student },
+      )
   }
 
   private bktFor(): (skillId: string) => BktParams {
