@@ -67,8 +67,12 @@ Remaining, roughly in the report's order:
 
 - [ ] 02/03 the stone: verify a milestone/grant now lands in-band and a
       demo session can actually place a stone inside five minutes.
-- [ ] 04 merge the two answer boxes — the step box should ACCEPT the final
-      answer ("you jumped ahead — that's the answer") instead of failing it.
+- [ ] 04 the step box calls a correct FINAL answer wrong. Merging the two
+      boxes is NOT the plan (Mia) — they have distinct jobs and conflating
+      them risks reading a step answer as a final one. Options worth
+      weighing: recognise the final answer at a step and say "that's the
+      answer — put it below", or separate them visually so the mistake
+      stops happening. Decide before building.
 - [ ] 06 unparseable input ("eight") must be a format nudge, not a
       misconception, and must not log an attempt.
 - [ ] 07 guide view off the event log: per-skill mastery, last attempts,

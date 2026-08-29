@@ -82,4 +82,45 @@ describe('real curriculum: a taught representation is the one practised', () => 
     expect(bad, bad.join('; ')).toEqual([])
     expect(bad.length).toBe(0)
   })
+  it('"show me another way" during the lesson decides the practice picture', () => {
+    // the chained representation must end up MOST RECENT: recency is what
+    // the faded lead replays and what the practice item is matched against,
+    // so completing the underlying lesson afterwards silently reinstated the
+    // original picture — the student was taught one thing and drilled another
+    const b = { skills: [] as never[], items: [] as never[], explanations: [] as never[] }
+    for (const d of ['skills', 'items', 'explanations']) {
+      const r = loadBundleDir(join(root, d))
+      b.skills.push(...(r.bundle.skills as never[]))
+      b.items.push(...(r.bundle.items as never[]))
+      b.explanations.push(...(r.bundle.explanations as never[]))
+    }
+    let t = Date.UTC(2026, 0, 1)
+    const core = new SiteCore(b as never, { now: () => t })
+    // first serve is the skill's opening lesson
+    const first = core.next('chain').body as {
+      action: { kind: string; skillId?: string; explanationId?: string }
+      explanation?: { representation: string }
+    }
+    expect(first.action.kind).toBe('lesson')
+    const skill = first.action.skillId!
+    const taught = first.explanation!.representation
+
+    // the student asks for another way, and the client chains it
+    const alt = core.explain('chain', { skill, exclude: [taught] }).body as {
+      explanation?: { id: string; representation: string }
+    }
+    expect(alt.explanation, 'the skill should offer a second representation').toBeDefined()
+    const chained = alt.explanation!.representation
+    expect(chained).not.toBe(taught)
+
+    // closeOverlay's order: finish the underlying lesson, THEN record the chain
+    core.explanationViewed('chain')
+    core.explained('chain', { explanationId: alt.explanation!.id, skillId: skill })
+
+    // the lead the next problem replays is the CHAINED one
+    const lead = core.explain('chain', { skill, viewedFirst: true }).body as {
+      explanation?: { representation: string }
+    }
+    expect(lead.explanation?.representation, 'practice replays the picture just taught').toBe(chained)
+  })
 })

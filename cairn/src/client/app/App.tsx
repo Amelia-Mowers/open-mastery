@@ -373,9 +373,12 @@ function Session({
 
   const closeOverlay = useCallback(async () => {
     if (!overlay) return
-    await api.explained(overlay.explanation.id, overlay.skillId)
-    // the underlying lesson action completes with the whole chain
+    // Complete the UNDERLYING lesson first, then record the chained
+    // representation — recency decides which picture the practice problem
+    // is framed in, and doing it the other way round made "show me another
+    // way" end with the ORIGINAL lesson as the most recent one.
     await api.explanationViewed()
+    await api.explained(overlay.explanation.id, overlay.skillId)
     setOverlay(null)
     refresh()
   }, [api, overlay, refresh])

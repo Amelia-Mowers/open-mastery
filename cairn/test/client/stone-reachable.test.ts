@@ -31,7 +31,7 @@ describe('a demo session reaches a stone', () => {
       if (a.kind !== 'serve_item') break
       if (a['checkAvailable'] === true) { core.startCheck('kid', a['forSkillId'] as string); continue }
       const inst = a['instance'] as { itemId: string; params: unknown }
-      const full = items.get(inst.itemId) as { answer: { value: unknown } }
+      const full = items.get(inst.itemId) as unknown as { answer: { value: unknown } }
       const r = renderTemplate(String(full.answer.value), inst.params as Env, { numberStyle: 'fraction' })
       const out = core.attempt('kid', { raw: r.ok ? r.value : '', hintLevel: 0, latencyMs: 900 }).body as {
         emitted: Array<{ kind: string }>
