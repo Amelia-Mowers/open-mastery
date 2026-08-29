@@ -11,7 +11,7 @@ timeline:
     expect:
       type: expr
       value: "{a}{variable} = {a*ans}"
-      prompt: "Subtract {b} from both sides — write the equation that's left."
+      prompt: "The {b} is added on. What move clears it, and what line is left?"
       hint: "The + {b} cancels on the left; the right becomes {a*ans+b} − {b}."
   - t: 8.5
     patch: { line: "{variable} = {a*ans} ÷ {a} = {ans}", note: "divide both sides by {a}" }
@@ -19,7 +19,7 @@ timeline:
     expect:
       type: expr
       value: "{variable} = {ans}"
-      prompt: "Divide both sides by {a} — write the last line."
+      prompt: "{variable} is still multiplied by {a}. What is the last line?"
       hint: "{a*ans} ÷ {a} — how many is that?"
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "\"{p} more than {a} times a number\"" }, caption: "Words first. Symbols say it shorter — and for EVERY number at once." }
-  - { t: 4, patch: { line: "{a} times the number  →  {a}{variable}", note: "call the number {variable}" }, caption: "Give the unknown number a letter: {variable}.", expect: { type: expr, value: "{a}{variable}", prompt: "Write '{a} times the number' using the letter {variable}." } }
-  - { t: 8.5, patch: { line: "{p} more  →  {a}{variable} + {p}", note: "\"more than\" means add" }, caption: "The expression: {a}{variable} + {p}.", expect: { type: expr, value: "{a}{variable} + {p}", prompt: "Write the whole expression: {a} times the number, then {p} more." } }
+  - { t: 4, patch: { line: "{a} times the number  →  {a}{variable}", note: "call the number {variable}" }, caption: "Give the unknown number a letter: {variable}.", expect: { type: expr, value: "{a}{variable}", prompt: "How do you write '{a} times the number' using {variable}?" } }
+  - { t: 8.5, patch: { line: "{p} more  →  {a}{variable} + {p}", note: "\"more than\" means add" }, caption: "The expression: {a}{variable} + {p}.", expect: { type: expr, value: "{a}{variable} + {p}", prompt: "So what is the WHOLE expression — {a} times the number, then {p} more?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -238,6 +238,31 @@ answer sat on the axis before anything happened. Reveal progressively
 tables) and show each step as a MOVE (`arcs` with their size above the
 line, the tape's `removed`, the balance's op badges).
 
+## A GATE ASKS. It never tells the student what to do.
+
+The step the student is asked to work must POSE A QUESTION they answer
+from the diagram — never an instruction they execute. "Do it — multiply
+both sides by the reciprocal" is not a problem; it is a button labelled
+with its own answer, and it teaches nothing.
+
+Two ways this breaks, and both must be checked:
+
+- **The prompt is imperative.** `Do it — …`, `Now subtract 8`, `Multiply
+  both sides by 3`. Rewrite as the question the move answers: "The left
+  pan holds {p}/{q} of {variable}. What one move leaves exactly one
+  {variable}?" Validator: `[gate_tells]` flags imperative openings and
+  prompts that name the operation the gate is grading.
+- **A caption ANSWERS THE NEXT GATE.** Even a perfect question is dead if
+  the caption above it already said "multiply both sides by the
+  RECIPROCAL — 2/3 flipped over is 3/2". Scene-setting captions come
+  BEFORE their gate; the explanation of a move belongs on the step that
+  CONFIRMS it, never on the step that asks. Validator: `[gate_telegraph]`
+  (existing) catches the caption; read them together.
+
+The hint is where the method may be stated — a hint is help the student
+CHOSE to take. The prompt is the question; the caption before it sets the
+scene; the caption after it confirms and explains.
+
 ## Decomposition BUILDS the diagram, then asks what it makes obvious
 
 A decomposition step is construction, not annotation. The diagram starts

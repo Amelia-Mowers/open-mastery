@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{variable} + {p} = {p+d}" }, caption: "On the board: {variable} has {p} added to it." }
-  - { t: 4, patch: { line: "{variable} + {p} − {p} = {p+d} − {p}", note: "subtract {p} from both sides" }, caption: "Undo the addition — subtract {p} from both sides.", expect: { type: expr, value: "{variable} + {p} - {p} = {p+d} - {p}" } }
+  - { t: 4, patch: { line: "{variable} + {p} − {p} = {p+d} − {p}", note: "subtract {p} from both sides" }, caption: "The {p} is added to {variable}. What undoes that — on both sides?", expect: { type: expr, value: "{variable} + {p} - {p} = {p+d} - {p}" } }
   - { t: 8.5, patch: { line: "{variable} = {d}", note: "{p} − {p} = 0" }, caption: "{variable} = {d}.", expect: { type: expr, value: "{variable} = {d}" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

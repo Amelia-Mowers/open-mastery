@@ -227,13 +227,12 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           if (!prior?.caption) return
           if (st.expect.type === 'op') {
             const word = String(st.expect.value).split(/\s/)[0] ?? ''
-            // DO-gates are exempt: when the gate's own prompt names the move
-            // ("Do it — multiply both sides…"), the gate is enactment, not a
-            // question — the caption naming the move is the teaching, not a
-            // leak. Only ASK-gates (prompt withholds the move) must not have
-            // it on screen.
-            const enactment = st.expect.prompt !== undefined && opStem[word]?.test(st.expect.prompt)
-            if (!enactment && opStem[word]?.test(prior.caption))
+            // NO DO-GATE EXEMPTION. A gate whose prompt names its own move
+            // ("Do it — multiply both sides by the reciprocal") is a button
+            // labelled with its answer; the caption above it stating the
+            // method made the whole step a no-op. Both are faults, and the
+            // exemption is what let them stack. See [gate_tells] below.
+            if (opStem[word]?.test(prior.caption))
               push(
                 'warning',
                 'gate_telegraph',
@@ -261,6 +260,28 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
               )
           }
         })
+      // A GATE ASKS. A step the student is asked to work must pose a
+        // QUESTION they answer from the diagram, never an instruction they
+        // execute — "Do it, multiply both sides by the reciprocal" is a
+        // button labelled with its own answer and teaches nothing.
+        for (const [i, st] of e.timeline.entries()) {
+          const prompt = st.expect?.prompt
+          if (prompt === undefined) continue
+          if (!prompt.includes('?'))
+            push(
+              'warning',
+              'gate_tells',
+              `${e.id}.timeline[${i}]`,
+              `this gate instructs instead of asking ('${prompt.slice(0, 60)}…') — pose the question the move answers`,
+            )
+          else if (/^\s*(do it|now |go ahead)/i.test(prompt))
+            push(
+              'warning',
+              'gate_tells',
+              `${e.id}.timeline[${i}]`,
+              `this gate opens by telling the student what to do ('${prompt.slice(0, 40)}…') — lead with the question`,
+            )
+        }
       }
       // CONSTRUCTION: the diagram is built FROM the equation, so its first
       // frame must be empty (or nearly so). A timeline whose opening patch

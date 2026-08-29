@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{p}/{q} {variable} = {b}" }, caption: "The shortcut — one move instead of two." }
-  - { t: 4, patch: { line: "{q}/{p} · {p}/{q} {variable} = {q}/{p} · {b}", note: "multiply both sides by the reciprocal {q}/{p}" }, caption: "Flip {p}/{q} upside down and multiply both sides by it." }
+  - { t: 4, patch: { line: "{q}/{p} · {p}/{q} {variable} = {q}/{p} · {b}", note: "multiply both sides by the reciprocal {q}/{p}" }, caption: "{p}/{q} is in the way. What one factor on both sides turns it into 1?" }
   - { t: 9, patch: { line: "1{variable} = {q}/{p} · {b}", note: "reciprocals multiply to 1" }, caption: "A fraction times its reciprocal is 1 — the left side collapses.", expect: { type: expr, value: "1{variable} = {q}/{p} * {b}" } }
   - { t: 13, patch: { line: "{variable} = {q*b/p}" }, caption: "{variable} = {q*b/p}. Fewer steps — once the flip feels natural.", expect: { type: expr, value: "{variable} = {q*b/p}" } }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
