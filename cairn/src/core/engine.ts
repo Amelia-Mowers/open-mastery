@@ -416,13 +416,25 @@ function instantiateFor(
     for (const key of session.served) if (key.startsWith(`${itemId}#`)) n++
     return n
   }
+  // Difficulty BANDS, not exact distance. As a hard first key it starved
+  // the variety tiebreak completely: with items at difficulty 1 and 2 and
+  // a target of 2, the harder item won every single comparison and the
+  // student saw ONE representation for the rest of the skill (17 serves
+  // straight, in the trace that caught this) — the "one picture repeated"
+  // failure the whole rotation design exists to prevent. Items within a
+  // band are equally appropriate, so rotation decides between them.
+  const band = (it: Item): number =>
+    target === null ? 0 : Math.abs(it.difficulty - target) <= pol.selector.difficultyBand ? 0 : 1
   const ordered = [...pool].sort((a, b) => {
-    if (target !== null) {
-      const da = Math.abs(a.difficulty - target)
-      const db = Math.abs(b.difficulty - target)
-      if (da !== db) return da - db
-    }
-    return servedCount(a.id) - servedCount(b.id)
+    const ba = band(a)
+    const bb = band(b)
+    if (ba !== bb) return ba - bb
+    const sa = servedCount(a.id)
+    const sb = servedCount(b.id)
+    if (sa !== sb) return sa - sb
+    // still tied: the closer-to-target item is the better serve
+    if (target !== null) return Math.abs(a.difficulty - target) - Math.abs(b.difficulty - target)
+    return 0
   })
   for (const item of ordered) {
     const inst = instantiate(item, blocked, seedFor(session), pol.selector.isomorphSeedTries)

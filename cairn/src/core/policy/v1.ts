@@ -78,6 +78,10 @@ export const policyV1 = {
      * buys discrimination between problem types, but rotating away from a
      * skill that is two answers from its check just strands the work —
      * a student ends a session with several 88%s and no stone. */
+    /** difficulty distance still counted "appropriate" for this student.
+     * Items inside the band rotate by least-served, so variety of
+     * representation survives a skill's long practice tail. */
+    difficultyBand: 1,
     finishAtP: 0.75,
     /** extra serves a nearly-done skill may hold the floor for. Bounded so
      * a skill that can never offer its check (too few distinct base items,

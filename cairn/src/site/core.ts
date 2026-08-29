@@ -255,8 +255,13 @@ export class SiteCore {
     const skill = st.student.skills[leaving]
     if (!skill || skill.phase === 'mastered') return null
     const pct = this.masteryOf(studentId, leaving)
-    // only recognise real ground: a skill glanced at and left teaches nothing
-    if (pct < 0.12) return null
+    // Recognise EFFORT, not mastery. Gating on pct silenced the milestone
+    // for exactly the student the rule exists for: one who answers wrong,
+    // gets punted, and sits at pct = 0.00 on every skill — "the student
+    // should never be punted without a reward". A skill genuinely worked
+    // at has attempts on it; one merely glanced at and left does not.
+    // ('Started' is the rank that covers the ground-but-no-progress case.)
+    if ((skill.attempts ?? 0) < 1) return null
     const already = st.milestonesShown ?? new Set<string>()
     const rank = SiteCore.milestoneRank(pct)
     const key = `${leaving}:${rank.name}`
