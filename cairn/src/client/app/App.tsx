@@ -61,6 +61,7 @@ export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: Ap
   /** the guide view stands alone — no student join needed (?view=guide,
    * or the link on the join card) */
   const [guideMode, setGuideMode] = useState(urlParam('view') === 'guide')
+  const zooMode = urlParam('view') === 'zoo'
   const banner = demoBanner === true && (
     <p className="muted demo-banner">
       Demo — runs entirely in your browser. Progress stays on this device.
@@ -74,6 +75,23 @@ export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: Ap
           api={apiFactory ? apiFactory(apiBase, 'guide-viewer') : new SiteApi(apiBase, 'guide-viewer')}
           onBack={() => setGuideMode(false)}
         />
+      </>
+    )
+
+  // The zoo is a WIDGET WORKBENCH, not student work: it renders the
+  // curriculum's own demos and reads nothing student-scoped. Requiring a
+  // sign-in to reach it made ?view=zoo links useless to anyone reviewing
+  // widgets, which is the only thing it is for.
+  if (zooMode)
+    return (
+      <>
+        {banner}
+        <main className="shell">
+          <Header points={null} />
+          <Zoo
+            api={apiFactory ? apiFactory(apiBase, 'zoo-viewer') : new SiteApi(apiBase, 'zoo-viewer')}
+          />
+        </main>
       </>
     )
   if (pendingStudent !== null)
