@@ -21,4 +21,4 @@ timeline:
           says: "The × {a} is already undone. What is left is + {b} — take it off both pans."
   - { t: 23.5, patch: { left: "{variable}", right: "{ans}", op: null }, caption: "{variable} = {ans}." }
   - { t: 26, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-29 }

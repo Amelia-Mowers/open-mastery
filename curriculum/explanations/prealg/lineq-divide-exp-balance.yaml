@@ -23,4 +23,4 @@ timeline:
           says: "Multiplying by {a} makes it {a} times bigger still. To undo × {a}, divide."
   - { t: 19, patch: { left: "{variable}", right: "{b/a}", op: null }, caption: "{variable} = {b/a}." }
   - { t: 21, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-29 }

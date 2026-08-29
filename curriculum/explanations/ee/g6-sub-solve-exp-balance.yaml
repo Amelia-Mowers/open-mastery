@@ -20,4 +20,4 @@ timeline:
           says: "The {p} was already taken away — taking away more leaves even less. Put it back: add {p} to both pans."
   - { t: 19, patch: { left: "{variable}", right: "{p+d}", op: null }, caption: "{variable} = {p+d}." }
   - { t: 21, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-29 }

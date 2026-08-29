@@ -22,4 +22,4 @@ timeline:
           says: "Divide by the COMBINED coefficient — {c1} + {c2} − {c3} = {c1+c2-c3}, not by {c1} alone."
   - { t: 31, patch: { left: "{variable}", right: "{ans}", op: null }, caption: "{variable} = {ans}." }
   - { t: 33, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-29 }

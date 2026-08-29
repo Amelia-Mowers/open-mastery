@@ -11,4 +11,4 @@ timeline:
   - { t: 16, patch: { op: multiply, by: "{q}/{p}", highlight: null }, caption: "× {q}/{p} on both sides — {p}/{q} flipped over. That is the RECIPROCAL.", expect: { type: op, value: "multiply {q}/{p}", prompt: "What ONE move to both pans leaves exactly one {variable} on the left?", hint: "The reciprocal of {p}/{q} is {q}/{p}. Multiply both sides by it. (Dividing by {p} first works too — this way does it in one move.)" } }
   - { t: 20, patch: { left: "{variable}", right: "{q*b/p}", op: null }, caption: "{p}/{q} × {q}/{p} = 1, so {variable} stands alone. {variable} = {q*b/p}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-29 }
