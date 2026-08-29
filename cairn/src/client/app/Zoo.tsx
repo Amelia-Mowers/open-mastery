@@ -304,7 +304,10 @@ export function Zoo({ api }: { api: CairnApi }) {
                     <span aria-hidden className={e.vetted ? 'vet-ok' : 'vet-draft'}>
                       {e.vetted ? '✓' : '◌'}
                     </span>{' '}
-                    {e.id.replace(/^.*\.(exp-)/, '$1')} · {e.skillName}
+                    {/* the full id, not the display name: this list is for
+                        REFERENCE — it is what you paste into shoot-steps,
+                        grep for in the curriculum, or quote in a review */}
+                    {e.id}
                   </a>
                 ))}
               </p>
