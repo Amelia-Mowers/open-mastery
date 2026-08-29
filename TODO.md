@@ -143,11 +143,11 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       SessionState, and the demo reconstructs SiteCore on EVERY page
       load. The credit-destroying case is fixed (see reload-credit.test
       .ts) by removing the 'led' discount, but these remain, worst first:
-      - `session.promised` lost ⇒ the lesson just watched is discarded and
-        a different skill in a different representation is served next —
-        the exact failure "the picture taught is the picture practised"
-        exists to prevent. Reproduced on 3 mid-skill lessons in a
-        247-step run.
+      - DONE: the lesson's promise now survives (StudentState.lastTaught,
+        folded from explanation_viewed; lesson-promise.test.ts). The
+        instance-level `session.promised` is still session-only, so the
+        exact NUMBERS may differ after a reload — the skill and the
+        representation no longer do.
       - `session.check` lost ⇒ a check in progress restarts and passed
         items are thrown away; conversely a FAILED check can be re-taken
         by reloading, since the gate is event-derived but the failure

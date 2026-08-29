@@ -45,6 +45,11 @@ export interface SkillState {
 
 export interface StudentState {
   skills: Record<string, SkillState>
+  /** the skill whose lesson was watched most recently. Event-derived, so
+   * it survives a reload — `session.currentSkill` does not, and without it
+   * a student who reloaded right after a lesson was re-ranked onto a
+   * DIFFERENT skill and never got the problem the lesson was about. */
+  lastTaught?: string | null
   /** instances (itemId#paramHash) that ever received assistance */
   assisted: Set<string>
   /** representations of completed explanations, per skill (corrective variety) */
@@ -92,8 +97,6 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
     case 'attempt': {
       const s = skillState(state, ev.skillId, params)
       s.attempts += 1
-      // a faded completion is heavily assisted by construction — the
-      // walkthrough played every step but the last — so a correct one
       // Assistance is measured by hints TAKEN, nothing else. The old
       // maximal-assistance discount for a "led" serve assumed the
       // walkthrough played every step but the last — true of the retired
@@ -116,13 +119,14 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       const s = skillState(state, ev.skillId, params)
       if (ev.completed) {
         // MOST-RECENT-LAST: the tail is "the representation they were just
-        // taught", which the faded lead replays and the next practice item
+        // taught", which the scaffolded lead replays and the next item
         // is chosen to match. Re-viewing an earlier one moves it to the end,
         // so "show me differently" actually changes what comes next.
         const reps = (state.representationsViewed[ev.skillId] ??= [])
         const at = reps.indexOf(ev.representation)
         if (at !== -1) reps.splice(at, 1)
         reps.push(ev.representation)
+        state.lastTaught = ev.skillId
         if (s.phase === 'unseen' || s.phase === 'lesson') s.phase = 'practice'
       } else if (s.phase === 'unseen') {
         s.phase = 'lesson'

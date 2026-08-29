@@ -220,15 +220,21 @@ export function nextAction(
   const capped =
     activeCount >= pol.selector.maxActiveSkills ? unparked.filter(started) : unparked
   const pickPool = capped.length > 0 ? capped : unparked
+  // The skill in hand. `session.currentSkill` is session-only AND is set
+  // only on an item serve, never on a lesson — so a student who reloaded
+  // right after watching one was re-ranked onto a different skill and
+  // never got the problem that lesson set up. `lastTaught` is folded from
+  // explanation_viewed, so it survives the reload.
+  const heldSkill = session.currentSkill ?? student.lastTaught ?? null
   const skillId =
     opts.focusSkill !== undefined &&
     (allEligible.includes(opts.focusSkill) ||
       (opts.forceFocus === true && ctx.cur.skills.has(opts.focusSkill)))
       ? opts.focusSkill
-      : session.currentSkill !== null &&
-          unparked.includes(session.currentSkill) &&
-          (inAcquisition(session.currentSkill) || nearlyDone(session.currentSkill))
-        ? session.currentSkill
+      : heldSkill !== null &&
+          unparked.includes(heldSkill) &&
+          (inAcquisition(heldSkill) || nearlyDone(heldSkill))
+        ? heldSkill
         : (rankSkills(
             pickPool,
             student,
