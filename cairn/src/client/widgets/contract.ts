@@ -1,5 +1,8 @@
 import type { ReactElement } from 'react'
 
+/** How a widget is being asked to draw itself. Note 'faded' here is a
+ * RENDER mode — the partly-worked preview — not a life phase; the 'faded'
+ * PHASE was removed when stepwise made every problem a worked lead. */
 export type WidgetMode = 'lesson' | 'faded' | 'problem' | 'review'
 
 export interface TraceEvent {

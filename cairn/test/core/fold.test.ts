@@ -87,7 +87,7 @@ describe('fold (§4.7): state = fold(core, events by siteSeq)', () => {
     const env = {
       siteSeq: 1, deviceId: 'd', deviceSeq: 1, coreVersion: 'c', bundleVersion: 'b', studentId: 's', t: 1,
     }
-    const attempt = (itemKind: 'faded' | 'practice', hintLevel: number): number => {
+    const attempt = (itemKind: 'led' | 'practice', hintLevel: number): number => {
       const state = initialStudentState()
       applyEvent(
         state,
@@ -101,8 +101,8 @@ describe('fold (§4.7): state = fold(core, events by siteSeq)', () => {
     }
     // heavily assisted by construction — exactly the maximal-hint evidence,
     // no matter how few hints were revealed on the answer step itself
-    expect(attempt('faded', 0)).toBeCloseTo(attempt('practice', 2), 10)
-    expect(attempt('faded', 0)).toBeLessThan(attempt('practice', 0) - 0.1)
+    expect(attempt('led', 0)).toBeCloseTo(attempt('practice', 2), 10)
+    expect(attempt('led', 0)).toBeLessThan(attempt('practice', 0) - 0.1)
   })
 
   it('llm_help marks exactly (itemId, paramHash) assisted', () => {
@@ -131,7 +131,7 @@ describe('fold (§4.7): state = fold(core, events by siteSeq)', () => {
       { ...env, siteSeq: 2, kind: 'explanation_viewed', explanationId: 'e1', skillId: SKILL_A, completed: true, representation: 'number-line' },
       bktFor(),
     )
-    expect(state.skills[SKILL_A]?.phase).toBe('faded')
+    expect(state.skills[SKILL_A]?.phase).toBe('practice')
     expect(state.representationsViewed[SKILL_A]).toEqual(['number-line'])
   })
 })

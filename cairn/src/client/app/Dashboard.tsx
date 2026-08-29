@@ -7,7 +7,6 @@ import type { BundleView, CairnApi, StateView } from './api'
 const PHASE_STYLE: Record<string, { bg: string; fg: string; label: string }> = {
   unseen: { bg: '#ede7db', fg: '#8b8070', label: 'up ahead' },
   lesson: { bg: '#e7d9be', fg: '#6b5a33', label: 'learning' },
-  faded: { bg: '#e7d9be', fg: '#6b5a33', label: 'learning' },
   practice: { bg: '#ecd0b0', fg: '#8a5320', label: 'practicing' },
   mastered: { bg: '#dbe8d6', fg: '#3f6a4d', label: 'mastered ✓' },
 }

@@ -162,7 +162,7 @@ Identity { userId, provider: 'local' | 'class_code' | 'google' | 'microsoft' | '
 ```ts
 type MasteryState = Record<SkillId, {
   p: number; attempts: number; lastCorrect?: number;
-  phase: 'unseen' | 'lesson' | 'faded' | 'practice' | 'mastered';
+  phase: 'unseen' | 'lesson' | 'practice' | 'mastered';   # 'faded' retired 2026-08-28
   fsrs?: { stability; difficulty; due };
 }>
 
@@ -196,7 +196,7 @@ type Event = Envelope & (
 
 ## 5. Core (pure functions)
 
-**Per-skill sequence.** `lesson` (primary explanation) → `faded` (worked examples with student-completed steps) → `practice` → mastery check on an **unassisted isomorph**. On mastery, skill enters FSRS review.
+**Per-skill sequence.** `lesson` (primary explanation) → `practice` → mastery check on an **unassisted isomorph**. There is no separate `faded` phase: stepwise made EVERY problem a worked lead the student finishes, so the phase duplicated what practice already is. What survives is a serving MODE — the first serve of a skill is `itemKind: 'led'`, a real practice item whose lead plays before the student takes over, and it carries the same maximal-assistance evidence discount described below. On mastery, skill enters FSRS review.
 
 **Graders.** numeric (tolerance, units), symbolic expression equivalence, set/order, choice, and `rubric-route` returning `needs_llm` (queued when offline or low confidence). Rubric-graded attempts are practice-only: they update `p` at the hint-level-1 discount and are never check items.
 
@@ -206,7 +206,7 @@ correct, hint level k:   post = p(1−S) / (p(1−S) + (1−p)·G_eff),  G_eff =
 incorrect (any k):       post = pS / (pS + (1−p)(1−G))            // base G, base S
 then                     p' = post + (1−post)·T
 ```
-Correct-with-help carries reduced evidence; wrong-with-help is full negative evidence. `faded` completions are heavily assisted by construction (the walkthrough plays every step but the last), so a correct faded attempt updates `p` at the hint-level-2 (maximal-assistance) discount regardless of hints revealed; a wrong one is still full negative evidence. Like the `0.5` halving, this is part of the model formula the fold replays, not policy. The mastery **check** is *offered* when `p ≥ 0.9` or after 3 consecutive unassisted correct; **passing 2 unassisted isomorphs from two distinct base items grants mastery regardless of `p`** (emits `mastery_granted`, sets `p ≥ 0.95`). Assisted attempts never satisfy the check. This is a deliberately thin bar; FSRS review is the intended safety net for false positives.
+Correct-with-help carries reduced evidence; wrong-with-help is full negative evidence. `led` serves are heavily assisted by construction (the walkthrough plays every step but the last), so a correct `led` attempt updates `p` at the hint-level-2 (maximal-assistance) discount regardless of hints revealed; a wrong one is still full negative evidence. Like the `0.5` halving, this is part of the model formula the fold replays, not policy. The mastery **check** is *offered* when `p ≥ 0.9` or after 3 consecutive unassisted correct; **passing 2 unassisted isomorphs from two distinct base items grants mastery regardless of `p`** (emits `mastery_granted`, sets `p ≥ 0.95`). Assisted attempts never satisfy the check. This is a deliberately thin bar; FSRS review is the intended safety net for false positives.
 
 **BKT → FSRS handoff.** On mastery the skill enters FSRS. Review outcome → rating: wrong → *again*; correct with hint or latency > 1.5× skill median → *hard*; correct unassisted → *good*; correct unassisted, fast, first try → *easy*. A failed review emits `mastery_lapsed`, demotes phase to `practice` (not `lesson`), sets `p = 0.7`, and requires a fresh unassisted check to re-master.
 

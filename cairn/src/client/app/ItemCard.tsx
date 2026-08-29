@@ -53,7 +53,7 @@ const TEXT_INPUTS = new Set(['numeric-input', 'expression-input', 'equation-inpu
 const MILESTONE_MARKS = [0.2, 0.45, 0.7]
 
 const KICKERS: Record<ServeAction['itemKind'], string> = {
-  faded: 'WORK IT OUT — STEP BY STEP',
+  led: 'WORK IT OUT — STEP BY STEP',
   review: 'QUICK REVIEW',
   practice: 'PRACTICE',
   check: 'MASTERY CHECK',
@@ -161,13 +161,13 @@ export function ItemCard({
   const maxHints = isCheck ? 0 : Math.min(item.hints.length, 2)
 
   /** answers lock the moment the verdict lands — review mode is inert */
-  const answerMode = outcome !== null ? 'review' : action.itemKind === 'faded' ? 'faded' : 'problem'
+  const answerMode = outcome !== null ? 'review' : action.itemKind === 'led' ? 'faded' : 'problem'
 
   // the assistance spectrum: faded serves always get a lead; scaffolded
   // practice serves get one too WHEN the skill's lead is stepwise-capable
   // (expects authored) — the discrete phases become presentation rungs
   const wantsLead =
-    action.itemKind === 'faded' || (action.itemKind === 'practice' && action.scaffolded)
+    action.itemKind === 'led' || (action.itemKind === 'practice' && action.scaffolded)
 
   // guide the eye: focus the answer box when a fresh problem arrives — on
   // serves with a lead (faded, or scaffolded practice), only once the lead
@@ -372,7 +372,7 @@ export function ItemCard({
         />
       ) : (
         <>
-          {scaffold && action.itemKind !== 'faded' && !fadedLead && <div className="viz">{scaffold.element}</div>}
+          {scaffold && action.itemKind !== 'led' && !fadedLead && <div className="viz">{scaffold.element}</div>}
           {/* wide widget answer spaces (tape, number lines, tables …) take a
               full row of their own; only the text inputs sit inline with the
               buttons. A <form> so Enter submits from any text field. */}

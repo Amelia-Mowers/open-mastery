@@ -51,7 +51,7 @@ the answer.
 
 Two invariants keep the stepwise promise honest:
 
-- `[no_stepwise]` — the faded/stepwise lead DROPS the final content step
+- `[no_stepwise]` — the led/stepwise lead DROPS the final content step
   (it is the resolution the student supplies), so a timeline whose only
   gate sits there plays as a movie. Gate a step BEFORE the resolution.
 - Items carry `representation`, and the engine teaches an unseen
@@ -274,11 +274,12 @@ flags: `leftIn`/`rightIn`, `shapesIn`/`weightIn`, `totalIn`,
 where the widget supports it. The student's eye follows symbol → shape
 every time. Full standard: `../cairn/GOLDEN_WIDGET.md` §3.
 
-## The faded phase is the visualization, not a separate system
+## The LED serve is the visualization, not a separate system
 
 Faded examples are NOT separate items with worked-steps lists (the old
-`faded.steps` mechanism is retired). The engine serves a normal instance
-marked `faded`; the client plays the skill's explanation with THAT
+`faded.steps` mechanism is retired, and so is the `faded` PHASE — see
+cairn-architecture.md). The engine serves a normal instance marked
+`itemKind: 'led'`; the client plays the skill's explanation with THAT
 instance's numbers up to just before the resolution, and the student
 finishes it in the ordinary answer input. Authoring rule this relies on:
 **an explanation's final content step must BE the resolution** (the reveal

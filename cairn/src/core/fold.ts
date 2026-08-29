@@ -20,7 +20,11 @@ export const REDUCER_VERSION = 'reducer/v1'
 const GRANT_P_FLOOR = 0.95
 const LAPSE_P = 0.7
 
-export type Phase = 'unseen' | 'lesson' | 'faded' | 'practice' | 'mastered'
+/** A skill's life. 'faded' used to sit between lesson and practice, back
+ * when the first problem after a lesson was a special worked-example kind.
+ * Stepwise made every problem that thing — the lead plays, the student
+ * finishes it — so the phase was a duplicate of what practice already is. */
+export type Phase = 'unseen' | 'lesson' | 'practice' | 'mastered'
 
 export interface SkillState {
   p: number
@@ -77,7 +81,7 @@ function skillState(state: StudentState, skillId: string, params: ParamsFor): Sk
 }
 
 const atLeastPhase = (current: Phase, target: Phase): Phase => {
-  const order: Phase[] = ['unseen', 'lesson', 'faded', 'practice', 'mastered']
+  const order: Phase[] = ['unseen', 'lesson', 'practice', 'mastered']
   return order.indexOf(target) > order.indexOf(current) ? target : current
 }
 
@@ -92,7 +96,9 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       // walkthrough played every step but the last — so a correct one
       // replays at the maximal-assistance discount (hint level 2). Like
       // grantP and the 0.5 halving, a fold/model constant, not policy.
-      const k = ev.itemKind === 'faded' ? 2 : ev.hintLevel
+      // a heavily-led attempt replays at the maximal-assistance discount:
+      // the walkthrough played every step but the last
+      const k = ev.itemKind === 'led' ? 2 : ev.hintLevel
       s.p = bktUpdate(s.p, ev.correct, ev.correct ? k : 0, params(ev.skillId))
       s.latencyEmaMs =
         s.latencyEmaMs === undefined ? ev.latencyMs : 0.7 * s.latencyEmaMs + 0.3 * ev.latencyMs
@@ -103,8 +109,7 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       s.consecUnassistedCorrect = ev.correct && !ev.assisted ? s.consecUnassistedCorrect + 1 : 0
       if (ev.assisted) state.assisted.add(instanceKey(ev.itemId, ev.paramHash))
       if (s.phase !== 'mastered') {
-        if (ev.itemKind === 'faded' && ev.correct) s.phase = atLeastPhase(s.phase, 'practice')
-        else if (ev.itemKind === 'faded') s.phase = atLeastPhase(s.phase, 'faded')
+        if (ev.itemKind === 'led') s.phase = atLeastPhase(s.phase, 'practice')
         else if (ev.itemKind !== 'probe') s.phase = atLeastPhase(s.phase, 'practice')
       }
       break
@@ -120,7 +125,7 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
         const at = reps.indexOf(ev.representation)
         if (at !== -1) reps.splice(at, 1)
         reps.push(ev.representation)
-        if (s.phase === 'unseen' || s.phase === 'lesson') s.phase = 'faded'
+        if (s.phase === 'unseen' || s.phase === 'lesson') s.phase = 'practice'
       } else if (s.phase === 'unseen') {
         s.phase = 'lesson'
       }

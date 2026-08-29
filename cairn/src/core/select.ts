@@ -71,13 +71,26 @@ export function rankSkills(
   /** session serve-seq of each skill's last serve — band ties go to the
    * LEAST recently served skill, which is what makes practice interleave */
   recency?: (skillId: string) => number,
+  /** whether the skill's mastery check is on offer right now */
+  checkOffered?: (skillId: string) => boolean,
 ): string[] {
   const [lo, hi] = pol.selector.expectedCorrectness
   const bandDistance = (id: string): number => {
     const st = student.skills[id]
     const phase = st?.phase ?? 'unseen'
     if (phase !== 'practice') return -1 // instruction phases are exempt and lead
-    const pc = predictCorrect(st?.p ?? bkt(id).L0, bkt(id))
+    const par = bkt(id)
+    const pc = predictCorrect(st?.p ?? par.L0, par)
+    // A skill whose mastery is already past the finish line is NOT
+    // "appropriately challenging" just because its predicted correctness
+    // lands inside the band — it is finished, and only its check can
+    // retire it. Left in the band it wins every tie-break (predicted
+    // correctness tops out INSIDE [lo, hi], so p=1.0 scores a perfect 0)
+    // and drills a learned skill forever while less-known ones wait.
+    // Send it to the back; `nearlyDone` still holds the floor for one
+    // bounded run so finishing beats rotating.
+    const shown = (((st?.p ?? par.L0) - par.L0) / (0.95 - par.L0))
+    if (shown >= pol.selector.finishAtP && checkOffered?.(id)) return Number.MAX_SAFE_INTEGER
     return pc < lo ? lo - pc : pc > hi ? pc - hi : 0
   }
   return [...eligible].sort((a, b) => {

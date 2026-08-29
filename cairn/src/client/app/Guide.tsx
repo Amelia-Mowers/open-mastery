@@ -14,7 +14,6 @@ const FLAG_COPY: Record<string, string> = {
 
 const PHASE_LABEL: Record<string, string> = {
   lesson: 'in the lesson',
-  faded: 'finishing examples',
   practice: 'practicing',
 }
 

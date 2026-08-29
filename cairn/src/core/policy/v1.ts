@@ -79,6 +79,10 @@ export const policyV1 = {
      * skill that is two answers from its check just strands the work —
      * a student ends a session with several 88%s and no stone. */
     finishAtP: 0.75,
+    /** extra serves a nearly-done skill may hold the floor for. Bounded so
+     * a skill that can never offer its check (too few distinct base items,
+     * or one the student keeps declining) cannot pin the session. */
+    finishGrace: 4,
     /** blocked acquisition: stay on a skill through its lesson, faded phase,
      * and this many practice serves — THEN it joins the interleaved rotation
      * (novices benefit from a short blocked run; interleave after) */

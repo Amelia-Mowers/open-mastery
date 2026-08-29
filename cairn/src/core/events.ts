@@ -28,7 +28,9 @@ export interface Envelope {
  * curriculum-free. (Additive over §4.7, as are skillId/paramHash: the doc's
  * accounting rules — probe attempts scope to the prereq, assistance scopes to
  * (itemId, paramHash) — need them explicit on the event.) */
-export type AttemptItemKind = 'faded' | 'practice' | 'check' | 'probe' | 'review'
+/** 'led' = a problem served with its lesson playing above it (what used to
+ * be the 'faded' phase). It is a serving MODE, not a life stage. */
+export type AttemptItemKind = 'led' | 'practice' | 'check' | 'probe' | 'review'
 
 export type EventBody =
   | {

@@ -84,11 +84,13 @@ const workSkills = (actions: NextAction[]): string[] =>
     .map((a) => a.forSkillId)
 
 describe('blocked acquisition, interleaved consolidation', () => {
-  it('stays on one skill through lesson+faded+acquisitionRun, then rotates the working set', () => {
+  it('stays on one skill through its blocked run, then rotates the working set', () => {
     const { ctx } = miniCtx(3)
     const { actions } = runSession(ctx, neverChecks, 24)
     const serves = workSkills(actions)
-    const run = 1 + policyV1.selector.acquisitionRun // faded + first practice serves
+    // the led serve counts toward the run (it IS the first problem), so the
+    // blocked stretch is acquisitionRun serves, not one more
+    const run = policyV1.selector.acquisitionRun
     // blocked: each skill's acquisition is a contiguous run. It may run
     // LONGER than acquisitionRun — a skill that climbs past finishAtP holds
     // the floor until its check is on the table (finish what you start), so
@@ -105,7 +107,13 @@ describe('blocked acquisition, interleaved consolidation', () => {
     while (serves[s3end + 1] === 't.sched.s3') s3end++
     const tail = serves.slice(s3end + 1)
     expect(tail.length).toBeGreaterThanOrEqual(6)
-    for (let i = 1; i < tail.length; i++) expect(tail[i], `position ${i}`).not.toBe(tail[i - 1])
+    // interleaved: the working set is genuinely shared, and no skill is
+    // allowed to monopolise the tail. (Strict alternation is too strong now:
+    // a NEW representation's lesson restarts a short blocked run so its own
+    // problems follow it, and a skill past finishAtP holds until its check.)
+    expect(new Set(tail).size).toBeGreaterThanOrEqual(2)
+    for (const id of new Set(tail))
+      expect(tail.filter((x) => x === id).length, id).toBeLessThan(tail.length)
   })
 
   it('the working-set cap: a 4th skill is not started while 3 are underway — but all master eventually', () => {
@@ -152,7 +160,7 @@ describe('the faded phase poses a DIFFERENT problem than the lesson', () => {
     })
     const faded = nextAction(student, session, ctx)
     if (faded.kind !== 'serve_item') throw new Error('expected faded serve')
-    expect(faded.itemKind).toBe('faded')
+    expect(faded.itemKind).toBe('led')
     const authored = ctx.cur.items.get(faded.instance.itemId)!.params
     expect(faded.instance.params).not.toEqual(authored)
   })

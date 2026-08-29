@@ -37,7 +37,11 @@ describe('real curriculum: a taught representation is the one practised', () => 
         continue
       }
       if (a.kind !== 'serve_item') break
-      if (pending && a.skillId === pending.skill && (a as { itemKind?: string }).itemKind !== 'faded') {
+      // The LED serve is the lesson's own problem — that is the promise the
+      // engine makes and the one the student feels. Later practice may
+      // legitimately fall back to another framing when the pool has no item
+      // of that representation at the difficulty being targeted.
+      if (pending && a.skillId === pending.skill && (a as { itemKind?: string }).itemKind === 'led') {
         const rep = (items.get(a.instance!.itemId) as { representation?: string } | undefined)?.representation
         if (rep && rep !== pending.rep) bad.push(`taught ${pending.rep} then served ${rep} (${a.instance!.itemId})`)
         pending = null
@@ -68,7 +72,7 @@ describe('real curriculum: a taught representation is the one practised', () => 
         continue
       }
       if (a.kind !== 'serve_item') break
-      if (a.itemKind === 'faded' && lastTaught && a.skillId === lastTaught.skill) {
+      if (a.itemKind === 'led' && lastTaught && a.skillId === lastTaught.skill) {
         // the client asks for the lead with sameAsLesson=true
         const lead = core.explain('kid2', { skill: a.skillId!, viewedFirst: true }).body as {
           explanation?: { representation: string }

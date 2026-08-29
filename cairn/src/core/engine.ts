@@ -85,7 +85,7 @@ export type NextAction =
   | { kind: 'alt_explanation'; skillId: string; explanationId: string; representation: string }
   | {
       kind: 'serve_item'
-      itemKind: 'faded' | 'practice' | 'check' | 'probe' | 'review'
+      itemKind: 'led' | 'practice' | 'check' | 'probe' | 'review'
       /** the skill the attempt will count against (prereq for probes) */
       skillId: string
       /** the skill being worked on (differs from skillId for probes) */
@@ -194,21 +194,27 @@ export function nextAction(
     const L0 = ctx.bkt(id).L0
     const shown = (st.p - L0) / (0.95 - L0)
     if (shown < pol.selector.finishAtP) return false
-    return !checkAvailable(student, session, ctx, id)
+    // The hold must be SELF-LIMITING. Releasing only when the check is on
+    // offer pins the student forever on a skill whose check never comes —
+    // one that cannot field the required distinct base items, or whose
+    // check is repeatedly declined. Give finishing a bounded number of
+    // extra serves, then rejoin the rotation.
+    if (checkAvailable(student, session, ctx, id)) return false
+    const sess = skillSession(session, id)
+    return sess.practiceServes < pol.selector.acquisitionRun + pol.selector.finishGrace
   }
   const inAcquisition = (id: string): boolean => {
     const phase = student.skills[id]?.phase ?? 'unseen'
     return (
       phase === 'unseen' ||
       phase === 'lesson' ||
-      phase === 'faded' ||
       (phase === 'practice' && skillSession(session, id).practiceServes < pol.selector.acquisitionRun)
     )
   }
   // working-set cap: never START a new skill while maxActiveSkills are
   // already underway (breadth with breathing room, not a lesson avalanche)
   const activeCount = Object.values(student.skills).filter((st) =>
-    st.phase === 'lesson' || st.phase === 'faded' || st.phase === 'practice',
+    st.phase === 'lesson' || st.phase === 'practice',
   ).length
   const started = (id: string): boolean => (student.skills[id]?.phase ?? 'unseen') !== 'unseen'
   const capped =
@@ -223,8 +229,14 @@ export function nextAction(
           unparked.includes(session.currentSkill) &&
           (inAcquisition(session.currentSkill) || nearlyDone(session.currentSkill))
         ? session.currentSkill
-        : (rankSkills(pickPool, student, ctx.cur, ctx.bkt, pol, (id) =>
-            skillSession(session, id).lastServedSeq,
+        : (rankSkills(
+            pickPool,
+            student,
+            ctx.cur,
+            ctx.bkt,
+            pol,
+            (id) => skillSession(session, id).lastServedSeq,
+            (id) => checkAvailable(student, session, ctx, id),
           )[0] ?? null)
 
   // a review is served on cadence, or whenever nothing else is eligible
@@ -262,31 +274,41 @@ export function nextAction(
   }
 
   const pool = practiceItems(skillId, ctx.cur)
-  const wantFresh = phase === 'faded'
+  // LED: the lesson just played, so this problem is served with it replaying
+  // above (the student finishes the last step). It is the first problem after
+  // any lesson — including one reached via "show me another way".
+  const sess0 = skillSession(session, skillId)
+  const led = sess0.practiceServes === 0
+  const wantFresh = led
   // an item we already promised (we interrupted it to teach its picture)
   // is served now, before any fresh pick — the lesson was ABOUT this item
   const promised = session.promised?.skillId === skillId ? session.promised.instance : null
   if (promised) session.promised = null
   // the faded phase normally wants a FRESH isomorph, but a promised item was
   // the subject of the lesson just watched — honouring it matters more
-  // Straight after a lesson (the FADED serve), the problem must be framed in
-  // the representation just taught — including after "show me differently",
-  // where the promise made for the earlier lesson is stale. Later practice
-  // serves rotate freely, which is how the next representation gets its turn.
+  // The problem is framed in the representation the student was just taught.
+  // Rotation happens BETWEEN lessons — each new lesson introduces the next
+  // picture and its problems follow it — never mid-run: taught the balance
+  // and handed a tape problem is the bug, not the variety.
+  //
+  // The blocked run is where that holds. Once it is over the student has
+  // seen the picture enough; the pool opens up again, which is what lets an
+  // unseen representation surface and earn its own lesson.
+  const inRun = sess0.practiceServes < pol.selector.acquisitionRun
   const lastRep = seenReps[seenReps.length - 1] ?? null
   const matching =
-    wantFresh && lastRep !== null
+    inRun && lastRep !== null
       ? pool.filter((it) => (it.representation ?? null) === lastRep)
       : []
   const promisedMatches =
     promised !== null &&
-    (!wantFresh ||
+    (!inRun ||
       lastRep === null ||
       (ctx.cur.items.get(promised.itemId)?.representation ?? null) === lastRep)
   const inst =
     (promisedMatches ? promised : null) ??
     (matching.length > 0
-      ? instantiateFor(matching, student, session, pol, skillId, true)
+      ? instantiateFor(matching, student, session, pol, skillId, wantFresh)
       : null) ??
     (wantFresh ? instantiateFor(pool, student, session, pol, skillId, true) : null) ??
     instantiateFor(pool, student, session, pol, skillId)
@@ -298,25 +320,25 @@ export function nextAction(
   // encoding beats repetition of one picture) — but an unseen picture is
   // instruction, not a test of it.
   const itemRep = ctx.cur.items.get(inst.itemId)?.representation ?? null
-  if (itemRep !== null && !seenReps.includes(itemRep) && phase !== 'faded') {
+  if (itemRep !== null && !seenReps.includes(itemRep) && !led) {
     const teach = (ctx.cur.explanationsBySkill.get(skillId) ?? []).find(
       (e) => e.representation === itemRep,
     )
     if (teach) {
-      // hold the instance so the lesson's own problem is what follows
+      // hold the instance so the lesson's own problem is what follows, and
+      // restart the blocked run so the NEW picture gets its problems too
       session.promised = { skillId, instance: inst }
+      skillSession(session, skillId).practiceServes = 0
       return { kind: 'lesson', skillId, explanationId: teach.id, representation: teach.representation }
     }
   }
-  // the faded phase is a normal instance served as 'faded': the client plays
-  // the skill's explanation up to just before the resolution with THIS
-  // instance's numbers, and the student finishes it — no separate
-  // worked-steps system
-  return serveWorkItem(phase === 'faded' ? 'faded' : 'practice', skillId, inst, student, session, ctx)
+  // the client plays the skill's explanation up to just before the
+  // resolution with THIS instance's numbers, and the student finishes it
+  return serveWorkItem(led ? 'led' : 'practice', skillId, inst, student, session, ctx)
 }
 
 function serveWorkItem(
-  itemKind: 'faded' | 'practice' | 'review',
+  itemKind: 'led' | 'practice' | 'review',
   skillId: string,
   instance: ItemInstance,
   student: StudentState,
@@ -326,7 +348,9 @@ function serveWorkItem(
   session.serveSeq += 1
   const sess = skillSession(session, skillId)
   sess.lastServedSeq = session.serveSeq
-  if (itemKind === 'practice') sess.practiceServes += 1
+  // counts every WORK serve on this skill (led or plain) — it drives both
+  // the blocked-acquisition run and whether the next one still gets a lead
+  if (itemKind === 'led' || itemKind === 'practice') sess.practiceServes += 1
   session.sinceReview = itemKind === 'review' ? 0 : session.sinceReview + 1
   const p = student.skills[skillId]?.p ?? ctx.bkt(skillId).L0
   const action: NextAction = {
@@ -337,7 +361,7 @@ function serveWorkItem(
     instance,
     // faded examples always keep their scaffolding; practice fades it out;
     // reviews are always raw (retrieval of the mastered, unscaffolded form)
-    scaffolded: itemKind === 'faded' || (itemKind === 'practice' && p < ctx.policy.scaffolding.fadeAtP),
+    scaffolded: itemKind === 'led' || (itemKind === 'practice' && p < ctx.policy.scaffolding.fadeAtP),
   }
   const offered = session.pendingHint[skillId]
   if (offered !== undefined) action.offeredHintLevel = offered
@@ -550,7 +574,7 @@ export function recordAttempt(
       if (!correct) emit({ kind: 'mastery_lapsed', skillId: action.skillId })
       break
     }
-    case 'faded':
+    case 'led':
     case 'practice': {
       const sess = skillSession(session, action.skillId)
       session.bySkill[action.skillId] = applySkillAttempt(sess, correct, assisted)
