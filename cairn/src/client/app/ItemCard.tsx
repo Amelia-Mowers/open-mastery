@@ -86,6 +86,9 @@ export function ItemCard({
   const [inline, setInline] = useState<InlinePlay | null>(null)
   /** watched the walk-through → this try counts as helped */
   const [explained, setExplained] = useState(false)
+  /** watched a full walk-through end to end — maximal assistance, and
+   * distinct from merely engaging a stepwise gate (which is level 1) */
+  const [watchedFull, setWatchedFull] = useState(false)
   /** the student CLICKED for help (vs help offered/served) — copy only */
   const [askedForHelp, setAskedForHelp] = useState(false)
   /** the bar the student sees; jumps to the server's post-attempt value */
@@ -193,7 +196,11 @@ export function ItemCard({
     if (raw.trim() === '') return
     setBusy(true)
     try {
-      const out = await onSubmit(raw, revealedHints, Math.round(performance.now() - startedAt))
+      // watching the full walk-through is maximal assistance even though
+      // it reveals no hint text; grading must not depend on what happens
+      // to be rendered
+      const assistLevel = watchedFull ? Math.max(revealedHints, 2) : revealedHints
+      const out = await onSubmit(raw, assistLevel, Math.round(performance.now() - startedAt))
       setOutcome(out)
       if (out.mastery !== undefined) setShownMastery(out.mastery)
     } finally {
@@ -270,9 +277,14 @@ export function ItemCard({
       onContinue()
       return
     }
+    // Watching the walk-through does NOT open the hints. The student has
+    // just been shown the whole method; stacking hint text under it is
+    // more to read, not more help — the same "help arrives unasked"
+    // pattern as the pre-opened hint offer. It still counts as a helped
+    // try (see `assistLevel`), which is what the credit turns on.
     setExplained(true)
+    setWatchedFull(true)
     setAskedForHelp(true)
-    setRevealedHints((h) => Math.max(h, 1, Math.min(item.hints.length, 2)))
   }
 
   const mastered = outcome?.emitted.some((e) => e.kind === 'mastery_granted') ?? false
