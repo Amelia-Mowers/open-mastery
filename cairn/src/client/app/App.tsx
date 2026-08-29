@@ -52,6 +52,9 @@ const urlParam = (name: string): string | null => {
 const CHECK_DEFER_SERVES = 3
 
 export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppProps) {
+  /** a student who has signed in but not yet been placed — the grade page
+   * stands between the two, and only for someone new */
+  const [pendingStudent, setPendingStudent] = useState<string | null>(null)
   const [student, setStudent] = useState(
     initialStudent ?? urlParam('student') ?? readStoredStudent(),
   )
@@ -73,35 +76,36 @@ export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: Ap
         />
       </>
     )
+  if (pendingStudent !== null)
+    return (
+      <>
+        {banner}
+        <GradePage
+          api={apiFactory ? apiFactory(apiBase, pendingStudent) : new SiteApi(apiBase, pendingStudent)}
+          onPlaced={() => {
+            const id = pendingStudent
+            setPendingStudent(null)
+            setStudent(id)
+          }}
+        />
+      </>
+    )
+
+  // SIGN-IN IS A LOGIN. The grade step is a separate page and appears
+  // only for a student with no history — asking a returning student what
+  // grade they are in, every single time, is the wrong contract.
   if (student === '')
     return (
       <>
         {banner}
         <JoinCard
-          // a throwaway instance just to read which grades exist; the
-          // student's own api is created by <Session> once they join
-          api={apiFactory ? apiFactory(apiBase, 'grade-picker') : new SiteApi(apiBase, 'grade-picker')}
-          onJoin={(id, grade) => {
-            if (grade === null) {
-              setStudent(id)
-              return
-            }
-            // AWAIT the placement: mounting <Session> immediately would let
-            // it fetch its first problem before the placement landed, and
-            // the student would still open on the bottom of the graph.
-            const api = apiFactory ? apiFactory(apiBase, id) : new SiteApi(apiBase, id)
-            void api
-              .place(grade)
-              .catch(() => {
-                /* placement is a convenience; never block entry on it */
-              })
-              .finally(() => setStudent(id))
-          }}
+          onJoin={(id) => setPendingStudent(id)}
           onGuide={() => setGuideMode(true)}
           about={demoBanner === true}
         />
       </>
     )
+
   return (
     <>
       {banner}
@@ -163,39 +167,101 @@ function AboutPanel() {
 
 /** Grades the product intends to cover. Ones the catalog cannot teach yet
  * are shown but disabled — the roadmap stays visible without dropping a
- * 4th-grader into grade-6 algebra, which is what the demo used to do. */
+ * 4th-grader into grade-6 algebra. */
 const GRADE_RANGE = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 
-function JoinCard({
-  onJoin,
-  onGuide,
-  about,
-  api,
-}: {
-  onJoin: (id: string, grade: number | null) => void
-  onGuide?: () => void
-  about?: boolean
-  api?: CairnApi
-}) {
-  const [name, setName] = useState('')
-  const [grade, setGrade] = useState<number | null>(null)
+/** A page of its own, shown ONCE to a student with no history. Sign-in is
+ * a login for everyone else, so this must never become a question they
+ * answer again on every visit. Not optional: a starting point is needed
+ * to serve anything sensible, and "skip" would just recreate the
+ * everyone-lands-in-grade-6 problem the picker exists to fix. */
+function GradePage({ api, onPlaced }: { api: CairnApi; onPlaced: () => void }) {
   const [available, setAvailable] = useState<number[] | null>(null)
+  const [busy, setBusy] = useState(false)
 
   useEffect(() => {
-    if (!api) return
     let live = true
-    api
-      .grades()
-      .then((g) => {
-        if (live) setAvailable(g.available)
+    // a returning student never sees this page
+    void api
+      .needsPlacement()
+      .then((r) => {
+        if (!live) return
+        if (!r.needsPlacement) {
+          onPlaced()
+          return null
+        }
+        return api.grades().then((g) => {
+          if (live) setAvailable(g.available)
+        })
       })
       .catch(() => {
-        if (live) setAvailable([])
+        // if we cannot tell, do not trap them on this page
+        if (live) onPlaced()
       })
     return () => {
       live = false
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [api])
+
+  const pick = (g: number) => {
+    if (busy) return
+    setBusy(true)
+    void api
+      .place(g)
+      .catch(() => {
+        /* never trap a student on the way in */
+      })
+      .finally(onPlaced)
+  }
+
+  if (available === null)
+    return (
+      <main className="shell">
+        <Header points={null} />
+        <section className="card">
+          <p className="muted">Loading…</p>
+        </section>
+      </main>
+    )
+
+  return (
+    <main className="shell">
+      <Header points={null} />
+      <section className="card grade-page">
+        <h1>What grade are you in?</h1>
+        <p className="muted">
+          This just sets where you start. You can work above or below it whenever you like.
+        </p>
+        <div className="grade-grid" role="group" aria-label="Choose your grade">
+          {GRADE_RANGE.map((g) => {
+            const ready = available.includes(g)
+            return (
+              <button
+                key={g}
+                type="button"
+                className="grade-big"
+                disabled={!ready || busy}
+                onClick={() => pick(g)}
+                aria-label={ready ? `Grade ${g}` : `Grade ${g}, coming soon`}
+              >
+                <span className="grade-big-num">{g}</span>
+                <span className="grade-big-sub">{ready ? 'Grade' : 'soon'}</span>
+              </button>
+            )
+          })}
+        </div>
+        <p className="muted grade-page-note">
+          Grades {available[0]}–{available[available.length - 1]} are built today; the rest are on
+          the way.
+        </p>
+      </section>
+    </main>
+  )
+}
+
+function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; onGuide?: () => void; about?: boolean }) {
+  const [name, setName] = useState('')
 
   const join = () => {
     const id = name.trim().toLowerCase()
@@ -205,7 +271,7 @@ function JoinCard({
     } catch {
       /* storage unavailable is fine */
     }
-    onJoin(id, grade)
+    onJoin(id)
   }
   return (
     <main className="shell">
@@ -232,35 +298,6 @@ function JoinCard({
             Start
           </button>
         </div>
-        {available !== null && available.length > 0 && (
-          <div className="grade-picker">
-            <p className="muted grade-picker-label" id="grade-picker-label">
-              What grade are you in? <span>Optional — it just sets where you start.</span>
-            </p>
-            <div className="grade-row" role="group" aria-labelledby="grade-picker-label">
-              {GRADE_RANGE.map((g) => {
-                const ready = available.includes(g)
-                return (
-                  <button
-                    key={g}
-                    type="button"
-                    className={grade === g ? 'grade-chip on' : 'grade-chip'}
-                    disabled={!ready}
-                    aria-pressed={grade === g}
-                    title={ready ? `Grade ${g}` : `Grade ${g} — coming soon`}
-                    onClick={() => setGrade(grade === g ? null : g)}
-                  >
-                    {g}
-                  </button>
-                )
-              })}
-            </div>
-            <p className="muted grade-picker-note">
-              Grades {available[0]}–{available[available.length - 1]} are built today; the rest are
-              on the way.
-            </p>
-          </div>
-        )}
         {onGuide && (
           <p className="muted join-guide-link">
             Running the room?{' '}

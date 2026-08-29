@@ -277,24 +277,37 @@ body {
 .guide-ok { color: #3f6a4d; font-weight: 700; }
 .guide-bad { color: #b04528; font-weight: 700; }
 
-/* ---- grade picker (sign-in) ---- */
-.grade-picker { margin-top: 18px; }
-.grade-picker-label { margin: 0 0 8px; font-weight: 600; color: #5c5245; }
-.grade-picker-label span { font-weight: 400; }
-.grade-row { display: flex; flex-wrap: wrap; gap: 6px; }
-.grade-chip {
-  min-width: 44px; min-height: 44px; padding: 0 12px;
-  font: 600 15px 'Nunito Sans', sans-serif;
-  color: #6b5a33; background: #fffdf9;
-  border: 1px solid #e6ddd0; border-radius: 10px; cursor: pointer;
-  transition: background 0.15s ease, border-color 0.15s ease;
+/* ---- grade page (new students only) ---- */
+.grade-page h1 { margin-bottom: 4px; }
+.grade-grid {
+  display: grid; gap: 10px; margin: 20px 0 12px;
+  grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
 }
-.grade-chip:hover:not(:disabled) { background: #f7efe3; border-color: #d8c9b2; }
-.grade-chip.on { background: #b05f28; border-color: #b05f28; color: #fffdf9; }
+.grade-big {
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  gap: 2px; min-height: 92px; padding: 12px;
+  /* an AVAILABLE grade must read as the thing to press. Sitting at the
+     same weight as the "soon" tiles made the real choices disappear into
+     the roadmap. */
+  background: #fffdf9; border: 2px solid #b05f28; border-radius: 14px;
+  color: #8a5320; cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, transform 0.1s ease;
+}
+.grade-big:hover:not(:disabled) { background: #f7efe3; border-color: #b05f28; }
+.grade-big:active:not(:disabled) { transform: translateY(1px); }
+.grade-big:focus-visible { outline: 3px solid #b05f28; outline-offset: 2px; }
+.grade-big-num { font: 700 30px 'Nunito Sans', sans-serif; line-height: 1; }
+.grade-big-sub {
+  font: 600 11px 'Nunito Sans', sans-serif; letter-spacing: 0.08em;
+  text-transform: uppercase; color: #8b8070;
+}
 /* not-yet-built grades stay VISIBLE (the roadmap is the point) but must
    read as unavailable rather than merely low-contrast */
-.grade-chip:disabled { opacity: 0.45; cursor: not-allowed; text-decoration: line-through; }
-.grade-picker-note { margin: 8px 0 0; font-size: 13px; }
+.grade-big:disabled {
+  cursor: not-allowed; background: #f4efe6;
+  border-color: #e6ddd0; border-style: dashed; color: #9a9084;
+}
+.grade-page-note { margin: 0; font-size: 13px; }
 
 /* ---- micro-interactions ---- */
 .btn { transition: transform 0.12s ease, background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease; }

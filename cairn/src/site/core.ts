@@ -573,6 +573,20 @@ export class SiteCore {
     return ok({ grade, placed: below.length })
   }
 
+  /** Is this a student we have never seen? The sign-in page is a LOGIN
+   * for almost everyone, so the grade step must only appear for someone
+   * genuinely new — never as a question a returning student answers
+   * again every time they come back. */
+  needsPlacement(studentId: string): SiteResult {
+    const st = this.slots.get(studentId)
+    const known =
+      st !== undefined &&
+      (st.student.placedGrade !== undefined ||
+        Object.keys(st.student.skills).length > 0 ||
+        this.log.some((e) => e.studentId === studentId))
+    return ok({ needsPlacement: !known })
+  }
+
   state(studentId: string): SiteResult {
     const st = this.slot(studentId)
     return ok({

@@ -224,6 +224,10 @@ export class DemoApi implements CairnApi {
     return Promise.resolve({ available: this.core.gradesAvailable() })
   }
 
+  needsPlacement(): Promise<{ needsPlacement: boolean }> {
+    return Promise.resolve(this.unwrap(this.core.needsPlacement(this.studentId)))
+  }
+
   place(grade: number): Promise<void> {
     this.unwrap(this.core.place(this.studentId, grade))
     this.persist()

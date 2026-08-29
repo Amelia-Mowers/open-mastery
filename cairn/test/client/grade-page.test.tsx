@@ -33,7 +33,7 @@ function realBundle() {
   return b
 }
 
-describe('grade picker', () => {
+describe('grade page', () => {
   // the join card remembers the last student in localStorage; each case
   // must start from a cold sign-in
   beforeEach(() => {
@@ -44,7 +44,7 @@ describe('grade picker', () => {
     }
   })
 
-  it('offers 3–12, disables what is not built, and places the student', async () => {
+  it('is a SEPARATE page after sign-in, with a grade required to continue', async () => {
     if (!existsSync(root)) return
     const user = userEvent.setup()
     const bundle = realBundle()
@@ -64,53 +64,66 @@ describe('grade picker', () => {
       />,
     )
 
-    // the whole intended range is visible…
-    const three = await screen.findByRole('button', { name: '3' })
-    expect(three).toBeTruthy()
-    expect(screen.getByRole('button', { name: '12' })).toBeTruthy()
-    // …but grades with no curriculum are not selectable
-    expect((three as HTMLButtonElement).disabled).toBe(true)
+    // SIGN-IN IS A LOGIN: no grade question on this page
+    const nameField = await screen.findByLabelText(/your name/i)
+    expect(screen.queryByRole('button', { name: /^Grade 6$/ })).toBeNull()
+    expect(screen.queryByText(/what grade are you in/i)).toBeNull()
 
-    // the grades the catalog can teach are offered
-    const offered = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-      .map((g) => screen.getByRole('button', { name: String(g) }) as HTMLButtonElement)
-      .filter((b) => !b.disabled)
-    expect(offered.length).toBeGreaterThan(0)
-
-    // Start is inert until a name is typed (the report's silent no-op)
+    // Start is inert until a name is typed (was a silent no-op)
     const start = screen.getByRole('button', { name: 'Start' })
     expect((start as HTMLButtonElement).disabled).toBe(true)
 
-    await user.click(offered[0]!)
-    await user.type(screen.getByLabelText(/your name/i), 'ada')
+    await user.type(nameField, 'ada')
     await user.click(start)
 
-    // the choice reached the engine
-    await waitFor(() => expect(placed.length).toBe(1))
+    // …now the grade page, on its own
+    await screen.findByText(/what grade are you in/i)
+    // the whole intended range is visible, unbuilt grades disabled
+    const g3 = screen.getByRole('button', { name: /Grade 3, coming soon/ })
+    expect((g3 as HTMLButtonElement).disabled).toBe(true)
+    const g6 = screen.getByRole('button', { name: 'Grade 6' })
+    expect((g6 as HTMLButtonElement).disabled).toBe(false)
+
+    // picking places, and moves straight on — no "skip"
+    expect(screen.queryByRole('button', { name: /skip|later|not now/i })).toBeNull()
+    await user.click(g6)
+    await waitFor(() => expect(placed).toEqual([6]))
+    await waitFor(() => expect(screen.queryByText(/what grade are you in/i)).toBeNull())
   })
 
-  it('joining without picking a grade still works', async () => {
+  it('a RETURNING student is never asked again', async () => {
+    if (!existsSync(root)) return
     const user = userEvent.setup()
-    const bundle = fixtureBundle()
-    const placed: number[] = []
-    render(
-      <App
-        demoBanner
-        apiFactory={(_b, student) => {
-          const api = new DemoApi(student, bundle, null)
-          const real = api.place.bind(api)
-          api.place = (g) => {
-            placed.push(g)
-            return real(g)
-          }
-          return api
-        }}
-      />,
-    )
-    await user.type(await screen.findByLabelText(/your name/i), 'sam')
+    const bundle = realBundle()
+    // one shared core, so the second sign-in sees the first one's history
+    const apis = new Map<string, DemoApi>()
+    const factory = (_b: string, student: string): DemoApi => {
+      let api = apis.get(student)
+      if (!api) {
+        api = new DemoApi(student, bundle, null)
+        apis.set(student, api)
+      }
+      return api
+    }
+    const { unmount } = render(<App demoBanner apiFactory={factory} />)
+    await user.type(await screen.findByLabelText(/your name/i), 'bo')
     await user.click(screen.getByRole('button', { name: 'Start' }))
-    // no grade chosen ⇒ no placement, and entry is not blocked
+    await screen.findByText(/what grade are you in/i)
+    await user.click(screen.getByRole('button', { name: 'Grade 6' }))
+    await waitFor(() => expect(screen.queryByText(/what grade are you in/i)).toBeNull())
+    unmount()
+
+    // sign in again as the same student: straight through
+    try {
+      localStorage.clear()
+    } catch {
+      /* fine */
+    }
+    render(<App demoBanner apiFactory={factory} />)
+    await user.type(await screen.findByLabelText(/your name/i), 'bo')
+    await user.click(screen.getByRole('button', { name: 'Start' }))
     await waitFor(() => expect(screen.queryByLabelText(/your name/i)).toBeNull())
-    expect(placed).toEqual([])
+    // the grade question does not come back
+    expect(screen.queryByText(/what grade are you in/i)).toBeNull()
   })
 })

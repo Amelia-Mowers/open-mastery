@@ -188,6 +188,9 @@ export interface CairnApi {
   grades(): Promise<{ available: number[] }>
   /** place the student at a grade (everything below is assumed known) */
   place(grade: number): Promise<void>
+  /** true only for a student with no history — the grade step is for
+   * new students, not a question returning ones answer again */
+  needsPlacement(): Promise<{ needsPlacement: boolean }>
   state(): Promise<StateView>
   reset(): Promise<void>
 }
@@ -318,6 +321,11 @@ export class SiteApi implements CairnApi {
 
   async place(grade: number): Promise<void> {
     await this.post('/api/place', { grade })
+  }
+
+  async needsPlacement(): Promise<{ needsPlacement: boolean }> {
+    const r = await fetch(this.url('/api/needs-placement'))
+    return this.json<{ needsPlacement: boolean }>(r, 'needs placement')
   }
 
   async seedClass(): Promise<void> {

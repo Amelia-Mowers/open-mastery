@@ -122,6 +122,8 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       return send(res, core.place(studentId, ((await readBody(req)) as { grade?: unknown }).grade))
     if (req.method === 'POST' && url.pathname === '/api/start-check')
       return send(res, core.startCheck(studentId, ((await readBody(req)) as { skillId?: string }).skillId))
+    if (req.method === 'GET' && url.pathname === '/api/needs-placement')
+      return send(res, core.needsPlacement(studentId))
     if (req.method === 'GET' && url.pathname === '/api/state') return send(res, core.state(studentId))
     if (req.method === 'GET' && url.pathname === '/api/explain')
       return send(
