@@ -66,10 +66,12 @@ whose regions map to symbol parts expose **staged entrance flags**
 - opposite-flip / area-model / worked-equation: inherently staged
   (`flip`/`resolve`, `products`, appended lines)
 
-The **faded phase** ("finish this one") replays the SAME representation
-the student's initial lesson used — `/api/explain?viewedFirst=1` prefers
-the first completed representation from the student's own event history,
-so the metaphor that taught the skill is the one that fades.
+The **scaffolded lead** ("finish this one") replays the SAME
+representation the student was JUST taught — `/api/explain?viewedFirst=1`
+prefers the LAST completed representation in the student's own event
+history, so the metaphor that taught the skill is the one that fades.
+Taking the first instead is the "tape lesson, scale practice" bug: after
+rotating to a new picture, the lead must follow the rotation.
 
 ## 4. Contract mechanics
 
@@ -102,6 +104,13 @@ Global `prefers-reduced-motion` handling covers the rest.
 
 ## 6b. Reuse with care — new widgets are cheap
 
+**Ask the reuse question LAST.** Read Illustrative Mathematics for the
+standard, decide what the representation should be, write that down, and
+only then look at the fleet. Opening the registry first biases every
+answer toward "close enough" — that is how the simplify-first number
+line and cube's bar model shipped. Full sequence:
+`../curriculum/CLAUDE.md`, "Representation decisions go IM FIRST".
+
 Reuse a widget only when the REPRESENTATION genuinely matches, not
 because the data shape fits. The ratio-table can display any x→y pairs,
 but pressing it into service as a function machine (and the area model
@@ -109,6 +118,23 @@ as "a square, sort of") reads as the wrong picture to a learner. A
 purpose-built widget costs an afternoon against this checklist — when in
 doubt, build the right picture. (Widget-type saturation is an
 observation about progressions reusing representations, not a budget.)
+
+## 6c. Slab kickoff checklist (before authoring ANY new slab)
+
+Run this once per slab, before the first skill is written:
+
+1. **Read IM's lessons** for every standard in the slab. Note what each
+   one uses to teach the idea, and what that picture DOES.
+2. **Read the Progressions figures** for the domain — they name expected
+   representations and their ordering.
+3. **Write the representation list** the slab needs, per skill, from 1–2
+   alone — without consulting the registry.
+4. **Now diff that list against the fleet.** Genuine matches are reuse;
+   everything else is a queued widget with a named source.
+5. **Size the slab from that diff.** A slab needing several new widgets
+   is fleet-building work and costs like the FIRST slab, not like the
+   saturated ones (EE added 8 skills with zero new widgets; 8.EE/8.F,
+   SP and G will not).
 
 ## 7. Fleet integration checklist (adding a widget)
 
@@ -122,5 +148,5 @@ observation about progressions reusing representations, not a budget.)
    on adoption).
 5. Tests per §6.
 6. Curriculum adoption: an explanation using it (its final content step
-   must BE the resolution — the faded phase truncates it), items whose
+   must BE the resolution — the stepwise lead truncates it), items whose
    `representation:` matches, `verify:` on those items.

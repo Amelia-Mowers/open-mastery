@@ -133,16 +133,35 @@ widgets/explanation timelines.
 Implemented so far: tape diagram (G7 U6 L2–3), hanger diagram (G6 U6 L3),
 area model (G6 U6 L10), plus OpenStax's envelopes-and-counters (§3.5).
 
-## Before inventing ANY visualization: check the quarries
+## Representation decisions go IM FIRST, fleet LAST
 
-For every new skill batch (and every new widget), FIRST list candidate
-representations from (1) Illustrative Mathematics first edition's lesson
-pages for the matching standard, (2) the Progressions document's figures
-for that domain, (3) the existing widget fleet. Only invent when none
-fit — and when a rep genuinely doesn't exist in the fleet (algebra
-tiles), queue the widget rather than forcing a wrong picture (the
-simplify-first number line, removed, is the cautionary example: a line
-cannot show combining like terms).
+The order is not a preference, it is the sequence. Reuse is a
+CONCLUSION you reach, never the assumption you start from.
+
+1. **Read Illustrative Mathematics first edition** for the matching
+   standard — its actual lesson pages, not a memory of them. What does
+   IM use to teach this, and what does that picture DO that the maths
+   needs done?
+2. **Check the Progressions figures** for the domain — they name the
+   expected representations and their ordering per standard.
+3. **Decide what the representation should BE**, and write it down,
+   before looking at what exists.
+4. **Only then ask whether the fleet already is that thing.** If a
+   widget matches the decision, reuse it. If it merely *could be made
+   to* fit, that is not a match — queue the new widget.
+
+Starting from the fleet is how we shipped wrong pictures twice: the
+simplify-first number line (removed — a line cannot show combining like
+terms) and cube's bar model (replaced by the area model — a bar of four
+squares shows four of something, never cubing). Both were "make it fit
+what we have"; both cost more to undo than the right widget would have
+cost to build. New widgets are cheap; a wrong picture teaches a wrong
+idea and is caught late.
+
+Budget for this. A slab in a domain the fleet does not already cover
+(8.EE/8.F graphs, SP plots, G scale drawings and angle figures) is
+FLEET-BUILDING work, not authoring work, and should be planned at the
+first slab's rate rather than the saturated rate EE hit.
 
 ## Don't map textbook sections to skills naively
 

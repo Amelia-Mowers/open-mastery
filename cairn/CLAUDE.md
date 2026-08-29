@@ -5,9 +5,14 @@
   server on :4777 serving ../curriculum + dist).
 - The architecture doc (`../cairn-architecture.md`) is authoritative; the
   UI mockup is reference only.
-- **Widget sourcing: mine Illustrative Mathematics first edition (CC BY)
-  for diagrams before inventing visualizations** — inventory and license
-  rules in `../curriculum/sources/illustrative-mathematics/SOURCES.md`.
+- **Widget sourcing: IM FIRST, fleet LAST.** Read Illustrative
+  Mathematics first edition (CC BY) for the standard, decide what the
+  representation should BE, and only then ask whether an existing widget
+  already is that. Reuse is a conclusion, not a starting assumption —
+  starting from the fleet shipped two wrong pictures (the simplify-first
+  number line, cube's bar model). Full sequence in
+  `../curriculum/CLAUDE.md`; inventory and license rules in
+  `../curriculum/sources/illustrative-mathematics/SOURCES.md`.
   Existing viz widgets: balance-scale, envelope-model, tape-diagram,
   hanger-diagram, area-model; lesson timelines drive them via patches
   (see `src/client/app/LessonPlayer.tsx` setup functions).

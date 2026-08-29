@@ -13,9 +13,20 @@ here: entries are one line plus a pointer. Last audited 2026-08-28.
 
 Not K–12 — the middle-school band plus the manager's view (~2–3 months):
 
-- [ ] Slabs 10–15 authored (6–8 band). DONE: 6–7.RP, 6–7.EE. NEXT: 6–8.NS,
-      then the 8.EE/F band (slab-map.md). ~200 timelines at the measured
-      pace; vet in fresh-eyes batches, recruit pilot tutors as reviewers.
+- [ ] Slabs 10–15 authored (6–8 band). NEXT: 6–8.NS, then 8.EE/F
+      (slab-map.md). ~200 timelines; vet in fresh-eyes batches, recruit
+      pilot tutors as reviewers.
+      MEASURED 2026-08-29: 18/110 sub-clauses = **16% of 6–8**. RP 9/12,
+      EE 8/16, everything else 0. The two "DONE" slabs are done as
+      teachable SPINES, not as full coverage — RP defers 6.RP.A.3.D, EE
+      defers inequalities (6.EE.B.5/6/8, 7.EE.B.4.B).
+      SIZE EACH SLAB FROM ITS WIDGET DIFF, not from the EE rate. EE added
+      8 skills with ZERO new widgets because the fleet already covered
+      it; that saturation does NOT hold for 8.EE/8.F (no coordinate-plane
+      or graph widget exists), SP (dot/box plots, histograms, probability
+      trees) or G (scale drawings, angle figures). Those cost like the
+      FIRST slab. Run the §6c slab-kickoff checklist (GOLDEN_WIDGET.md)
+      before sizing: IM first, fleet last.
 - [ ] Build step 5: real site server (SQLite SiteStore, auth/enrollment).
 - [ ] Guide v2: per-student drill-in (their map + event timeline),
       intervention actions (clear a flag, assign focus), real auth
