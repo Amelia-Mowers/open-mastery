@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{c1}{variable} + {c2}{variable} - {c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}" }, caption: "Messy — tidy each side first." }
   - { t: 4, patch: { line: "{c1+c2-c3}{variable} = {(c1+c2-c3)*ans}", note: "combine like terms on each side" }, caption: "{c1} + {c2} - {c3} = {c1+c2-c3} of {variable}; the numbers combine too.", expect: { type: expr, value: "{c1+c2-c3}{variable} = {(c1+c2-c3)*ans}" } }
-  - { t: 9, patch: { line: "{variable} = {ans}", note: "divide both sides by {c1+c2-c3}" }, caption: "One step left: divide by {c1+c2-c3}. {variable} = {ans}.", expect: { type: expr, value: "{variable} = {ans}" } }
+  - { t: 9, patch: { line: "{variable} = {ans}", note: "the same move on both sides" }, caption: "One step left: divide by {c1+c2-c3}. {variable} = {ans}.", expect: { type: expr, value: "{variable} = {ans}" } }
   - { t: 11.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

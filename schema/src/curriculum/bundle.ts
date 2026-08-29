@@ -265,6 +265,21 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         // execute — "Do it, multiply both sides by the reciprocal" is a
         // button labelled with its own answer and teaches nothing.
         for (const [i, st] of e.timeline.entries()) {
+          // The whiteboard NOTE is a second channel onto the same screen.
+          // A step reading "subtract 8 from both sides" hands over the move
+          // the gate is grading just as plainly as a caption would — and it
+          // is not covered by [gate_telegraph], which only reads captions
+          // and only for op gates.
+          const note = st.expect !== undefined && typeof st.patch?.['note'] === 'string'
+            ? st.patch['note']
+            : ''
+          if (/\b(add|subtract|multiply|divide)\b[^"]*\b(both sides|from both|to both)\b/i.test(note))
+            push(
+              'warning',
+              'gate_telegraph',
+              `${e.id}.timeline[${i}]`,
+              `the note on screen ('${note}') names the move this gate asks for — say it on the step that CONFIRMS the move instead`,
+            )
           const prompt = st.expect?.prompt
           if (prompt === undefined) continue
           if (!prompt.includes('?'))

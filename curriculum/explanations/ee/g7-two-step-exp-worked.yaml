@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}" }, caption: "Undo in REVERSE order: the add came last, so it goes first." }
   - t: 4
-    patch: { line: "{a}{variable} = {a*ans+b} − {b} = {a*ans}", note: "subtract {b} from both sides" }
+    patch: { line: "{a}{variable} = {a*ans+b} − {b} = {a*ans}", note: "the same move on both sides" }
     caption: "Step 1: clear the {b}."
     expect:
       type: expr
@@ -14,7 +14,7 @@ timeline:
       prompt: "The {b} is added on. What move clears it, and what line is left?"
       hint: "The + {b} cancels on the left; the right becomes {a*ans+b} − {b}."
   - t: 8.5
-    patch: { line: "{variable} = {a*ans} ÷ {a} = {ans}", note: "divide both sides by {a}" }
+    patch: { line: "{variable} = {a*ans} ÷ {a} = {ans}", note: "the same move on both sides" }
     caption: "Step 2: divide by {a}. {variable} = {ans}."
     expect:
       type: expr
