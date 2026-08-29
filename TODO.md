@@ -148,18 +148,20 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
         instance-level `session.promised` is still session-only, so the
         exact NUMBERS may differ after a reload — the skill and the
         representation no longer do.
-      - `session.check` lost ⇒ a check in progress restarts and passed
-        items are thrown away; conversely a FAILED check can be re-taken
-        by reloading, since the gate is event-derived but the failure
-        consequence is session-only. A weakened gate, not a forged grant.
-      - miss counters / `parked` / pendingHint lost ⇒ the corrective
-        ladder (hint → alt explanation → prereq probe) is unreachable for
-        a student who reloads, i.e. exactly the struggling student.
+      - `session.check` lost ⇒ a check IN PROGRESS restarts and passed
+        items are thrown away. (The reported re-take bypass is NOT real
+        and was verified: failing a check zeroes consecUnassistedCorrect
+        AND drops p below pThreshold in the durable fold, so both gates
+        close and startCheck is refused after a reload just as it is
+        live.)
+      - DONE: the corrective ladder survives (restoreSession replays the
+        log's attempts through applySkillAttempt; corrective-reload.test
+        .ts checks all three rungs).
       - `session.served` lost ⇒ the same instance with the same numbers
         can be served twice.
-      Fix shape: derive the counters from `attempt` events at replay;
-      make `check` and `promised` events rather than memory. `pending` is
-      correctly non-durable (it 409s, which is right).
+      Fix shape: `check` should become an event rather than memory; the
+      instance-level `promised` likewise if the exact numbers matter.
+      `pending` is correctly non-durable (it 409s, which is right).
 - [ ] `SiteApi` never checks `r.ok`, so an HTTP error body is cast to the
       success type — `attempt` can hand ItemCard `{error}` and render a
       NaN point delta. Same shape in DemoApi.unwrap for 409s.
