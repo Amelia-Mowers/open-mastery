@@ -4,9 +4,10 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a}{variable} + {b},   {variable} = {c}" }, caption: "An expression plus a value for its letter." }
-  - { t: 4, patch: { line: "= {a} · {c} + {b}", note: "substitute {variable} = {c}" }, caption: "Replace {variable} with {c} everywhere it appears. What is the expression worth now?", expect: { type: numeric, value: "{a*c}", prompt: "Substitute and multiply: {a} · {c} is what?" } }
-  - { t: 8.5, patch: { line: "= {a*c} + {b}", note: "multiply first" }, caption: "The expression outputs {a*c+b}.", expect: { type: numeric, value: "{a*c+b}", prompt: "So what is the expression worth when {variable} = {c}?" } }
-  - { t: 12, patch: { line: "= {a*c+b}", note: "then add" }, caption: "The expression outputs {a*c+b}." }
-  - { t: 14.5, handoff: { prompt: "Now you try." } }
+  - { t: 0, patch: { start: "{a}{variable} + {b},   {variable} = {c}" }, caption: "An expression plus a value for its letter. Put {c} in place of {variable} — what does the line read?" }
+  - { t: 4, patch: { line: "= {a} · {c} + {b}", note: "substitute {variable} = {c}" }, caption: "{variable} is {c} everywhere it appears. Multiplication comes first: what is {a} · {c}?", expect: { type: expr, value: "{a} * {c} + {b}", prompt: "With {c} in place of {variable}, what does the line read?", hint: "Every {variable} becomes {c}: {a} · {c} + {b}." } }
+  - { t: 8.5, patch: { line: "= {a*c} + {b}", note: "multiply first" }, caption: "{a} · {c} is {a*c}. One step left: add the {b}. So what is the expression worth?", expect: { type: numeric, value: "{a*c}", prompt: "Multiplication first — what is {a} · {c}?", hint: "{a} groups of {c}." } }
+  - { t: 12, patch: { line: "= {a*c+b}", note: "then add" }, caption: "The expression outputs {a*c+b}.", expect: { type: numeric, value: "{a*c+b}", prompt: "{a*c} + {b} — what is the expression worth when {variable} = {c}?" } }
+  - { t: 15, patch: { note: "done" }, caption: "{variable} = {c} makes {a}{variable} + {b} worth {a*c+b}." }
+  - { t: 17.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

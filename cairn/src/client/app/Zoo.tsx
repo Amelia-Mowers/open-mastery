@@ -349,11 +349,24 @@ function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
   // gradeable. A skill fades its answer space across tiers — structured
   // early, raw at the ceiling — so a reviewer has to be able to play the
   // same problem through each one and confirm it grades the same.
+  const key = renderText(String((item.answer as { value: unknown }).value), params)
+  // Offer only inputs that can EXPRESS this answer. term-input's
+  // [ ]x [±] [ ] is for a two-term expression; showing it where the
+  // answer is a plain integer invites an answer that cannot be right.
+  // An input is tied to the shape of the ANSWER, not to the skill.
+  const isTwoTerm = new RegExp(`\\d\\s*\\*?\\s*${variable}\\s*[+-]\\s*\\d`).test(key)
   const styles: Array<{ type: WidgetType; config: Record<string, unknown>; note: string }> = [
-    { type: 'term-input', config: { variable }, note: 'structured · easier tiers' },
+    ...(isTwoTerm
+      ? [
+          {
+            type: 'term-input' as WidgetType,
+            config: { variable } as Record<string, unknown>,
+            note: 'structured · easier tiers',
+          },
+        ]
+      : []),
     { type: 'expression-input', config: { variable }, note: 'raw · the ceiling' },
   ]
-  const key = renderText(String((item.answer as { value: unknown }).value), params)
   return (
     <div className="zoo-answer">
       <p className="muted">
