@@ -9,4 +9,4 @@ timeline:
   - { t: 8.5, patch: { line: "numbers: {b} + {d} = {b+d}", note: "plain numbers together" }, caption: "The plain numbers combine separately: {b} + {d} = {b+d}. So what is the whole expression?", expect: { type: numeric, value: "{b+d}", prompt: "{b} + {d} — what do the plain numbers make?", hint: "Only the numbers with no {variable} on them." } }
   - { t: 13, patch: { line: "= {a-c}{variable} + {b+d}", note: "simplified" }, caption: "One short expression: {a-c}{variable} + {b+d}." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

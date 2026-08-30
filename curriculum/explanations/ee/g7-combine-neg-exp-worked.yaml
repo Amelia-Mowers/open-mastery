@@ -9,4 +9,4 @@ timeline:
   - { t: 8.5, patch: { line: "numbers: −{b} − {d} = −{b+d}", note: "both subtracted — they come off together" }, caption: "Take away {b}, then take away {d}: {b+d} comes off in all. So what is the whole expression?", expect: { type: numeric, value: "{0-(b+d)}", prompt: "−{b} and −{d} — what do they make together?", hint: "Both are taken away: −{b} − {d} = −{b+d}.", misconceptions: [{ id: "dropped-the-minus", when: "{b+d}", says: "{b+d} is how MUCH comes off — but combined, the two subtractions make −{b+d}: the minus rides along." }, { id: "subtracted-the-numbers-wrong", when: "{d-b}", says: "Both numbers are being subtracted, so together they make −({b} + {d}) = −{b+d}, not −({b} − {d})." }] } }
   - { t: 13, patch: { line: "= {a-c}{variable} − {b+d}", note: "simplified" }, caption: "One short expression: {a-c}{variable} − {b+d}." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
