@@ -522,6 +522,29 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             )
         }
       }
+      // The caption on screen while the LAST gate is open is the one on
+      // the step BEFORE it. If that step is a plain statement, nothing
+      // has put the closing question to the student — they meet "what is
+      // x?" with the board silent. (When the previous step is itself
+      // gated, its own prompt is what they read, so no caption is owed.)
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const content = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        const gi = content.map((st, i) => (st.expect ? i : -1)).filter((i) => i >= 0)
+        const last = gi[gi.length - 1]
+        if (last === undefined || last === 0) continue
+        const prev = content[last - 1]!
+        if (prev.expect !== undefined) continue // its prompt asks
+        const cap = prev.caption ?? ''
+        if (cap !== '' && !cap.includes('?'))
+          push(
+            'warning',
+            'lead_ends_quiet',
+            `${e.id}.timeline[${last - 1}]`,
+            `the caption shown while the last gate is open ('${cap.slice(0, 50)}…') states rather than asks — end it on the lesson's own question`,
+          )
+      }
       // EVERY timeline must be workable: the faded/stepwise lead drops the
       // final content step (the resolution), so a timeline whose only gates
       // sit there plays as a passive movie. Count the gates that SURVIVE.

@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{5*f}% of ? = {f*k}" }, caption: "Work backwards from the part to the whole." }
   - { t: 4, patch: { line: "5% = {f*k} ÷ {f}", note: "÷ {f}" }, caption: "{5*f}% is {f} fives, so one five is {k}. So what is the WHOLE?", expect: { type: numeric, value: "{k}", prompt: "What number finishes this line?" } }
-  - { t: 6.5, patch: { line: "5% = {k}", note: "one five" }, caption: "One five is {k}." }
+  - { t: 6.5, patch: { line: "5% = {k}", note: "one five" }, caption: "One five is {k}. So what is the WHOLE?" }
   - { t: 8.5, patch: { line: "100% = 20 × {k}", note: "× 20" }, caption: "Build back up: the whole is {20*k}.", expect: { type: numeric, value: "{20*k}", prompt: "So what is the WHOLE?" } }
   - { t: 12, patch: { line: "100% = {20*k}", note: "the whole" }, caption: "Build back up: the whole is {20*k}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
