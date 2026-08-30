@@ -4,7 +4,7 @@ difficulty: 1
 representation: worked-equation
 params: { a: 7, b: 3, c: 2, d: 4, variable: x }
 generator: { a: { int: [6, 12] }, b: { int: [1, 9] }, c: { int: [2, 5] }, d: { int: [1, 9] } }
-widget: { type: expression-input, config: { stem: "Simplify: {a}{variable} + {b} − {c}{variable} + {d}." } }
+widget: { type: term-input, config: { variable: "{variable}", stem: "Simplify: {a}{variable} + {b} − {c}{variable} + {d}." } }
 answer: { type: expr, value: "{a-c}{variable} + {b+d}", equivalence: symbolic, form: combined }
 misconceptions:
   - id: added-the-variable-terms
