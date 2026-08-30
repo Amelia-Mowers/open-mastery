@@ -8,4 +8,4 @@ timeline:
   - { t: 3.5, patch: { line: "{a}{variable} ÷ {a} = {b} ÷ {a}", note: "the same move on both sides" }, caption: "÷ {a} on both sides — that is what undoes the × {a}. The {a}s cancel: what is {variable}?", expect: { type: op, value: "divide {a}", prompt: "What do you do to BOTH sides to leave one {variable}?", hint: "{variable} is MULTIPLIED by {a}. Dividing both sides by {a} undoes that." , misconceptions: [ { id: subtracted-the-coefficient, when: "subtract {a}", says: "{a}{variable} means {a} TIMES {variable}, not {a} plus {variable} — subtracting {a} will not free it. Undo a multiply with a divide." }, { id: multiplied-instead-of-divided, when: "multiply {a}", says: "Multiplying by {a} makes it {a} times bigger still. To undo × {a}, divide." } ] } }
   - { t: 8, patch: { line: "{variable} = {b/a}", note: "{a} ÷ {a} = 1" }, caption: "{variable} = {b/a}.", expect: { type: expr, value: "{variable} = {b/a}", prompt: "The {a}s cancel — simplify. What is {variable}?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

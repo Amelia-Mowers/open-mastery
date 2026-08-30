@@ -8,4 +8,4 @@ timeline:
   - { t: 3.5, patch: { line: "{variable}/{a} × {a} = {b} × {a}", note: "the same move on both sides" }, caption: "× {a} on both sides — that is what undoes the ÷ {a}. The {a}s cancel: what is {variable}?", expect: { type: op, value: "multiply {a}", prompt: "What do you do to BOTH sides to leave one whole {variable}?", hint: "{variable} is DIVIDED by {a}. Multiplying both sides by {a} undoes that." , misconceptions: [ { id: divided-instead-of-multiplied, when: "divide {a}", says: "{variable} is already cut into {a} parts — dividing again makes them smaller. To rebuild the whole, multiply." } ] } }
   - { t: 8, patch: { line: "{variable} = {a*b}", note: "{a} ÷ {a} = 1" }, caption: "{variable} = {a*b}.", expect: { type: expr, value: "{variable} = {a*b}", prompt: "The {a}s cancel — simplify. What is {variable}?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

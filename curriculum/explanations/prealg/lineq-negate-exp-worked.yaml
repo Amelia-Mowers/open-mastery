@@ -8,4 +8,4 @@ timeline:
   - { t: 3.5, patch: { line: "(-1) · (-{variable}) = (-1) · {b}", note: "the same move on both sides" }, caption: "× (-1) on both sides — that is what undoes the -1. The negatives cancel: what is {variable}?", expect: { type: op, value: "multiply -1", prompt: "-{variable} is -1 times {variable}. What do you do to BOTH sides to get a positive {variable}?", hint: "Multiplying both sides by -1 turns -{variable} into {variable}." , misconceptions: [ { id: divided-by-the-value, when: "divide {b}", says: "Dividing by {b} does not touch the minus sign. Flipping the sign is a multiply by −1." } ] } }
   - { t: 8, patch: { line: "{variable} = {-b}", note: "(-1)(-1) = 1, the negatives cancel" }, caption: "Two negatives cancel: {variable} = {-b}.", expect: { type: expr, value: "{variable} = {-b}", prompt: "Two negatives cancel — simplify. What is {variable}?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
