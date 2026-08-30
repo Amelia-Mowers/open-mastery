@@ -386,6 +386,12 @@ export class SiteCore {
           params: repItem.params,
           widget: repItem.widget,
           fadedParams: feedableParams(e, [repItem.params]) ?? params,
+          // The zoo grades its own answer box so a reviewer can play a
+          // timeline end to end — lead, handoff, then the answer. This is
+          // the ONE place the key is served, and only here: the student
+          // app never calls /api/demo, and invariant 1 is unaffected
+          // because the engine still grades every real attempt.
+          answer: repItem.answer,
         }
       : null
     return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e, item })

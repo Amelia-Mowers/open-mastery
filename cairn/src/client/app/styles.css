@@ -241,6 +241,13 @@ body {
 .smooth-inner { transition: opacity 0.18s ease; display: flow-root; }
 .smooth-inner.dim { opacity: 0.55; pointer-events: none; }
 
+/* ---- zoo: live answer box (review only) ---- */
+.zoo-answer { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e6ddd0; }
+.zoo-answer-key { font: 12px 'IBM Plex Mono', ui-monospace, monospace; }
+.zoo-verdict { margin: 8px 0 0; font-weight: 600; }
+.zoo-verdict.ok { color: #3f6a4d; }
+.zoo-verdict.bad { color: #b04528; }
+
 /* ---- new build available ---- */
 .new-build-bar {
   position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);

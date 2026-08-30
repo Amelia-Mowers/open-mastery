@@ -76,6 +76,9 @@ export interface ZooDemoView {
     params: Record<string, number | string>
     widget: { type: string; config?: Record<string, unknown> }
     fadedParams: Record<string, number | string>
+    /** zoo ONLY: lets the review page grade its own answer box so a
+     * timeline can be played end to end. Never sent to the student app. */
+    answer?: { type: string; value: unknown; form?: string }
   } | null
 }
 

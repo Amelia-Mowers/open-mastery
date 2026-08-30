@@ -10,6 +10,7 @@ import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry
 import { FALLBACK_DEMOS, type ZooDemo } from './zoo-demos'
 import type { CairnApi } from './api'
 import { evalNumber, renderText, type Params } from './render'
+import { gradeAnswer } from '../../core/graders'
 
 function roleBadge(widget: string): string {
   const r = WIDGET_ROLES[widget as WidgetType]
@@ -109,7 +110,13 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
             <span className="mono-chip">{JSON.stringify(fadedParams)}</span>
           </div>
           {stepwise ? (
-            <StepwisePlayer key={replay} explanation={truncated} params={fadedParams} />
+            <>
+              <StepwisePlayer key={replay} explanation={truncated} params={fadedParams} />
+              {/* the answer box a real practice serve puts below the lead —
+                  without it the preview stops at the handoff and the whole
+                  point (does the lesson set up the answer?) is untestable */}
+              <ZooAnswer demo={demo} params={fadedParams} />
+            </>
           ) : (
             <LessonPlayer
               key={replay}
@@ -318,6 +325,59 @@ export function Zoo({ api }: { api: CairnApi }) {
       {!only && INPUT_SAMPLES.map((c) => (
         <InputCard key={c.title} title={c.title} type={c.type} config={c.config} />
       ))}
+    </div>
+  )
+}
+
+/** A working answer box for the zoo, so a timeline can be reviewed end to
+ * end: play the stepwise lead, take the handoff, then answer. It grades
+ * locally against the item's key (served only to this page) and says what
+ * it got — the point is checking that the LESSON sets the answer up, so a
+ * wrong verdict here is a curriculum finding, not a student's problem. */
+function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
+  const item = demo.item ?? null
+  const [raw, setRaw] = useState('')
+  const [verdict, setVerdict] = useState<null | { ok: boolean; says: string }>(null)
+  if (!item?.answer) return null
+  const check = (): void => {
+    if (raw.trim() === '') return
+    const spec = item.answer as unknown as Parameters<typeof gradeAnswer>[0]
+    const v = gradeAnswer(spec, params as never, raw)
+    setVerdict(
+      v.verdict === 'correct'
+        ? { ok: true, says: 'Correct — the lead sets this answer up.' }
+        : { ok: false, says: v.verdict === 'incorrect' && v.reason ? v.reason : 'Not accepted.' },
+    )
+  }
+  const key = (() => {
+    const r = renderText(String((item.answer as { value: unknown }).value), params)
+    return r
+  })()
+  return (
+    <div className="zoo-answer">
+      <div className="answer-row">
+        <input
+          aria-label="Answer"
+          value={raw}
+          placeholder="your answer"
+          onChange={(e) => {
+            setRaw(e.target.value)
+            setVerdict(null)
+          }}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') check()
+          }}
+        />
+        <button className="btn btn-primary" onClick={check}>
+          Check answer
+        </button>
+        <span className="muted zoo-answer-key">key: {key}</span>
+      </div>
+      {verdict && (
+        <p className={verdict.ok ? 'zoo-verdict ok' : 'zoo-verdict bad'} role="status">
+          {verdict.says}
+        </p>
+      )}
     </div>
   )
 }
