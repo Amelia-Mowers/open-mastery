@@ -4,8 +4,8 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{c}²" }, caption: "The small 2 counts FACTORS: {c} multiplied by itself." }
-  - { t: 4, patch: { line: "{c}² = {c} × {c}", note: "two factors of {c}" }, caption: "The board shows the base written twice — that is what the small 2 counts. So what does {c}² equal?", expect: { type: numeric, value: "{c}", prompt: "The board shows {c} × {c}. What is the FACTOR being repeated?" } }
-  - { t: 8, patch: { line: "= {c*c}", note: "multiply" }, caption: "{c}² = {c*c}.", expect: { type: numeric, value: "{c*c}", prompt: "So what does {c}² equal?" } }
+  - { t: 0, patch: { start: "{c}²" }, caption: "The small 2 is a COUNT — not a multiplier. It says how many {c}s to multiply together." }
+  - { t: 4, patch: { line: "{c}² = {c} × {c}", note: "written out" }, caption: "Two factors of {c}, written out. So what does {c}² equal?", expect: { type: numeric, value: "2", prompt: "How many factors of {c} does {c}² mean?", hint: "The small 2 counts how many times {c} is used as a factor.", misconceptions: [{ id: "exponent-as-multiplier", when: "{2*c}", says: "That is {c} × 2. The small 2 does not multiply — it COUNTS how many {c}s are multiplied together." }] } }
+  - { t: 8, patch: { line: "= {c*c}", note: "multiply" }, caption: "{c}² = {c*c}.", expect: { type: numeric, value: "{c*c}", prompt: "{c} times {c} — what does {c}² equal?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
