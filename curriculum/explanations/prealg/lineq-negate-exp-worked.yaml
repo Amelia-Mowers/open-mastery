@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "-{variable} = {b}" }, caption: "Watch it worked on the board." }
   - { t: 3.5, patch: { line: "(-1) · (-{variable}) = (-1) · {b}", note: "the same move on both sides" }, caption: "-{variable} is really -1 times {variable}. What undoes that — on both sides?", expect: { type: op, value: "multiply -1", prompt: "-{variable} is -1 times {variable}. What do you do to BOTH sides to get a positive {variable}?", hint: "Multiplying both sides by -1 turns -{variable} into {variable}." } }
-  - { t: 8, patch: { line: "{variable} = {-b}", note: "(-1)(-1) = 1, the negatives cancel" }, caption: "Two negatives cancel: {variable} = {-b}.", expect: { type: expr, value: "{variable} = {-b}", prompt: "Two negatives cancel — what line is left?" } }
+  - { t: 8, patch: { line: "{variable} = {-b}", note: "(-1)(-1) = 1, the negatives cancel" }, caption: "Two negatives cancel: {variable} = {-b}.", expect: { type: expr, value: "{variable} = {-b}", prompt: "Two negatives cancel — simplify. What is {variable}?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

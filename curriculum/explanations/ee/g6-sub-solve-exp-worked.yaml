@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{variable} − {p} = {d}" }, caption: "On the board: {variable} has {p} subtracted from it." }
   - { t: 4, patch: { line: "{variable} − {p} + {p} = {d} + {p}", note: "the same move on both sides" }, caption: "The {p} is taken away from {variable}. What undoes that — on both sides?", expect: { type: op, value: "add {p}", prompt: "What do you do to BOTH sides to put the {p} back?", hint: "{p} is SUBTRACTED from {variable}. The opposite of subtracting {p} is adding {p} — on both sides." } }
-  - { t: 8.5, patch: { line: "{variable} = {p+d}", note: "−{p} + {p} = 0" }, caption: "{variable} = {p+d}.", expect: { type: expr, value: "{variable} = {p+d}", prompt: "-{p} + {p} is 0, so what line is left?" } }
+  - { t: 8.5, patch: { line: "{variable} = {p+d}", note: "−{p} + {p} = 0" }, caption: "{variable} = {p+d}.", expect: { type: expr, value: "{variable} = {p+d}", prompt: "The {p}s cancel — simplify. What is {variable}?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

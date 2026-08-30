@@ -246,11 +246,19 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             // value's source is asking the student to READ the diagram, so
             // the caption carrying it is the teaching, not a leak.
             const enactment = st.expect.prompt !== undefined && st.expect.prompt.includes(v)
-            // values readable off the equation banner are fair game
+            // values readable off the equation banner are fair game — and
+            // that includes SUPERSCRIPT notation: 4³ prints the exponent
+            // as '³', so a gate asking "how many factors?" has its answer
+            // on the board already. Naming it in a caption is describing
+            // the notation, not leaking a result the student must find.
+            const SUP = '⁰¹²³⁴⁵⁶⁷⁸⁹'
+            const deSup = (t: string): string =>
+              [...t].map((ch) => (SUP.includes(ch) ? String(SUP.indexOf(ch)) : ch)).join('')
+            const onBoard = [...bannerSegs, ...e.timeline.map((x) => String(x.patch?.['start'] ?? ''))]
             if (
               !enactment &&
               prior.caption.includes(v) &&
-              ![...bannerSegs].some((seg) => seg.includes(v))
+              !onBoard.some((seg) => deSup(seg).includes(v))
             )
               push(
                 'warning',

@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{a}{variable} = {b}" }, caption: "On the board: {variable} is multiplied by {a}." }
   - { t: 3.5, patch: { line: "{a}{variable} ÷ {a} = {b} ÷ {a}", note: "the same move on both sides" }, caption: "{variable} is multiplied by {a}. What undoes that — on both sides?", expect: { type: op, value: "divide {a}", prompt: "What do you do to BOTH sides to leave one {variable}?", hint: "{variable} is MULTIPLIED by {a}. Dividing both sides by {a} undoes that." } }
-  - { t: 8, patch: { line: "{variable} = {b/a}", note: "{a} ÷ {a} = 1" }, caption: "{variable} = {b/a}.", expect: { type: expr, value: "{variable} = {b/a}", prompt: "{a} ÷ {a} is 1, so what line is left?" } }
+  - { t: 8, patch: { line: "{variable} = {b/a}", note: "{a} ÷ {a} = 1" }, caption: "{variable} = {b/a}.", expect: { type: expr, value: "{variable} = {b/a}", prompt: "The {a}s cancel — simplify. What is {variable}?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
