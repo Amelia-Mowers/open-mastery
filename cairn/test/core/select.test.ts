@@ -86,10 +86,15 @@ describe('selector (§5)', () => {
     expect(first.difficulty).toBe(2)
   })
 
-  it('practice difficulty ramps with the mastery estimate', () => {
+  it('practice difficulty ramps with the mastery estimate, reaching the ceiling only when the scaffold fades', () => {
     const pool = cur.itemsBySkill.get(SKILL_B)!.filter((it) => it.faded == null)
     expect(targetDifficulty(0.2, pool)).toBe(1)
-    expect(targetDifficulty(0.55, pool)).toBe(2)
+    // one unassisted correct (~0.51 under the default BKT) must NOT
+    // withdraw the structured tier — that read as punishment for a win
+    expect(targetDifficulty(0.55, pool)).toBe(1)
+    expect(targetDifficulty(0.84, pool)).toBe(1)
+    // the scaffold boundary is where the ceiling arrives
+    expect(targetDifficulty(0.85, pool)).toBe(2)
     expect(targetDifficulty(0.95, pool)).toBe(2)
     expect(targetDifficulty(0.5, [])).toBe(1)
   })

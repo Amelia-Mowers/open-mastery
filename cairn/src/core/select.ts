@@ -127,14 +127,23 @@ export function nextCheckBaseItem(
 }
 
 /** Practice difficulty ramp: map the skill's current p onto the pool's
- * difficulty range — low estimates get the easiest family, high estimates the
- * hardest (v1: difficulty still only orders items within a skill). */
-export function targetDifficulty(p: number, pool: readonly Item[]): number {
+ * difficulty range — low estimates get the easiest family, high estimates
+ * the hardest (v1: difficulty still only orders items within a skill).
+ *
+ * The scale is [0, fadeAtP], not [0, 1], and tiers advance by FLOOR, not
+ * round: the ceiling is reached when the scaffold fades (~3 unassisted
+ * wins under the default BKT), never before. Rounding put the 2-tier
+ * boundary at p = 0.5, which a SINGLE correct answer crosses (0.2 → 0.51)
+ * — one win took the structured input away, which read as punishment.
+ * The check still meets the hardest item regardless (hardest-first), so
+ * practice holding support longer costs no mastery evidence. */
+export function targetDifficulty(p: number, pool: readonly Item[], fadeAtP = 0.85): number {
   if (pool.length === 0) return 1
   const ds = pool.map((it) => it.difficulty)
   const lo = Math.min(...ds)
   const hi = Math.max(...ds)
-  return lo + Math.round(Math.min(1, Math.max(0, p)) * (hi - lo))
+  const scaled = Math.min(1, Math.max(0, p) / fadeAtP)
+  return lo + Math.min(hi - lo, Math.floor((hi - lo) * scaled + 1e-9))
 }
 
 /** The weakest unmastered-or-lapsed prerequisite, or null when every prereq

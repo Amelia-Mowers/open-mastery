@@ -553,7 +553,7 @@ function instantiateFor(
     rampSkillId !== undefined
       ? (student.skills[rampSkillId]?.p ?? bktOf?.(rampSkillId).L0 ?? 0)
       : 0
-  const target = rampSkillId !== undefined ? targetDifficulty(p, pool) : null
+  const target = rampSkillId !== undefined ? targetDifficulty(p, pool, pol.scaffolding.fadeAtP) : null
   const servedCount = (itemId: string): number => {
     let n = 0
     for (const key of session.served) if (key.startsWith(`${itemId}#`)) n++
@@ -566,8 +566,18 @@ function instantiateFor(
   // straight, in the trace that caught this) — the "one picture repeated"
   // failure the whole rotation design exists to prevent. Items within a
   // band are equally appropriate, so rotation decides between them.
-  const band = (it: Item): number =>
-    target === null ? 0 : Math.abs(it.difficulty - target) <= pol.selector.difficultyBand ? 0 : 1
+  // The band is ASYMMETRIC while the skill is scaffolded: easier-than-
+  // target stays in band (variety), harder-than-target does not — the
+  // structured answer space must not be withdrawn by rotation before the
+  // estimate has earned it. Once p clears fadeAtP the band is symmetric
+  // again, which is what keeps the long practice tail varied (the
+  // one-picture-repeated starvation the band exists to prevent).
+  const scaffolded = rampSkillId !== undefined && p < pol.scaffolding.fadeAtP
+  const band = (it: Item): number => {
+    if (target === null) return 0
+    if (scaffolded && it.difficulty > target) return 1
+    return Math.abs(it.difficulty - target) <= pol.selector.difficultyBand ? 0 : 1
+  }
   const ordered = [...pool].sort((a, b) => {
     const ba = band(a)
     const bb = band(b)
