@@ -150,7 +150,6 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
           </button>
         </div>
         {extracted && <p className="mono-chip zoo-extract">{extracted}</p>}
-        <AlternateInputs item={item} />
       </section>
       )}
     </>
@@ -342,92 +341,89 @@ export function Zoo({ api }: { api: CairnApi }) {
  * wrong verdict here is a curriculum finding, not a student's problem. */
 function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
   const item = demo.item ?? null
-  const [raw, setRaw] = useState('')
-  const [verdict, setVerdict] = useState<null | { ok: boolean; says: string }>(null)
   if (!item?.answer) return null
-  const check = (): void => {
-    if (raw.trim() === '') return
-    const spec = item.answer as unknown as Parameters<typeof gradeAnswer>[0]
-    const v = gradeAnswer(spec, params as never, raw)
-    setVerdict(
-      v.verdict === 'correct'
-        ? { ok: true, says: 'Correct — the lead sets this answer up.' }
-        : { ok: false, says: v.verdict === 'incorrect' && v.reason ? v.reason : 'Not accepted.' },
-    )
-  }
-  const key = (() => {
-    const r = renderText(String((item.answer as { value: unknown }).value), params)
-    return r
-  })()
+  const variable = typeof params['variable'] === 'string' ? params['variable'] : 'x'
+  // EVERY input style this answer could be given in, each independently
+  // gradeable. A skill fades its answer space across tiers — structured
+  // early, raw at the ceiling — so a reviewer has to be able to play the
+  // same problem through each one and confirm it grades the same.
+  const styles: Array<{ type: WidgetType; config: Record<string, unknown>; note: string }> = [
+    { type: 'term-input', config: { variable }, note: 'structured · easier tiers' },
+    { type: 'expression-input', config: { variable }, note: 'raw · the ceiling' },
+  ]
+  const key = renderText(String((item.answer as { value: unknown }).value), params)
   return (
     <div className="zoo-answer">
-      <div className="answer-row">
-        <input
-          aria-label="Answer"
-          value={raw}
-          placeholder="your answer"
-          onChange={(e) => {
-            setRaw(e.target.value)
-            setVerdict(null)
-          }}
-          onKeyDown={(e) => {
-            if (e.key === 'Enter') check()
-          }}
+      <p className="muted">
+        answer the problem above — every input style, all graded against{' '}
+        <span className="zoo-answer-key">{key}</span>
+      </p>
+      {styles.map((st) => (
+        <ZooAnswerRow
+          key={st.type}
+          style={st}
+          answer={item.answer as unknown as Parameters<typeof gradeAnswer>[0]}
+          params={params}
         />
+      ))}
+    </div>
+  )
+}
+
+/** One input style, with its own Check answer, so each can be verified. */
+function ZooAnswerRow({
+  style,
+  answer,
+  params,
+}: {
+  style: { type: WidgetType; config: Record<string, unknown>; note: string }
+  answer: Parameters<typeof gradeAnswer>[0]
+  params: Params
+}) {
+  const [widget] = useState(() => {
+    try {
+      return createWidget(style.type, style.config)
+    } catch {
+      return null
+    }
+  })
+  const [verdict, setVerdict] = useState<null | { ok: boolean; says: string }>(null)
+  if (!widget) return null
+  const check = (): void => {
+    const got = widget.extract() as { raw?: string; value?: number | null } | null
+    const raw = got?.raw ?? (got?.value != null ? String(got.value) : '')
+    if (raw.trim() === '') {
+      // an unfilled structured answer must READ as unfinished, not wrong
+      setVerdict({ ok: false, says: 'Nothing entered yet.' })
+      return
+    }
+    const v = gradeAnswer(answer, params as never, raw)
+    setVerdict(
+      v.verdict === 'correct'
+        ? { ok: true, says: `Correct — "${raw}" accepted.` }
+        : {
+            ok: false,
+            says: `"${raw}" — ${v.verdict === 'incorrect' && v.reason ? v.reason : 'not accepted'}`,
+          },
+    )
+  }
+  return (
+    <div className="zoo-answer-style">
+      <div className="zoo-alt-row">
+        <span className="mono-chip">{style.type}</span>
+        <span className="muted">{style.note}</span>
+      </div>
+      <div className="answer-row">
+        {widget.render({} as never, 'problem')}
         <button className="btn btn-primary" onClick={check}>
           Check answer
         </button>
-        <span className="muted zoo-answer-key">key: {key}</span>
       </div>
       {verdict && (
         <p className={verdict.ok ? 'zoo-verdict ok' : 'zoo-verdict bad'} role="status">
           {verdict.says}
         </p>
       )}
-    </div>
-  )
-}
-
-/** The SAME problem in every answer space it could use.
- *
- * A skill fades its input as it climbs — structured boxes at the easier
- * tiers, a raw expression at the ceiling — so a reviewer needs to compare
- * them side by side on one problem. The item card alone shows only the
- * widget that item happens to declare, which is how a newly built input
- * can look absent from the zoo entirely.
- */
-function AlternateInputs({ item }: { item: NonNullable<ZooDemo['item']> }) {
-  const params = item.params as Params
-  const variable = typeof params['variable'] === 'string' ? params['variable'] : 'x'
-  // every input this problem's answer could reasonably be given in
-  const alts = (
-    [
-      { type: 'term-input', config: { variable }, note: 'structured — easier tiers' },
-      { type: 'expression-input', config: { variable }, note: 'raw — the ceiling' },
-      { type: 'numeric-input', config: {}, note: 'raw number' },
-    ] as Array<{ type: WidgetType; config: Record<string, unknown>; note: string }>
-  ).filter((a) => a.type !== item.widget.type)
-  const [built] = useState(() =>
-    alts.map((a) => {
-      try {
-        return { ...a, w: createWidget(a.type, a.config) }
-      } catch {
-        return null
-      }
-    }),
-  )
-  const live = built.filter((b) => b !== null)
-  if (live.length === 0) return null
-  return (
-    <div className="zoo-alt-inputs">
-      <p className="muted">the same answer in the other input styles:</p>
-      {live.map((b) => (
-        <div key={b!.type} className="zoo-alt-row">
-          <span className="mono-chip">{b!.type}</span>
-          <span className="muted">{b!.note}</span>
-          <div className="answer-row">{b!.w.render({} as never, 'problem')}</div>
-        </div>
-      ))}
     </div>
   )
 }
