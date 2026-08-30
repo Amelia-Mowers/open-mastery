@@ -53,6 +53,27 @@ describe('new-build watcher', () => {
     expect(bar.querySelector('button')).not.toBeNull()
   })
 
+  it('AUTO-reloads on the widget zoo — a review surface with nothing to lose', async () => {
+    const reload = vi.fn()
+    vi.stubGlobal('location', { ...window.location, search: '?view=zoo', reload })
+    deployServes('./assets/demo-BBBB2222.js')
+    watchForNewBuild()
+    document.dispatchEvent(new Event('visibilitychange'))
+    await vi.waitFor(() => expect(reload).toHaveBeenCalled())
+    // no bar: it reloaded instead of asking
+    expect(document.querySelector('[data-new-build]')).toBeNull()
+  })
+
+  it('still only OFFERS on a student screen, where an answer may be part-typed', async () => {
+    const reload = vi.fn()
+    vi.stubGlobal('location', { ...window.location, search: '?student=kid', reload })
+    deployServes('./assets/demo-BBBB2222.js')
+    watchForNewBuild()
+    document.dispatchEvent(new Event('visibilitychange'))
+    await vi.waitFor(() => expect(document.querySelector('[data-new-build]')).not.toBeNull())
+    expect(reload).not.toHaveBeenCalled()
+  })
+
   it('does nothing when the page has no hashed bundle (dev server)', async () => {
     document.head.innerHTML = ''
     deployServes('./assets/demo-BBBB2222.js')
