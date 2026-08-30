@@ -195,6 +195,18 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       Fix shape: `check` should become an event rather than memory; the
       instance-level `promised` likewise if the exact numbers matter.
       `pending` is correctly non-durable (it 409s, which is right).
+- [ ] WRONG-PROBLEM WALKTHROUGH is only guarded for INTEGER answers.
+      [resolution_answer] skips symbolic ones (`ansR.d === 1n`), which is
+      how g6.ee.equivalent shipped a board teaching a(x + b) while its
+      worked-equation item asked a(bx + c) — the answer box rejected the
+      answer the lesson had just demonstrated. Fixed by hand; the class is
+      still unguarded. Two attempts at a check both failed and were
+      removed rather than shipped: comparing stem identifiers to board
+      identifiers flags the DOCUMENTED safe pattern (disjoint names, so
+      the item cannot feed the timeline) as an error, and comparing
+      rendered numbers misses the real case (3(x+2) vs 3(2x+5) share
+      their digits). A working check probably needs the STRUCTURE of the
+      stem vs the board's opening, not their identifiers or numerals.
 - [ ] `SiteApi` never checks `r.ok`, so an HTTP error body is cast to the
       success type — `attempt` can hand ItemCard `{error}` and render a
       NaN point delta. Same shape in DemoApi.unwrap for 409s.
