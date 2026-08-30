@@ -263,6 +263,29 @@ The hint is where the method may be stated — a hint is help the student
 CHOSE to take. The prompt is the question; the caption before it sets the
 scene; the caption after it confirms and explains.
 
+## Ask for the MOVE separately from the RESULT
+
+A both-sides step is two decisions — WHICH move, and WHAT LINE it leaves
+— so gate them separately: an `op` gate for the move ("What do you do to
+BOTH sides?"), then an `expr` gate for the line it produces.
+
+An open "write the next step" cannot tell them apart. `expr` grades by
+equivalence, so `x + 8 − 8 = 21 − 8` and `x = 13` both pass: a student
+who skipped straight to the answer looks identical to one who worked the
+move, and a miss cannot say which half broke. (Same failure mode the
+`form: expanded` / `form: evaluated` guards exist for — equivalence alone
+accepts an echo of the stem.)
+
+This also makes the whiteboard ask the way the concrete models already
+do: the balance scale takes the move as symbol + operand, and now so does
+the board.
+
+Every gate still needs a `prompt`. Without one the player falls back to a
+generic line ("Your move — write the next step"), which is both vague and
+disconnected from the caption on screen — and note that the caption
+DISPLAYED while a gate is open is the one BEFORE it, so a question
+written on the gated step itself is never the one the student reads.
+
 ## Decomposition BUILDS the diagram, then asks what it makes obvious
 
 A decomposition step is construction, not annotation. The diagram starts

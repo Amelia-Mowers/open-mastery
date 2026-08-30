@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "x: {a} → y: {a*k}    x: {c} → y: {c*k}    x: {e} → y: {e*k}" }, caption: "The proportionality test: one quotient, every row." }
-  - { t: 4, patch: { line: "{a*k} ÷ {a} = {k}    {c*k} ÷ {c} = {k}    {e*k} ÷ {e} = {k}", note: "y ÷ x, row by row" }, caption: "Divide y by x in each row.", expect: { type: expr, value: "{a*k} / {a} = {k}" } }
+  - { t: 4, patch: { line: "{a*k} ÷ {a} = {k}    {c*k} ÷ {c} = {k}    {e*k} ÷ {e} = {k}", note: "y ÷ x, row by row" }, caption: "Divide y by x in each row.", expect: { type: expr, value: "{a*k} / {a} = {k}", prompt: "Divide this row's y by its x — what do you get?" } }
   - { t: 8.5, patch: { line: "same quotient everywhere → proportional, y = {k}x", note: "one different row would break it" }, caption: "All {k}: proportional. If even one row differed, the answer would be no." }
   - { t: 11.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
