@@ -8,4 +8,4 @@ timeline:
   - { t: 4, patch: { line: "{variable} − {p} + {p} = {d} + {p}", note: "the same move on both sides" }, caption: "+ {p} on both sides — that is what undoes the − {p}. The {p}s cancel: what is {variable}?", expect: { type: op, value: "add {p}", prompt: "What do you do to BOTH sides to put the {p} back?", hint: "{p} is SUBTRACTED from {variable}. The opposite of subtracting {p} is adding {p} — on both sides." } }
   - { t: 8.5, patch: { line: "{variable} = {p+d}", note: "−{p} + {p} = 0" }, caption: "{variable} = {p+d}.", expect: { type: expr, value: "{variable} = {p+d}", prompt: "The {p}s cancel — simplify. What is {variable}?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

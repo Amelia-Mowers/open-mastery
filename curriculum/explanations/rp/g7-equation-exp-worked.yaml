@@ -7,8 +7,8 @@ timeline:
   - { t: 0, patch: { start: "x = {a} → y = {a*k}" }, caption: "One pair is enough to write the whole rule." }
   - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "constant of proportionality" }, caption: "Find k first.", expect: { type: numeric, value: "{k}", prompt: "What is k for this table?" } }
   - { t: 6.5, patch: { line: "k = {k}", note: "the constant" }, caption: "k = {k}." }
-  - { t: 8, patch: { line: "y = {k}x", note: "the rule for EVERY x" }, caption: "The equation: y = {k}x. So what does x come out to?", expect: { type: expr, value: "y = {k}x", prompt: "With k known, what is the equation linking y and x?" } }
-  - { t: 12, patch: { line: "x = {c} → y = {k} × {c}", note: "use the rule" }, caption: "Now any x you like: x = {c} gives y = {k*c}.", expect: { type: numeric, value: "{k*c}", prompt: "So what does x come out to?" } }
+  - { t: 8, patch: { line: "y = {k}x", note: "the rule for EVERY x" }, caption: "With k known, one rule covers every x. What is that equation?", expect: { type: expr, value: "y = {k}x", prompt: "With k known, what is the equation linking y and x?" } }
+  - { t: 12, patch: { line: "x = {c} → y = {k} × {c}", note: "use the rule" }, caption: "Now put x = {c} through the rule. So what does y come out to?", expect: { type: numeric, value: "{k*c}", prompt: "So what does x come out to?" } }
   - { t: 16, patch: { line: "y = {k*c}", note: "multiply" }, caption: "y = {k*c}." }
   - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

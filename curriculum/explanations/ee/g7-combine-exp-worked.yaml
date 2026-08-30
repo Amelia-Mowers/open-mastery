@@ -5,8 +5,8 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{a}{variable} + {b} − {c}{variable} + {d}" }, caption: "The letter {variable} appears TWICE — gather its terms." }
-  - { t: 4, patch: { line: "{variable}-terms: {a}{variable} − {c}{variable} = {a-c}{variable}", note: "same letter, combine" }, caption: "{a} of them minus {c} of them leaves {a-c}{variable}. What does the whole expression become?" }
-  - { t: 8.5, patch: { line: "numbers: {b} + {d} = {b+d}", note: "plain numbers together" }, caption: "The plain numbers combine separately.", expect: { type: expr, value: "{a-c}{variable} + {b+d}", prompt: "Gathered up — what does the whole expression simplify to?", hint: "{a} − {c} of the {variable}s, and {b} + {d} for the plain numbers." } }
+  - { t: 4, patch: { line: "{variable}-terms: {a}{variable} − {c}{variable} = {a-c}{variable}", note: "same letter, combine" }, caption: "{a} of them minus {c} of them leaves {a-c}{variable}. Now the plain numbers — what do they make?", expect: { type: numeric, value: "{a-c}", prompt: "{a} of the {variable}s minus {c} of them — how many {variable}s are left?", hint: "{a} − {c}." } }
+  - { t: 8.5, patch: { line: "numbers: {b} + {d} = {b+d}", note: "plain numbers together" }, caption: "The plain numbers combine separately: {b} + {d} = {b+d}. So what is the whole expression?", expect: { type: numeric, value: "{b+d}", prompt: "{b} + {d} — what do the plain numbers make?", hint: "Only the numbers with no {variable} on them." } }
   - { t: 13, patch: { line: "= {a-c}{variable} + {b+d}", note: "simplified" }, caption: "One short expression: {a-c}{variable} + {b+d}." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

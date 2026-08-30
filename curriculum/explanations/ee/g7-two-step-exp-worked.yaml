@@ -20,7 +20,7 @@ timeline:
   - { t: 8, patch: { line: "{a}{variable} = {a*ans}", note: "the {b}s cancel" }, caption: "The {b}s cancel on the left. One move left: {variable} is still multiplied by {a}.", expect: { type: numeric, value: "{a*ans}", prompt: "The {b}s cancel on the left. What does the RIGHT side come to?", hint: "{a*ans+b} − {b}." } }
   - t: 11
     patch: { line: "{a}{variable} ÷ {a} = {a*ans} ÷ {a}", note: "the same move on both sides" }
-    caption: "Now undo the multiply — the same move on both sides."
+    caption: "Now undo the multiply — the same move on both sides. So what is {variable}?"
     expect:
       type: op
       value: "divide {a}"

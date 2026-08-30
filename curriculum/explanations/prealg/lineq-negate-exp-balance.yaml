@@ -9,7 +9,7 @@ timeline:
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} on the right — balanced.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - t: 12
     patch: { eqHighlight: ["0"], highlight: left, op: multiply, by: "-1" }
-    caption: "Flip BOTH sides to their opposites — multiply both pans by −1. Balance keeps."
+    caption: "Flip BOTH sides to their opposites — multiply both pans by −1. Balance keeps. So what is {variable}?"
     expect:
       type: op
       value: "multiply -1"

@@ -10,7 +10,7 @@ timeline:
   - { t: 12, patch: { eqHighlight: ["1"], highlight: left }, caption: "{variable} had {p} TAKEN AWAY. Which move puts it back?" }
   - t: 15.5
     patch: { op: add, by: "{p}", highlight: null, eqHighlight: [] }
-    caption: "Add {p} to BOTH pans — the scale stays balanced."
+    caption: "Add {p} to BOTH pans — the scale stays balanced. So what is {variable}?"
     expect:
       type: op
       value: "add {p}"

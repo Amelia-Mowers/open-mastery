@@ -10,7 +10,7 @@ timeline:
   - { t: 12, patch: { eqHighlight: ["1"], highlight: left }, caption: "{variable} is hiding under {p} extra. Which move un-does ADDING?" }
   - t: 15.5
     patch: { op: subtract, by: "{p}", highlight: null, eqHighlight: [] }
-    caption: "Take {p} off BOTH pans — the scale stays balanced."
+    caption: "Take {p} off BOTH pans — the scale stays balanced. So what is {variable}?"
     expect:
       type: op
       value: "subtract {p}"

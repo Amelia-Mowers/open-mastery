@@ -23,7 +23,7 @@ timeline:
       hint: "{n} rows with {n} in each."
   - t: 12
     patch: { eqHighlight: ["1"], products: ["{n*n} per layer"] }
-    caption: "So the question is: the little 3 asks for {n} layers of {n*n}. That is {n}³ = {n*n*n}."
+    caption: "So the question is: the little 3 asks for {n} layers of {n*n}. That is {n}³ = {n*n*n}. So what does it equal?"
     expect:
       type: pick
       value: ["1"]

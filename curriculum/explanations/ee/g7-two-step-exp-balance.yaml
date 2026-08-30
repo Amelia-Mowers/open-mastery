@@ -39,7 +39,7 @@ timeline:
   - { t: 16, patch: { left: "{a}{variable}", right: "{a*ans}", op: null, eqHighlight: ["0"], highlight: null }, caption: "Now it reads {a}{variable} = {a*ans} — a problem you already know. What is {variable}?" }
   - t: 20
     patch: { op: divide, by: "{a}" }
-    caption: "Divide both pans by {a}."
+    caption: "Divide both pans by {a}. So what is {variable}?"
     expect:
       type: op
       value: "divide {a}"

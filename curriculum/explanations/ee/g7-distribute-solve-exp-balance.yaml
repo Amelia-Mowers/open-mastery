@@ -11,7 +11,7 @@ timeline:
   - { t: 16, patch: { left: "{variable} + {b}", right: "{ans+b}", op: null, eqHighlight: [], highlight: null }, caption: "One copy each side: {variable} + {b} = {ans+b} — a problem you already know. What move clears it?" }
   - t: 20
     patch: { op: subtract, by: "{b}" }
-    caption: "Subtract {b} from both pans."
+    caption: "Subtract {b} from both pans. So what is {variable}?"
     expect:
       type: op
       value: "subtract {b}"

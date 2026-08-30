@@ -12,7 +12,7 @@ timeline:
   - { t: 24, patch: { eqHighlight: [], highlight: null }, caption: "Now it is a one-step equation. What is {variable}?" }
   - t: 28
     patch: { op: divide, by: "{c1+c2-c3}" }
-    caption: "Divide both pans by {c1+c2-c3}."
+    caption: "Divide both pans by {c1+c2-c3}. So what is {variable}?"
     expect:
       type: op
       value: "divide {c1+c2-c3}"

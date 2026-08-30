@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { start: "{a}({variable} + {b}) = {a*(ans+b)}" }, caption: "A different opening: the whole left side is {a} copies of ONE thing. What does that let you do?" }
   - { t: 4, patch: { line: "{a}({variable} + {b}) ÷ {a} = {a*(ans+b)} ÷ {a}", note: "the same move on both sides" }, caption: "{a} copies split into {a} — one copy left on each side.", expect: { type: op, value: "divide {a}", prompt: "What do you do to BOTH sides first?", hint: "The whole left side is {a} copies of ({variable} + {b}). Dividing both sides by {a} leaves ONE copy." } }
   - { t: 8, patch: { line: "{variable} + {b} = {ans+b}", note: "one copy left" }, caption: "One copy: {variable} + {b} = {ans+b}. The {b} is still added on. What is {variable}?" }
-  - { t: 11, patch: { line: "{variable} + {b} − {b} = {ans+b} − {b}", note: "the same move on both sides" }, caption: "Now peel off the {b} — the same move on both sides.", expect: { type: op, value: "subtract {b}", prompt: "What do you do to BOTH sides now?", hint: "{b} is added to {variable}. Subtracting {b} from both sides undoes that." } }
+  - { t: 11, patch: { line: "{variable} + {b} − {b} = {ans+b} − {b}", note: "the same move on both sides" }, caption: "Now peel off the {b} — the same move on both sides. So what is {variable}?", expect: { type: op, value: "subtract {b}", prompt: "What do you do to BOTH sides now?", hint: "{b} is added to {variable}. Subtracting {b} from both sides undoes that." } }
   - { t: 15, patch: { line: "{variable} = {ans}", note: "the {b}s cancel" }, caption: "{variable} = {ans}." }
   - { t: 17.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

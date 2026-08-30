@@ -31,7 +31,7 @@ timeline:
       hint: "The value given for {variable} is the size of a single jump."
   - t: 16
     patch: { eqHighlight: [], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }, { from: "{b+c}", to: "{b+2*c}", label: "+{c}" }, { from: "{b+2*c}", to: "{a*c+b}", label: "+{c}" }], marker: "{b+c}", labelled: ["{b}", "{b+c}"] }
-    caption: "The first jump lands on {b+c}."
+    caption: "The first jump lands on {b+c}. So what is it worth?"
     expect:
       type: numeric
       value: "{b+c}"

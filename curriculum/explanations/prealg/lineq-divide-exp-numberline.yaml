@@ -15,7 +15,7 @@ timeline:
       hint: "The number written in front of {variable} counts them."
   - t: 7
     patch: { eqHighlight: ["3"], marker: "{b}", labelled: ["0", "{b}"] }
-    caption: "= {b}: the jumps must finish exactly on {b}."
+    caption: "= {b}: the jumps must finish exactly on {b}. So what is {variable}?"
     expect:
       type: pick
       value: ["3"]

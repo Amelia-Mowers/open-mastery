@@ -9,4 +9,4 @@ timeline:
   - { t: 8.5, patch: { line: "= {a*c} + {b}", note: "multiply first" }, caption: "{a} · {c} is {a*c}. One step left: add the {b}. So what is the expression worth?", expect: { type: numeric, value: "{a*c}", prompt: "Multiplication first — what is {a} · {c}?", hint: "{a} groups of {c}." } }
   - { t: 12, patch: { line: "= {a*c+b}", note: "then add" }, caption: "{variable} = {c} makes {a}{variable} + {b} worth {a*c+b}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

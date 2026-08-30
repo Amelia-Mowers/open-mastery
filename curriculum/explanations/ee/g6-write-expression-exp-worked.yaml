@@ -8,4 +8,4 @@ timeline:
   - { t: 4, patch: { line: "{a} times the number  →  {a}{variable}", note: "call the number {variable}" }, caption: "Give the unknown number a letter: {variable}. So how do you write the whole thing?", expect: { type: expr, value: "{a}{variable}", prompt: "How do you write '{a} times the number' using {variable}?" } }
   - { t: 8.5, patch: { line: "{p} more  →  {a}{variable} + {p}", note: "\"more than\" means add" }, caption: "The expression: {a}{variable} + {p}.", expect: { type: expr, value: "{a}{variable} + {p}", prompt: "So what is the WHOLE expression — {a} times the number, then {p} more?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

@@ -10,7 +10,7 @@ timeline:
   - { t: 12, patch: { eqHighlight: [], highlight: left }, caption: "{variable} is divided by {a}. Which move un-does dividing?" }
   - t: 15.5
     patch: { op: multiply, by: "{a}", highlight: null }
-    caption: "Multiply both sides by {a} — the scale stays balanced."
+    caption: "Multiply both sides by {a} — the scale stays balanced. So what is {variable}?"
     expect:
       type: op
       value: "multiply {a}"

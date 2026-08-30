@@ -419,9 +419,24 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         const isResolutionValue =
           finalLine !== undefined &&
           new RegExp(`=\\s*${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`).test(finalLine)
+        // A gate asking for a COMPONENT is fine when the caption then puts
+        // the whole question to the student and the answer box collects
+        // it — combine gates "how many xs?" and "what do the numbers
+        // make?", then asks "so what is the whole expression?". That is
+        // the design, not an unfinished lesson. [lead_ends_quiet] is what
+        // guards the case this was really catching: a last gate on a
+        // component with NOTHING asking for the whole.
+        const content2 = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        const gi2 = content2.map((st, i) => (st.expect ? i : -1)).filter((i) => i >= 0)
+        const lastGateIdx = gi2[gi2.length - 1]
+        const closingAsks =
+          lastGateIdx !== undefined && (content2[lastGateIdx]!.caption ?? '').includes('?')
         if (
           !asksForAMove &&
           !isResolutionValue &&
+          !closingAsks &&
           finalLine !== undefined &&
           /\{variable\}/.test(finalLine) &&
           !/\{variable\}/.test(key)
@@ -543,6 +558,31 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             'lead_ends_quiet',
             `${e.id}.timeline[${last - 1}]`,
             `the caption shown while the last gate is open ('${cap.slice(0, 50)}…') states rather than asks — end it on the lesson's own question`,
+          )
+      }
+      // …and the caption on the LAST GATED step is what a student reads
+      // while the ANSWER BOX is open, because the lead drops the final
+      // content step. If it only states, nothing has asked for the whole
+      // answer the box is waiting for. (Reported on combine: two easy
+      // gates, then the box, with no closing question anywhere.)
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const content = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        const gi = content.map((st, i) => (st.expect ? i : -1)).filter((i) => i >= 0)
+        const lastGate = gi[gi.length - 1]
+        if (lastGate === undefined) continue
+        // the dropped step is content.length - 1; if the last gate IS it,
+        // the student never sees that caption and the step before it is
+        // what [lead_ends_quiet] above already checks
+        if (lastGate === content.length - 1) continue
+        const cap = (content[lastGate]!.caption ?? '').trim()
+        if (cap !== '' && !cap.includes('?'))
+          push(
+            'warning',
+            'lead_ends_quiet',
+            `${e.id}.timeline[${lastGate}]`,
+            `the caption left on screen with the answer box ('${cap.slice(0, 50)}…') states rather than asks — end it on the question the box is waiting for`,
           )
       }
       // A step that CHANGES NOTHING is padding. [gate_moves_nothing] only
