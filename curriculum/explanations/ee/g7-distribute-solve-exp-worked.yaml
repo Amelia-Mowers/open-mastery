@@ -7,5 +7,6 @@ timeline:
   - { t: 0, patch: { start: "{a}({variable} + {b}) = {a*(ans+b)}" }, caption: "A different opening: divide FIRST — the whole left side is {a} copies of one thing." }
   - { t: 4, patch: { line: "{variable} + {b} = {a*(ans+b)} ÷ {a} = {ans+b}", note: "the same move on both sides" }, caption: "One copy: {variable} + {b} = {ans+b}. The {b} is still added on — what is {variable}?", expect: { type: expr, value: "{variable} + {b} = {ans+b}", prompt: "Divide the whole equation by {a} — what line does that leave?" } }
   - { t: 8.5, patch: { line: "{variable} = {ans+b} − {b} = {ans}", note: "the same move on both sides" }, caption: "{variable} = {ans}.", expect: { type: expr, value: "{variable} = {ans}", prompt: "The {b} is still added on — clear it. What is {variable}?" } }
-  - { t: 11, handoff: { prompt: "Now you try." } }
+  - { t: 11.5, patch: {}, caption: "{variable} = {ans}." }
+  - { t: 14, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

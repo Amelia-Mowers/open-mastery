@@ -8,5 +8,6 @@ timeline:
   - { t: 4.5, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "Feed it 1: {a}·1 + {b} = {a+b}." }
   - { t: 9, patch: { reveal: "2", highlight: "2" }, caption: "Feed it 2: {a}·2 + {b} = {2*a+b}.", expect: { type: numeric, value: "{2*a+b}", prompt: "What goes in the next row?" } }
   - { t: 13.5, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Feed it {c}: {a}·{c} + {b} = {a*c+b}.", expect: { type: numeric, value: "{a*c+b}", prompt: "What goes in the next row?" } }
+  - { t: 16.5, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Feed it {c}: {a}·{c} + {b} = {a*c+b}." }
   - { t: 16.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

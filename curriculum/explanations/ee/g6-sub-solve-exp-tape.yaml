@@ -5,6 +5,7 @@ widget: tape-diagram
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{p}", "{d}"], total: "{variable}", cellsIn: 0, totalIn: false }, caption: "An empty bar. Here {variable} is the WHOLE thing — watch the pieces arrive." }
+  - { t: 3, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{p}", "{d}"], total: "{variable}", cellsIn: 0, totalIn: false }, caption: "An empty bar. Here {variable} is the WHOLE thing — watch the pieces arrive." }
   - t: 4
     patch: { eqHighlight: ["1"], cellsIn: 1, highlight: ["1"] }
     caption: "{p} was taken away — that is one piece of the bar."
@@ -49,5 +50,6 @@ timeline:
       value: "{p+d}"
       prompt: "Look at the bar: {p} in one section, {d} in the other. How long is the whole bar?"
       hint: "Put the two pieces back together."
+  - { t: 23, patch: {}, caption: "{p} + {d} = {p+d}. The whole bar — {variable} — is {p+d}." }
   - { t: 24, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

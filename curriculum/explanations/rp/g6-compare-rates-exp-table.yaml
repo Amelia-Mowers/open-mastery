@@ -9,5 +9,6 @@ timeline:
   - { t: 8, patch: { reveal: "2", highlight: "2" }, caption: "Divide by {a1}: one pencil is ${u}.", expect: { type: numeric, value: "{u}", prompt: "Divide ${u*a1} by {a1} — what does ONE pencil cost?" } }
   - { t: 12, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Pack B: {a2} pencils, ${(u+d)*a2}.", expect: { type: pick, value: ["2"], prompt: "Which offer are we stepping down to one pencil now?" } }
   - { t: 16, patch: { eqHighlight: [], reveal: "4", highlight: "4" }, caption: "Divide by {a2}: one pencil is ${u+d}. ${u} beats ${u+d} — A is the better buy.", expect: { type: numeric, value: "{u+d}", prompt: "Divide ${(u+d)*a2} by {a2} — one Pack-B pencil costs?" } }
+  - { t: 19, patch: { eqHighlight: [], reveal: "4", highlight: "4" }, caption: "Divide by {a2}: one pencil is ${u+d}. ${u} beats ${u+d} — A is the better buy." }
   - { t: 19.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

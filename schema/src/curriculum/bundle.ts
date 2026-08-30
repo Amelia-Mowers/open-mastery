@@ -385,6 +385,27 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             'the faded lead ends on a statement — gate its last surviving step so the student is left with the question, not a finished picture',
           )
       }
+      // …and it must END ON THE ANSWER. The last content step states the
+      // resolution, as a step of its own AFTER the last gate. A timeline
+      // whose final content step is itself a gate has no resolution to
+      // drop, so the lead leaves the student on "3x = 12. One move left."
+      // and autoplay simply stops short of the answer. Invisible to every
+      // other check — [lead_ends_quiet] is SATISFIED by such a timeline,
+      // because the last surviving step is a gate precisely because the
+      // resolution is missing.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const content = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        const last = content[content.length - 1]
+        if (content.length > 1 && last?.expect !== undefined)
+          push(
+            'warning',
+            'no_resolution',
+            e.id,
+            'the timeline ends on a gate — add a final step STATING the answer, so the lead has a resolution to drop and autoplay finishes the problem',
+          )
+      }
       // EVERY timeline must be workable: the faded/stepwise lead drops the
       // final content step (the resolution), so a timeline whose only gates
       // sit there plays as a passive movie. Count the gates that SURVIVE.

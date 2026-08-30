@@ -8,5 +8,6 @@ timeline:
   - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "{variable} = 1: {a}(1 + {b}) = {a*(1+b)} — and {a}·1 + {a*b} = {a*(1+b)} too." }
   - { t: 8.5, patch: { reveal: "2", highlight: "2" }, caption: "{variable} = 2: both forms give {a*(2+b)}.", expect: { type: numeric, value: "{a*(2+b)}", prompt: "What goes in the next row?" } }
   - { t: 13, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Every input agrees — {a}({variable} + {b}) and {a}{variable} + {a*b} are the same expression in two outfits.", expect: { type: numeric, value: "{a*(3+b)}", prompt: "What goes in the next row?" } }
+  - { t: 16, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Every input agrees — {a}({variable} + {b}) and {a}{variable} + {a*b} are the same expression in two outfits." }
   - { t: 16, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

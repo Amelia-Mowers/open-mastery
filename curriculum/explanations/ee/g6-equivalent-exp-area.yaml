@@ -8,5 +8,6 @@ timeline:
   - { t: 4, patch: { eqHighlight: ["0"], height: "{a}" }, caption: "The number out front is the HEIGHT — the rectangle grows to {a} rows.", expect: { type: numeric, value: "{a}", prompt: "How tall should the rectangle be?" } }
   - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1", "2"] }, caption: "The width splits into {variable} and {b}.", expect: { type: pick, value: ["1"], prompt: "Which piece — or pieces — of the expression make the WIDTH of the rectangle?" } }
   - { t: 12, patch: { eqHighlight: [], products: ["{a}{variable}", "{a*b}"], highlight: [] }, caption: "Two pieces of area: {a}({variable} + {b}) = {a}{variable} + {a*b}.", expect: { type: numeric, value: "{a*b}", prompt: "The plain-number piece of area: {a} rows of {b} — how much?" } }
+  - { t: 15, patch: { eqHighlight: [], products: ["{a}{variable}", "{a*b}"], highlight: [] }, caption: "Two pieces of area: {a}({variable} + {b}) = {a}{variable} + {a*b}." }
   - { t: 15, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

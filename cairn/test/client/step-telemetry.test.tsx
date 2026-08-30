@@ -56,7 +56,14 @@ describe('stepwise telemetry', () => {
     await waitFor(
       async () => {
         for (let i = 0; i < 60; i++) {
-          if (screen.queryByTestId('stepwise-gate')) return
+          // the gate container is also rendered EMPTY between steps to
+          // reserve its height — wait for a gate that can actually be
+          // answered, not merely for the box
+          if (
+            screen.queryByTestId('stepwise-check') !== null ||
+            screen.queryByTestId('stepwise-showme') !== null
+          )
+            return
           const handoff =
             screen.queryByRole('button', { name: 'Now you try.' }) ??
             screen.queryByRole('button', { name: 'Start the lesson' })
@@ -80,16 +87,19 @@ describe('stepwise telemetry', () => {
       },
       { timeout: 20000 },
     )
-    // a pick gate needs a (wrong) chip; a text gate needs a (wrong) value
+    // Get the gate WRONG, whatever kind it is. "Show me" is always
+    // present and always logs a step_attempt (revealed), so it is the
+    // gate-type-independent way to make a move happen — the assertions
+    // below are about the EVENT, not about which input was used.
     const gateEl = screen.getByTestId('stepwise-gate')
     const input = gateEl.querySelector<HTMLInputElement>('input')
-    if (input) {
+    const check = screen.queryByTestId('stepwise-check')
+    if (input && check) {
       await user.type(input, '99999')
+      fireEvent.click(check)
     } else {
-      const chips = gateEl.querySelectorAll<HTMLButtonElement>('button:not([data-testid])')
-      if (chips.length > 0) fireEvent.click(chips[chips.length - 1]!)
+      fireEvent.click(screen.getByTestId('stepwise-showme'))
     }
-    fireEvent.click(screen.getByTestId('stepwise-check'))
 
     await waitFor(() =>
       expect(events().some((e) => e['kind'] === 'step_attempt')).toBe(true),
