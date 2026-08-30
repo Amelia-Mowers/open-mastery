@@ -439,6 +439,26 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             )
         }
       }
+      // A value-shaped PROMPT with an equation-shaped KEY marks correct
+      // arithmetic wrong: asked "what does the right side come to?", a
+      // student types 54 and expr rejects it for not being "6y = 54".
+      for (const e of explBySkill.get(s.id) ?? []) {
+        for (const [i, st] of e.timeline.entries()) {
+          const ex = st.expect
+          if (ex?.type !== 'expr' || typeof ex.value !== 'string') continue
+          if (!ex.value.includes('=')) continue
+          const prompt = ex.prompt ?? ''
+          // "what is x?" / "what equation…" legitimately want a line
+          if (/\bline\b|\bequation\b|what is \{?[a-z]\}?\??$/i.test(prompt)) continue
+          if (/\bcome(s)? to\b|\bwork(s)? out to\b|\bwhat do you get\b|\bhow many\b/i.test(prompt))
+            push(
+              'warning',
+              'gate_wants_transcription',
+              `${e.id}.timeline[${i}]`,
+              `the prompt asks for a value but the key is the equation '${ex.value}' — a correct number is rejected; use numeric on the part that changed`,
+            )
+        }
+      }
       // EVERY timeline must be workable: the faded/stepwise lead drops the
       // final content step (the resolution), so a timeline whose only gates
       // sit there plays as a passive movie. Count the gates that SURVIVE.

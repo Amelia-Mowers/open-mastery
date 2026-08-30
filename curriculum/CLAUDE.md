@@ -294,6 +294,25 @@ disconnected from the caption on screen — and note that the caption
 DISPLAYED while a gate is open is the one BEFORE it, so a question
 written on the gated step itself is never the one the student reads.
 
+## Ask for the VALUE, not a transcription of the whole line
+
+A gate keyed to a whole equation makes the student retype the parts that
+did not change. Asked "the 17s cancel — what line does that leave?", a
+student who typed `54` — the correct arithmetic, the actual thinking —
+was marked wrong for not writing `6y = 54`. That is assessing
+transcription.
+
+Prefer `numeric` on the thing that changed: "The 17s cancel on the left.
+What does the RIGHT side come to?" One step, one cognitive demand — load
+spent copying an untouched left side is load not spent on the maths.
+
+A whole-equation `expr` key is right only when the equation IS the
+answer: "what is {variable}?" wants `x = 4`, and "what is the equation
+linking y and x?" wants `y = 3x`. The test is whether the prompt asks for
+a LINE or for a VALUE — and it must agree with the key's type, because
+`expr` compares full expressions and will reject the bare number a
+value-shaped prompt invites.
+
 ## WHEN IN DOUBT, GATE THE OPERATION
 
 If a step performs arithmetic, the student should be the one performing
