@@ -11,19 +11,17 @@ What every Cairn widget must satisfy. The §4.4 contract is one interface —
   evaluated per instance). A setup function in `LessonPlayer.tsx` guards
   ranges and falls back to caption-only — never render broken or
   overflowing.
-- **problem** (and **faded**): the interactive answer space. `extract()`
-  returns `{ raw }` and/or `{ value }` that ItemCard can submit. If the
-  input role is not yet built, `WIDGET_ROLES.input` is `false` AND the
-  planned input semantic is documented in `CLAUDE.md` — display-only is a
-  stage, not a category, and **every audit must list planned-input
-  widgets as OPEN DEBT, never as conformant**. (Paid 2026-08-27:
-  balance/hanger = **op entry** — the student constructs the move (symbol
-  + operand via the shared `OpEntry`), mirrored live under BOTH sides;
-  worked = write the next line free-form; envelope = distribute the
-  counters; area = fill the missing product. Inputs are never
+- **problem** (and **faded**): the interactive answer space — for widgets
+  that ARE inputs. Display-only is a CATEGORY, not a stage: an input is
+  not owed to a representation. The trinity assumed every widget should
+  also collect an answer; across 62 authored items not one does, because
+  the answer FORMAT is orthogonal to the picture. A display-only widget
+  is conformant, carries no debt, and needs no "planned input semantic".
+  Where a widget genuinely IS the answer space, it may still be both.
+  Purpose-built inputs are tied to a problem SHAPE, not a representation
+  (`term-input`'s `[ ]x [±] [ ]`), and `extract()` returns `{ raw }`
+  and/or `{ value }` that ItemCard can submit. Inputs are never
   multiple-choice in costume: options rows are reserved for the `choice`
-  widget where the answer is genuinely categorical. Remaining debt:
-  cube-model needs a counting interaction designed.)
 - **review**: inert — `disabled` + `aria-disabled`, no pointer or keyboard
   mutation, single tab stop removed (`tabIndex -1`).
 

@@ -16,20 +16,24 @@
   Existing viz widgets: balance-scale, envelope-model, tape-diagram,
   hanger-diagram, area-model; lesson timelines drive them via patches
   (see `src/client/app/LessonPlayer.tsx` setup functions).
-- **The widget trinity (§4.4): one widget = display + input + lesson.**
-  The single contract (render(params, mode), extract(), applyPatch())
-  covers all three roles: 'lesson' mode is patch-driven animation,
-  'problem' mode is the interactive answer space (extract() returns the
-  answer), 'review' is disabled display. WIDGET_ROLES in the registry is
-  the live matrix; the zoo shows both roles. When a representation IS the
-  answer space, the same widget teaches AND asks (opposite-flip does
-  both for negate). Planned input semantics for the display-only widgets:
-  balance-scale/hanger = op ENTRY (construct the move: symbol + operand
-  via shared OpEntry, mirrored under both sides; graded by the 'op'
-  answer type); tape-diagram = fill a part; envelope-model = distribute
-  counters; area-model = fill the products; worked-equation = write the
-  next line. Inputs are constructed responses — never multiple choice
-  unless the answer is genuinely categorical (choice widget).
+- **THE TRINITY IS RETIRED (2026-08-30). An input is not owed to a
+  representation.** The old rule was "one widget = display + input +
+  lesson". It did not pan out: across 62 authored items, NOT ONE answers
+  by manipulating a representation. The reason is structural — the answer
+  FORMAT is orthogonal to the picture. A tape diagram is a fine way to
+  show x + 8 = 21; that says nothing about whether the answer should be
+  typed, picked, or built from boxes, and bundling them made one decision
+  carry two unrelated concerns.
+  What remains is the CONTRACT, which works: render(params, mode) +
+  applyPatch() drive every lesson animation, and 'review' mode is
+  disabled display. WIDGET_ROLES is now an honest matrix — viz widgets
+  are `input: false`, and the "planned input semantics" backlog is gone
+  rather than carried indefinitely.
+  A widget may still be both where that genuinely fits, and a
+  purpose-built input tied to a problem SHAPE is encouraged — term-input's
+  `[ ]x [±] [ ]` is one, and it belongs to no representation. Inputs are
+  constructed responses — never multiple choice unless the answer is
+  genuinely categorical (choice widget).
 - **STEPWISE PROBLEMS (the unified-widget direction)**: timeline steps
   may carry `expect` ({type: op|expr|numeric|pick, value, prompt?,
   hint?}) — in stepwise play (`StepwisePlayer`) the timeline PAUSES

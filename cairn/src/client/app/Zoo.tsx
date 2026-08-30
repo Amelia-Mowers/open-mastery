@@ -15,7 +15,9 @@ import { diagnose, gradeAnswer } from '../../core/graders'
 function roleBadge(widget: string): string {
   const r = WIDGET_ROLES[widget as WidgetType]
   if (!r) return ''
-  return r.input ? 'roles: lesson · input' : 'roles: lesson (input planned)'
+  // no "(input planned)": an input is not owed to a representation, and
+  // pretending one is coming was carrying a retired assumption
+  return r.input ? 'roles: lesson · input' : 'roles: lesson'
 }
 
 function DemoCard({ demo }: { demo: ZooDemo }) {

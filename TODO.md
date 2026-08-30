@@ -143,8 +143,10 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       write-expression, combine, simplify-first (its number-line rep was
       removed as a wrong picture) and future factoring. Also clears the
       last 2 representation_count warnings.
-- [ ] cube-model counting input — the ONE remaining planned-input debt
-      (GOLDEN §1: audits must list it as debt, never as conformance).
+- [x] ~~cube-model counting input~~ — dropped 2026-08-30 with the trinity.
+      An input is not owed to a representation: display-only is a category,
+      not debt. Build an input when a PROBLEM needs one, not to complete a
+      widget's role matrix.
 - [ ] First-run report 3 (29 Aug), still open. DONE: the K–8 overclaim
       (copy now "grades 6–7 today, 3–12 in progress") and the missing
       placement (grade picker on sign-in, 3–12 with unbuilt grades
