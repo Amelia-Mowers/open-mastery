@@ -1,0 +1,21 @@
+id: g7.ee.combine.003
+skills: [g7.ee.combine]
+difficulty: 2
+representation: worked-equation
+params: { a: 8, b: 6, c: 3, d: 5, variable: p }
+generator: { a: { int: [6, 12] }, b: { int: [1, 9] }, c: { int: [2, 5] }, d: { int: [1, 9] } }
+widget: { type: expression-input, config: { stem: "Simplify: {b} + {a}{variable} − {c}{variable} + {d}." } }
+answer: { type: expr, value: "{a-c}{variable} + {b+d}", equivalence: symbolic, form: combined }
+misconceptions:
+  - id: added-the-variable-terms
+    when: "{a+c}{variable} + {b+d}"
+    says: "The −{c}{variable} is taken away, so the {variable}-terms give {a} − {c} = {a-c}, not {a} + {c}."
+  - id: combined-unlike-terms
+    when: "{a-c+b+d}"
+    says: "{variable}-terms and plain numbers can't merge — {variable} is an unknown amount. Combine each kind separately."
+hints:
+  - "Gather the {variable}-terms and the plain numbers separately."
+  - "{a}{variable} − {c}{variable} = {a-c}{variable}, and {b} + {d} = {b+d}."
+source: { book: ccss-ee-progression, section: "7.EE.A.1" }
+verify: "({a} - {c})*{variable} + {b} + {d}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

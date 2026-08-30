@@ -778,6 +778,10 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         it.skills.includes(s.id) &&
         it.generator != null &&
         it.widget.type !== 'choice' &&
+        // structured inputs (term-input) hand over the answer's form —
+        // practice scaffolding, never check evidence (mirrors
+        // isCheckEligible in cairn)
+        it.widget.type !== 'term-input' &&
         it.answer.type !== 'choice' &&
         it.rubric == null &&
         it.faded == null,
@@ -787,7 +791,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         gate,
         'check_items',
         s.id,
-        `needs ≥2 generator-backed, non-choice, non-rubric items eligible as check items (has ${checkEligible.length})`,
+        `needs ≥2 generator-backed, non-choice, non-rubric, non-structured items eligible as check items (has ${checkEligible.length})`,
       )
     // FORM-MISMATCH guard (fail loudly): an item's declared representation
     // names the explanation its walkthrough prefers. If that explanation

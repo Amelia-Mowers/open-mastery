@@ -61,6 +61,10 @@ export function buildIndex(bundle: Bundle): CurriculumIndex {
 export const isCheckEligible = (it: Item): boolean =>
   it.generator != null &&
   it.widget.type !== 'choice' &&
+  // a STRUCTURED input hands over the form of the answer ([ ]x [±] [ ] says
+  // "two terms, sign between") — legitimate scaffolding for practice,
+  // weak evidence at the gate. Checks are capstones: raw only.
+  it.widget.type !== 'term-input' &&
   it.answer.type !== 'choice' &&
   it.rubric == null &&
   it.faded == null
