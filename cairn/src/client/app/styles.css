@@ -241,6 +241,20 @@ body {
 .smooth-inner { transition: opacity 0.18s ease; display: flow-root; }
 .smooth-inner.dim { opacity: 0.55; pointer-events: none; }
 
+/* ---- new build available ---- */
+.new-build-bar {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+  z-index: 60; display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; border-radius: 12px;
+  background: #2e2822; color: #fffdf9;
+  box-shadow: 0 6px 20px rgba(46, 40, 34, 0.28);
+  font: 600 14px 'Nunito Sans', sans-serif;
+}
+.new-build-bar .btn { padding: 6px 12px; font-size: 13px; }
+@media (max-width: 480px) {
+  .new-build-bar { left: 12px; right: 12px; transform: none; justify-content: space-between; }
+}
+
 /* ---- guide: live event log ---- */
 .event-stream {
   max-height: 340px; overflow-y: auto; overflow-x: auto;
