@@ -567,6 +567,43 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             )
         })
       }
+      // Consecutive steps with the SAME caption read as a repeat even when
+      // the board moves, and the earlier one usually states the answer to
+      // its own gate. Both instances came from splitting a condensed line
+      // and carrying the caption across.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const content = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        for (let i = 1; i < content.length; i++) {
+          const a = (content[i - 1]!.caption ?? '').trim()
+          const b = (content[i]!.caption ?? '').trim()
+          if (a !== '' && a === b)
+            push(
+              'warning',
+              'caption_repeats',
+              `${e.id}.timeline[${i}]`,
+              `this step repeats the previous caption ('${a.slice(0, 45)}…') — say what THIS step changed`,
+            )
+        }
+      }
+      // Two gates keyed to the SAME value ask the student the same thing
+      // twice — they answer, the board moves, and the identical question
+      // comes back in different words.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const gated = e.timeline.filter((st) => st.expect !== undefined)
+        for (let i = 1; i < gated.length; i++) {
+          const a = JSON.stringify(gated[i - 1]!.expect?.value)
+          const b = JSON.stringify(gated[i]!.expect?.value)
+          if (a === b)
+            push(
+              'warning',
+              'gate_repeats',
+              `${e.id}`,
+              `two gates in a row both ask for ${a} — the second repeats the first in different words`,
+            )
+        }
+      }
       // EVERY timeline must be workable: the faded/stepwise lead drops the
       // final content step (the resolution), so a timeline whose only gates
       // sit there plays as a passive movie. Count the gates that SURVIVE.
