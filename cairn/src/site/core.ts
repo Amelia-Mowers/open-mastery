@@ -12,7 +12,7 @@
  * server-side.
  */
 import { parseTemplate, templateIdentifiers, type Bundle, type Explanation } from '@openmastery/schema'
-import { DAY_MS } from '../core/fsrs'
+import { DAY_MS } from '../core/fsrs.ts'
 import {
   applyEvent,
   bktUpdate,
@@ -382,9 +382,6 @@ export class SiteCore {
     const e = this.cur.explanations.get(id)
     if (!e) return err(404, `unknown explanation '${id}'`)
     const skill = this.cur.skills.get(e.skill)
-    const repMatches = practiceItems(e.skill, this.cur).filter(
-      (it) => it.representation === e.representation,
-    )
     // NO SILENT FALLBACK. A skill may hold several FORMS with disjoint
     // identifiers, so not every item can feed every timeline — but
     // rendering with params that do not fit produces raw "{a*b}" on the
@@ -392,24 +389,31 @@ export class SiteCore {
     // Refuse instead: an explanation with no item able to feed it is a
     // curriculum fault, and the reviewer should see that, not a
     // half-rendered lesson.
-    const params = feedableParams(e, [
-      ...repMatches.map((it) => it.params),
-      ...practiceItems(e.skill, this.cur).map((it) => it.params),
-    ])
-    if (params === null)
+    const feedable = practiceItems(e.skill, this.cur).filter(
+      (it) => feedableParams(e, [it.params]) !== null,
+    )
+    if (feedable.length === 0)
       return err(
         422,
         `no item of '${e.skill}' can feed '${id}' — every item is a different form (disjoint identifiers), so this timeline has no numbers to render with`,
       )
-    // prefer the item whose ANSWER SPACE is this very widget (shows the
-    // widget's own input role), else any item framed in this representation
-    const repItem = repMatches.find((it) => it.widget.type === e.widget) ?? repMatches[0]
+    // The answer space is ORTHOGONAL to the representation (the trinity is
+    // retired): a real scaffolded lead can replay this lesson over an item
+    // declared in another representation, so the zoo's end-to-end preview
+    // must be able to pair them too. What the item MUST be is feedable —
+    // the lead plays with the very params the box grades, so the lesson
+    // and the answer are one problem by construction. Representation match
+    // is only a tiebreak (it shows the item's own answer widget).
+    const repFeedable = feedable.filter((it) => it.representation === e.representation)
+    const repItem =
+      repFeedable.find((it) => it.widget.type === e.widget) ?? repFeedable[0] ?? feedable[0]!
+    const params = feedableParams(e, [repItem.params])!
     const item = repItem
       ? {
           id: repItem.id,
           params: repItem.params,
           widget: repItem.widget,
-          fadedParams: feedableParams(e, [repItem.params]) ?? params,
+          fadedParams: params,
           // The zoo grades its own answer box so a reviewer can play a
           // timeline end to end — lead, handoff, then the answer. This is
           // the ONE place the key is served, and only here: the student
