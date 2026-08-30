@@ -9,4 +9,4 @@ timeline:
   - { t: 9, patch: { line: "{variable} = {q}/{p} · {b}", note: "reciprocals multiply to 1" }, caption: "A fraction times its reciprocal is 1 — the left side collapses to just {variable}. So what is {variable}?" }
   - { t: 13, patch: { line: "{variable} = {q*b/p}" }, caption: "{variable} = {q*b/p}. One move: multiply by the reciprocal." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
