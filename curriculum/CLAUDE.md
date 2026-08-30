@@ -294,6 +294,27 @@ disconnected from the caption on screen — and note that the caption
 DISPLAYED while a gate is open is the one BEFORE it, so a question
 written on the gated step itself is never the one the student reads.
 
+## WHEN IN DOUBT, GATE THE OPERATION
+
+If a step performs arithmetic, the student should be the one performing
+it. A board that writes `3x + 5 − 5 = 17 − 5` and then produces `3x = 12`
+on its own has done the subtraction for them — the very subtraction the
+lesson is about. Gate it: "The 5s cancel — what line does that leave?"
+
+The default is to gate. Leave a step ungated only when it genuinely
+carries no work: pure scene-setting, a label, a restatement. Anything
+where a value CHANGES is a move, and a move is a question.
+
+THE ONE EXCEPTION IS THE FINAL LINE. The last content step states the
+answer, and the answer box below the lead already collects it — gating it
+asks the same question twice, and the lead drops that step anyway. Gate
+the intermediate simplifications; leave the resolution plain.
+
+This is why a five-line board is a five-gate timeline and not a
+three-gate one. Gate fatigue is a real cost — see the tuning note in
+TODO.md — but silently doing the student's arithmetic is the worse
+failure: it looks like teaching and produces nothing.
+
 ## Whiteboards show EVERY step — never condensed to save lines
 
 One patch, one line, one move. A board that solves an equation writes the

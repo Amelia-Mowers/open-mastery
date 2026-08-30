@@ -17,7 +17,7 @@ timeline:
         - id: "divided-before-clearing"
           when: "divide {a}"
           says: "Dividing first splits the {b} too. Take the {b} off both sides FIRST, then divide — undo in reverse order."
-  - { t: 8, patch: { line: "{a}{variable} = {a*ans}", note: "the {b}s cancel" }, caption: "One move left: {variable} is still multiplied by {a}." }
+  - { t: 8, patch: { line: "{a}{variable} = {a*ans}", note: "the {b}s cancel" }, caption: "The {b}s cancel on the left. One move left: {variable} is still multiplied by {a}.", expect: { type: expr, value: "{a}{variable} = {a*ans}", prompt: "The {b}s cancel — what line does that leave?", hint: "On the left the {b}s make 0; on the right, {a*ans+b} − {b}." } }
   - t: 11
     patch: { line: "{a}{variable} ÷ {a} = {a*ans} ÷ {a}", note: "the same move on both sides" }
     caption: "Now undo the multiply — the same move on both sides."
