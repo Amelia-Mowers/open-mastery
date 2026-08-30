@@ -18,13 +18,13 @@ timeline:
           when: "divide {a}"
           says: "Dividing first splits the {b} too. Take the {b} off both sides FIRST, then divide — undo in reverse order."
   - t: 8.5
-    patch: { line: "{variable} = {a*ans} ÷ {a} = {ans}", note: "the same move on both sides" }
+    patch: { line: "{variable} = {a*ans} ÷ {a}", note: "the same move on both sides" }
     caption: "{a}{variable} = {a*ans}. One move left: what is {variable}?"
     expect:
       type: expr
       value: "{variable} = {ans}"
       prompt: "{variable} is still multiplied by {a}. Simplify — what is {variable}?"
       hint: "{a*ans} ÷ {a} — how many is that?"
-  - { t: 12, patch: {}, caption: "{variable} = {ans}." }
+  - { t: 12, patch: { line: "{variable} = {ans}", note: "both moves done" }, caption: "{variable} = {ans}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
