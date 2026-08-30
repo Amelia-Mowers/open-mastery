@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "x: {a} → y: {a*k}" }, caption: "Proportional means y is always the same multiple of x." }
-  - { t: 4, patch: { line: "k = y ÷ x = {a*k} ÷ {a}", note: "same for every row" }, caption: "Divide y by x to expose the multiple. So what is k?", expect: { type: expr, value: "k = {a*k} / {a}", prompt: "k is y ÷ x. What is it for this row?" } }
+  - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "y ÷ x, this row's numbers" }, caption: "Divide y by x to expose the multiple. So what is k?", expect: { type: expr, value: "k = {a*k} / {a}", prompt: "k is y ÷ x. What is it for this row?" } }
   - { t: 8.5, patch: { line: "k = {k}", note: "the constant of proportionality" }, caption: "k = {k} — every x is multiplied by {k}.", expect: { type: expr, value: "k = {k}", prompt: "So what is k?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

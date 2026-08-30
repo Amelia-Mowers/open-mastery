@@ -410,6 +410,35 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             `the last gate resolves to '${key}' — a working line, not the answer; the lesson stops one move short of solving the problem`,
           )
       }
+      // A whiteboard must not CONDENSE: "3x = 17 − 5 = 12" chains two
+      // assertions onto one line, which is the running-equals-sign habit
+      // teachers spend years undoing, and it hides the move the student
+      // is meant to copy. A named quantity being evaluated
+      // ("discount = 15% of 80 = 12") is fine — the fault is two
+      // different EQUATIONS sharing a line, which is what an equals sign
+      // on BOTH sides of an arithmetic operator looks like.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        if (e.widget !== 'worked-equation') continue
+        for (const [i, st] of e.timeline.entries()) {
+          const line = typeof st.patch?.['line'] === 'string' ? st.patch['line'] : ''
+          // several equations laid out side by side on one line (a row of
+          // worked examples) is not a chain — split on the run of spaces
+          // that separates them and check each independently
+          if (/\s{3,}/.test(line)) continue
+          const parts = line.split('=')
+          if (parts.length < 3) continue
+          // chained: a middle segment carries arithmetic, i.e. the line
+          // asserts A = <working> = <result>
+          const middle = parts.slice(1, -1).join('=')
+          if (/[+\-−*/×÷]/.test(middle.replace(/\{[^}]*\}/g, '')))
+            push(
+              'warning',
+              'board_condensed',
+              `${e.id}.timeline[${i}]`,
+              `the board line '${line}' chains two equations — write the move and the line it leaves as SEPARATE steps`,
+            )
+        }
+      }
       // EVERY timeline must be workable: the faded/stepwise lead drops the
       // final content step (the resolution), so a timeline whose only gates
       // sit there plays as a passive movie. Count the gates that SURVIVE.

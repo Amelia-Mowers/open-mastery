@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}" }, caption: "TWO things are done to {variable} here: multiplied by {a}, then {b} added. Which one do you undo first?" }
   - t: 4
-    patch: { line: "{a}{variable} = {a*ans+b} − {b} = {a*ans}", note: "the same move on both sides" }
+    patch: { line: "{a}{variable} + {b} − {b} = {a*ans+b} − {b}", note: "the same move on both sides" }
     caption: "The add came LAST, so it comes off FIRST — undo in reverse order."
     expect:
       type: op
@@ -17,14 +17,15 @@ timeline:
         - id: "divided-before-clearing"
           when: "divide {a}"
           says: "Dividing first splits the {b} too. Take the {b} off both sides FIRST, then divide — undo in reverse order."
-  - t: 8.5
-    patch: { line: "{variable} = {a*ans} ÷ {a}", note: "the same move on both sides" }
-    caption: "{a}{variable} = {a*ans}. One move left: what is {variable}?"
+  - { t: 8, patch: { line: "{a}{variable} = {a*ans}", note: "the {b}s cancel" }, caption: "One move left: {variable} is still multiplied by {a}." }
+  - t: 11
+    patch: { line: "{a}{variable} ÷ {a} = {a*ans} ÷ {a}", note: "the same move on both sides" }
+    caption: "Now undo the multiply — the same move on both sides."
     expect:
-      type: expr
-      value: "{variable} = {ans}"
-      prompt: "{variable} is still multiplied by {a}. Simplify — what is {variable}?"
-      hint: "{a*ans} ÷ {a} — how many is that?"
-  - { t: 12, patch: { line: "{variable} = {ans}", note: "both moves done" }, caption: "{variable} = {ans}." }
-  - { t: 14.5, handoff: { prompt: "Now you try." } }
+      type: op
+      value: "divide {a}"
+      prompt: "What do you do to BOTH sides now?"
+      hint: "{variable} is multiplied by {a}. Dividing both sides by {a} undoes that."
+  - { t: 15, patch: { line: "{variable} = {ans}", note: "the {a}s cancel" }, caption: "{variable} = {ans}." }
+  - { t: 17.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

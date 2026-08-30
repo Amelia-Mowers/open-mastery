@@ -294,6 +294,31 @@ disconnected from the caption on screen — and note that the caption
 DISPLAYED while a gate is open is the one BEFORE it, so a question
 written on the gated step itself is never the one the student reads.
 
+## Whiteboards show EVERY step — never condensed to save lines
+
+One patch, one line, one move. A board that solves an equation writes the
+operation on both sides AND the line it produces, for every step:
+
+    3x + 5 = 17
+    3x + 5 − 5 = 17 − 5      ← the move
+    3x = 12                  ← what it leaves
+    3x ÷ 3 = 12 ÷ 3          ← the move
+    x = 4                    ← what it leaves
+
+Not `3x = 17 − 5 = 12`. Chaining two assertions onto one line is the
+running-equals-sign habit teachers spend years undoing — modelling it on
+the board teaches it — and it hides the move the student is meant to
+copy. Condensing to fit fewer lines is never a reason; the board is the
+one place where showing all the working IS the content.
+
+A named quantity being evaluated is NOT a chain: `discount = 15% of 80 =
+12` and `k = y ÷ x = 6 ÷ 2` state one thing and compute it. The fault is
+two different EQUATIONS sharing a line.
+
+This costs steps, and that is correct — a two-step equation is a
+five-line board, so it is a five-step timeline. Gate the moves; leave the
+result lines plain.
+
 ## The last gate resolves to the ANSWER, not a working line
 
 A timeline ENDING on a gate is correct — the lead drops the final content
