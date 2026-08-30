@@ -9,4 +9,4 @@ timeline:
   - { t: 9, patch: { line: "{c1+c2-c3}{variable} = {(c1+c2-c3)*ans}", note: "combine the numbers" }, caption: "Tidy: {c1+c2-c3}{variable} = {(c1+c2-c3)*ans} — a one-step equation. So what is {variable}?", expect: { type: numeric, value: "{(c1+c2-c3)*ans}", prompt: "{d1} + {(c1+c2-c3)*ans - d1} — what does the right side come to?", hint: "Add them — mind the sign." } }
   - { t: 13, patch: { line: "{variable} = {ans}", note: "the same move on both sides" }, caption: "{variable} = {ans}.", expect: { type: expr, value: "{variable} = {ans}", prompt: "What is {variable}?" } }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
