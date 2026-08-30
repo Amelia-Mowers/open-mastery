@@ -4,7 +4,7 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a} pounds cost ${b}" }, caption: "On the board: the whole cost, all {a} pounds at once. What does ONE pound cost?" }
+  - { t: 0, patch: { start: "{a} pounds cost ${b}" }, caption: "On the board: the whole cost, all {a} pounds at once." }
   - { t: 4, patch: { line: "1 pound costs ${b} ÷ {a}", note: "share equally" }, caption: "One pound is an equal share — divide by {a}. So what does ONE pound cost?", expect: { type: numeric, value: "{b/a}", prompt: "Share ${b} equally across {a} pounds — what does ONE cost?" } }
   - { t: 8, patch: { line: "unit rate = ${b/a} per pound", note: "{b} ÷ {a} = {b/a}" }, caption: "${b/a} for one pound — that per-ONE number is the unit rate." }
   - { t: 10.5, handoff: { prompt: "Now you try." } }

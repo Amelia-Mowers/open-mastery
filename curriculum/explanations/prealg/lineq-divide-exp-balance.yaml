@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], left: "{a}{variable}", right: "{b}", leftIn: false, rightIn: false }, caption: "Here is the problem in symbols. Watch each piece land on the scale." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{a}{variable} goes on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} goes on the right pan — and the scale balances.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
-  - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "{variable} is multiplied by {a}. Which move un-does multiplying?" }
+  - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "{variable} is multiplied by {a}." }
   - t: 15.5
     patch: { op: divide, by: "{a}", highlight: null }
     caption: "Divide both sides by {a} — the scale stays balanced. So what is {variable}?"

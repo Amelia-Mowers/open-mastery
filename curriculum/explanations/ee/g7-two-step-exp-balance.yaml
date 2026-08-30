@@ -36,7 +36,7 @@ timeline:
         - id: added-instead-of-subtracted
           when: "add {b}"
           says: "Adding {b} puts MORE on the left. The {b} is already there — take it away from both pans."
-  - { t: 16, patch: { left: "{a}{variable}", right: "{a*ans}", op: null, eqHighlight: ["0"], highlight: null }, caption: "Now it reads {a}{variable} = {a*ans} — a problem you already know. What is {variable}?" }
+  - { t: 16, patch: { left: "{a}{variable}", right: "{a*ans}", op: null, eqHighlight: ["0"], highlight: null }, caption: "Now it reads {a}{variable} = {a*ans} — a problem you already know." }
   - t: 20
     patch: { op: divide, by: "{a}" }
     caption: "Divide both pans by {a}. So what is {variable}?"

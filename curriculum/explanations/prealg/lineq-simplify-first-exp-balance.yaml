@@ -9,7 +9,7 @@ timeline:
   - { t: 9, patch: { leftIn: true }, caption: "{c1} + {c2} − {c3} = {c1+c2-c3}: the left side collapses to {c1+c2-c3}{variable}.", expect: { type: numeric, value: "{c1+c2-c3}", prompt: "Combine the {variable}-terms: {c1} + {c2} − {c3} makes how many {variable}?" } }
   - { t: 14, patch: { eqHighlight: ["4", "5"], highlight: right }, caption: "The plain numbers belong together on the right pan.", expect: { type: pick, value: ["4", "5"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - { t: 19, patch: { rightIn: true }, caption: "{d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans} lands on the right pan.", expect: { type: numeric, value: "{(c1+c2-c3)*ans}", prompt: "Combine the numbers: {d1} + {(c1+c2-c3)*ans - d1} makes what?" } }
-  - { t: 24, patch: { eqHighlight: [], highlight: null }, caption: "Now it is a one-step equation. What is {variable}?" }
+  - { t: 24, patch: { eqHighlight: [], highlight: null }, caption: "Now it is a one-step equation." }
   - t: 28
     patch: { op: divide, by: "{c1+c2-c3}" }
     caption: "Divide both pans by {c1+c2-c3}. So what is {variable}?"

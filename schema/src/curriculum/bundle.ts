@@ -537,11 +537,14 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             )
         }
       }
-      // The caption on screen while the LAST gate is open is the one on
-      // the step BEFORE it. If that step is a plain statement, nothing
-      // has put the closing question to the student — they meet "what is
-      // x?" with the board silent. (When the previous step is itself
-      // gated, its own prompt is what they read, so no caption is owed.)
+      // When the last gate sits on the DROPPED final step, the caption on
+      // screen with the answer box is the one BEFORE it. If that step is a
+      // plain statement, nothing has put the closing question to the
+      // student — they meet "what is x?" with the board silent. (When the
+      // previous step is itself gated, its own prompt is what they read,
+      // so no caption is owed. When the last gate SURVIVES, its own
+      // caption is the closing one — the arm below owns that case, and
+      // requiring a question here too made the lead ask twice in a row.)
       for (const e of explBySkill.get(s.id) ?? []) {
         const content = e.timeline.filter(
           (st) => st.patch !== undefined || st.caption !== undefined,
@@ -549,6 +552,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         const gi = content.map((st, i) => (st.expect ? i : -1)).filter((i) => i >= 0)
         const last = gi[gi.length - 1]
         if (last === undefined || last === 0) continue
+        if (last !== content.length - 1) continue // surviving gate: arm below
         const prev = content[last - 1]!
         if (prev.expect !== undefined) continue // its prompt asks
         const cap = prev.caption ?? ''
@@ -577,6 +581,24 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         // what [lead_ends_quiet] above already checks
         if (lastGate === content.length - 1) continue
         const cap = (content[lastGate]!.caption ?? '').trim()
+        // …and the closing question lives THERE ALONE. While the gate is
+        // open the prompt asks; once confirmed, this caption asks. A
+        // question on the ungated step before it is a third ask in a row
+        // (the two-step balance read "What is x?" twice back to back).
+        const prevStep = lastGate > 0 ? content[lastGate - 1] : undefined
+        const prevCap = (prevStep?.caption ?? '').trim()
+        if (
+          prevStep !== undefined &&
+          prevStep.expect === undefined &&
+          prevCap.endsWith('?') &&
+          cap.includes('?')
+        )
+          push(
+            'warning',
+            'double_ask',
+            `${e.id}.timeline[${lastGate - 1}]`,
+            `the step before the last gate already asks ('${prevCap.slice(-50)}') and the gate's caption asks again — the gate's prompt covers the open gate, so drop this question`,
+          )
         if (cap !== '' && !cap.includes('?'))
           push(
             'warning',

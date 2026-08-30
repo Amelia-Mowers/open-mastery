@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["{p}/{q}", "{variable}", " = ", "{b}"], left: "{p}/{q} {variable}", right: "{b}", leftIn: false, rightIn: false }, caption: "Here is the problem in symbols. Watch each piece land on the scale." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{p}/{q} {variable} goes on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "{b} goes on the right pan — and the scale balances.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
-  - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "The left pan holds {p}/{q} of {variable} — not a whole one. What one move leaves exactly one {variable}?" }
+  - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "The left pan holds {p}/{q} of {variable} — not a whole one." }
   - { t: 16, patch: { op: multiply, by: "{q}/{p}", highlight: null }, caption: "× {q}/{p} on both sides — {p}/{q} flipped over. That is the RECIPROCAL. So what is {variable}?", expect: { type: op, value: "multiply {q}/{p}", prompt: "What ONE move to both pans leaves exactly one {variable} on the left?", hint: "The reciprocal of {p}/{q} is {q}/{p}. Multiply both sides by it. (Dividing by {p} first works too — this way does it in one move.)" } }
   - { t: 20, patch: { left: "{variable}", right: "{q*b/p}", op: null }, caption: "{p}/{q} × {q}/{p} = 1, so {variable} stands alone. {variable} = {q*b/p}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
