@@ -150,6 +150,7 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
           </button>
         </div>
         {extracted && <p className="mono-chip zoo-extract">{extracted}</p>}
+        <AlternateInputs item={item} />
       </section>
       )}
     </>
@@ -177,7 +178,7 @@ function InputCard({ title, type, config }: { title: string; type: string; confi
 }
 
 /** every input-capable widget appears here with a sample config */
-const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<string, unknown> }> = [
+export const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<string, unknown> }> = [
   {
     title: 'term-input (structured [ ]x + [ ], easier tiers)',
     type: 'term-input',
@@ -383,6 +384,50 @@ function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
           {verdict.says}
         </p>
       )}
+    </div>
+  )
+}
+
+/** The SAME problem in every answer space it could use.
+ *
+ * A skill fades its input as it climbs — structured boxes at the easier
+ * tiers, a raw expression at the ceiling — so a reviewer needs to compare
+ * them side by side on one problem. The item card alone shows only the
+ * widget that item happens to declare, which is how a newly built input
+ * can look absent from the zoo entirely.
+ */
+function AlternateInputs({ item }: { item: NonNullable<ZooDemo['item']> }) {
+  const params = item.params as Params
+  const variable = typeof params['variable'] === 'string' ? params['variable'] : 'x'
+  // every input this problem's answer could reasonably be given in
+  const alts = (
+    [
+      { type: 'term-input', config: { variable }, note: 'structured — easier tiers' },
+      { type: 'expression-input', config: { variable }, note: 'raw — the ceiling' },
+      { type: 'numeric-input', config: {}, note: 'raw number' },
+    ] as Array<{ type: WidgetType; config: Record<string, unknown>; note: string }>
+  ).filter((a) => a.type !== item.widget.type)
+  const [built] = useState(() =>
+    alts.map((a) => {
+      try {
+        return { ...a, w: createWidget(a.type, a.config) }
+      } catch {
+        return null
+      }
+    }),
+  )
+  const live = built.filter((b) => b !== null)
+  if (live.length === 0) return null
+  return (
+    <div className="zoo-alt-inputs">
+      <p className="muted">the same answer in the other input styles:</p>
+      {live.map((b) => (
+        <div key={b!.type} className="zoo-alt-row">
+          <span className="mono-chip">{b!.type}</span>
+          <span className="muted">{b!.note}</span>
+          <div className="answer-row">{b!.w.render({} as never, 'problem')}</div>
+        </div>
+      ))}
     </div>
   )
 }

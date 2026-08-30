@@ -6,7 +6,7 @@ import { render, screen, waitFor } from '@testing-library/react'
 import { createDevSite, type DevSite } from '../../src/server/dev'
 import { fixtureBundle } from '../core/fixtures'
 import { SiteApi } from '../../src/client/app/api'
-import { Zoo } from '../../src/client/app/Zoo'
+import { INPUT_SAMPLES, Zoo } from '../../src/client/app/Zoo'
 import { FALLBACK_DEMOS } from '../../src/client/app/zoo-demos'
 
 let site: DevSite
@@ -35,7 +35,9 @@ describe('widget zoo', () => {
     })
     // demo + input cards all present
     expect(container.querySelectorAll('.zoo-card')).toHaveLength(
-      distinctWidgets.size + fallbacks.length + 15,
+      // derived, not a magic number: adding an input sample should not
+      // fail this test, only a MISSING card should
+      distinctWidgets.size + fallbacks.length + INPUT_SAMPLES.length,
     )
     // fallback entries are labeled as not yet adopted
     for (const f of fallbacks) expect(screen.getByText(new RegExp(f.widget.toUpperCase()))).toBeInTheDocument()

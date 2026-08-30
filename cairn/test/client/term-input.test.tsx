@@ -8,7 +8,7 @@ import { render, screen } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { createWidget } from '../../src/client/widgets/registry'
 import { assembleTerm } from '../../src/client/widgets/term-input'
-import { gradeAnswer } from '../../src/core/graders'
+import { diagnose, gradeAnswer } from '../../src/core/graders'
 
 describe('term input', () => {
   it('assembles an ordinary expression, so the SAME key grades both inputs', () => {
@@ -21,6 +21,25 @@ describe('term input', () => {
       assembleTerm('6', '+', '15', 'x'),
     )
     expect(v.verdict).toBe('correct')
+  })
+
+  it('the SAME authored misconception fires for structured and raw input', () => {
+    // the widget assembles an ordinary expression, so diagnose() matches
+    // the same `when` values either way — a structured answer space must
+    // not need its own diagnoses
+    const params = { m: 3, n: 2, variable: 'x' } as never
+    const mis = [
+      {
+        id: 'distributed-to-first-term-only',
+        when: '{m}{variable} + {n}',
+        says: 'The {m} multiplies EVERY part inside.',
+      },
+    ]
+    const raw = diagnose(mis, params, '3x + 2')
+    const structured = diagnose(mis, params, assembleTerm('3', '+', '2', 'x'))
+    expect(raw?.id).toBe('distributed-to-first-term-only')
+    expect(structured?.id).toBe(raw?.id)
+    expect(structured?.says).toBe(raw?.says)
   })
 
   it('an unfinished answer stays EMPTY rather than defaulting', () => {

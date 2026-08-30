@@ -241,6 +241,10 @@ body {
 .smooth-inner { transition: opacity 0.18s ease; display: flow-root; }
 .smooth-inner.dim { opacity: 0.55; pointer-events: none; }
 
+/* ---- zoo: the same problem in every input style ---- */
+.zoo-alt-inputs { margin-top: 16px; padding-top: 12px; border-top: 1px dashed #e6ddd0; }
+.zoo-alt-row { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 10px; }
+
 /* ---- zoo: live answer box (review only) ---- */
 .zoo-answer { margin-top: 14px; padding-top: 12px; border-top: 1px dashed #e6ddd0; }
 .zoo-answer-key { font: 12px 'IBM Plex Mono', ui-monospace, monospace; }
