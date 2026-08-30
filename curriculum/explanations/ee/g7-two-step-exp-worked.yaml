@@ -4,22 +4,26 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}" }, caption: "Undo in REVERSE order: the add came last, so it goes first." }
+  - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}" }, caption: "TWO things are done to {variable} here: multiplied by {a}, then {b} added. Which one do you undo first?" }
   - t: 4
     patch: { line: "{a}{variable} = {a*ans+b} − {b} = {a*ans}", note: "the same move on both sides" }
-    caption: "Step 1: clear the {b}."
+    caption: "The add came LAST, so it comes off FIRST — undo in reverse order."
     expect:
-      type: expr
-      value: "{a}{variable} = {a*ans}"
-      prompt: "The {b} is added on. What move clears it, and what line is left?"
-      hint: "The + {b} cancels on the left; the right becomes {a*ans+b} − {b}."
+      type: op
+      value: "subtract {b}"
+      prompt: "What do you do to BOTH sides first?"
+      hint: "Undo in reverse order: the {b} was added last, so peel it off first — subtract {b} from both sides."
+      misconceptions:
+        - id: "divided-before-clearing"
+          when: "divide {a}"
+          says: "Dividing first splits the {b} too. Take the {b} off both sides FIRST, then divide — undo in reverse order."
   - t: 8.5
     patch: { line: "{variable} = {a*ans} ÷ {a} = {ans}", note: "the same move on both sides" }
-    caption: "Step 2: divide by {a}. {variable} = {ans}."
+    caption: "{a}{variable} = {a*ans}. One move left."
     expect:
       type: expr
       value: "{variable} = {ans}"
-      prompt: "{variable} is still multiplied by {a}. What is the last line?"
+      prompt: "{variable} is still multiplied by {a}. Simplify — what is {variable}?"
       hint: "{a*ans} ÷ {a} — how many is that?"
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

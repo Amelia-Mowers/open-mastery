@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{a}{variable} + {b},   {variable} = {c}" }, caption: "An expression plus a value for its letter." }
   - { t: 4, patch: { line: "= {a} · {c} + {b}", note: "substitute {variable} = {c}" }, caption: "Replace {variable} with {c} everywhere it appears.", expect: { type: numeric, value: "{a*c}", prompt: "Substitute and multiply: {a} · {c} is what?" } }
-  - { t: 8.5, patch: { line: "= {a*c} + {b} = {a*c+b}", note: "multiply first, then add" }, caption: "The expression outputs {a*c+b}.", expect: { type: numeric, value: "{a*c+b}", prompt: "What number finishes this line?" } }
+  - { t: 8.5, patch: { line: "= {a*c} + {b} = {a*c+b}", note: "multiply first, then add" }, caption: "The expression outputs {a*c+b}.", expect: { type: numeric, value: "{a*c+b}", prompt: "So what is the expression worth when {variable} = {c}?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

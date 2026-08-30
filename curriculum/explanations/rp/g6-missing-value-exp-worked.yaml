@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{a} pounds → ${b}" }, caption: "Two steps: down to one pound, then up to {c}." }
   - { t: 4, patch: { line: "1 pound → ${b} ÷ {a} = ${b/a}", note: "unit rate" }, caption: "Step 1: one pound costs ${b/a}.", expect: { type: numeric, value: "{b/a}", prompt: "What number finishes this line?" } }
-  - { t: 8.5, patch: { line: "{c} pounds → {c} × {b/a} = ${c*b/a}", note: "scale up" }, caption: "Step 2: {c} pounds costs ${c*b/a}.", expect: { type: numeric, value: "{c*b/a}", prompt: "What number finishes this line?" } }
+  - { t: 8.5, patch: { line: "{c} pounds → {c} × {b/a} = ${c*b/a}", note: "scale up" }, caption: "Step 2: {c} pounds costs ${c*b/a}.", expect: { type: numeric, value: "{c*b/a}", prompt: "So what does {c} pounds cost?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

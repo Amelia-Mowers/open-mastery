@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{5*f}% of ? = {f*k}" }, caption: "Work backwards from the part to the whole." }
   - { t: 4, patch: { line: "5% = {f*k} ÷ {f} = {k}", note: "÷ {f}" }, caption: "{5*f}% is {f} fives, so one five is {k}.", expect: { type: numeric, value: "{k}", prompt: "What number finishes this line?" } }
-  - { t: 8.5, patch: { line: "100% = 20 × {k} = {20*k}", note: "× 20" }, caption: "Build back up: the whole is {20*k}.", expect: { type: numeric, value: "{20*k}", prompt: "What number finishes this line?" } }
+  - { t: 8.5, patch: { line: "100% = 20 × {k} = {20*k}", note: "× 20" }, caption: "Build back up: the whole is {20*k}.", expect: { type: numeric, value: "{20*k}", prompt: "So what is the WHOLE?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
