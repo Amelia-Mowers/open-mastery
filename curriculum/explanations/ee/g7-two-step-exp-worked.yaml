@@ -25,5 +25,6 @@ timeline:
       value: "{variable} = {ans}"
       prompt: "{variable} is still multiplied by {a}. Simplify — what is {variable}?"
       hint: "{a*ans} ÷ {a} — how many is that?"
-  - { t: 11, handoff: { prompt: "Now you try." } }
+  - { t: 12, patch: {}, caption: "{variable} = {ans}." }
+  - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
