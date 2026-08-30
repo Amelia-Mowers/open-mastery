@@ -43,6 +43,10 @@ export interface TermAnswer {
   coefficient: string
   sign: Sign | null
   constant: string
+  /** which parts are still blank. An incomplete answer collapses to an
+   * empty `raw`, so without this the host can only say "nothing entered"
+   * — useless to a student who filled both boxes but chose no sign. */
+  missing: Array<'coefficient' | 'sign' | 'constant'>
 }
 
 type TermState = { coefficient: string; sign: Sign | null; constant: string }
@@ -159,11 +163,16 @@ export const createTermInput: WidgetFactory<
     render: (params, mode) => <View params={params} mode={mode} />,
     extract: () => {
       const { coefficient, sign, constant } = store.getState()
+      const missing: Array<'coefficient' | 'sign' | 'constant'> = []
+      if (coefficient.trim() === '') missing.push('coefficient')
+      if (sign === null) missing.push('sign')
+      if (constant.trim() === '') missing.push('constant')
       return {
         raw: assembleTerm(coefficient, sign, constant, variable),
         coefficient,
         sign,
         constant,
+        missing,
       }
     },
     trace: () => store.trace(),

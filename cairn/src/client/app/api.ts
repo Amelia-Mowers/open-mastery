@@ -79,6 +79,8 @@ export interface ZooDemoView {
     /** zoo ONLY: lets the review page grade its own answer box so a
      * timeline can be played end to end. Never sent to the student app. */
     answer?: { type: string; value: unknown; form?: string }
+    /** zoo ONLY: so a reviewer can confirm a diagnosis fires */
+    misconceptions?: Array<{ id: string; when: string; says: string }>
   } | null
 }
 

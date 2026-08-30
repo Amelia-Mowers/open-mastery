@@ -20,6 +20,8 @@ export interface ZooDemo {
     /** zoo ONLY: the key, so the review page can grade its own answer box
      * and a timeline can be played end to end. Never sent to the app. */
     answer?: { type: string; value: unknown; form?: string }
+    /** zoo ONLY: so a reviewer can confirm a diagnosis fires */
+    misconceptions?: Array<{ id: string; when: string; says: string }>
   } | null
 }
 

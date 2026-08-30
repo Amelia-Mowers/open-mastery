@@ -416,6 +416,10 @@ export class SiteCore {
           // app never calls /api/demo, and invariant 1 is unaffected
           // because the engine still grades every real attempt.
           answer: repItem.answer,
+          // …and the authored diagnoses, so the reviewer can confirm a
+          // named misconception actually FIRES rather than seeing the
+          // generic "not accepted" a student would never be shown
+          misconceptions: repItem.misconceptions,
         }
       : null
     return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e, item })

@@ -10,7 +10,7 @@ import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry
 import { FALLBACK_DEMOS, type ZooDemo } from './zoo-demos'
 import type { CairnApi } from './api'
 import { evalNumber, renderText, type Params } from './render'
-import { gradeAnswer } from '../../core/graders'
+import { diagnose, gradeAnswer } from '../../core/graders'
 
 function roleBadge(widget: string): string {
   const r = WIDGET_ROLES[widget as WidgetType]
@@ -363,6 +363,7 @@ function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
           key={st.type}
           style={st}
           answer={item.answer as unknown as Parameters<typeof gradeAnswer>[0]}
+          misconceptions={item.misconceptions}
           params={params}
         />
       ))}
@@ -374,10 +375,12 @@ function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
 function ZooAnswerRow({
   style,
   answer,
+  misconceptions,
   params,
 }: {
   style: { type: WidgetType; config: Record<string, unknown>; note: string }
   answer: Parameters<typeof gradeAnswer>[0]
+  misconceptions?: Array<{ id: string; when: string; says: string }>
   params: Params
 }) {
   const [widget] = useState(() => {
@@ -390,22 +393,45 @@ function ZooAnswerRow({
   const [verdict, setVerdict] = useState<null | { ok: boolean; says: string }>(null)
   if (!widget) return null
   const check = (): void => {
-    const got = widget.extract() as { raw?: string; value?: number | null } | null
+    const got = widget.extract() as {
+      raw?: string
+      value?: number | null
+      missing?: string[]
+    } | null
     const raw = got?.raw ?? (got?.value != null ? String(got.value) : '')
     if (raw.trim() === '') {
-      // an unfilled structured answer must READ as unfinished, not wrong
-      setVerdict({ ok: false, says: 'Nothing entered yet.' })
+      // NAME the missing part. A structured answer collapses to '' when
+      // any piece is blank, so "nothing entered yet" told a student who
+      // had filled both boxes but picked no sign precisely nothing.
+      const gaps = got?.missing ?? []
+      const label: Record<string, string> = {
+        coefficient: 'the number in front',
+        sign: 'the + or −',
+        constant: 'the plain number',
+      }
+      setVerdict({
+        ok: false,
+        says:
+          gaps.length > 0
+            ? `Still to fill in: ${gaps.map((g) => label[g] ?? g).join(', ')}.`
+            : 'Nothing entered yet.',
+      })
       return
     }
     const v = gradeAnswer(answer, params as never, raw)
-    setVerdict(
-      v.verdict === 'correct'
-        ? { ok: true, says: `Correct — "${raw}" accepted.` }
-        : {
-            ok: false,
-            says: `"${raw}" — ${v.verdict === 'incorrect' && v.reason ? v.reason : 'not accepted'}`,
-          },
-    )
+    if (v.verdict === 'correct') {
+      setVerdict({ ok: true, says: `Correct — "${raw}" accepted.` })
+      return
+    }
+    // show the NAMED diagnosis a student would get, not the generic line
+    // — the point of reviewing here is confirming it actually fires
+    const named = diagnose(misconceptions, params as never, raw)
+    setVerdict({
+      ok: false,
+      says: named
+        ? `"${raw}" — ${named.says}  [${named.id}]`
+        : `"${raw}" — ${v.verdict === 'incorrect' && v.reason ? v.reason : 'not accepted'}`,
+    })
   }
   return (
     <div className="zoo-answer-style">
