@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "${20*g} at {5*f}% off" }, caption: "Two steps: find the discount, then subtract it." }
-  - { t: 4, patch: { line: "discount = {5*f}% of {20*g} = {f*g}", note: "5% is {g}" }, caption: "{5*f}% of ${20*g} is ${f*g}.", expect: { type: numeric, value: "{f*g}", prompt: "What number finishes this line?" } }
+  - { t: 4, patch: { line: "discount = {5*f}% of {20*g} = {f*g}", note: "5% is {g}" }, caption: "{5*f}% of ${20*g} is ${f*g}. So what is the final price?", expect: { type: numeric, value: "{f*g}", prompt: "What number finishes this line?" } }
   - { t: 8.5, patch: { line: "sale price = {20*g} − {f*g} = {20*g - f*g}", note: "subtract" }, caption: "You pay ${20*g - f*g}.", expect: { type: numeric, value: "{20*g - f*g}", prompt: "So what is the final price?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

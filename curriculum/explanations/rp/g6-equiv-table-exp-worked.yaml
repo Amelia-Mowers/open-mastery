@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{a} cups : {b} muffins" }, caption: "One batch, written as a ratio." }
-  - { t: 4, patch: { line: "× {m} on BOTH:  {a}·{m} : {b}·{m}", note: "same multiplier, both quantities" }, caption: "Scale both quantities by the same number and the ratio stays equivalent.", expect: { type: numeric, value: "{a*m}", prompt: "Scale up: {a} cups × {m} batches — how many cups?" } }
+  - { t: 4, patch: { line: "× {m} on BOTH:  {a}·{m} : {b}·{m}", note: "same multiplier, both quantities" }, caption: "Scale both quantities by the same number and the ratio stays equivalent. So how many muffins?", expect: { type: numeric, value: "{a*m}", prompt: "Scale up: {a} cups × {m} batches — how many cups?" } }
   - { t: 8.5, patch: { line: "{a*m} cups : {b*m} muffins", note: "{m} batches" }, caption: "{a*m} cups makes {b*m} muffins.", expect: { type: numeric, value: "{b*m}", prompt: "{a*m} cups is {m} batches — how many muffins is that?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
