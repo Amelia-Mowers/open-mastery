@@ -83,9 +83,17 @@ worked lines = `expr` (the clean resulting equation: first `=` segment
 rendered key — cairn's test/client/stepwise-coverage.test.tsx drives
 each one and fails the build otherwise; the validator statically
 rejects unparseable expr/numeric values and malformed op/pick shapes
-([expect_shape]). Remaining passive timelines (table reveals,
-number-line landings, area fills, cube counts, flip) need hand-authored
-gate semantics — the no_expects warning list is the backlog.
+([expect_shape]).
+
+Gate-quality invariants — `[gate_tells]` and the `[gate_telegraph]`
+tightening were added 2026-08-29, after a full review found these faults
+spread across the catalog rather than isolated:
+`[gate_tells]` (a prompt that instructs, or asks nothing at all),
+`[gate_telegraph]` (the answer or the move already on screen — reads the
+caption AND the whiteboard note, with no exemption for gates whose prompt
+names their own move: that exemption was what let a telling caption and a
+"Do it" prompt stack into one dead step), and `[gate_moves_nothing]` (a
+gate whose patch does not change the diagram).
 
 ## The skill graph derives from STANDARDS, not textbooks
 
@@ -285,6 +293,54 @@ generic line ("Your move — write the next step"), which is both vague and
 disconnected from the caption on screen — and note that the caption
 DISPLAYED while a gate is open is the one BEFORE it, so a question
 written on the gated step itself is never the one the student reads.
+
+## The LAST gate asks the lesson's own question
+
+A timeline ends by answering the problem it opened with, so its final
+gate must pose THAT question — "So what is {p}% of {b}?", "Simplify —
+what is {variable}?" — not the bookkeeping that gets there. "What number
+finishes this line?" and "what line is left?" describe the board; they do
+not ask the student anything they came to learn.
+
+The penultimate CAPTION does the setting up: it names what is still
+outstanding and puts the question in the air ("Two of the factors make
+{n}² = {n*n}. One factor of {n} is still waiting. What does {n}³
+equal?"), so the closing gate lands on a question already asked.
+
+## Every channel on screen leaks: caption, note, and prompt
+
+`[gate_telegraph]` reads the caption, but the whiteboard `note` is a
+second line of text on the same board — "subtract 8 from both sides"
+gives the move away exactly as plainly. Notes on a gated step say what
+KIND of thing is happening ("the same move on both sides"), never which
+one. The specific move goes on the step that confirms it.
+
+The same applies to the prompt itself: a prompt that names the operation
+it is grading has answered its own question.
+
+## A prompt must match what the gate GRADES
+
+Rewriting prompts in a batch is where this breaks. compare-rates' final
+gate expects Pack B's unit price, so "which pack is the better buy?" —
+which reads perfectly — would mark a correct "A" wrong. Before changing
+any prompt, read the `value` beside it. `test/client/stepwise-coverage`
+drives every gate against its own key and is the backstop, but it only
+catches an unanswerable gate, not a misleading one.
+
+## Decomposition can be a COUNT, not just a construction
+
+Translating notation into a discrete quantity IS a decomposition step:
+"how many factors of {n} does {n}³ mean?" turns an exponent into a number
+of objects, which is what the later steps then group and multiply. Prefer
+it to asking for the written-out form when the written form would make
+the student type operators (`*`) they do not otherwise write.
+
+Watch for the collision this creates: the answer (3) is the exponent
+already PRINTED on the board, so a caption naming the notation looks like
+a leak. That is a false positive — `[gate_telegraph]` now normalises
+superscripts and reads the board's `start` line, because the fix belongs
+in the check, not in the pedagogy. Never reword a sound question to
+appease a lint.
 
 ## Decomposition BUILDS the diagram, then asks what it makes obvious
 

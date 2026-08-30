@@ -78,6 +78,15 @@
   gates) and the named sentence replaces the generic "not quite" in both
   the item card and the stepwise gate. Authoring rules and invariants:
   `../curriculum/CLAUDE.md`.
+- **A gate ASKS; it never tells.** A gated step poses the question the
+  move answers, and the last gate asks the LESSON'S OWN question ("what
+  is x?"), not the bookkeeping ("what line is left?"). A both-sides move
+  is two gates: `op` for the move, `expr` for the line it leaves — an
+  open "write the next step" grades by equivalence, so it cannot tell a
+  student who worked the move from one who jumped to the answer. Every
+  channel leaks: caption, whiteboard `note`, and the prompt itself.
+  Invariants `[gate_tells]` / `[gate_telegraph]`; full rules and the
+  reasoning in `../curriculum/CLAUDE.md`.
 - **Gates never solve themselves.** A miss re-offers the hint and points
   at "Show me"; the student chooses the reveal. Taking the step away
   turns their problem back into a movie against their will.
