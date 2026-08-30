@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{m}", "({variable} + {n})"], height: "1", parts: ["{variable}", "{n}"] , fillRows: "0"}, caption: "{m}({variable} + {n}) is a rectangle waiting to be drawn. How tall, how wide?" }
   - { t: 4, patch: { eqHighlight: ["0"], height: "{m}" }, caption: "The number out front is the HEIGHT — the rectangle grows to {m} rows.", expect: { type: numeric, value: "{m}", prompt: "How tall should the rectangle be?" } }
-  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1", "2"] }, caption: "The width splits into {variable} and {n}.", expect: { type: pick, value: ["1"], prompt: "Which piece — or pieces — of the expression make the WIDTH of the rectangle?" } }
+  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1", "2"] }, caption: "The width splits into {variable} and {n}. So what does {m}({variable} + {n}) expand to?", expect: { type: pick, value: ["1"], prompt: "Which piece — or pieces — of the expression make the WIDTH of the rectangle?" } }
   - { t: 12, patch: { eqHighlight: [], products: ["{m}{variable}", "{m*n}"], highlight: [] }, caption: "Two pieces of area: {m}({variable} + {n}) = {m}{variable} + {m*n}.", expect: { type: numeric, value: "{m*n}", prompt: "The plain-number piece of area: {m} rows of {n} — how much?" } }
   - { t: 15, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

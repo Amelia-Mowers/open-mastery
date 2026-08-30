@@ -31,7 +31,7 @@ timeline:
       hint: "The bar started as one thing before anything was taken from it."
   - t: 16
     patch: { eqHighlight: [], highlight: ["1", "2"], totalOp: { op: add, by: "{p}" } }
-    caption: "Put the {p} section back onto the {d} — the whole bar is both together."
+    caption: "Put the {p} section back onto the {d} — so how long is the whole bar?"
     expect:
       type: op
       value: "add {p}"

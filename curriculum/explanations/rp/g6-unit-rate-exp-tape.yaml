@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a} pounds", " → ", "${b}"], parts: "{a}", partLabel: "?", total: "${b}", totalIn: false , cellsIn: 0}, caption: "The whole cost, cut into one piece per pound." }
   - { t: 4, patch: { eqHighlight: ["0"], highlight: ["1"] , cellsIn: "{a}"}, caption: "{a} pounds — {a} equal pieces, one pound each.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — tell how many equal pieces the tape has?" } }
-  - { t: 8, patch: { eqHighlight: ["2"], totalIn: true, highlight: [] }, caption: "All the pieces together cost ${b}.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — tell what the WHOLE tape costs?" } }
+  - { t: 8, patch: { eqHighlight: ["2"], totalIn: true, highlight: [] }, caption: "All the pieces together cost ${b}. So what does ONE pound cost?", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — tell what the WHOLE tape costs?" } }
   - { t: 12, patch: { eqHighlight: [], partLabel: "{b/a}", highlight: ["1"] }, caption: "${b} ÷ {a} = ${b/a} — one pound costs ${b/a}. That is the unit rate.", expect: { type: numeric, value: "{b/a}", prompt: "How big is each part?" } }
   - { t: 15, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

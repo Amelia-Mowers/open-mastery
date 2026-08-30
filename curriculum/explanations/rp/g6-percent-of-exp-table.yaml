@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{5*f}%", " of ", "{20*g}"], cols: ["percent", "amount"], rows: [["100%", "{20*g}"], ["5%", "{g}"], ["{5*f}%", "{f*g}"]], reveal: "0" }, caption: "Percent rows are ratio rows: percent beside amount." }
   - { t: 4, patch: { eqHighlight: ["2"], reveal: "1", highlight: "1" }, caption: "100% is the whole thing: {20*g}." }
-  - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷20" } }, caption: "5% is one twentieth: {g}.", expect: { type: numeric, value: "{g}", prompt: "What goes in the next row?" } }
+  - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷20" } }, caption: "5% is one twentieth: {g}. {5*f}% is {f} of those fives — so what does it come to?", expect: { type: numeric, value: "{g}", prompt: "What goes in the next row?" } }
   - { t: 13, patch: { eqHighlight: ["0"], reveal: "3", highlight: "3", factor: { from: "2", to: "3", text: "×{f}" } }, caption: "{5*f}% is {f} fives: {f} × {g} = {f*g}.", expect: { type: numeric, value: "{f*g}", prompt: "What goes in the next row?" } }
   - { t: 16, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

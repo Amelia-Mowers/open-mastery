@@ -554,7 +554,11 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         if (last === undefined || last === 0) continue
         if (last !== content.length - 1) continue // surviving gate: arm below
         const prev = content[last - 1]!
-        if (prev.expect !== undefined) continue // its prompt asks
+        // gated or not, prev is the last SURVIVING step, so its caption is
+        // what the student reads with the box open. "Its prompt asks" was
+        // an exemption for gated prevs — but the prompt asks only while
+        // the gate is OPEN; once answered, the caption stands alone (the
+        // divide lead showed "What undoes that?" beside a box wanting x).
         const cap = prev.caption ?? ''
         if (cap !== '' && !cap.includes('?'))
           push(

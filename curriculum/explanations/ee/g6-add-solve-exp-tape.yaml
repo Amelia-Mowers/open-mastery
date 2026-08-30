@@ -31,7 +31,7 @@ timeline:
       hint: "The = tells you what everything adds up to."
   - t: 16
     patch: { eqHighlight: [], highlight: ["1"], removed: ["2"], totalOp: { op: subtract, by: "{p}" } }
-    caption: "Take the {p} section off — and take {p} off the total too. What is left is the {variable} piece."
+    caption: "Take the {p} section off — and take {p} off the total too. So how long is the {variable} piece?"
     expect:
       type: op
       value: "subtract {p}"

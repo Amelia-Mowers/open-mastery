@@ -5,7 +5,7 @@ widget: number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{c}", "²"], min: 0, max: "{c*c}", step: "{c}" , labelled: []}, caption: "{c}² means {c} jumps, each as big as the number itself. Where does the FIRST jump land?" }
-  - { t: 4, patch: { eqHighlight: ["0"], marker: "{c}", highlight: ["{c}"] }, caption: "The base {c} is the jump size: one jump lands on {c}.", expect: { type: numeric, value: "{c}", prompt: "One jump: where does it land? Type the number." } }
+  - { t: 4, patch: { eqHighlight: ["0"], marker: "{c}", highlight: ["{c}"] }, caption: "The base {c} is the jump size: one jump lands on {c}. The small 2 says take {c} jumps — where do they land?", expect: { type: numeric, value: "{c}", prompt: "One jump: where does it land? Type the number." } }
   - { t: 8, patch: { eqHighlight: ["1"], marker: "{c*c}", highlight: [] }, caption: "The small 2 says take {c} jumps: they land on {c*c}. {c}² = {c*c}.", expect: { type: numeric, value: "{c*c}", prompt: "{c} jumps of {c}: where do they land? Type the number." } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
