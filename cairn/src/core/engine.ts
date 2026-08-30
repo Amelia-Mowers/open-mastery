@@ -244,8 +244,16 @@ export function nextAction(
         }
       }
     }
-    // cannot continue the check (bundle bug caught by CI); abandon it
-    session.check = null
+    // NO SILENT FALLBACK. Abandoning here dropped a check MID-WAY: the
+    // student who was one item from mastery lost the passes they had
+    // already banked, got handed an ordinary practice problem with no
+    // explanation, and no stone. checkAvailable only counts check-ELIGIBLE
+    // base items, not whether an unblocked isomorph can still be built, so
+    // this is reachable once session.served has consumed the space.
+    throw new Error(
+      `cannot continue the mastery check for '${c.skillId}': no further check item can be built ` +
+        `(${c.passedInstanceIds.length} already passed) — the skill lacks distinct check-eligible isomorphs`,
+    )
   }
 
   // ---- spaced review (§5): mastered skills come due on the FSRS clock;
@@ -329,7 +337,7 @@ export function nextAction(
   // a review is served on cadence, or whenever nothing else is eligible
   if (dueReviews.length > 0 && (reviewTurn || skillId === null) && opts.focusSkill === undefined) {
     for (const reviewSkill of dueReviews) {
-      const inst = instantiateFor(practiceItems(reviewSkill, ctx.cur), student, session, pol, reviewSkill)
+      const inst = instantiateFor(practiceItems(reviewSkill, ctx.cur), student, session, pol, reviewSkill, false, ctx.bkt)
       if (inst) return serveWorkItem('review', reviewSkill, inst, student, session, ctx)
     }
   }
@@ -345,7 +353,7 @@ export function nextAction(
     // A lesson is always ABOUT the problem that follows it. Pick that
     // problem first, then teach ITS representation — otherwise the student
     // watches a tape lesson and gets a balance problem.
-    const lead = instantiateFor(practiceItems(skillId, ctx.cur), student, session, pol, skillId)
+    const lead = instantiateFor(practiceItems(skillId, ctx.cur), student, session, pol, skillId, false, ctx.bkt)
     const leadRep = lead ? (ctx.cur.items.get(lead.itemId)?.representation ?? null) : null
     // THE WHITEBOARD NEVER LEADS INSTRUCTION. It is what the concrete
     // models fade TOWARD, so a skill whose items happen to be framed on
@@ -415,11 +423,19 @@ export function nextAction(
   const inst =
     (promisedMatches ? promised : null) ??
     (matching.length > 0
-      ? instantiateFor(matching, student, session, pol, skillId, wantFresh)
+      ? instantiateFor(matching, student, session, pol, skillId, wantFresh, ctx.bkt)
       : null) ??
-    (wantFresh ? instantiateFor(pool, student, session, pol, skillId, true) : null) ??
-    instantiateFor(pool, student, session, pol, skillId)
-  if (!inst) return { kind: 'session_done' } // out of items (bundle bug)
+    (wantFresh ? instantiateFor(pool, student, session, pol, skillId, true, ctx.bkt) : null) ??
+    instantiateFor(pool, student, session, pol, skillId, false, ctx.bkt)
+  // NO SILENT FALLBACK: 'session_done' is what a student is told when they
+  // have finished everything available. Returning it because the generator
+  // could not build an unblocked isomorph tells a student mid-skill that
+  // their session is over — a curriculum defect presented as completion.
+  if (!inst)
+    throw new Error(
+      `no servable item for skill '${skillId}': every candidate is blocked or its generator ` +
+        `could not produce a fresh isomorph`,
+    )
 
   // A REPRESENTATION IS NEVER MET COLD: if the item we are about to serve is
   // framed in a representation this student has not been taught, teach it
@@ -521,13 +537,22 @@ function instantiateFor(
    * DIFFERENT problem than the lesson's example (which used the family's
    * authored numbers) */
   avoidAuthored = false,
+  /** a skill with no state yet sits at its OWN L0, not at 0 */
+  bktOf?: (skillId: string) => BktParams,
 ): ItemInstance | null {
   const blocked = new Set(blockedSet(student, session))
   if (avoidAuthored) for (const item of pool) blocked.add(instanceKey(item.id, paramHash(item.params)))
   // difficulty ramps with the mastery estimate; within a difficulty, rotate
   // item families least-served-first (variety — e.g. alternating sign
   // families)
-  const p = rampSkillId !== undefined ? (student.skills[rampSkillId]?.p ?? 0) : 0
+  // an absent skill state means "not started", whose estimate is L0 — the
+  // convention every other site in core uses. `?? 0` pinned the difficulty
+  // target at the EASIEST family instead, on exactly the first serve of a
+  // skill, and stayed invisible because 0 is a plausible probability.
+  const p =
+    rampSkillId !== undefined
+      ? (student.skills[rampSkillId]?.p ?? bktOf?.(rampSkillId).L0 ?? 0)
+      : 0
   const target = rampSkillId !== undefined ? targetDifficulty(p, pool) : null
   const servedCount = (itemId: string): number => {
     let n = 0
@@ -563,7 +588,18 @@ function instantiateFor(
 
 function probeItemPool(prereqId: string, ctx: EngineCtx): Item[] {
   const pool = practiceItems(prereqId, ctx.cur).filter((it) => it.rubric == null)
-  return pool.filter(isCheckEligible).length > 0 ? pool.filter(isCheckEligible) : pool
+  const eligible = pool.filter(isCheckEligible)
+  // NO SILENT WIDENING. Falling back to non-check-eligible items serves a
+  // guessable CHOICE item as a probe: one lucky guess then clears the
+  // target skill's miss run and tells the engine the prerequisite is
+  // sound. That destroys the only thing a probe measures. No skill in the
+  // catalog trips this today; a future one must not do so quietly.
+  if (eligible.length === 0 && pool.length > 0)
+    throw new Error(
+      `cannot probe prerequisite '${prereqId}': it has no check-eligible items, ` +
+        `so a probe could only be answered by guessing`,
+    )
+  return eligible
 }
 
 // ---------- recording ----------
@@ -782,7 +818,19 @@ export function recordExplanationViewed(
   ctx: EngineCtx,
   args: { skillId: string; explanationId: string; completed: boolean },
 ): CairnEvent[] {
-  const rep = ctx.cur.explanations.get(args.explanationId)?.representation ?? 'unknown'
+  // NO SILENT FALLBACK — and this one reaches the DURABLE LOG. Stamping
+  // 'unknown' put a representation no item declares into
+  // representationsViewed, which is read as "the picture just taught":
+  // rep-matched practice then matches nothing, and the "never met cold"
+  // check believes a representation was taught that never was. Replay
+  // reproduces it forever. A missing explanation means the client asked
+  // to record a lesson that is not in the bundle — a real fault.
+  const expl = ctx.cur.explanations.get(args.explanationId)
+  if (!expl)
+    throw new Error(
+      `cannot record explanation_viewed: unknown explanation '${args.explanationId}'`,
+    )
+  const rep = expl.representation
   const ev = ctx.stamp({
     kind: 'explanation_viewed',
     explanationId: args.explanationId,

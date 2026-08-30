@@ -76,7 +76,12 @@ export function diagnose(
         })()
       ) {
         const says = renderTemplate(m.says, params, { numberStyle: 'fraction' })
-        return { id: m.id, says: says.ok ? says.value : m.says }
+        // NO RAW TEMPLATE TO A STUDENT. An unrenderable `says` used to be
+        // shown verbatim — "You added {a} and {b} instead of multiplying".
+        // Fall through to the generic "not quite" instead: a missing
+        // diagnosis is a gap, a templated one is nonsense.
+        if (!says.ok) return null
+        return { id: m.id, says: says.value }
       }
       continue
     }
@@ -87,7 +92,8 @@ export function diagnose(
     }
     if (exprEquivalent(side(student), side(rendered.value))) {
       const says = renderTemplate(m.says, params, { numberStyle: 'fraction' })
-      return { id: m.id, says: says.ok ? says.value : m.says }
+      if (!says.ok) return null
+      return { id: m.id, says: says.value }
     }
   }
   return null
@@ -103,6 +109,19 @@ export function gradeItem(
   if (item.rubric != null)
     return { verdict: 'needs_llm', reason: 'rubric item: queued for LLM grading' }
   return gradeAnswer(item.answer, params, raw)
+}
+
+/** A malformed ANSWER KEY is a curriculum fault, never a student's miss.
+ * Returning `incorrect` for it logged an attempt event, drove the mastery
+ * estimate down, advanced the corrective ladder and could park the
+ * student with a guide flag — all for our bug, with authoring
+ * diagnostics ("answer key does not evaluate") shown to a child. It
+ * throws now; the caller must not convert this into a verdict. */
+export class AnswerKeyError extends Error {
+  constructor(reason: string) {
+    super(`answer key fault: ${reason}`)
+    this.name = 'AnswerKeyError'
+  }
 }
 
 export function gradeAnswer(spec: AnswerSpec, params: Env, raw: string | string[]): Verdict {
@@ -130,21 +149,21 @@ export function gradeAnswer(spec: AnswerSpec, params: Env, raw: string | string[
 const OP_WORDS = new Set(['add', 'subtract', 'multiply', 'divide'])
 
 function gradeOp(spec: AnswerSpec, params: Env, raw: string): Verdict {
-  if (typeof spec.value !== 'string') return incorrect('answer key is not an op template')
+  if (typeof spec.value !== 'string') throw new AnswerKeyError('answer key is not an op template')
   const rendered = renderTemplate(spec.value, params, { numberStyle: 'fraction' })
-  if (!rendered.ok) return incorrect('answer key does not evaluate')
+  if (!rendered.ok) throw new AnswerKeyError('answer key does not evaluate')
   const splitMove = (s: string): [string, string] | null => {
     const m = /^(\S+)\s+(.+)$/.exec(s.trim())
     return m ? [m[1]!.toLowerCase(), m[2]!] : null
   }
   const key = splitMove(rendered.value)
-  if (!key || !OP_WORDS.has(key[0])) return incorrect('answer key is not an op template')
+  if (!key || !OP_WORDS.has(key[0])) throw new AnswerKeyError('answer key is not an op template')
   const student = splitMove(raw)
   if (!student) return incorrect('empty')
   if (!OP_WORDS.has(student[0])) return incorrect('unknown operation')
   if (student[0] !== key[0]) return incorrect()
   const expected = evalClosed(key[1])
-  if (!expected) return incorrect('answer key operand does not evaluate')
+  if (!expected) throw new AnswerKeyError('answer key operand does not evaluate')
   const got = evalClosed(student[1])
   if (!got) return incorrect('operand is not a number')
   return ratEq(got, expected) ? correct : incorrect()
@@ -175,7 +194,7 @@ function evalClosed(src: string): Rational | null {
 
 function gradeNumeric(spec: AnswerSpec, params: Env, raw: string): Verdict {
   const expected = resolveClosed(spec.value as string | number, params)
-  if (!expected) return incorrect('answer key does not evaluate')
+  if (!expected) throw new AnswerKeyError('answer key does not evaluate')
   let s = raw.trim().toLowerCase()
   if (s === '') return incorrect('empty')
   if (spec.units) {
@@ -274,7 +293,7 @@ function splitEquation(s: string): string[] | null {
 }
 
 function gradeExpr(spec: AnswerSpec, params: Env, raw: string): Verdict {
-  if (typeof spec.value !== 'string') return incorrect('answer key is not an expression')
+  if (typeof spec.value !== 'string') throw new AnswerKeyError('answer key is not an expression')
   // syntactic form guards: symbolic equivalence would accept an echo of the
   // stem ("3(x+2)" ≡ "3x+6"), so expansion/combination items constrain shape
   if (spec.form === 'expanded' && /[()]/.test(raw))
@@ -297,7 +316,7 @@ function gradeExpr(spec: AnswerSpec, params: Env, raw: string): Verdict {
     }
   }
   const rendered = renderTemplate(spec.value, params, { numberStyle: 'fraction' })
-  if (!rendered.ok) return incorrect('answer key does not evaluate')
+  if (!rendered.ok) throw new AnswerKeyError('answer key does not evaluate')
   const expectedParts = splitEquation(rendered.value)
   const studentParts = splitEquation(raw.trim().toLowerCase())
   if (!expectedParts || !studentParts || studentParts.some((p) => p === ''))
@@ -338,7 +357,7 @@ function gradeList(spec: AnswerSpec, params: Env, raw: string | string[], ordere
   const expected: Rational[] = []
   for (const v of expectedRaw) {
     const r = resolveClosed(v as string | number, params)
-    if (!r) return incorrect('answer key does not evaluate')
+    if (!r) throw new AnswerKeyError('answer key does not evaluate')
     expected.push(r)
   }
   const parts = (Array.isArray(raw) ? raw : raw.split(/[,;]/)).map((p) => p.trim()).filter((p) => p !== '')

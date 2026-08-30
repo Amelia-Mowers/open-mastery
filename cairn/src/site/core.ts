@@ -110,7 +110,6 @@ export class SiteCore {
   private readonly bundle: Bundle
   readonly cur: ReturnType<typeof buildIndex>
   private readonly bktDefaults: Map<string, BktParams>
-  private readonly fallback: BktParams = { L0: 0.3, T: 0.15, S: 0.1, G: 0.2 }
   private siteSeq = 0
   private siteTime = 0
   readonly log: CairnEvent[] = []
@@ -146,7 +145,18 @@ export class SiteCore {
   }
 
   private bktFor(): (skillId: string) => BktParams {
-    return (skillId) => this.bktDefaults.get(skillId) ?? this.fallback
+    return (skillId) => {
+      const p = this.bktDefaults.get(skillId)
+      // NO SILENT FALLBACK on MODEL PARAMETERS. bkt_defaults is required by
+      // the schema, so a miss means this skill is not in the bundle at all
+      // — a renamed or retired skill whose state still lives in the event
+      // log. Substituting a house default silently re-scores that student
+      // under a different, more permissive model: p climbs faster, the
+      // check gate opens sooner, and their progress bar jumps overnight
+      // for identical work.
+      if (!p) throw new Error(`no BKT parameters for skill '${skillId}' — not in this bundle`)
+      return p
+    }
   }
 
   private slot(id: string): StudentSlot {

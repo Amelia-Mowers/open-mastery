@@ -207,6 +207,7 @@ const GRADE_RANGE = [3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
 function GradePage({ api, onPlaced }: { api: CairnApi; onPlaced: () => void }) {
   const [available, setAvailable] = useState<number[] | null>(null)
   const [busy, setBusy] = useState(false)
+  const [error, setError] = useState<string | null>(null)
 
   useEffect(() => {
     let live = true
@@ -223,9 +224,12 @@ function GradePage({ api, onPlaced }: { api: CairnApi; onPlaced: () => void }) {
           if (live) setAvailable(g.available)
         })
       })
-      .catch(() => {
-        // if we cannot tell, do not trap them on this page
-        if (live) onPlaced()
+      .catch((e: unknown) => {
+        // NO SILENT FALLBACK: proceeding as though placed serves this
+        // student from the BOTTOM of the graph — a 7th-grader lands in
+        // grade-6 material — and, because the placement never landed,
+        // asks them their grade again next visit. Say so instead.
+        if (live) setError(String(e))
       })
     return () => {
       live = false
@@ -238,10 +242,12 @@ function GradePage({ api, onPlaced }: { api: CairnApi; onPlaced: () => void }) {
     setBusy(true)
     void api
       .place(g)
-      .catch(() => {
-        /* never trap a student on the way in */
+      .then(onPlaced)
+      .catch((e: unknown) => {
+        // a failed placement must not look like a successful one
+        setBusy(false)
+        setError(String(e))
       })
-      .finally(onPlaced)
   }
 
   if (available === null)
@@ -280,6 +286,11 @@ function GradePage({ api, onPlaced }: { api: CairnApi; onPlaced: () => void }) {
             )
           })}
         </div>
+        {error !== null && (
+          <p className="feedback bad" role="alert">
+            Could not save that — please try again. ({error})
+          </p>
+        )}
         <p className="muted grade-page-note">
           Grades {available[0]}–{available[available.length - 1]} are built today; the rest are on
           the way.
