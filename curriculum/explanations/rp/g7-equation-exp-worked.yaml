@@ -8,6 +8,5 @@ timeline:
   - { t: 4, patch: { line: "k = {a*k} ÷ {a} = {k}", note: "constant of proportionality" }, caption: "Find k first.", expect: { type: expr, value: "k = {k}", prompt: "What is k for this table?" } }
   - { t: 8, patch: { line: "y = {k}x", note: "the rule for EVERY x" }, caption: "The equation: y = {k}x. So what does x come out to?", expect: { type: expr, value: "y = {k}x", prompt: "With k known, what is the equation linking y and x?" } }
   - { t: 12, patch: { line: "x = {c} → y = {k} × {c} = {k*c}", note: "use the rule" }, caption: "Now any x you like: x = {c} gives y = {k*c}.", expect: { type: expr, value: "x = {k*c}", prompt: "So what does x come out to?" } }
-  - { t: 15, patch: {}, caption: "Now any x you like: x = {c} gives y = {k*c}." }
-  - { t: 17.5, handoff: { prompt: "Now you try." } }
+  - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

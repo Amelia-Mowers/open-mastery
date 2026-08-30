@@ -385,25 +385,29 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             'the faded lead ends on a statement — gate its last surviving step so the student is left with the question, not a finished picture',
           )
       }
-      // …and it must END ON THE ANSWER. The last content step states the
-      // resolution, as a step of its own AFTER the last gate. A timeline
-      // whose final content step is itself a gate has no resolution to
-      // drop, so the lead leaves the student on "3x = 12. One move left."
-      // and autoplay simply stops short of the answer. Invisible to every
-      // other check — [lead_ends_quiet] is SATISFIED by such a timeline,
-      // because the last surviving step is a gate precisely because the
-      // resolution is missing.
+      // …and its LAST GATE must resolve to the ANSWER, not to an
+      // intermediate line. The lead drops the final content step because
+      // the answer box below IS the resolution — that is the design, and
+      // a timeline ending on a gate is correct. What is NOT correct is a
+      // last gate whose key is a working line ("{a}{variable} =
+      // {a*ans}"), because then neither the gate nor the box ever states
+      // what {variable} is, and the lesson stops one move short.
       for (const e of explBySkill.get(s.id) ?? []) {
-        const content = e.timeline.filter(
-          (st) => st.patch !== undefined || st.caption !== undefined,
-        )
-        const last = content[content.length - 1]
-        if (content.length > 1 && last?.expect !== undefined)
+        const gated = e.timeline.filter((st) => st.expect !== undefined)
+        const last = gated[gated.length - 1]
+        const key = last?.expect?.value
+        if (typeof key !== 'string' || !key.includes('=')) continue
+        // strip the TEMPLATES first: "{p+d}" renders to a single number,
+        // so its arithmetic is the author computing the answer, not the
+        // student being left mid-working. What matters is arithmetic
+        // OUTSIDE the braces — "{a}{variable} = {a*ans} ÷ {a}".
+        const rhs = (key.split('=').pop() ?? '').replace(/\{[^}]*\}/g, '').trim()
+        if (/[+\-*/×÷]/.test(rhs))
           push(
             'warning',
-            'no_resolution',
+            'ends_mid_solution',
             e.id,
-            'the timeline ends on a gate — add a final step STATING the answer, so the lead has a resolution to drop and autoplay finishes the problem',
+            `the last gate resolves to '${key}' — a working line, not the answer; the lesson stops one move short of solving the problem`,
           )
       }
       // EVERY timeline must be workable: the faded/stepwise lead drops the

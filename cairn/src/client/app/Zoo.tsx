@@ -77,11 +77,8 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
   const [inputWidget] = useState(() =>
     item ? createWidget(item.widget.type, evalConfig(item.widget.config ?? {}, item.params as Params)) : null,
   )
-  // same truncation as ItemCard's lead: content steps minus the
-  // resolution — the answer space below IS the resolution. The preview
-  // must show what a STUDENT sees, so it truncates too; a timeline that
-  // reads as unfinished here is missing its resolution step, which is a
-  // curriculum fault to fix in the timeline, not to paper over here.
+  // same truncation as ItemCard's faded lead: content steps minus the
+  // resolution — the answer space below IS the resolution
   const content = demo.explanation.timeline.filter(
     (st) => st.patch !== undefined || st.caption !== undefined,
   )

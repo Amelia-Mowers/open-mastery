@@ -5,7 +5,6 @@ widget: tape-diagram
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{variable}", " + {p}", " = ", "{p+d}"], cells: ["{variable}", "{p}"], total: "{p+d}", cellsIn: 0, totalIn: false }, caption: "An empty bar. Watch the equation build it, piece by piece." }
-  - { t: 3, patch: { equation: ["{variable}", " + {p}", " = ", "{p+d}"], cells: ["{variable}", "{p}"], total: "{p+d}", cellsIn: 0, totalIn: false }, caption: "An empty bar. Watch the equation build it, piece by piece." }
   - t: 4
     patch: { eqHighlight: ["0"], cellsIn: 1, highlight: ["1"] }
     caption: "{variable} is the first piece of the bar — the part we are looking for."
@@ -50,6 +49,5 @@ timeline:
       value: "{d}"
       prompt: "Look at the bar: {p+d} across, and {p} of it is the second piece. How long is the first piece?"
       hint: "Cover the {p} section. What is left of the {p+d}?"
-  - { t: 23, patch: { eqHighlight: [], highlight: ["1", "2"] }, caption: "{variable} = {d}." }
   - { t: 24, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

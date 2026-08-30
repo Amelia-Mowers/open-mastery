@@ -7,6 +7,5 @@ timeline:
   - { t: 0, patch: { start: "{a}({variable} + {b})" }, caption: "{a} copies of the WHOLE parenthesis." }
   - { t: 4, patch: { line: "= {a}·{variable} + {a}·{b}", note: "distribute {a} to EACH part" }, caption: "Multiply {a} by each part inside. So what is the plain-number part?", expect: { type: expr, value: "{a}{variable} + {a}*{b}", prompt: "{a} multiplies EVERY part inside the brackets. What do you get?" } }
   - { t: 8.5, patch: { line: "= {a}{variable} + {a*b}", note: "equivalent for every {variable}" }, caption: "{a}{variable} + {a*b} — same value as {a}({variable} + {b}) for every {variable}.", expect: { type: numeric, value: "{a*b}", prompt: "Distribute: {a} · {b} makes the plain-number part. What is it?" } }
-  - { t: 11.5, patch: {}, caption: "{a}{variable} + {a*b} — same value as {a}({variable} + {b}) for every {variable}." }
-  - { t: 14, handoff: { prompt: "Now you try." } }
+  - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

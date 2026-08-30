@@ -7,6 +7,5 @@ timeline:
   - { t: 0, patch: { start: "{variable} + {p} = {p+d}" }, caption: "On the board: {variable} has {p} added to it. What undoes that?" }
   - { t: 4, patch: { line: "{variable} + {p} − {p} = {p+d} − {p}", note: "the same move on both sides" }, caption: "− {p} on both sides — that is what undoes the + {p}. The {p}s cancel: what is {variable}?", expect: { type: op, value: "subtract {p}", prompt: "What do you do to BOTH sides to peel the {p} off {variable}?", hint: "{p} is ADDED to {variable}. The opposite of adding {p} is subtracting {p} — and it goes on both sides." } }
   - { t: 8.5, patch: { line: "{variable} = {d}", note: "{p} − {p} = 0" }, caption: "{variable} = {d}.", expect: { type: expr, value: "{variable} = {d}", prompt: "The {p}s cancel — simplify. What is {variable}?" } }
-  - { t: 11.5, patch: {}, caption: "{variable} = {d}." }
-  - { t: 14, handoff: { prompt: "Now you try." } }
+  - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-29 }

@@ -8,6 +8,5 @@ timeline:
   - { t: 4, patch: { eqHighlight: ["0", "1"], reveal: "1", highlight: "1" }, caption: "{5*f}% of the number is {f*k}." }
   - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{f}" } }, caption: "Step down to 5%: {f*k} ÷ {f} = {k}.", expect: { type: numeric, value: "{k}", prompt: "What goes in the next row?" } }
   - { t: 13, patch: { reveal: "3", highlight: "3", factor: { from: "2", to: "3", text: "×20" } }, caption: "100% is twenty fives: {k} × 20 = {20*k}. The number is {20*k}.", expect: { type: numeric, value: "{20*k}", prompt: "What goes in the next row?" } }
-  - { t: 16, patch: { reveal: "3", highlight: "3", factor: { from: "2", to: "3", text: "×20" } }, caption: "100% is twenty fives: {k} × 20 = {20*k}. The number is {20*k}." }
   - { t: 16, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

@@ -9,6 +9,5 @@ timeline:
   - { t: 8, patch: { fillRows: "2" }, caption: "Two rows: {c} + {c} = {2*c}.", expect: { type: numeric, value: "{2*c}", prompt: "How many little squares filled in so far?" } }
   - { t: 12, patch: { eqHighlight: ["1"], fillRows: "{c}" }, caption: "So the question the square asks is: {c} rows of {c} make WHAT?", expect: { type: numeric, value: "{c}", prompt: "How many squares are in ONE row?", hint: "Count along a single row of the square." } }
   - { t: 16, patch: { products: ["{c*c}"] }, caption: "{c} rows of {c}: {c}² = {c} × {c} = {c*c}.", expect: { type: numeric, value: "{c*c}", prompt: "What is the total?" } }
-  - { t: 19, patch: { products: ["{c*c}"] }, caption: "{c} rows of {c}: {c}² = {c} × {c} = {c*c}." }
-  - { t: 21.5, handoff: { prompt: "Now you try." } }
+  - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

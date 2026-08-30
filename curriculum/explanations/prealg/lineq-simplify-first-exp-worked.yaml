@@ -7,6 +7,5 @@ timeline:
   - { t: 0, patch: { start: "{c1}{variable} + {c2}{variable} - {c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}" }, caption: "Messy — tidy each side first." }
   - { t: 4, patch: { line: "{c1+c2-c3}{variable} = {(c1+c2-c3)*ans}", note: "combine like terms on each side" }, caption: "{c1} + {c2} - {c3} = {c1+c2-c3} of {variable}; the numbers combine too. So what is {variable}?", expect: { type: expr, value: "{c1+c2-c3}{variable} = {(c1+c2-c3)*ans}", prompt: "With the like terms gathered, what does the equation read now?" } }
   - { t: 9, patch: { line: "{variable} = {ans}", note: "the same move on both sides" }, caption: "One step left: divide by {c1+c2-c3}. {variable} = {ans}.", expect: { type: expr, value: "{variable} = {ans}", prompt: "Simplify. What is {variable}?" } }
-  - { t: 12, patch: {}, caption: "One step left: divide by {c1+c2-c3}. {variable} = {ans}." }
-  - { t: 14.5, handoff: { prompt: "Now you try." } }
+  - { t: 11.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

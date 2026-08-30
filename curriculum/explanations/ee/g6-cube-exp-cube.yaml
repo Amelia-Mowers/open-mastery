@@ -9,6 +9,5 @@ timeline:
   - { t: 8, patch: { eqHighlight: ["1"], slices: 2, count: "2 × {n*n}" }, caption: "The small 3 says: take that WHOLE square again — a second slice behind it.", expect: { type: numeric, value: "2 * {n*n}", prompt: "How many small squares in all now?" } }
   - { t: 12, patch: { slices: "{n}", count: null }, caption: "So the question the cube asks is: {n} slices of {n*n} make WHAT?", expect: { type: numeric, value: "{n}", prompt: "How many slices are stacked? Count them.", hint: "The small 3 said take the square this many times." } }
   - { t: 16, patch: { count: "{n*n*n}" }, caption: "{n} slices of {n*n}: {n}³ = {n*n} × {n} = {n*n*n}.", expect: { type: numeric, value: "{n*n*n}", prompt: "How many small squares in all now?" } }
-  - { t: 19, patch: { count: "{n*n*n}" }, caption: "{n} slices of {n*n}: {n}³ = {n*n} × {n} = {n*n*n}." }
-  - { t: 21.5, handoff: { prompt: "Now you try." } }
+  - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

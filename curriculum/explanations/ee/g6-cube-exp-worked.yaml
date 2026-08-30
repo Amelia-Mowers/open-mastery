@@ -8,6 +8,5 @@ timeline:
   - { t: 4, patch: { line: "{n}³ = {n} × {n} × {n}", note: "written out" }, caption: "Three factors of {n}, written out.", expect: { type: numeric, value: "3", prompt: "How many factors of {n} does {n}³ mean?", hint: "The small 3 counts how many times {n} is used as a factor.", misconceptions: [{ id: "exponent-as-multiplier", when: "{3*n}", says: "That is {n} × 3. The small 3 does not multiply — it COUNTS how many {n}s are multiplied together." }] } }
   - { t: 8, patch: { line: "= {n*n} × {n}", note: "the square first" }, caption: "Two of the factors make {n}² = {n*n}. One factor of {n} is still waiting. What does {n}³ equal?", expect: { type: numeric, value: "{n*n}", prompt: "Take two of the three factors first — what is {n} × {n}?" } }
   - { t: 12, patch: { line: "= {n*n*n}", note: "one more factor" }, caption: "{n}³ = {n*n*n}.", expect: { type: numeric, value: "{n*n*n}", prompt: "{n*n} with one more factor of {n} — what is {n}³?" } }
-  - { t: 15, patch: {}, caption: "{n}³ = {n*n*n}." }
-  - { t: 17.5, handoff: { prompt: "Now you try." } }
+  - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-29 }

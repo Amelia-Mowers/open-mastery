@@ -8,6 +8,5 @@ timeline:
   - { t: 4, patch: { eqHighlight: ["2"], highlight: "1" }, caption: "x = 1 gives y = {k} — that is k itself." }
   - { t: 8, patch: { reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "×{a}" } }, caption: "x = {a} now. What does the y column read on that row?", expect: { type: numeric, value: "{a*k}", prompt: "What goes in the next row?" } }
   - { t: 12.5, patch: { eqHighlight: [], reveal: "3", highlight: "3", factor: { from: "1", to: "3", text: "×{c}" } }, caption: "x = {c} gives y = {k*c}. Every row obeys y = {k}x.", expect: { type: numeric, value: "{c*k}", prompt: "What goes in the next row?" } }
-  - { t: 15.5, patch: { eqHighlight: [], reveal: "3", highlight: "3", factor: { from: "1", to: "3", text: "×{c}" } }, caption: "x = {c} gives y = {k*c}. Every row obeys y = {k}x." }
   - { t: 16, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

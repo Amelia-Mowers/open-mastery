@@ -294,26 +294,23 @@ disconnected from the caption on screen — and note that the caption
 DISPLAYED while a gate is open is the one BEFORE it, so a question
 written on the gated step itself is never the one the student reads.
 
-## The timeline ENDS ON THE ANSWER
+## The last gate resolves to the ANSWER, not a working line
 
-The last content step must STATE the resolution — "{variable} = {ans}",
-"{n}³ = {n*n*n}" — as a step of its own, after the last gate. Two things
-depend on it, and both break silently:
+A timeline ENDING on a gate is correct — the lead drops the final content
+step because the answer box below it IS the resolution. What must not
+happen is the last gate keying to an intermediate line: two-step's ended
+on `{a}{variable} = {a*ans} ÷ {a}`, so neither the gate nor the box ever
+said what {variable} was and the lesson stopped one move short of solving
+the problem. Its key is `{variable} = {ans}` now.
 
-- The stepwise lead DROPS the final content step, because the answer box
-  below it is the resolution. A timeline whose last gate IS its last step
-  has nothing to drop, so the student is left on "{a}{variable} =
-  {a*ans}. One move left." and the lesson never resolves.
-- Autoplay and the zoo preview play the timeline as written. Without a
-  resolution step they simply stop short of the answer.
+Read the last gate's `value`: after its templates are substituted, the
+side after `=` should be a NUMBER, not arithmetic still to do. Validator:
+`[ends_mid_solution]`.
 
-So the shape is: … → gate asking the closing question → a plain step
-stating the answer → handoff. Validator: `[no_resolution]`.
-
-This is easy to miss because every other check passes on such a
-timeline — `[lead_ends_quiet]` is satisfied (the last SURVIVING step is
-a gate, precisely because the resolution got dropped), and the gate
-coverage test still finds a workable gate.
+(Do not "fix" this by appending a resolution step everywhere. A gate that
+already resolves to the answer is finished — the student supplies it in
+the box, which is the whole design. An earlier sweep added 47 such steps
+before this was understood, and reverted.)
 
 ## The LAST gate asks the lesson's own question
 
