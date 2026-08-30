@@ -8,6 +8,7 @@ import { Dashboard } from './Dashboard'
 import { Zoo } from './Zoo'
 import { Guide } from './Guide'
 import { SmoothHeight } from './SmoothHeight'
+import { ContentErrorBoundary } from './ContentErrorBoundary'
 import type { Params } from './render'
 
 /** an alternative explanation chained from the current lesson */
@@ -51,7 +52,17 @@ const urlParam = (name: string): string | null => {
  * after the student chose "More practice first" */
 const CHECK_DEFER_SERVES = 3
 
-export function App({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppProps) {
+export function App(props: AppProps) {
+  // a content fault (unrenderable template, undrawable widget) must stop
+  // the lesson honestly rather than render something broken
+  return (
+    <ContentErrorBoundary>
+      <AppInner {...props} />
+    </ContentErrorBoundary>
+  )
+}
+
+function AppInner({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppProps) {
   /** a student who has signed in but not yet been placed — the grade page
    * stands between the two, and only for someone new */
   const [pendingStudent, setPendingStudent] = useState<string | null>(null)

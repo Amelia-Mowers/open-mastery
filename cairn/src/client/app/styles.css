@@ -248,6 +248,12 @@ body {
 .zoo-verdict.ok { color: #3f6a4d; }
 .zoo-verdict.bad { color: #b04528; }
 
+/* ---- content error ---- */
+.content-error-detail {
+  margin-top: 14px; font: 12px 'IBM Plex Mono', ui-monospace, monospace;
+  word-break: break-word;
+}
+
 /* ---- new build available ---- */
 .new-build-bar {
   position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);

@@ -324,7 +324,19 @@ export function StepwisePlayer({
         </div>
       )}
       <div className="lesson-stage" key={scrub ?? 'live'}>
-        {shownWidget ? shownWidget.element : null}
+        {shownWidget ? (
+          shownWidget.element
+        ) : (
+          // NO SILENT FALLBACK: the gates below ask about a diagram
+          // ("which piece goes in the left pan?"). Rendering nothing
+          // leaves the student answering questions about an invisible
+          // picture, so say what happened instead. Reachable when an
+          // instance's generated params fall outside a widget setup's
+          // guards — lesson-coverage only proves the FAMILY params build.
+          <p className="lesson-caption" role="status" data-testid="stepwise-no-widget">
+            This walk-through could not be drawn for these numbers.
+          </p>
+        )}
       </div>
       <p
         key={view.caption}

@@ -1,14 +1,34 @@
-/** Client-side cairn-expr template rendering. Total: a template that fails to
- * render (curriculum bug) falls back to its raw source so the UI never
- * crashes mid-lesson. */
+/** Client-side cairn-expr template rendering.
+ *
+ * NO SILENT FALLBACK. A template that cannot render is a CURRICULUM fault.
+ * Returning its raw source printed "{a*b}" on the board as though it were
+ * content — the exact defect this project has paid for repeatedly — and any
+ * placeholder has the same problem in weaker form: it is still a lesson
+ * being shown to a student with the content missing.
+ *
+ * So it THROWS. <ContentErrorBoundary> catches it and offers a reload; the
+ * student sees an honest error instead of a broken lesson, and the fault
+ * cannot reach production unnoticed. Correctness over self-recovery.
+ */
 import { renderTemplate, type Env } from '@openmastery/schema'
 import type { BalanceScaleView } from '../viz/balance-scale'
 
 export type Params = Record<string, number | string>
 
+export class TemplateRenderError extends Error {
+  constructor(
+    readonly template: string,
+    readonly params: Params,
+  ) {
+    super(`template failed to render: ${JSON.stringify(template)}`)
+    this.name = 'TemplateRenderError'
+  }
+}
+
 export function renderText(template: string, params: Params): string {
   const r = renderTemplate(template, params as Env)
-  return r.ok ? r.value : template
+  if (r.ok) return r.value
+  throw new TemplateRenderError(template, params)
 }
 
 /** Evaluate a templated patch value ("{b/a}", 7, "3") to a finite number, or

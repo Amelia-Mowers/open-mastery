@@ -9,6 +9,7 @@ import { dirname, join } from 'node:path'
 import { loadBundleDir } from '@openmastery/schema/load'
 import { buildIndex } from '../../src/core/curriculum'
 import { practiceItems } from '../../src/core/select'
+import { feedableParams } from '../../src/site/core'
 import { createLessonWidget } from '../../src/client/app/LessonPlayer'
 import { evalNumber, numberLineSetup } from '../../src/client/app/render'
 import { WIDGET_ROLES, type WidgetType } from '../../src/client/widgets/registry'
@@ -30,7 +31,11 @@ describe.skipIf(!has)('every curriculum explanation renders a live lesson', () =
     const failures: string[] = []
     for (const e of cur.explanations.values()) {
       if (!WIDGET_ROLES[e.widget as WidgetType]?.lesson) continue
-      const family = practiceItems(e.skill, cur)[0]?.params ?? {}
+      // NO SILENT FALLBACK: a skill may hold several forms with disjoint
+      // identifiers, so item[0]'s params may not render this board at all.
+      // Use params that can actually feed it, or skip — never substitute.
+      const family = feedableParams(e, practiceItems(e.skill, cur).map((it) => it.params))
+      if (family === null) continue
       const w = createLessonWidget(e, family as never)
       if (w === null) failures.push(e.id)
     }
@@ -52,7 +57,9 @@ describe.skipIf(!has)('every curriculum explanation renders a live lesson', () =
     const bad: string[] = []
     for (const e of cur.explanations.values()) {
       if (e.widget !== 'number-line') continue
-      const params = (practiceItems(e.skill, cur)[0]?.params ?? {}) as Record<string, unknown>
+      const fed = feedableParams(e, practiceItems(e.skill, cur).map((it) => it.params))
+      if (fed === null) continue
+      const params = fed as Record<string, unknown>
       const setup = numberLineSetup(e.timeline as never, params as never)
       if (!setup) continue
       const ticks = new Set<number>()

@@ -278,7 +278,7 @@ export class SiteApi implements CairnApi {
       const again = await fetch(
         this.url('/api/explain', { skill: skillId, exclude: excludeReps[excludeReps.length - 1]! }),
       )
-      return (await again.json()) as ExplainResult
+      return this.json<ExplainResult>(again, 'explain (loop)')
     }
     return result
   }
@@ -289,17 +289,20 @@ export class SiteApi implements CairnApi {
 
   async demos(): Promise<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> }> {
     const r = await fetch(`${this.base}/api/demos`)
-    return (await r.json()) as { demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> }
+    return this.json<{ demos: ZooDemoView[]; index?: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>> }>(r, 'demos')
   }
 
   async demoFor(explanationId: string): Promise<ZooDemoView> {
     const r = await fetch(`${this.base}/api/demo?exp=${encodeURIComponent(explanationId)}`)
-    return (await r.json()) as ZooDemoView
+    // explanationDemo returns 422 when no item can feed a timeline —
+    // casting that error body back to the success type would undo the
+    // loud failure and hand the reviewer an opaque TypeError instead
+    return this.json<ZooDemoView>(r, 'demo')
   }
 
   async bundle(): Promise<BundleView> {
     const r = await fetch(`${this.base}/api/bundle`)
-    return (await r.json()) as BundleView
+    return this.json<BundleView>(r, 'bundle')
   }
 
   async guide(): Promise<GuideView> {
@@ -337,7 +340,7 @@ export class SiteApi implements CairnApi {
 
   async state(): Promise<StateView> {
     const r = await fetch(this.url('/api/state'))
-    return (await r.json()) as StateView
+    return this.json<StateView>(r, 'state')
   }
 
   async reset(): Promise<void> {

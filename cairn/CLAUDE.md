@@ -141,9 +141,17 @@
   stale attempt rendered a NaN delta; `explanationDemo` fell back to
   `practiceItems[0]`, which is how a lesson taught one problem while the
   answer box graded another.
-  When the correct value is not available, RETURN AN ERROR or throw —
+  When the correct value is not available, RETURN AN ERROR or THROW —
   including in tests, which is where these are cheapest to catch. Correct
   or loud; never quietly approximate.
+  **THROWING IS THE DEFAULT, and a placeholder is not a compromise.**
+  "Render a marker so the UI doesn't crash" is the same failure in weaker
+  form: a lesson is still on screen with its content missing. `renderText`
+  throws `TemplateRenderError`; `<ContentErrorBoundary>` (wrapping the
+  whole app) catches it and offers a reload, so the student is told the app
+  broke rather than shown broken material — and the fault cannot reach
+  production unnoticed. Apply the same shape to any new content path: throw
+  at the fault, catch at a boundary, never substitute.
 - **Review EVERY STEP, not the last frame.** `node
   scripts/shoot-steps.mjs <explanation-id> <out.png>` drives the real
   widget through its patches, renders each state with the app's own
