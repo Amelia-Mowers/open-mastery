@@ -296,8 +296,16 @@ function gradeExpr(spec: AnswerSpec, params: Env, raw: string): Verdict {
   if (typeof spec.value !== 'string') throw new AnswerKeyError('answer key is not an expression')
   // syntactic form guards: symbolic equivalence would accept an echo of the
   // stem ("3(x+2)" ≡ "3x+6"), so expansion/combination items constrain shape
-  if (spec.form === 'expanded' && /[()]/.test(raw))
-    return incorrect('give the expanded form — no parentheses')
+  if (spec.form === 'expanded') {
+    if (/[()]/.test(raw)) return incorrect('give the expanded form — no parentheses')
+    // …and the arithmetic must be CARRIED OUT. "3*2x + 3*5" has no
+    // parentheses and is equivalent to "6x + 15", but it is the line the
+    // board already shows: typing it back demonstrates nothing, and
+    // producing the simplified form IS the skill. A number multiplying a
+    // number, or a number multiplying a coefficient, is unfinished work.
+    const pending = /\d\s*[*·×]\s*\d/.test(raw)
+    if (pending) return incorrect('multiply it out — give the simplified terms')
+  }
   if (spec.form === 'evaluated') {
     // the value side must be a literal number (optionally signed/decimal or
     // a single fraction) — no pending arithmetic

@@ -233,7 +233,13 @@ export function StepwisePlayer({
             return picked.size === want.size && [...picked].every((i) => want.has(i))
           })()
         : gradeAnswer(
-            { type: waitingOn.type, value: waitingOn.value } as AnswerSpec,
+            // carry the gate's `form` through: without it a gate accepts
+            // the unsimplified line the board already shows
+            {
+              type: waitingOn.type,
+              value: waitingOn.value,
+              ...(waitingOn.form ? { form: waitingOn.form } : {}),
+            } as AnswerSpec,
             params as never,
             raw,
           ).verdict === 'correct'

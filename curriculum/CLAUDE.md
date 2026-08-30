@@ -63,6 +63,18 @@ Two invariants keep the stepwise promise honest:
   whose banner phrasing doesn't match the item's stem is a wrong-form
   risk, not a rotation.
 
+## `form: expanded` means SIMPLIFIED, not merely bracket-free
+
+Symbolic equivalence accepts the line already on the board: asked to
+expand `3(2x + 5)`, a student could type `3*2x + 3*5` and be marked
+correct, having demonstrated nothing — producing the simplified form IS
+the skill. `form: expanded` now rejects pending arithmetic (a number
+times a number, or times a coefficient) as well as parentheses.
+
+GATES take `form` too. Without it a stepwise gate accepts the
+unsimplified line even when its item would not — the same answer graded
+two different ways depending on where it was typed.
+
 ## Answers must be FINISHED (form: evaluated)
 
 `59 − 25` evaluates to the right number but is arithmetic the student

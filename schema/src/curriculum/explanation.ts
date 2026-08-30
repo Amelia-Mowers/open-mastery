@@ -16,6 +16,11 @@ export const stepExpectSchema = z
     prompt: z.string().min(1).optional(),
     /** shown after a wrong try (second wrong try reveals the move) */
     hint: z.string().optional(),
+    /** same shape guards the ITEMS use: 'expanded' also rejects pending
+     * arithmetic ("3*2x + 3*5"), because producing the simplified form is
+     * the skill and equivalence alone accepts the line already on the
+     * board; 'evaluated' requires a literal number */
+    form: z.enum(['expanded', 'evaluated', 'combined']).optional(),
     /** named wrong MOVES at this gate — the same diagnosis standard the
      * items use, applied to a step instead of a final answer */
     misconceptions: z.array(misconceptionSchema).optional(),
