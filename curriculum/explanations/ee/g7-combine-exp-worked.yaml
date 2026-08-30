@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{a}{variable} + {b} − {c}{variable} + {d}" }, caption: "The letter {variable} appears TWICE — gather its terms." }
   - { t: 4, patch: { line: "{variable}-terms: {a}{variable} − {c}{variable} = {a-c}{variable}", note: "same letter, combine" }, caption: "{a} of them minus {c} of them leaves {a-c}{variable}. What does the whole expression become?" }
-  - { t: 8.5, patch: { line: "numbers: {b} + {d} = {b+d}", note: "plain numbers together" }, caption: "The plain numbers combine separately.", expect: { type: numeric, value: "{b+d}", prompt: "Gathered up — what does the expression simplify to?" } }
+  - { t: 8.5, patch: { line: "numbers: {b} + {d} = {b+d}", note: "plain numbers together" }, caption: "The plain numbers combine separately.", expect: { type: expr, value: "{a-c}{variable} + {b+d}", prompt: "Gathered up — what does the whole expression simplify to?", hint: "{a} − {c} of the {variable}s, and {b} + {d} for the plain numbers." } }
   - { t: 13, patch: { line: "= {a-c}{variable} + {b+d}", note: "simplified" }, caption: "One short expression: {a-c}{variable} + {b+d}." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

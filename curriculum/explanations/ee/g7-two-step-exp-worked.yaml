@@ -28,4 +28,4 @@ timeline:
       hint: "{variable} is multiplied by {a}. Dividing both sides by {a} undoes that."
   - { t: 15, patch: { line: "{variable} = {ans}", note: "the {a}s cancel" }, caption: "{variable} = {ans}." }
   - { t: 17.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

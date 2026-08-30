@@ -396,7 +396,45 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         const gated = e.timeline.filter((st) => st.expect !== undefined)
         const last = gated[gated.length - 1]
         const key = last?.expect?.value
-        if (typeof key !== 'string' || !key.includes('=')) continue
+        if (typeof key !== 'string') continue
+        // A last gate that asks for only PART of the answer leaves the
+        // lesson unfinished just as surely as a working line does:
+        // equivalent's board ended by asking for the constant ({a*b}, "12")
+        // when the answer is the whole expression ({a}{variable} + {a*b},
+        // "3x + 12"). If the board's final LINE names the variable and the
+        // gate's key does not, the student never states the answer.
+        const finalLine = [...e.timeline]
+          .reverse()
+          .map((st) => (typeof st.patch?.['line'] === 'string' ? st.patch['line'] : ''))
+          .find((l) => l !== '')
+        // op gates ask for a MOVE ("divide {a}"), never for the answer —
+        // the resolution line after them is what the answer box collects,
+        // so they are finished, not partial.
+        const asksForAMove = last?.expect?.type === 'op'
+        // A gate asking for the VALUE that the resolution line states
+        // ("x = {q*b/p}" with a gate keyed to "{q*b/p}") is finished too:
+        // the student produced the number, and the box collects "x = …".
+        // Only a gate asking for a DIFFERENT part than the answer — the
+        // constant term of "3x + 12" — leaves the lesson incomplete.
+        const isResolutionValue =
+          finalLine !== undefined &&
+          new RegExp(`=\\s*${key.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`).test(finalLine)
+        if (
+          !asksForAMove &&
+          !isResolutionValue &&
+          finalLine !== undefined &&
+          /\{variable\}/.test(finalLine) &&
+          !/\{variable\}/.test(key)
+        ) {
+          push(
+            'warning',
+            'ends_mid_solution',
+            e.id,
+            `the last gate asks for '${key}' but the board finishes on '${finalLine}' — the student never states the whole answer`,
+          )
+          continue
+        }
+        if (!key.includes('=')) continue
         // strip the TEMPLATES first: "{p+d}" renders to a single number,
         // so its arithmetic is the author computing the answer, not the
         // student being left mid-working. What matters is arithmetic
