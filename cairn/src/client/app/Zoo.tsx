@@ -178,6 +178,11 @@ function InputCard({ title, type, config }: { title: string; type: string; confi
 
 /** every input-capable widget appears here with a sample config */
 const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Record<string, unknown> }> = [
+  {
+    title: 'term-input (structured [ ]x + [ ], easier tiers)',
+    type: 'term-input',
+    config: { variable: 'x', stem: 'Expand: 3(2x + 5).' },
+  },
   { title: 'number-line (answer input)', type: 'number-line', config: { min: -4, max: 4, step: 2 } },
   { title: 'opposite-flip (answer input)', type: 'opposite-flip', config: { value: 2 } },
   { title: 'tape-diagram (fill a part)', type: 'tape-diagram', config: { parts: 4, total: 28, fill: 'part' } },

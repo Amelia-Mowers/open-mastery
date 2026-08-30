@@ -1,6 +1,7 @@
 import type { WidgetInstance } from './contract'
 import { createNumericInput, type NumericInputConfig } from './numeric-input'
 import { createExpressionInput, type ExpressionInputConfig } from './expression-input'
+import { createTermInput, type TermInputConfig } from './term-input'
 import { createNumberLine, type NumberLineConfig } from './number-line'
 import { createBalanceScale, type BalanceScaleConfig } from '../viz/balance-scale'
 import { createEnvelopeModel, type EnvelopeModelConfig } from '../viz/envelope-model'
@@ -26,6 +27,9 @@ export interface WidgetRoles {
 export const WIDGET_ROLES: Record<WidgetType, WidgetRoles> = {
   'numeric-input': { lesson: false, input: true },
   'expression-input': { lesson: false, input: true },
+  // structured [ ]x + [ ] — scaffolds the easier tiers; the ceiling stays
+  // a raw expression (capstone rule)
+  'term-input': { lesson: false, input: true },
   'equation-input': { lesson: false, input: true },
   'number-line': { lesson: true, input: true },
   'balance-scale': { lesson: true, input: true },
@@ -51,6 +55,7 @@ export class UnknownWidgetError extends Error {
 export type WidgetType =
   | 'numeric-input'
   | 'expression-input'
+  | 'term-input'
   | 'equation-input' // curriculum alias for expression-input
   | 'number-line'
   | 'balance-scale'
@@ -77,6 +82,8 @@ export function createWidget(
   switch (type) {
     case 'numeric-input':
       return createNumericInput(config as NumericInputConfig) as never
+    case 'term-input':
+      return createTermInput(config as TermInputConfig) as never
     case 'expression-input':
     case 'equation-input':
       return createExpressionInput(config as ExpressionInputConfig) as never

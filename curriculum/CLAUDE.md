@@ -528,6 +528,30 @@ Opening captions teach the concept AFFIRMATIVELY ("6² means a square:
 are the primary learning path, not reminder notes — a misconception
 contrast may FOLLOW the positive statement, but never lead it.
 
+## Structure the answer space early, withdraw it at the ceiling
+
+Concreteness fading applies to the ANSWER SPACE, not only the diagram.
+`term-input` renders `[ ]x [±] [ ]` — a box per term and the sign chosen,
+not printed — for the easier tiers of an expression skill:
+
+- it isolates the mathematics. A free-text box also tests notation
+  (writing `6x` not `6*x` or `x6`), so a student who distributes
+  perfectly can still be marked wrong for typing;
+- the blank structure IS teaching. `[ ]x + [ ]` says the answer has two
+  parts, one attached to the variable and one not — the conceptual
+  content of distributing over a sum;
+- it localises the error. Coefficient right, constant left as the
+  original ⇒ distributed to the first term only, which one box cannot
+  distinguish from any other mistake.
+
+It must NOT be the ceiling: it gives away the form, and the standard asks
+the student to GENERATE an equivalent expression, not fill slots. So:
+structured at difficulty 1, raw expression at the hardest item — the
+capstone rule below, applied to the same skill.
+
+It assembles an ordinary expression string, so ONE answer key grades both
+inputs; a structured answer never needs a structured key.
+
 ## Difficulty ceilings are RAW (capstone rule)
 
 Widget answer spaces (tape, number lines, tables, flip, choice) scaffold

@@ -4,7 +4,7 @@ difficulty: 1
 representation: ratio-table
 params: { m: 3, n: 2, variable: x }
 generator: { m: { int: [2, 9] }, n: { int: [1, 9] } }
-widget: { type: expression-input, config: { stem: "Expand: {m}({variable} + {n})." } }
+widget: { type: term-input, config: { variable: "{variable}", stem: "Expand: {m}({variable} + {n})." } }
 answer: { type: expr, value: "{m}{variable} + {m*n}", equivalence: symbolic, form: expanded }
 misconceptions:
   - id: distributed-to-first-term-only
