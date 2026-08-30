@@ -497,6 +497,31 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             )
         }
       }
+      // THE MIRROR CASE. A prompt asking for an algebraic PART ("what does
+      // the x-part become?") with a bare NUMERIC key rejects the correct
+      // answer: the student writes 6x, the key is 6. Third instance of a
+      // prompt/answer-type mismatch this catalog has shipped, so check
+      // both directions.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        for (const [i, st] of e.timeline.entries()) {
+          const ex = st.expect
+          if (ex?.type !== 'numeric') continue
+          const prompt = ex.prompt ?? ''
+          // does the prompt name a part of the expression, not a value?
+          // "what is it WORTH / what does it equal" wants a number; only a
+          // prompt naming a PART of the expression wants a term
+          if (!/\{variable\}-part|\bterm\b|\bpart\b\s+become/i.test(prompt)) continue
+          const key = String(ex.value)
+          // a key naming the variable is fine; a bare number is the fault
+          if (!key.includes('{variable}'))
+            push(
+              'warning',
+              'gate_wants_transcription',
+              `${e.id}.timeline[${i}]`,
+              `the prompt asks for an algebraic part ('${prompt.slice(0, 50)}…') but the key '${key}' is a bare number — the correct term is rejected`,
+            )
+        }
+      }
       // EVERY timeline must be workable: the faded/stepwise lead drops the
       // final content step (the resolution), so a timeline whose only gates
       // sit there plays as a passive movie. Count the gates that SURVIVE.
