@@ -1,0 +1,13 @@
+id: g7.ee.combine-neg
+name: Combine like terms when the numbers are subtracted
+preamble:
+  plain: "9y − 8 − 3y − 2: the y-terms still gather, and the subtracted numbers pile up TOGETHER — taking away 8 and then 2 takes away 10 in all."
+  vocab:
+    - { term: like terms, meaning: "terms with the same letter part — they can be combined" }
+standards: [CCSS.MATH.CONTENT.7.EE.A.1]
+source: { book: ccss-ee-progression, section: "7.EE.A.1" }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
+fluency: false
+prereqs: [g7.ee.combine]
+instruction:
+  - g7.ee.combine-neg.exp-worked

@@ -5,10 +5,16 @@ import { createExpressionInput, normalizeExpression } from '../src/client/widget
 
 describe('expression-input widget', () => {
   it('renders from params', () => {
-    const w = createExpressionInput({ variable: 'x' })
+    const w = createExpressionInput({ variable: 'x', placeholder: 'x = ?' })
     render(w.render({ prompt: 'Solve for x.' }, 'problem'))
     expect(screen.getByText('Solve for x.')).toBeInTheDocument()
     expect(screen.getByPlaceholderText('x = ?')).toBeInTheDocument()
+  })
+
+  it('shows NO placeholder unless one is configured — a bare-expression answer must not see "x = ?"', () => {
+    const w = createExpressionInput({ variable: 'x' })
+    render(w.render({ prompt: 'Expand.' }, 'problem'))
+    expect(screen.getByRole('textbox')).not.toHaveAttribute('placeholder')
   })
 
   it('extract() returns raw and normalized after typing', async () => {

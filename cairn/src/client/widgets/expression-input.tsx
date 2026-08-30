@@ -3,7 +3,13 @@ import type { WidgetFactory, WidgetInstance, WidgetMode } from './contract'
 import { WidgetStore } from './store'
 
 export interface ExpressionInputConfig {
+  /** feeds the `x =` prefix normalization only */
   variable?: string
+  /** shown faded when empty. EXPLICIT: an equation answer wants "x = ?",
+   * a bare expression wants none — the caller knows the answer's shape
+   * (the curriculum names it: equation-input vs expression-input), the
+   * widget must not guess it from `variable`. */
+  placeholder?: string
 }
 
 export interface ExpressionInputParams {
@@ -47,7 +53,7 @@ export const createExpressionInput: WidgetFactory<
           aria-label={label(params)}
           aria-disabled={disabled}
           disabled={disabled}
-          placeholder={config.variable ? `${config.variable} = ?` : undefined}
+          placeholder={config.placeholder}
           value={state.raw}
           onChange={(e) => {
             store.record('input', { raw: e.target.value })

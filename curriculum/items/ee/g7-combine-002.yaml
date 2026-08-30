@@ -1,21 +1,21 @@
 id: g7.ee.combine.002
 skills: [g7.ee.combine]
 difficulty: 2
-representation: ratio-table
-params: { a: 9, b: 8, c: 3, d: 2, variable: y }
-generator: { a: { int: [6, 12] }, b: { int: [6, 12] }, c: { int: [2, 5] }, d: { int: [1, 5] } }
-widget: { type: expression-input, config: { stem: "Simplify: {a}{variable} − {b} − {c}{variable} − {d}." } }
-answer: { type: expr, value: "{a-c}{variable} - {b+d}", equivalence: symbolic, form: combined }
+representation: worked-equation
+params: { a: 11, b: 2, c: 4, d: 6, variable: t }
+generator: { a: { int: [6, 12] }, b: { int: [1, 9] }, c: { int: [2, 5] }, d: { int: [1, 9] } }
+widget: { type: expression-input, config: { stem: "Simplify: {b} + {a}{variable} + {d} − {c}{variable}." } }
+answer: { type: expr, value: "{a-c}{variable} + {b+d}", equivalence: symbolic, form: combined }
 misconceptions:
   - id: added-the-variable-terms
-    when: "{a+c}{variable} - {b+d}"
+    when: "{a+c}{variable} + {b+d}"
     says: "The −{c}{variable} is taken away, so the {variable}-terms give {a} − {c} = {a-c}, not {a} + {c}."
-  - id: subtracted-the-numbers-wrong
-    when: "{a-c}{variable} - {b-d}"
-    says: "Both numbers are being subtracted, so together they take away {b} + {d} = {b+d}."
+  - id: combined-unlike-terms
+    when: "{a-c+b+d}"
+    says: "{variable}-terms and plain numbers can't merge — {variable} is an unknown amount. Combine each kind separately."
 hints:
-  - "Gather the {variable}-terms; the numbers are BOTH subtracted."
-  - "{a}{variable} − {c}{variable} = {a-c}{variable}, and −{b} − {d} = −{b+d}."
+  - "Gather the {variable}-terms and the plain numbers separately."
+  - "{a}{variable} − {c}{variable} = {a-c}{variable}, and {b} + {d} = {b+d}."
 source: { book: ccss-ee-progression, section: "7.EE.A.1" }
-verify: "({a} - {c})*{variable} - {b} - {d}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+verify: "({a} - {c})*{variable} + {b} + {d}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

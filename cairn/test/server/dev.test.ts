@@ -49,7 +49,9 @@ async function play(base: string, studentId: string, bundle: Bundle, opts: Clien
     })
   for (let step = 0; step < (opts.maxSteps ?? 400); step++) {
     const r = await fetch(`${base}/api/next?student=${studentId}`)
-    const { action, item } = (await r.json()) as { action: Record<string, unknown>; item?: { answer?: unknown } }
+    const body = (await r.json()) as { action: Record<string, unknown>; item?: { answer?: unknown } }
+    if (body.action === undefined) throw new Error(`api/next errored: ${JSON.stringify(body)}`)
+    const { action, item } = body
     if (action['kind'] === 'session_done') return
     if (action['kind'] === 'lesson' || action['kind'] === 'alt_explanation') {
       await post('/api/explanation-viewed', {})

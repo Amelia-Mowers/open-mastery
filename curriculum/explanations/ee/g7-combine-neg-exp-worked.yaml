@@ -1,0 +1,12 @@
+id: g7.ee.combine-neg.exp-worked
+skill: g7.ee.combine-neg
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "{a}{variable} − {b} − {c}{variable} − {d}" }, caption: "The letter {variable} appears TWICE — and BOTH plain numbers are subtracted." }
+  - { t: 4, patch: { line: "{variable}-terms: {a}{variable} − {c}{variable} = {a-c}{variable}", note: "same letter, combine" }, caption: "{a} of them minus {c} of them leaves {a-c}{variable}. Now the subtracted numbers — together, how much comes off?", expect: { type: numeric, value: "{a-c}", prompt: "{a} of the {variable}s minus {c} of them — how many {variable}s are left?", hint: "{a} − {c}." } }
+  - { t: 8.5, patch: { line: "numbers: −{b} − {d} = −{b+d}", note: "both subtracted — they come off together" }, caption: "Take away {b}, then take away {d}: {b+d} comes off in all. So what is the whole expression?", expect: { type: numeric, value: "{b+d}", prompt: "−{b} and −{d} — how much is taken away in all?", hint: "{b} + {d} comes off.", misconceptions: [{ id: "subtracted-the-numbers-wrong", when: "{b-d}", says: "Both numbers are being subtracted, so together they take away {b} + {d} = {b+d}, not {b} − {d}." }] } }
+  - { t: 13, patch: { line: "= {a-c}{variable} − {b+d}", note: "simplified" }, caption: "One short expression: {a-c}{variable} − {b+d}." }
+  - { t: 15.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

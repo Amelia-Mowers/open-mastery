@@ -1,0 +1,21 @@
+id: g7.ee.combine-neg.001
+skills: [g7.ee.combine-neg]
+difficulty: 1
+representation: worked-equation
+params: { a: 9, b: 8, c: 3, d: 2, variable: y }
+generator: { a: { int: [6, 12] }, b: { int: [6, 12] }, c: { int: [2, 5] }, d: { int: [1, 5] } }
+widget: { type: expression-input, config: { stem: "Simplify: {a}{variable} − {b} − {c}{variable} − {d}." } }
+answer: { type: expr, value: "{a-c}{variable} - {b+d}", equivalence: symbolic, form: combined }
+misconceptions:
+  - id: added-the-variable-terms
+    when: "{a+c}{variable} - {b+d}"
+    says: "The −{c}{variable} is taken away, so the {variable}-terms give {a} − {c} = {a-c}, not {a} + {c}."
+  - id: subtracted-the-numbers-wrong
+    when: "{a-c}{variable} - {b-d}"
+    says: "Both numbers are being subtracted, so together they take away {b} + {d} = {b+d}."
+hints:
+  - "Gather the {variable}-terms; the numbers are BOTH subtracted."
+  - "{a}{variable} − {c}{variable} = {a-c}{variable}, and −{b} − {d} = −{b+d}."
+source: { book: ccss-ee-progression, section: "7.EE.A.1" }
+verify: "({a} - {c})*{variable} - {b} - {d}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

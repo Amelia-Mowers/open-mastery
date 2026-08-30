@@ -1,0 +1,11 @@
+id: g6.ee.write-expression-sub.exp-worked
+skill: g6.ee.write-expression-sub
+representation: worked-equation
+widget: worked-equation
+params_from: item
+timeline:
+  - { t: 0, patch: { start: "\"{p} less than {a} times a number\"" }, caption: "Words first — and watch the ORDER: \"less than\" flips it." }
+  - { t: 4, patch: { line: "{a} times the number  →  {a}{variable}", note: "call the number {variable}" }, caption: "Give the unknown number a letter: {variable}. Now {p} LESS than that — which way around?", expect: { type: expr, value: "{a}{variable}", prompt: "How do you write '{a} times the number' using {variable}?" } }
+  - { t: 8.5, patch: { line: "{p} less  →  {a}{variable} − {p}", note: "\"less than\" takes away — from the OTHER phrase" }, caption: "The expression: {a}{variable} − {p}. The {p} comes OFF, so it is written last.", expect: { type: expr, value: "{a}{variable} - {p}", prompt: "So what is the WHOLE expression — {p} less than {a} times the number?", misconceptions: [{ id: "subtracted-the-wrong-way", when: "{p} - {a}{variable}", says: "'{p} less than' starts from {a}{variable} and takes {p} AWAY: {a}{variable} − {p}." }] } }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

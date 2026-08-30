@@ -246,7 +246,7 @@ export const INPUT_SAMPLES: Array<{ title: string; type: WidgetType; config: Rec
     config: { height: '3', parts: ['x', '2'], products: ['3x', '?'] },
   },
   { title: 'numeric-input', type: 'numeric-input', config: { units: 'cm' } },
-  { title: 'expression-input', type: 'equation-input', config: { variable: 'x' } },
+  { title: 'expression-input', type: 'equation-input', config: { variable: 'x', placeholder: 'x = ?' } },
 ]
 
 export function Zoo({ api }: { api: CairnApi }) {
@@ -365,7 +365,14 @@ function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
           },
         ]
       : []),
-    { type: 'expression-input', config: { variable }, note: 'raw · the ceiling' },
+    {
+      type: 'expression-input',
+      // the zoo holds the key, so the answer's shape is known exactly:
+      // an equation answer gets the "x = ?" placeholder, a bare
+      // expression gets none
+      config: { variable, ...(key.includes('=') ? { placeholder: `${variable} = ?` } : {}) },
+      note: 'raw · the ceiling',
+    },
   ]
   return (
     <div className="zoo-answer">

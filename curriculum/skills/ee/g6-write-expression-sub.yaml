@@ -1,0 +1,13 @@
+id: g6.ee.write-expression-sub
+name: Write a subtraction expression from words
+preamble:
+  plain: "\"7 less than 4 times a number\" becomes 4n − 7 — NOT 7 − 4n. You'll learn that \"less than\" starts from the other phrase and takes away, so the order flips."
+  vocab:
+    - { term: less than, meaning: "\"p less than E\" means E − p — start from E and take p away" }
+standards: [CCSS.MATH.CONTENT.6.EE.A.2.A]
+source: { book: ccss-ee-progression, section: "6.EE.A.2a" }
+bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
+fluency: false
+prereqs: [g6.ee.write-expression]
+instruction:
+  - g6.ee.write-expression-sub.exp-worked

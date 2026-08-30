@@ -43,6 +43,7 @@ import { fileURLToPath } from 'node:url'
 import { loadBundleDir } from '@openmastery/schema/load'
 import { buildIndex } from '../../src/core/curriculum'
 import { practiceItems } from '../../src/core/select'
+import { feedableParams } from '../../src/site/core'
 import { createLessonWidget } from '../../src/client/app/LessonPlayer'
 import { renderTemplate } from '@openmastery/schema'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'curriculum')
@@ -55,7 +56,11 @@ it('steps', () => {
   const cur = buildIndex(b)
   const e = cur.explanations.get(${JSON.stringify(id)})
   if (!e) throw new Error('unknown explanation ' + ${JSON.stringify(id)})
-  const params = practiceItems(e.skill, cur)[0]?.params ?? {}
+  // FEEDABLE item only, and fail loudly: the first item may be a different
+  // family, and rendering its params paints raw {a*b} braces that look like
+  // a real strip (the silent-fallback class)
+  const params = feedableParams(e, practiceItems(e.skill, cur).map((it) => it.params))
+  if (params === null) throw new Error('no item can feed ' + ${JSON.stringify(id)})
   const w = createLessonWidget(e, params)
   if (!w) throw new Error('widget did not build')
   const { container, rerender } = render(<>{w.element}</>)

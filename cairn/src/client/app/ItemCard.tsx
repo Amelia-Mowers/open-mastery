@@ -119,11 +119,17 @@ export function ItemCard({
 
   const widget = useMemo(() => {
     const { stem: _stem, ...config } = (item.widget.config ?? {}) as Record<string, unknown>
-    // give inputs a friendly placeholder from the item's variable param
     const variable = typeof params['variable'] === 'string' ? params['variable'] : undefined
     if (variable && config['variable'] === undefined &&
         (item.widget.type === 'equation-input' || item.widget.type === 'expression-input')) {
       config['variable'] = variable
+    }
+    // "x = ?" is the shape of an EQUATION answer. The curriculum names the
+    // shape in the widget type — equation-input solves for the variable,
+    // expression-input takes a bare expression, where "x = ?" would tell
+    // the student to write an equals sign that doesn't belong.
+    if (variable && item.widget.type === 'equation-input' && config['placeholder'] === undefined) {
+      config['placeholder'] = `${variable} = ?`
     }
     if (item.widget.type === 'numeric-input' && config['placeholder'] === undefined) {
       config['placeholder'] = '?'

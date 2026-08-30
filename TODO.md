@@ -197,18 +197,22 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       Fix shape: `check` should become an event rather than memory; the
       instance-level `promised` likewise if the exact numbers matter.
       `pending` is correctly non-durable (it 409s, which is right).
-- [ ] WRONG-PROBLEM WALKTHROUGH is only guarded for INTEGER answers.
-      [resolution_answer] skips symbolic ones (`ansR.d === 1n`), which is
-      how g6.ee.equivalent shipped a board teaching a(x + b) while its
-      worked-equation item asked a(bx + c) — the answer box rejected the
-      answer the lesson had just demonstrated. Fixed by hand; the class is
-      still unguarded. Two attempts at a check both failed and were
-      removed rather than shipped: comparing stem identifiers to board
-      identifiers flags the DOCUMENTED safe pattern (disjoint names, so
-      the item cannot feed the timeline) as an error, and comparing
-      rendered numbers misses the real case (3(x+2) vs 3(2x+5) share
-      their digits). A working check probably needs the STRUCTURE of the
-      stem vs the board's opening, not their identifiers or numerals.
+- [x] WRONG-PROBLEM WALKTHROUGH guarded for symbolic answers too
+      (2026-08-30). [resolution_answer] now matches non-integer answers by
+      expression equivalence against the rendered resolution (verbatim
+      substring first, expression-segment equivalence as fallback). On
+      arrival it found two LIVE wrong-form pairs — write-expression.002
+      (4n−7) and combine.002 (6y−10) fed plus-form timelines — resolved by
+      the add-solve/sub-solve precedent: split into g6.ee.write-expression-sub
+      and g7.ee.combine-neg (see below).
+- [ ] IM-FIRST concrete models for g6.ee.write-expression-sub and
+      g7.ee.combine-neg (created 2026-08-30 from the minus-form items that
+      used to wrong-problem the plus skills). Each has only a
+      worked-equation timeline — the [worked_primary] and
+      [representation_count] warnings on both skills ARE this task. Read
+      IM first edition for 6.EE.A.2a / 7.EE.A.1 before choosing pictures
+      (a tape shows "4n with 7 removed" naturally, but decide from IM,
+      not the fleet).
 - [ ] `SiteApi` never checks `r.ok`, so an HTTP error body is cast to the
       success type — `attempt` can hand ItemCard `{error}` and render a
       NaN point delta. Same shape in DemoApi.unwrap for 409s.

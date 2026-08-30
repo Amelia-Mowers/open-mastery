@@ -5,7 +5,8 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{a}({b}{variable} + {c})" }, caption: "{a} copies of the WHOLE parenthesis — both parts of it." }
-  - { t: 4, patch: { line: "= {a}·{b}{variable} + {a}·{c}", note: "distribute {a} to EACH part" }, caption: "{a} multiplies every part inside — including the {c}. So what is the full expression?", expect: { type: expr, value: "{a*b}{variable}", prompt: "{a} multiplies EVERY part inside. What does the {variable}-part become?", hint: "{a} times {b}{variable} — write it as one term." } }
-  - { t: 8.5, patch: { line: "= {a*b}{variable} + {a*c}", note: "equivalent for every {variable}" }, caption: "{a*b}{variable} + {a*c} — same value as {a}({b}{variable} + {c}) for every {variable}.", expect: { type: expr, value: "{a*b}{variable} + {a*c}", form: expanded, prompt: "And the plain-number part — what does the whole expression come to?", hint: "{a}·{c} is {a*c}, so {a*b}{variable} + {a*c}.", misconceptions: [{ id: "distributed-to-first-term-only", when: "{a*b}{variable} + {c}", says: "The {a} multiplies EVERY part inside: {a}·{b}{variable} AND {a}·{c}. The {c} was left untouched." }] } }
-  - { t: 11, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
+  - { t: 4, patch: { line: "{variable}-part: {a}·{b}{variable} = {a*b}{variable}", note: "distribute {a} to EACH part" }, caption: "{a} copies of {b}{variable} make {a*b}{variable}. And the plain number — what does it become?", expect: { type: numeric, value: "{a*b}", prompt: "{a} copies of {b}{variable} — how many {variable}s is that?", hint: "{a} × {b}." } }
+  - { t: 8.5, patch: { line: "numbers: {a}·{c} = {a*c}", note: "the {c} gets its {a} copies too" }, caption: "The {c} is multiplied too: {a}·{c} = {a*c}. So what is the whole expression?", expect: { type: numeric, value: "{a*c}", prompt: "{a} copies of {c} — what do they make?", hint: "{a} × {c}.", misconceptions: [{ id: "distributed-to-first-term-only", when: "{c}", says: "That is the {c} left as it was — the {a} multiplies EVERY part inside, so the plain number becomes {a}·{c}." }] } }
+  - { t: 13, patch: { line: "= {a*b}{variable} + {a*c}", note: "equivalent for every {variable}" }, caption: "{a*b}{variable} + {a*c} — same value as {a}({b}{variable} + {c}) for every {variable}." }
+  - { t: 15.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

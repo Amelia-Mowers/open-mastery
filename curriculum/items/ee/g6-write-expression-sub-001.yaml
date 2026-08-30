@@ -1,0 +1,21 @@
+id: g6.ee.write-expression-sub.001
+skills: [g6.ee.write-expression-sub]
+difficulty: 1
+representation: worked-equation
+params: { a: 4, p: 7, variable: n }
+generator: { a: { int: [2, 9] }, p: { int: [1, 12] } }
+widget: { type: expression-input, config: { stem: "Write an expression: {p} less than {a} times a number {variable}." } }
+answer: { type: expr, value: "{a}{variable} - {p}", equivalence: symbolic }
+misconceptions:
+  - id: subtracted-the-wrong-way
+    when: "{p} - {a}{variable}"
+    says: "'{p} less than {a} times a number' starts from {a}{variable} and takes {p} away: {a}{variable} − {p}."
+  - id: used-p-as-the-coefficient
+    when: "{p}{variable} - {a}"
+    says: "{a} is what the number is multiplied BY; {p} is what gets taken away. They are swapped here."
+hints:
+  - "{a} times the number is {a}{variable}."
+  - "{p} LESS than that means subtract: {a}{variable} − {p}."
+source: { book: ccss-ee-progression, section: "6.EE.A.2a" }
+verify: "-{p} + {a}*{variable}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

@@ -1220,14 +1220,48 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     // explanation's resolution (final content step) rendered under THIS
     // item's params must state this item's answer. Otherwise "show me how"
     // can teach a different problem (the 4³ → "4² = 16" class: identifier
-    // overlap across forms). Closed integer answers only.
+    // overlap across forms). Closed integers match by digits; symbolic and
+    // fractional answers match by expression equivalence against any
+    // expression-shaped segment of the resolution (a resolution that
+    // restates the stem still passes — equivalence proves SAME PROBLEM,
+    // which is what this guard is for; simplification is [form]/
+    // [ends_mid_solution] territory).
     {
       const ansR = answerValue(it.params as Env)
       // selection answers (row-select etc.) are positional indices, not
       // values a resolution would state
       const isSelection = it.widget.config?.['select'] === true
-      if (ansR !== null && ansR.d === 1n && !isSelection) {
-        const ansStr = ansR.n.toString()
+      const isInteger = ansR !== null && ansR.d === 1n
+      // symbolic key: the answer template rendered under this item's
+      // params, taking the side after the last '=' (an equation answer
+      // states its value there)
+      let symKey: string | null = null
+      if (!isInteger && !isSelection && typeof it.answer?.value === 'string') {
+        const kr = renderTemplate(it.answer.value, it.params as Env, { numberStyle: 'fraction' })
+        if (kr.ok) symKey = (kr.value.split('=').pop() ?? '').trim()
+      }
+      // expression-shaped candidates inside prose: split on separators,
+      // normalise math glyphs, drop word tokens ("4/5 miles per hour" →
+      // "4/5") — generous extraction, because a miss here is a spurious
+      // ERROR on legitimate content
+      const candidatesOf = (src: string): string[] => {
+        const out: string[] = []
+        for (const seg of src.split(/[=—:;,→\n]/)) {
+          const base = seg
+            .replace(/[×·]/g, '*')
+            .replace(/÷/g, '/')
+            .replace(/−/g, '-')
+            .replace(/²/g, '^2')
+            .replace(/³/g, '^3')
+            .trim()
+          if (base !== '') out.push(base)
+          const deworded = base.replace(/\b[a-zA-Z]{2,}\b/g, ' ').replace(/\s+/g, ' ').trim()
+          if (deworded !== '' && deworded !== base) out.push(deworded)
+        }
+        return out
+      }
+      if ((isInteger || symKey !== null) && !isSelection) {
+        const ansStr = isInteger && ansR !== null ? ansR.n.toString() : ''
         const ansRe = new RegExp(`(?<![\\d-])${ansStr.replace('-', '\\-')}(?!\\d)`)
         const stringsOf = (v: unknown): string[] => {
           if (typeof v === 'string') return [v]
@@ -1260,12 +1294,23 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
               }
               rendered += ` ${r.value}`
             }
-            if (renderable && !ansRe.test(rendered))
+            if (!renderable) continue
+            // symbolic: the key VERBATIM in the text is a statement of the
+            // answer (the common case — "The expression: 3n + 5."); segment
+            // equivalence is the fallback for formatting variants
+            const glyphs = (t: string): string =>
+              t.replace(/[×·]/g, '*').replace(/÷/g, '/').replace(/−/g, '-').replace(/\s+/g, ' ')
+            const stated = isInteger
+              ? ansRe.test(rendered)
+              : symKey !== null &&
+                (glyphs(rendered).includes(glyphs(symKey)) ||
+                  candidatesOf(rendered).some((c) => exprEquivalentStrings(c, symKey)))
+            if (!stated)
               push(
                 'error',
                 'resolution_answer',
                 `${it.id} ↔ ${e.id}`,
-                `this item's params feed the explanation, but its resolution ('${rendered.trim().slice(0, 90)}') never states the item's answer ${ansStr} — wrong-problem walkthrough`,
+                `this item's params feed the explanation, but its resolution ('${rendered.trim().slice(0, 90)}') never states the item's answer ${isInteger ? ansStr : symKey} — wrong-problem walkthrough`,
               )
           }
         }
