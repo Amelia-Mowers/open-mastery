@@ -607,6 +607,37 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             `the caption left on screen with the answer box ('${cap.slice(0, 50)}…') states rather than asks — end it on the question the box is waiting for`,
           )
       }
+      // A misconception belongs to the MOVE, not the picture: the same op
+      // gate across a skill's representations meets the same predictable
+      // errors, so a diagnosis authored on one timeline and absent on
+      // another means the same mistake is named on the scale and generic
+      // on the board. Warn on the gap. (Reported on add-solve: the
+      // balance's op gate diagnosed add-instead-of-subtract, the worked
+      // board's identical gate said only "not accepted".)
+      {
+        const byOp = new Map<
+          string,
+          Array<{ eid: string; idx: number; has: boolean }>
+        >()
+        for (const e of explBySkill.get(s.id) ?? []) {
+          e.timeline.forEach((st, i) => {
+            if (st.expect?.type !== 'op') return
+            const v = String(st.expect.value)
+            const has = (st.expect.misconceptions ?? []).length > 0
+            byOp.set(v, [...(byOp.get(v) ?? []), { eid: e.id, idx: i, has }])
+          })
+        }
+        for (const [v, gates] of byOp) {
+          if (!gates.some((g) => g.has)) continue
+          for (const g of gates.filter((g) => !g.has))
+            push(
+              'warning',
+              'gate_misconception_parity',
+              `${g.eid}.timeline[${g.idx}]`,
+              `the op gate '${v}' is diagnosed on another of this skill's timelines but generic here — port the misconceptions (same ids; reword 'says' for this representation)`,
+            )
+        }
+      }
       // A step that CHANGES NOTHING is padding. [gate_moves_nothing] only
       // inspects gated steps, so a plain step whose patch has no drawing
       // keys — added to satisfy "end on the answer" when the previous
