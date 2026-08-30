@@ -9,4 +9,4 @@ timeline:
   - { t: 8.5, patch: { line: "numbers: {a}·{c} = {a*c}", note: "the {c} gets its {a} copies too" }, caption: "The {c} is multiplied too: {a}·{c} = {a*c}. So what is the whole expression?", expect: { type: numeric, value: "{a*c}", prompt: "{a} copies of {c} — what do they make?", hint: "{a} × {c}.", misconceptions: [{ id: "distributed-to-first-term-only", when: "{c}", says: "That is the {c} left as it was — the {a} multiplies EVERY part inside, so the plain number becomes {a}·{c}." }] } }
   - { t: 13, patch: { line: "= {a*b}{variable} + {a*c}", note: "equivalent for every {variable}" }, caption: "{a*b}{variable} + {a*c} — same value as {a}({b}{variable} + {c}) for every {variable}." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
