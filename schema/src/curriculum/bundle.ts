@@ -545,6 +545,28 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             `the caption shown while the last gate is open ('${cap.slice(0, 50)}…') states rather than asks — end it on the lesson's own question`,
           )
       }
+      // A step that CHANGES NOTHING is padding. [gate_moves_nothing] only
+      // inspects gated steps, so a plain step whose patch has no drawing
+      // keys — added to satisfy "end on the answer" when the previous
+      // step already wrote it — was invisible to every check and shipped.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const content = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        content.forEach((st, i) => {
+          if (i === 0 || st.expect !== undefined) return
+          const draws = Object.keys(st.patch ?? {}).filter(
+            (k) => k !== 'eqHighlight' && k !== 'note' && k !== 'caption',
+          )
+          if (draws.length === 0)
+            push(
+              'warning',
+              'step_moves_nothing',
+              `${e.id}.timeline[${i}]`,
+              `this step changes nothing on the diagram — it only restates the caption. Drop it, or give it a patch that moves the picture`,
+            )
+        })
+      }
       // EVERY timeline must be workable: the faded/stepwise lead drops the
       // final content step (the resolution), so a timeline whose only gates
       // sit there plays as a passive movie. Count the gates that SURVIVE.
