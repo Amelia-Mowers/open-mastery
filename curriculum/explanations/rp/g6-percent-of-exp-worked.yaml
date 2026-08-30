@@ -5,8 +5,8 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{5*f}% of {20*g}" }, caption: "Percent means out of every 100." }
-  - { t: 4, patch: { line: "5% of {20*g} = {g}", note: "÷ 20" }, caption: "Start small: 5% is one twentieth of {20*g}. So what is {p}% of {b}?", expect: { type: numeric, value: "{g}", prompt: "What number finishes this line?" } }
-  - { t: 8.5, patch: { line: "{5*f}% = {f} × {g}", note: "{f} fives" }, caption: "{5*f}% is {f} of those fives: {f*g}.", expect: { type: numeric, value: "{f*g}", prompt: "So what is {p}% of {b}?" } }
+  - { t: 4, patch: { line: "5% of {20*g} = {g}", note: "÷ 20" }, caption: "Start small: 5% is one twentieth of {20*g}. So what is {5*f}% of {20*g}?", expect: { type: numeric, value: "{g}", prompt: "What number finishes this line?" } }
+  - { t: 8.5, patch: { line: "{5*f}% = {f} × {g}", note: "{f} fives" }, caption: "{5*f}% is {f} of those fives: {f*g}.", expect: { type: numeric, value: "{f*g}", prompt: "So what is {5*f}% of {20*g}?" } }
   - { t: 12, patch: { line: "{5*f}% = {f*g}", note: "multiply" }, caption: "{5*f}% is {f} of those fives: {f*g}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

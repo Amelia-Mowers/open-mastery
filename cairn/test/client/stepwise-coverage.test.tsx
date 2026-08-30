@@ -40,8 +40,14 @@ function gatedExplanations(): Array<{ e: Explanation; truncated: Explanation; pa
     if (content.length < 2) continue
     const truncated = { ...e, timeline: content.slice(0, -1) }
     if (!truncated.timeline.some((st) => st.expect !== undefined)) continue
-    const family = practiceItems(e.skill, cur)[0]?.params ?? {}
-    const params = (feedableParams(e, [family]) ?? family) as Params
+    // NO SILENT FALLBACK: params that cannot feed this timeline render
+    // raw "{a*b}" on the board. A timeline no item can feed is a
+    // curriculum fault and must fail here, not render half-templated.
+    const all = practiceItems(e.skill, cur)
+    const rep = all.filter((it) => it.representation === e.representation)
+    const fed = feedableParams(e, [...rep.map((it) => it.params), ...all.map((it) => it.params)])
+    if (fed === null) throw new Error(`${e.id}: no item of ${e.skill} can feed this timeline`)
+    const params = fed as Params
     out.push({ e, truncated, params })
   }
   return out

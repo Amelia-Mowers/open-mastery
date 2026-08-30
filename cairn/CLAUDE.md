@@ -125,11 +125,25 @@
   at the workspace root (github.com/Amelia-Mowers/open-mastery). Commit at
   the ROOT — the old per-directory repos are archived as .git-local-archive
   and must not be used. Every push to main redeploys the Pages demo.
-- **Fail loudly.** A wrong-but-plausible render (an addition walkthrough
-  on a subtraction problem) is worse than an error. Prefer invariants
-  that make the state unrepresentable; where that's not mechanical, add
-  a validator check that at least WARNS (see [form_mismatch]). Never let
-  a fallback silently produce content that could teach the wrong thing.
+- **NO SILENT FALLBACKS. Fail loudly.** A wrong-but-plausible render (an
+  addition walkthrough on a subtraction problem) is worse than an error.
+  Prefer invariants that make the state unrepresentable; where that's not
+  mechanical, add a validator check that at least WARNS (see
+  [form_mismatch]).
+  **A fallback that "does something sensible" when the right answer is
+  unavailable is a bug, not resilience.** It converts a detectable fault
+  into undefined behaviour that ships. Every instance of this has cost us
+  a user-visible defect: `??` chains in the demo/zoo param picker rendered
+  raw `{a*b}` on the board when the chosen item was a different form
+  (twice — the second time my "prefer this, else that" fix just moved the
+  breakage to another timeline); `SiteApi`/`DemoApi` cast HTTP error
+  bodies to the success type, so "Show me how" silently did nothing and a
+  stale attempt rendered a NaN delta; `explanationDemo` fell back to
+  `practiceItems[0]`, which is how a lesson taught one problem while the
+  answer box graded another.
+  When the correct value is not available, RETURN AN ERROR or throw —
+  including in tests, which is where these are cheapest to catch. Correct
+  or loud; never quietly approximate.
 - **Review EVERY STEP, not the last frame.** `node
   scripts/shoot-steps.mjs <explanation-id> <out.png>` drives the real
   widget through its patches, renders each state with the app's own

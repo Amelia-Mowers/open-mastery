@@ -2,23 +2,23 @@ id: g6.ee.equivalent.003
 skills: [g6.ee.equivalent]
 difficulty: 1
 representation: area-model
-params: { a: 3, b: 2, variable: x }
-generator: { a: { int: [2, 9] }, b: { int: [1, 9] } }
+params: { m: 3, n: 2, variable: x }
+generator: { m: { int: [2, 9] }, n: { int: [1, 9] } }
 widget:
   type: area-model
   config:
-    stem: "{a}({variable} + {b}): fill in the missing piece of area."
-    height: "{a}"
-    parts: ["{variable}", "{b}"]
-    products: ["{a}{variable}", "?"]
-answer: { type: expr, value: "{a*b}", form: evaluated, integer: true }
+    stem: "{m}({variable} + {n}): fill in the missing piece of area."
+    height: "{m}"
+    parts: ["{variable}", "{n}"]
+    products: ["{m}{variable}", "?"]
+answer: { type: expr, value: "{m*n}", form: evaluated, integer: true }
 misconceptions:
   - id: added-instead-of-multiplied
-    when: "{a+b}"
-    says: "Each piece of area is a MULTIPLY: this one is {a} rows of {b}, so {a}·{b}."
+    when: "{m+n}"
+    says: "Each piece of area is a MULTIPLY: this one is {m} rows of {n}, so {m}·{n}."
 hints:
-  - "The missing piece is {a} tall and {b} wide."
-  - "{a} × {b} = {a*b}."
+  - "The missing piece is {m} tall and {n} wide."
+  - "{m} × {n} = {m*n}."
 source: { book: ccss-ee-progression, section: "6.EE.A.3" }
-verify: "{answer / b == a}"
+verify: "{answer / n == m}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

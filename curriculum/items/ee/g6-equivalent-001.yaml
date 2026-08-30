@@ -2,17 +2,17 @@ id: g6.ee.equivalent.001
 skills: [g6.ee.equivalent]
 difficulty: 1
 representation: ratio-table
-params: { a: 3, b: 2, variable: x }
-generator: { a: { int: [2, 9] }, b: { int: [1, 9] } }
-widget: { type: expression-input, config: { stem: "Expand: {a}({variable} + {b})." } }
-answer: { type: expr, value: "{a}{variable} + {a*b}", equivalence: symbolic, form: expanded }
+params: { m: 3, n: 2, variable: x }
+generator: { m: { int: [2, 9] }, n: { int: [1, 9] } }
+widget: { type: expression-input, config: { stem: "Expand: {m}({variable} + {n})." } }
+answer: { type: expr, value: "{m}{variable} + {m*n}", equivalence: symbolic, form: expanded }
 misconceptions:
   - id: distributed-to-first-term-only
-    when: "{a}{variable} + {b}"
-    says: "The {a} multiplies EVERY part inside: {a}·{variable} AND {a}·{b}. The {b} was left untouched."
+    when: "{m}{variable} + {n}"
+    says: "The {m} multiplies EVERY part inside: {m}·{variable} AND {m}·{n}. The {n} was left untouched."
 hints:
-  - "Multiply {a} by EACH part inside the parentheses."
-  - "{a}·{variable} + {a}·{b} = {a}{variable} + {a*b}."
+  - "Multiply {m} by EACH part inside the parentheses."
+  - "{m}·{variable} + {m}·{n} = {m}{variable} + {m*n}."
 source: { book: ccss-ee-progression, section: "6.EE.A.3" }
-verify: "{a}*{variable} + {a}*{b}"
+verify: "{m}*{variable} + {m}*{n}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }

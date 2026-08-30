@@ -372,11 +372,25 @@ export class SiteCore {
     const e = this.cur.explanations.get(id)
     if (!e) return err(404, `unknown explanation '${id}'`)
     const skill = this.cur.skills.get(e.skill)
-    const family = practiceItems(e.skill, this.cur)[0]?.params ?? {}
-    const params = feedableParams(e, [family]) ?? family
     const repMatches = practiceItems(e.skill, this.cur).filter(
       (it) => it.representation === e.representation,
     )
+    // NO SILENT FALLBACK. A skill may hold several FORMS with disjoint
+    // identifiers, so not every item can feed every timeline — but
+    // rendering with params that do not fit produces raw "{a*b}" on the
+    // board, which is worse than an error because it looks like content.
+    // Refuse instead: an explanation with no item able to feed it is a
+    // curriculum fault, and the reviewer should see that, not a
+    // half-rendered lesson.
+    const params = feedableParams(e, [
+      ...repMatches.map((it) => it.params),
+      ...practiceItems(e.skill, this.cur).map((it) => it.params),
+    ])
+    if (params === null)
+      return err(
+        422,
+        `no item of '${e.skill}' can feed '${id}' — every item is a different form (disjoint identifiers), so this timeline has no numbers to render with`,
+      )
     // prefer the item whose ANSWER SPACE is this very widget (shows the
     // widget's own input role), else any item framed in this representation
     const repItem = repMatches.find((it) => it.widget.type === e.widget) ?? repMatches[0]

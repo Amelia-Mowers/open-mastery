@@ -294,6 +294,24 @@ disconnected from the caption on screen — and note that the caption
 DISPLAYED while a gate is open is the one BEFORE it, so a question
 written on the gated step itself is never the one the student reads.
 
+## Every timeline must be FEEDABLE by one of its skill's items
+
+A timeline renders with a real item's params. If NO item of the skill can
+supply every identifier the timeline uses, the board renders raw `{a*b}`
+— content-shaped nonsense that looks like a lesson. That is now a hard
+failure in `explanationDemo` (422) and in stepwise-coverage, not a
+fallback to whichever item happened to be first.
+
+Two ways to satisfy it, and the choice is the authoring decision:
+- give the timeline's own representation an item that carries every
+  identifier it needs (constant-k's ratio-table board shows a second row,
+  so its item must supply that row's `c`); or
+- change the timeline to use only what its items have (percent-of's board
+  asked "{p}% of {b}" — identifiers no item defines — when its own
+  vocabulary is "{5*f}% of {20*g}").
+
+Both faults were live and invisible until the fallback was removed.
+
 ## Ask for the VALUE, not a transcription of the whole line
 
 A gate keyed to a whole equation makes the student retype the parts that
