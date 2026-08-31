@@ -8,4 +8,4 @@ timeline:
   - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "y ÷ x" }, caption: "Divide y by its x. So what is k?", expect: { type: op, value: "divide {a}", prompt: "k is y ÷ x — what do you do to the {a*k}?" } }
   - { t: 8.5, patch: { line: "k = {k}", note: "so y = {k}x" }, caption: "k = {k} — every x is multiplied by {k}: y = {k}x." }
   - { t: 11, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
