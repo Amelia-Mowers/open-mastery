@@ -1,21 +1,30 @@
 id: g6.rp.compare-rates.003
 skills: [g6.rp.compare-rates]
 difficulty: 2
-representation: number-line
+representation: worked-equation
 params: { u: 3, d: 2, a1: 5, a2: 8 }
 generator: { u: { int: [2, 6] }, d: { int: [1, 4] }, a1: { int: [3, 9] }, a2: { int: [3, 9], distinct: a1 } }
-widget: { type: numeric-input, config: { stem: "Pack A: {a1} pencils for ${u*a1}. Pack B: {a2} pencils for ${(u+d)*a2}. In the BETTER buy, how many dollars does one pencil cost?" } }
-answer: { type: expr, value: "{u}", form: evaluated, integer: true }
+widget:
+  type: compare-input
+  config:
+    stem: "Pack A: {a1} pencils for ${u*a1}. Pack B: {a2} pencils for ${(u+d)*a2}. Price each pack per pencil, then pick the better buy."
+    aLabel: "Pack A — $ per pencil"
+    bLabel: "Pack B — $ per pencil"
+    pickLabel: "The better buy"
+    options:
+      - { key: a, label: "Pack A" }
+      - { key: b, label: "Pack B" }
+answer: { type: ordered, value: ["{u}", "{u+d}", "a"] }
 misconceptions:
-  - id: answered-the-other-pack
-    when: "{u+d}"
-    says: "That's the per-pencil price of the OTHER pack. Read the one the question names."
+  - id: swapped-the-packs
+    when: "{u+d}, {u}, b"
+    says: "Those are each other's prices — ${u*a1} ÷ {a1} = {u} belongs to Pack A. Recheck which total goes with which pack."
   - id: answered-the-pack-price
-    when: "{u*a1}"
-    says: "${u*a1} is what the whole pack costs. Per pencil means splitting it into {a1} equal parts."
+    when: "{u*a1}, {(u+d)*a2}, a"
+    says: "Those are whole-PACK prices. Per pencil means splitting each pack's cost across its own pencils."
 hints:
-  - "Find each pack's price for ONE pencil, then keep the smaller."
-  - "A: {u*a1} ÷ {a1} = {u}. B: {(u+d)*a2} ÷ {a2} = {u+d}. The better buy is ${u}."
+  - "Split each pack's price across its own pencils."
+  - "A: {u*a1} ÷ {a1} = {u}. B: {(u+d)*a2} ÷ {a2} = {u+d}. The smaller per-pencil price wins."
 source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
-verify: "{answer * a1 == u*a1}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{(u*a1) * a2 < ((u+d)*a2) * a1}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

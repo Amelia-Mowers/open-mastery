@@ -23,6 +23,16 @@ export interface ZooDemo {
     /** zoo ONLY: so a reviewer can confirm a diagnosis fires */
     misconceptions?: Array<{ id: string; when: string; says: string }>
   } | null
+  /** the check's first pick (hardest, raw) — the mastery gate this
+   * timeline builds toward, shown on its zoo page */
+  checkItem?: {
+    id: string
+    params: Record<string, number | string>
+    widget: { type: string; config?: Record<string, unknown> }
+    answer?: { type: string; value: unknown; form?: string }
+    misconceptions?: Array<{ id: string; when: string; says: string }>
+    difficulty?: number
+  } | null
 }
 
 const exp = (id: string, widget: string, timeline: unknown[]): Explanation =>

@@ -827,7 +827,10 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     const skillItems = bundle.items.filter((it) => it.skills.includes(s.id) && it.faded == null)
     if (skillItems.length > 0) {
       const maxD = Math.max(...skillItems.map((it) => it.difficulty))
-      const rawTypes = new Set(['numeric-input', 'expression-input', 'equation-input'])
+      // compare-input is the composite CHECK instrument (both computed
+      // rates + the decision) — more unprompted work than one number, so
+      // it counts as a raw ceiling
+      const rawTypes = new Set(['numeric-input', 'expression-input', 'equation-input', 'compare-input'])
       if (!skillItems.some((it) => it.difficulty === maxD && rawTypes.has(it.widget.type)))
         push(
           'warning',
@@ -1038,6 +1041,64 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
           const rendered = renderTemplate(m.when, env, { numberStyle: 'fraction' })
           if (!rendered.ok) {
             push('error', 'misconception_shape', `${where} [${m.id}]`, `'${m.when}' does not render`)
+            continue
+          }
+          // an ORDERED-list answer takes LIST whens ("{u+d}, {u}, b"):
+          // each part must parse as an expression or be a bare token, the
+          // count must match the key, and a part-wise match against the
+          // rendered key is the correctness collision
+          if (Array.isArray(it.answer.value)) {
+            const norm = (x: string): string[] =>
+              x.split(',').map((t) => t.trim()).filter((t) => t !== '')
+            const parts = norm(rendered.value)
+            const badPart = parts.find(
+              (t) => !parseExprLoose(t).ok && !/^[a-z][a-z0-9-]*$/i.test(t),
+            )
+            if (badPart !== undefined) {
+              push(
+                'error',
+                'misconception_shape',
+                `${where} [${m.id}]`,
+                `list part '${badPart}' is neither an expression nor a token`,
+              )
+              continue
+            }
+            if (parts.length !== it.answer.value.length) {
+              push(
+                'error',
+                'misconception_shape',
+                `${where} [${m.id}]`,
+                `'${m.when}' has ${parts.length} parts but the answer has ${it.answer.value.length}`,
+              )
+              continue
+            }
+            const keyParts: string[] = []
+            let keyOk = true
+            for (const kv of it.answer.value) {
+              const kr = renderTemplate(String(kv), env, { numberStyle: 'fraction' })
+              if (!kr.ok) {
+                keyOk = false
+                break
+              }
+              keyParts.push(kr.value.trim())
+            }
+            if (keyOk && keyParts.every((k, i) => {
+              const pe = parseExprLoose(parts[i]!)
+              const ke = parseExprLoose(k)
+              if (pe.ok && ke.ok) {
+                const a = evaluate(pe.value, {})
+                const b = evaluate(ke.value, {})
+                if (a.ok && b.ok && a.value.t === 'num' && b.value.t === 'num')
+                  return ratEq(a.value.v, b.value.v)
+              }
+              return parts[i]!.toLowerCase() === k.toLowerCase()
+            }))
+              push(
+                'error',
+                'misconception_correct',
+                `${where} [${m.id}]`,
+                `'${m.when}' equals the right answer part for part — a correct student would be told they erred`,
+              )
             continue
           }
           // a `when` may be a NUMBER (most items) or a symbolic expression

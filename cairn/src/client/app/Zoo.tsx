@@ -154,6 +154,36 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
         {extracted && <p className="mono-chip zoo-extract">{extracted}</p>}
       </section>
       )}
+      {demo.checkItem && (
+        <section className="card zoo-card">
+          <div className="card-kicker">
+            <span className="kicker">MASTERY CHECK EXAMPLE — HARDEST, RAW, NO HINTS</span>
+            <span className="mono-chip">{demo.checkItem.id}</span>
+          </div>
+          {typeof demo.checkItem.widget.config?.['stem'] === 'string' && (
+            <h2 className="stem">
+              {renderText(demo.checkItem.widget.config['stem'] as string, demo.checkItem.params as Params)}
+            </h2>
+          )}
+          {demo.checkItem.answer ? (
+            <ZooAnswerRow
+              style={{
+                type: demo.checkItem.widget.type as WidgetType,
+                config: {
+                  ...evalConfig(demo.checkItem.widget.config ?? {}, demo.checkItem.params as Params),
+                  seed: 'zoo',
+                },
+                note: 'what the mastery check serves for this skill',
+              }}
+              answer={demo.checkItem.answer as unknown as Parameters<typeof gradeAnswer>[0]}
+              misconceptions={demo.checkItem.misconceptions}
+              params={demo.checkItem.params as Params}
+            />
+          ) : (
+            <p className="zoo-note">this check item has no key in the payload — cannot preview grading</p>
+          )}
+        </section>
+      )}
     </>
   )
 }
@@ -269,6 +299,7 @@ export function Zoo({ api }: { api: CairnApi }) {
             params: d.params as Params,
             explanation: d.explanation,
             item: d.item ?? null,
+            checkItem: d.checkItem ?? null,
           },
         ]),
       )
@@ -355,16 +386,21 @@ function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
   // answer is a plain integer invites an answer that cannot be right.
   // An input is tied to the shape of the ANSWER, not to the skill.
   const isTwoTerm = new RegExp(`\\d\\s*\\*?\\s*${variable}\\s*[+-]\\s*\\d`).test(key)
-  // a CHOICE key ("a") cannot be expressed in a text box — offering one
-  // grades typed letters against an option key and rejects "A" for "a".
-  // The item's own choice widget IS the answer space; render that.
-  const isChoice = (item.answer as { type?: string }).type === 'choice'
+  // a CHOICE key ("a") or a composite list key cannot be expressed in a
+  // plain text box — offering one grades typed letters against option
+  // keys ("A" rejected for "a"). The item's own widget IS the answer
+  // space; render that.
+  const answerType = (item.answer as { type?: string }).type
+  const isChoice = answerType === 'choice' || answerType === 'ordered' || answerType === 'set'
   const styles: Array<{ type: WidgetType; config: Record<string, unknown>; note: string }> = isChoice
     ? [
         {
           type: item.widget.type as WidgetType,
           config: { ...evalConfig(item.widget.config ?? {}, params), seed: 'zoo' },
-          note: 'choice · guess-discounted, never check evidence',
+          note:
+            answerType === 'choice'
+              ? 'choice · guess-discounted, never check evidence'
+              : 'the item\u2019s own composite input',
         },
       ]
     : [

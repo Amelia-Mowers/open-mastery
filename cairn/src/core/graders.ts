@@ -85,6 +85,27 @@ export function diagnose(
       }
       continue
     }
+    // a composite list ("2, 3, a") compares part-wise: numbers
+    // numerically, tokens case-insensitively — a list is not an expression
+    if (rendered.value.includes(',') && student.includes(',')) {
+      const norm = (x: string): string[] =>
+        x.split(',').map((t) => t.trim()).filter((t) => t !== '')
+      const want = norm(rendered.value)
+      const got = norm(student)
+      if (
+        want.length === got.length &&
+        want.every((w, i) => {
+          const a = evalClosed(w)
+          const b = evalClosed(got[i]!)
+          return a !== null && b !== null ? ratEq(a, b) : w.toLowerCase() === got[i]!.toLowerCase()
+        })
+      ) {
+        const says = renderTemplate(m.says, params, { numberStyle: 'fraction' })
+        if (!says.ok) return null
+        return { id: m.id, says: says.value }
+      }
+      continue
+    }
     // an equation-shaped submission ("x = 84") is compared on its value side
     const side = (x: string): string => {
       const parts = x.split(/(?<![=<>!])=(?!=)/)
@@ -362,22 +383,46 @@ function gradeExpr(spec: AnswerSpec, params: Env, raw: string): Verdict {
 
 function gradeList(spec: AnswerSpec, params: Env, raw: string | string[], ordered: boolean): Verdict {
   const expectedRaw = Array.isArray(spec.value) ? spec.value : [spec.value]
-  const expected: Rational[] = []
+  // a key part is a NUMBER, or — ordered lists only — a TOKEN: a part
+  // that renders cleanly but is not numeric (compare-input's pick, "a")
+  // matches the student's part case-insensitively. A part that fails to
+  // RENDER is still a broken key and throws.
+  const expected: Array<{ num: Rational } | { tok: string }> = []
   for (const v of expectedRaw) {
     const r = resolveClosed(v as string | number, params)
-    if (!r) throw new AnswerKeyError('answer key does not evaluate')
-    expected.push(r)
+    if (r) {
+      expected.push({ num: r })
+      continue
+    }
+    const rendered = typeof v === 'string' ? renderTemplate(v, params, { numberStyle: 'fraction' }) : null
+    if (!rendered?.ok) throw new AnswerKeyError('answer key does not evaluate')
+    if (!ordered) throw new AnswerKeyError('set keys must be numeric — tokens have no order to hide in')
+    expected.push({ tok: rendered.value.trim().toLowerCase() })
   }
   const parts = (Array.isArray(raw) ? raw : raw.split(/[,;]/)).map((p) => p.trim()).filter((p) => p !== '')
   if (parts.length !== expected.length) return incorrect('wrong number of values')
+  if (ordered) {
+    for (let i = 0; i < parts.length; i++) {
+      const e = expected[i]!
+      if ('tok' in e) {
+        if (parts[i]!.toLowerCase() !== e.tok) return incorrect()
+        continue
+      }
+      const r = evalClosed(parts[i]!)
+      if (!r) return incorrect(`'${parts[i]}' is not a number`)
+      if (!ratEq(r, e.num)) return incorrect()
+    }
+    return correct
+  }
   const student: Rational[] = []
   for (const p of parts) {
     const r = evalClosed(p)
     if (!r) return incorrect(`'${p}' is not a number`)
     student.push(r)
   }
+  const nums = expected.map((e) => ('num' in e ? e.num : null)) as Rational[]
   const sortKey = (xs: Rational[]) => [...xs].sort((x, y) => cmp(x, y))
-  const a = ordered ? student : sortKey(student)
-  const b = ordered ? expected : sortKey(expected)
+  const a = sortKey(student)
+  const b = sortKey(nums)
   return a.every((x, i) => ratEq(x, b[i]!)) ? correct : incorrect()
 }

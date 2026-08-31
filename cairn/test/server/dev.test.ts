@@ -73,9 +73,15 @@ async function play(base: string, studentId: string, bundle: Bundle, opts: Clien
 }
 
 const correctRaw = (item: Item, params: Record<string, number | string>): string => {
-  const r = renderTemplate(item.answer.value as string, params as Env, { numberStyle: 'fraction' })
-  if (!r.ok) throw new Error(r.error.message)
-  return r.value
+  // list answers (ordered/set) render part by part into the comma form
+  // the grader splits — String(array) would mangle the templates
+  const values = Array.isArray(item.answer.value) ? item.answer.value : [item.answer.value]
+  const parts = values.map((v) => {
+    const r = renderTemplate(String(v), params as Env, { numberStyle: 'fraction' })
+    if (!r.ok) throw new Error(r.error.message)
+    return r.value
+  })
+  return parts.join(', ')
 }
 
 async function getJson<T>(base: string, path: string, studentId: string): Promise<T> {

@@ -2,6 +2,7 @@ import type { WidgetInstance } from './contract'
 import { createNumericInput, type NumericInputConfig } from './numeric-input'
 import { createExpressionInput, type ExpressionInputConfig } from './expression-input'
 import { createTermInput, type TermInputConfig } from './term-input'
+import { createCompareInput, type CompareInputConfig } from './compare-input'
 import { createNumberLine, type NumberLineConfig } from './number-line'
 import { createBalanceScale, type BalanceScaleConfig } from '../viz/balance-scale'
 import { createEnvelopeModel, type EnvelopeModelConfig } from '../viz/envelope-model'
@@ -30,6 +31,9 @@ export const WIDGET_ROLES: Record<WidgetType, WidgetRoles> = {
   // structured [ ]x + [ ] — scaffolds the easier tiers; the ceiling stays
   // a raw expression (capstone rule)
   'term-input': { lesson: false, input: true },
+  // composite comparison answer: both rates + the pick, one submission —
+  // the CHECK instrument for compare skills
+  'compare-input': { lesson: false, input: true },
   'equation-input': { lesson: false, input: true },
   'number-line': { lesson: true, input: false },
   'balance-scale': { lesson: true, input: false },
@@ -56,6 +60,7 @@ export type WidgetType =
   | 'numeric-input'
   | 'expression-input'
   | 'term-input'
+  | 'compare-input'
   | 'equation-input' // curriculum alias for expression-input
   | 'number-line'
   | 'balance-scale'
@@ -84,6 +89,8 @@ export function createWidget(
       return createNumericInput(config as NumericInputConfig) as never
     case 'term-input':
       return createTermInput(config as TermInputConfig) as never
+    case 'compare-input':
+      return createCompareInput(config as CompareInputConfig) as never
     case 'expression-input':
     case 'equation-input':
       return createExpressionInput(config as ExpressionInputConfig) as never

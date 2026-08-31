@@ -13,6 +13,7 @@
  */
 import { parseTemplate, templateIdentifiers, type Bundle, type Explanation } from '@openmastery/schema'
 import { DAY_MS } from '../core/fsrs.ts'
+import { nextCheckBaseItem } from '../core/select.ts'
 import {
   applyEvent,
   bktUpdate,
@@ -426,7 +427,20 @@ export class SiteCore {
           misconceptions: repItem.misconceptions,
         }
       : null
-    return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e, item })
+    // the MASTERY example: the check's first pick (hardest, raw) — so a
+    // reviewer sees the gate the lesson is building toward on the same page
+    const cb = nextCheckBaseItem(e.skill, [], this.cur)
+    const checkItem = cb
+      ? {
+          id: cb.id,
+          params: cb.params,
+          widget: cb.widget,
+          answer: cb.answer,
+          misconceptions: cb.misconceptions,
+          difficulty: cb.difficulty,
+        }
+      : null
+    return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e, item, checkItem })
   }
 
   next(studentId: string, focusSkill?: string | null, forceFocus = false): SiteResult {
