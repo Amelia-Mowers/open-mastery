@@ -18,13 +18,16 @@ import { WidgetStore } from './store'
 export interface CompareInputConfig {
   /** optional sentence above the boxes */
   stem?: string
-  /** label for the first computed slot, e.g. "Pack A — $ per pencil" */
+  /** the computed slots, in answer order — e.g. one per ratio pair
+   * ("6 ÷ 2", "15 ÷ 5", "24 ÷ 8"). Takes precedence over aLabel/bLabel. */
+  fields?: Array<{ label: string }>
+  /** two-slot shorthand: label for the first computed slot */
   aLabel?: string
-  /** label for the second computed slot */
+  /** two-slot shorthand: label for the second computed slot */
   bLabel?: string
-  /** the deciding question, e.g. "The better buy" */
+  /** the deciding question, e.g. "The better buy" / "Proportional?" */
   pickLabel?: string
-  /** the two options; `key` is the answer token the grader sees */
+  /** the options; `key` is the answer token the grader sees */
   options?: Array<{ key: string; label: string }>
 }
 
@@ -33,16 +36,15 @@ export interface CompareInputParams {
 }
 
 export interface CompareAnswer {
-  /** "«a», «b», «pick»" — empty until every part is filled, so a partial
+  /** "«v1», …, «pick»" — empty until every part is filled, so a partial
    * answer can never grade as a wrong one */
   raw: string
-  a: string
-  b: string
+  values: string[]
   pick: string | null
-  missing: Array<'a' | 'b' | 'pick'>
+  missing: string[]
 }
 
-type CompareState = { a: string; b: string; pick: string | null }
+type CompareState = { values: string[]; pick: string | null }
 
 const label = (params: CompareInputParams): string =>
   params.prompt ? `Comparison answer: ${params.prompt}` : 'Comparison answer'
@@ -63,7 +65,9 @@ export const createCompareInput: WidgetFactory<
   Record<never, never>,
   CompareInputConfig
 > = (config): WidgetInstance<CompareInputParams, CompareAnswer, Record<never, never>> => {
-  const store = new WidgetStore<CompareState>({ a: '', b: '', pick: null })
+  const fields: Array<{ label: string }> =
+    config.fields ?? [{ label: config.aLabel ?? 'A' }, { label: config.bLabel ?? 'B' }]
+  const store = new WidgetStore<CompareState>({ values: fields.map(() => ''), pick: null })
   const options = config.options ?? [
     { key: 'a', label: 'A' },
     { key: 'b', label: 'B' },
@@ -74,7 +78,7 @@ export const createCompareInput: WidgetFactory<
     text,
     disabled,
   }: {
-    slot: 'a' | 'b'
+    slot: number
     text: string
     disabled: boolean
   }) {
@@ -87,10 +91,12 @@ export const createCompareInput: WidgetFactory<
           inputMode="decimal"
           aria-disabled={disabled}
           disabled={disabled}
-          value={state[slot]}
+          value={state.values[slot] ?? ''}
           onChange={(e) => {
-            store.record('input', { part: slot, raw: e.target.value })
-            store.setState({ ...store.getState(), [slot]: e.target.value })
+            store.record('input', { part: `v${slot}`, raw: e.target.value })
+            const values = [...store.getState().values]
+            values[slot] = e.target.value
+            store.setState({ ...store.getState(), values })
           }}
           style={boxStyle}
         />
@@ -108,8 +114,9 @@ export const createCompareInput: WidgetFactory<
             {config.stem}
           </p>
         )}
-        <Field slot="a" text={config.aLabel ?? 'A'} disabled={disabled} />
-        <Field slot="b" text={config.bLabel ?? 'B'} disabled={disabled} />
+        {fields.map((f, i) => (
+          <Field key={i} slot={i} text={f.label} disabled={disabled} />
+        ))}
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ minWidth: 180, fontFamily: "'Lora', serif", color: '#2e2822' }}>
             {config.pickLabel ?? 'Which one?'}
@@ -147,15 +154,16 @@ export const createCompareInput: WidgetFactory<
   return {
     render: (params, mode) => <View params={params} mode={mode} />,
     extract: () => {
-      const { a, b, pick } = store.getState()
-      const missing: Array<'a' | 'b' | 'pick'> = []
-      if (a.trim() === '') missing.push('a')
-      if (b.trim() === '') missing.push('b')
-      if (pick === null) missing.push('pick')
+      const { values, pick } = store.getState()
+      const missing: string[] = []
+      values.forEach((v, i) => {
+        if (v.trim() === '') missing.push(fields[i]?.label ?? `value ${i + 1}`)
+      })
+      if (pick === null) missing.push(config.pickLabel ?? 'the pick')
       return {
-        raw: missing.length === 0 ? `${a.trim()}, ${b.trim()}, ${pick}` : '',
-        a,
-        b,
+        raw:
+          missing.length === 0 ? [...values.map((v) => v.trim()), pick].join(', ') : '',
+        values,
         pick,
         missing,
       }

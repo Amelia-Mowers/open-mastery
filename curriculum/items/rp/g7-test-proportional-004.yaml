@@ -2,17 +2,28 @@ id: g7.rp.test-proportional.004
 skills: [g7.rp.test-proportional]
 difficulty: 3
 representation: double-number-line
-params: { k: 3, a: 2, c: 6, d: 4 }
-generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 9] }, d: { int: [1, 5] } }
-widget: { type: numeric-input, config: { stem: "x: {a} → y: {a*k}.   x: {c} → y: {c*k+d}.   The second row breaks the proportion. How much too BIG is its y?" } }
-answer: { type: expr, value: "{d}", form: evaluated, integer: true }
+params: { k: 3, j: 7, a: 2, c: 6, e: 9 }
+generator: { k: { int: [2, 9] }, j: { int: [2, 9], distinct: k }, a: { int: [2, 4] }, c: { int: [5, 7] }, e: { int: [8, 12] } }
+widget:
+  type: compare-input
+  config:
+    stem: "Is y proportional to x?  x = {a}, y = {a*k}.  x = {c}, y = {c*k}.  x = {e}, y = {e*j}.  Divide each pair, then decide."
+    fields:
+      - { label: "{a*k} ÷ {a}" }
+      - { label: "{c*k} ÷ {c}" }
+      - { label: "{e*j} ÷ {e}" }
+    pickLabel: "Proportional?"
+    options:
+      - { key: "yes", label: "Yes" }
+      - { key: "no", label: "No" }
+answer: { type: ordered, value: ["{k}", "{k}", "{j}", "no"] }
 misconceptions:
-  - id: answered-the-y-value
-    when: "{c*k+d}"
-    says: "That's the y the table shows. The question asks how far OFF it is: {c*k+d} − {c*k}."
+  - id: said-yes-past-a-mismatch
+    when: "{k}, {k}, {j}, yes"
+    says: "Two matching pairs are not enough — the last pair gives {j}, not {k}. Every pair must divide to the same constant."
 hints:
-  - "The first row's rule is y = {k}x. What SHOULD y be when x = {c}?"
-  - "It should be {k} × {c} = {c*k}; it is {c*k+d}. The excess is {c*k+d} − {c*k}."
+  - "Divide each y by its x, all three — the breaker can hide anywhere."
+  - "{a*k} ÷ {a} = {k} and {c*k} ÷ {c} = {k}, but {e*j} ÷ {e} = {j} — not proportional."
 source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
-verify: "{(c*k+d) - answer == k*c}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{(e*j) * a != (a*k) * e}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

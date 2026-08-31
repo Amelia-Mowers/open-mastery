@@ -5,24 +5,25 @@ representation: double-number-line
 params: { k: 3, a: 2, c: 5, e: 8 }
 generator: { k: { int: [2, 9] }, a: { int: [2, 4] }, c: { int: [5, 7] }, e: { int: [8, 12] } }
 widget:
-  type: ratio-table
+  type: compare-input
   config:
-    stem: "Is y proportional to x? Click the row that breaks the pattern — or 'All rows agree'."
-    select: true
-    noneLabel: "All rows agree"
-    cols: ["x", "y"]
-    rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]]
-answer: { type: expr, value: "0", form: evaluated, integer: true }
+    stem: "Is y proportional to x?  x = {a}, y = {a*k}.  x = {c}, y = {c*k}.  x = {e}, y = {e*k}.  Divide each pair, then decide."
+    fields:
+      - { label: "{a*k} ÷ {a}" }
+      - { label: "{c*k} ÷ {c}" }
+      - { label: "{e*k} ÷ {e}" }
+    pickLabel: "Proportional?"
+    options:
+      - { key: "yes", label: "Yes" }
+      - { key: "no", label: "No" }
+answer: { type: ordered, value: ["{k}", "{k}", "{k}", "yes"] }
 misconceptions:
-  - id: flagged-a-row-that-fits
-    when: "1"
-    says: "Row 1 fits: {a*k} ÷ {a} = {k}, the same as every other row. Check each quotient before picking a breaker."
-  - id: flagged-the-last-row
-    when: "3"
-    says: "Row 3 fits too: {e*k} ÷ {e} = {k}. When every quotient matches, nothing breaks the pattern."
+  - id: said-no-to-one-constant
+    when: "{k}, {k}, {k}, no"
+    says: "Every pair divides to {k} — one constant multiplying every x is exactly what proportional MEANS."
 hints:
-  - "Divide y by x in each row. Do you get the same number every time?"
-  - "{a*k} ÷ {a} = {k}, {c*k} ÷ {c} = {k}, {e*k} ÷ {e} = {k} — no row breaks it."
+  - "Divide each y by its x. Do you get the same number every time?"
+  - "{a*k} ÷ {a} = {k}, {c*k} ÷ {c} = {k}, {e*k} ÷ {e} = {k} — one constant everywhere."
 source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
 verify: "{a*k * c == c*k * a}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
