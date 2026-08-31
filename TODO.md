@@ -173,17 +173,19 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       misconception, per-gate latency); the roster row opens a per-child
       detail panel whose "Where the moves break" names the STEP.
       Remaining, roughly by the report's own ordering:
-      - Enter-to-submit on the answer box
       - hints are keyed to the problem, not the current step, so they
-        describe a step already finished
-      - skill map clipped at 390px (fixed 560px, no overflow-x)
-      - no routing: Back exits the app, nothing is linkable
-      - mastery bar reads 100% before the check is passed
-      - 4 text styles fail WCAG AA contrast (3.15:1 worst)
-      - sign-in should list existing local profiles
-      - points vs stones: two currencies, neither explained
-      - lesson's own numbers reused as a practice problem
-      - reset-demo confirm never disarms
+        describe a step already finished (S-06; the one still open)
+      - lesson's own numbers reused as a practice problem (engine design
+        question — the scaffolded lead is SUPPOSED to share numbers; is
+        the follow-up serve too similar?)
+      DONE 2026-08-30 (funnel batch for the homeschool pilot): mastery
+      bar capped at 96% + "check to finish" until the stone; sign-in
+      lists this device's profiles (tap to continue); muted text
+      #8b8070 → #6f6557 (AA at small sizes); points chip + dashboard
+      explain points (effort) vs stones (mastery via check); work↔cairn
+      rides location.hash so Back toggles views (#my-cairn linkable).
+      Earlier: Enter-to-submit (form), 390px map (overflow-x), reset
+      confirm (15s disarm).
 - [ ] Flow gaps still open: parked-vs-done framing on session_done;
       offered-hint auto-reveal lacks framing copy. (Reset-demo, the
       focus-mode indicator, and the check-unlock dismissal: done — the

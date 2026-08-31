@@ -344,20 +344,39 @@ export function ItemCard({
         </span>
         {isCheck && <span className="muted">no hints on these — show what you know</span>}
         {action.itemKind === 'probe' && <span className="muted">these count for the earlier skill</span>}
-        <span className="mastery-meter" aria-label={`Mastery ${Math.round(shownMastery * 100)} percent`}>
-          <span className="mastery-label">MASTERY</span>
-          <span className="m-bar" aria-hidden>
-            <span className="m-fill" style={{ width: `${Math.round(shownMastery * 100)}%` }} />
-            {MILESTONE_MARKS.map((at) => (
-              <span
-                key={at}
-                className={shownMastery >= at ? 'm-tick m-tick-hit' : 'm-tick'}
-                style={{ left: `${at * 100}%` }}
-              />
-            ))}
-          </span>
-          <b data-testid="mastery-pct">{Math.round(shownMastery * 100)}%</b>
-        </span>
+        {(() => {
+          // the ESTIMATE can saturate before the check, but the bar must
+          // never read 100% while the stone is unearned — a full bar
+          // beside an unpassed check reads as a lie to anyone evaluating
+          // rigor. Cap the readout: the last few percent belong to the
+          // check itself.
+          const pct = Math.round(shownMastery * 100)
+          const atCap = pct >= 97
+          const shownPct = atCap ? 96 : pct
+          return (
+            <span
+              className="mastery-meter"
+              aria-label={
+                atCap
+                  ? 'Mastery nearly complete — pass the check to finish'
+                  : `Mastery ${pct} percent`
+              }
+            >
+              <span className="mastery-label">MASTERY</span>
+              <span className="m-bar" aria-hidden>
+                <span className="m-fill" style={{ width: `${shownPct}%` }} />
+                {MILESTONE_MARKS.map((at) => (
+                  <span
+                    key={at}
+                    className={shownMastery >= at ? 'm-tick m-tick-hit' : 'm-tick'}
+                    style={{ left: `${at * 100}%` }}
+                  />
+                ))}
+              </span>
+              <b data-testid="mastery-pct">{atCap ? 'check to finish' : `${pct}%`}</b>
+            </span>
+          )
+        })()}
       </div>
       {stem && (
         <h2 className="stem" data-testid="stem">

@@ -300,8 +300,26 @@ function GradePage({ api, onPlaced }: { api: CairnApi; onPlaced: () => void }) {
   )
 }
 
+/** student ids already in this browser's demo log, most recent first —
+ * a returning family should tap their name, not retype it */
+function localProfiles(): string[] {
+  try {
+    const raw = localStorage.getItem('cairn.demo.events')
+    if (!raw) return []
+    const events = JSON.parse(raw) as Array<{ studentId?: string; t?: number }>
+    const lastSeen = new Map<string, number>()
+    for (const e of events)
+      if (typeof e.studentId === 'string' && e.studentId !== '')
+        lastSeen.set(e.studentId, e.t ?? 0)
+    return [...lastSeen.entries()].sort((a, b) => b[1] - a[1]).map(([id]) => id)
+  } catch {
+    return []
+  }
+}
+
 function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; onGuide?: () => void; about?: boolean }) {
   const [name, setName] = useState('')
+  const [profiles] = useState(localProfiles)
 
   const join = () => {
     const id = name.trim().toLowerCase()
@@ -324,6 +342,26 @@ function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; on
             ? 'Pick any name — progress stays on this device under that name.'
             : 'Type your name to pick up where you left off.'}
         </p>
+        {profiles.length > 0 && (
+          <div className="profile-row">
+            {profiles.slice(0, 6).map((id) => (
+              <button
+                key={id}
+                className="btn btn-quiet profile-chip"
+                onClick={() => {
+                  try {
+                    localStorage.setItem('cairn.student', id)
+                  } catch {
+                    /* storage unavailable is fine */
+                  }
+                  onJoin(id)
+                }}
+              >
+                {id}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="answer-row">
           <input
             aria-label="Your name"
@@ -386,7 +424,12 @@ function Header({
       </span>
       <span className="brand">Cairn</span>
       {points !== null && (
-        <span key={points} className="points-chip bump" aria-label={`${points} points`}>
+        <span
+          key={points}
+          className="points-chip bump"
+          aria-label={`${points} points`}
+          title="Points measure EFFORT — every try earns some. Stones (on My cairn) mark skills mastered by passing their check."
+        >
           ● {points}
         </span>
       )}
@@ -449,7 +492,8 @@ function Session({
    * glides to the next one instead of flashing through a loading state */
   const [fetching, setFetching] = useState(false)
   const [view, setView] = useState<'work' | 'dashboard' | 'zoo' | 'guide'>(
-    urlParam('view') === 'dashboard'
+    urlParam('view') === 'dashboard' ||
+    (typeof window !== 'undefined' && window.location.hash === '#my-cairn')
       ? 'dashboard'
       : urlParam('view') === 'zoo'
         ? 'zoo'
@@ -481,6 +525,24 @@ function Session({
   const [milestones, setMilestones] = useState<Array<NonNullable<ServerNext['milestone']>>>([])
   const milestone = milestones[0] ?? null
   const dismissMilestone = useCallback(() => setMilestones((q) => q.slice(1)), [])
+  // Back must move between views, not exit the app: the work↔cairn
+  // toggle rides on location.hash so phone back-gestures behave
+  useEffect(() => {
+    const wanted = view === 'dashboard' ? '#my-cairn' : ''
+    try {
+      if (window.location.hash !== wanted && (wanted !== '' || window.location.hash !== ''))
+        window.history.pushState(null, '', wanted === '' ? window.location.pathname + window.location.search : wanted)
+    } catch {
+      /* history unavailable (embeds) is fine */
+    }
+  }, [view])
+  useEffect(() => {
+    const onPop = () => {
+      setView(window.location.hash === '#my-cairn' ? 'dashboard' : 'work')
+    }
+    window.addEventListener('popstate', onPop)
+    return () => window.removeEventListener('popstate', onPop)
+  }, [])
   /** the just-answered skill unlocked its check — offer before moving on */
   const [unlockOffer, setUnlockOffer] = useState<string | null>(null)
   /** an alternative explanation playing in the lesson slot */

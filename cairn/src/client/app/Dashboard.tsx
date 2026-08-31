@@ -173,7 +173,8 @@ export function Dashboard({
         </div>
         <div className="dash-points">
           <div className="dash-points-num">{state.points}</div>
-          <div className="muted">points earned</div>
+          <div className="muted">points earned — every try counts</div>
+          <div className="muted">stones are different: one per skill MASTERED, by passing its check</div>
         </div>
       </section>
 

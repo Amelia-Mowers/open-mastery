@@ -20,10 +20,10 @@ body {
 .brand { font: 700 20px 'Lora', Georgia, serif; }
 .spacer { flex: 1; }
 .mono-chip {
-  font: 600 11px ui-monospace, Menlo, monospace; color: #8b8070;
+  font: 600 11px ui-monospace, Menlo, monospace; color: #6f6557;
   background: #ece5d8; padding: 3px 8px; border-radius: 5px;
 }
-.muted { font-size: 13px; color: #8b8070; }
+.muted { font-size: 13px; color: #6f6557; }
 .loading { padding: 30px 0; }
 
 .card {
@@ -286,7 +286,7 @@ body {
   border-bottom: 1px solid #f2ece2;
 }
 .event-row:last-child { border-bottom: 0; }
-.event-seq { color: #8b8070; min-width: 44px; }
+.event-seq { color: #6f6557; min-width: 44px; }
 .event-kind { font-weight: 600; min-width: 124px; color: #6b5a33; }
 .event-kind.kind-attempt { color: #8a5320; }
 .event-kind.kind-step_attempt { color: #1c5d69; }
@@ -295,7 +295,7 @@ body {
 .event-who { min-width: 70px; color: #5c5245; }
 .event-detail { color: #5c5245; overflow: hidden; text-overflow: ellipsis; }
 /* the skill name is context, not signal — it yields first when space runs out */
-.event-skill { color: #8b8070; }
+.event-skill { color: #6f6557; }
 
 /* ---- guide: per-student detail ---- */
 .guide-open { padding: 2px 4px; font-weight: 700; text-decoration: underline; }
@@ -333,7 +333,7 @@ body {
 .grade-big-num { font: 700 30px 'Nunito Sans', sans-serif; line-height: 1; }
 .grade-big-sub {
   font: 600 11px 'Nunito Sans', sans-serif; letter-spacing: 0.08em;
-  text-transform: uppercase; color: #8b8070;
+  text-transform: uppercase; color: #6f6557;
 }
 /* not-yet-built grades stay VISIBLE (the roadmap is the point) but must
    read as unavailable rather than merely low-contrast */
@@ -383,7 +383,7 @@ body {
 
 /* ---- mastery meter ---- */
 .mastery-meter { display: inline-flex; align-items: center; gap: 7px; margin-left: auto; }
-.mastery-label { font: 700 10.5px 'Nunito Sans', sans-serif; letter-spacing: 0.07em; color: #8b8070; }
+.mastery-label { font: 700 10.5px 'Nunito Sans', sans-serif; letter-spacing: 0.07em; color: #6f6557; }
 .m-bar { width: 96px; height: 8px; background: #ece5d8; border-radius: 4px; overflow: hidden; display: inline-block; }
 .m-fill {
   display: block; height: 100%; background: linear-gradient(90deg, #c9803f, #b05f28);
@@ -397,7 +397,7 @@ body {
 /* ---- widget zoo ---- */
 .zoo-card .card-kicker .mono-chip { max-width: 55%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .zoo-extract { display: inline-block; margin-top: 10px; }
-.zoo-note { color: var(--ink-soft, #8b8070); font-size: 14.5px; margin: 4px 0; }
+.zoo-note { color: var(--ink-soft, #6f6557); font-size: 14.5px; margin: 4px 0; }
 
 /* stepwise problem player: the gate where the student constructs the move */
 .stepwise-gate {
@@ -461,7 +461,7 @@ body {
   box-shadow: 0 -9px 0 -4px #d8a978;
   margin-top: 8px;
 }
-.milestone-sub { display: block; font-size: 13.5px; color: #8b8070; margin-top: 3px; }
+.milestone-sub { display: block; font-size: 13.5px; color: #6f6557; margin-top: 3px; }
 .milestone-moment {
   text-align: center;
   padding: 34px 30px 26px;
@@ -507,7 +507,7 @@ body {
   text-align: center;
   font: 700 12px 'Nunito Sans', sans-serif;
   letter-spacing: 0.06em;
-  color: #8b8070;
+  color: #6f6557;
   margin: 10px 0 2px;
 }
 @keyframes sw-nudge {
@@ -608,7 +608,7 @@ body {
 .guide-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; }
 .guide-table th {
   text-align: left; font: 700 11px ui-monospace, Menlo, monospace;
-  color: #8b8070; padding: 6px 10px; border-bottom: 2px solid #e6ddd0;
+  color: #6f6557; padding: 6px 10px; border-bottom: 2px solid #e6ddd0;
 }
 .guide-table td { padding: 9px 10px; border-bottom: 1px solid #efe8dc; vertical-align: top; }
 .guide-table tr[data-flagged] td { background: #fbf1ef; }
@@ -642,3 +642,6 @@ body {
 
 .vet-ok { color: #3f6a4d; }
 .vet-draft { color: #a8814f; }
+
+.profile-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
+.profile-chip { font-weight: 700; }
