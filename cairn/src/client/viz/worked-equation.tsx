@@ -54,8 +54,15 @@ export function createWorkedEquation(
           boxShadow: '0 2px 0 rgba(92, 74, 56, 0.08)',
         }}
       >
-        {lines.map((l, i) => {
-          const last = i === lines.length - 1
+        {(() => {
+          // emphasis groups are delimited by the operation dividers: the
+          // CURRENT group is every line since the last note. A multi-line
+          // opening (given + question, no divider between) reads with
+          // equal weight; each worked step still gets its single-line
+          // emphasis because each arrives with its divider.
+          const lastNoted = lines.reduce((acc, l, i) => (l.note !== undefined ? i : acc), 0)
+          return lines.map((l, i) => {
+          const last = i >= lastNoted
           return (
             <div key={i} data-line style={{ animation: 'cairn-rise 0.35s ease both' }}>
               {l.note !== undefined && (
@@ -86,7 +93,8 @@ export function createWorkedEquation(
               </div>
             </div>
           )
-        })}
+        })
+        })()}
         {interactive && (
           <div data-next-line>
             <div
