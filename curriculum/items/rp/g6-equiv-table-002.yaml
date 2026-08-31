@@ -5,19 +5,22 @@ representation: worked-equation
 params: { a: 3, b: 8, m: 4 }
 generator: { a: { int: [1, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
 widget:
-  type: ratio-table
+  type: pair-input
   config:
-    stem: "This table shows equivalent ratios. Fill in the missing cups value."
-    cols: ["cups", "muffins"]
-    rows: [["{a}", "{b}"], ["?", "{b*m}"]]
-answer: { type: expr, value: "{a*m}", form: evaluated, integer: true }
+    stem: "One batch is {a} cups : {b} muffins. A bakery makes {m} batches at once — write that row, cups and muffins."
+    aLabel: "cups"
+    bLabel: "muffins"
+answer: { type: ordered, value: ["{a*m}", "{b*m}"] }
 misconceptions:
   - id: added-instead-of-scaling
-    when: "{a+m}"
+    when: "{a+m}, {b+m}"
     says: "Equivalent ratios scale by multiplying BOTH quantities by the same number — here ×{m} — not by adding."
+  - id: scaled-one-side
+    when: "{a*m}, {b}"
+    says: "The cups were scaled but the muffins were left as one batch — BOTH quantities multiply by {m}."
 hints:
-  - "The muffins went from {b} to {b*m}. What were they multiplied by?"
-  - "Multiply the cups by {m} too: {a} × {m} = {a*m}."
+  - "{m} batches means BOTH quantities multiply by {m}."
+  - "{a} × {m} = {a*m} cups, and {b} × {m} = {b*m} muffins."
 source: { book: ccss-rp-progression, section: "6.RP.A.3a" }
-verify: "{answer * b == a * (b*m)}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{(a*m) * b == (b*m) * a}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

@@ -4,12 +4,20 @@ difficulty: 3
 representation: ratio-table
 params: { a: 3, b: 10, m: 4 }
 generator: { a: { int: [1, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
-widget: { type: numeric-input, config: { stem: "A recipe uses {a} cups of flour to make {b} muffins. How many muffins do {a*m} cups make?" } }
-answer: { type: expr, value: "{b*m}", form: evaluated, integer: true }
+widget:
+  type: pair-input
+  config:
+    stem: "A recipe uses {a} cups of flour to make {b} muffins. A batch of {a*m} cups is on the counter — write its full row, cups and muffins."
+    aLabel: "cups"
+    bLabel: "muffins"
+answer: { type: ordered, value: ["{a*m}", "{b*m}"] }
 misconceptions:
   - id: added-instead-of-scaling
-    when: "{b+m}"
+    when: "{a+m}, {b+m}"
     says: "Equivalent ratios scale by multiplying BOTH quantities by the same number — here ×{m} — not by adding."
+  - id: scaled-one-side
+    when: "{a*m}, {b}"
+    says: "The cups were scaled but the muffins were left as one batch — BOTH quantities multiply by {m}."
 hints:
   - "{a} cups became {a*m} cups — both quantities scale by the same number."
   - "That's × {m}: the muffins become {b} × {m} = {b*m}."

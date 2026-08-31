@@ -830,7 +830,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
       // compare-input is the composite CHECK instrument (both computed
       // rates + the decision) — more unprompted work than one number, so
       // it counts as a raw ceiling
-      const rawTypes = new Set(['numeric-input', 'expression-input', 'equation-input', 'compare-input'])
+      const rawTypes = new Set(['numeric-input', 'expression-input', 'equation-input', 'compare-input', 'pair-input'])
       if (!skillItems.some((it) => it.difficulty === maxD && rawTypes.has(it.widget.type)))
         push(
           'warning',
