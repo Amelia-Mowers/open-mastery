@@ -9,4 +9,4 @@ timeline:
   - { t: 8, patch: { line: "{c*k} ÷ {c} = {k}", note: "the second pair" }, caption: "The second pair matches. And the last one — {e*k} ÷ {e}?" }
   - { t: 12, patch: { line: ["{e*k} ÷ {e} = {k}", "proportional: y = {k}x"], note: "every pair, one constant" }, caption: "The same quotient in every pair — proportional, and the rule is y = {k}x." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
