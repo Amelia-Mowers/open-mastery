@@ -11,4 +11,4 @@ timeline:
   - { t: 12, patch: { line: "x = {c} → y = {k} × {c}", note: "use the rule" }, caption: "Now put x = {c} through the rule. So what does y come out to?" }
   - { t: 16, patch: { line: "y = {k*c}", note: "multiply" }, caption: "y = {k*c}." }
   - { t: 18.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

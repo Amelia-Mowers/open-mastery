@@ -10,4 +10,4 @@ timeline:
   - { t: 8.5, patch: { line: "sale price = {n*p} − {p}", note: "the discount comes off" }, caption: "The discount comes off the full price. So what do you actually pay?" }
   - { t: 12, patch: { line: "sale price = {n*p - p}", note: "the rest" }, caption: "You pay ${n*p - p}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

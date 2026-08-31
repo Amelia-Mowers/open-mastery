@@ -4,8 +4,9 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "x: {a} → y: {a*k}    x: {c} → y: {c*k}    x: {e} → y: {e*k}" }, caption: "The proportionality test: one quotient, every row." }
-  - { t: 4, patch: { line: "{a*k} ÷ {a} = {k}    {c*k} ÷ {c} = {k}    {e*k} ÷ {e} = {k}", note: "y ÷ x, row by row" }, caption: "Divide y by x in each row. What does this row give you?", expect: { type: numeric, value: "{k}", prompt: "Divide this row's y by its x — what do you get?" } }
-  - { t: 8.5, patch: { line: "same quotient everywhere → proportional, y = {k}x", note: "one different row would break it" }, caption: "All {k}: proportional. If even one row differed, the answer would be no." }
-  - { t: 11.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+  - { t: 0, patch: { start: "is y proportional to x?", line: ["x = {a}, y = {a*k}", "x = {c}, y = {c*k}", "x = {e}, y = {e*k}"] }, caption: "Proportional means ONE constant multiplies every x. The test: y ÷ x, every pair." }
+  - { t: 4, patch: { line: "{a*k} ÷ {a} = {k}", note: "y ÷ x, the first pair" }, caption: "The first pair gives {k}. Do the other pairs match?", expect: { type: numeric, value: "{k}", prompt: "{a*k} ÷ {a} — what does the first pair give?", hint: "y ÷ x." } }
+  - { t: 8, patch: { line: "{c*k} ÷ {c} = {k}", note: "the second pair" }, caption: "The second pair matches. And the last one — {e*k} ÷ {e}?" }
+  - { t: 12, patch: { line: ["{e*k} ÷ {e} = {k}", "proportional: y = {k}x"], note: "every pair, one constant" }, caption: "The same quotient in every pair — proportional, and the rule is y = {k}x." }
+  - { t: 15.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
