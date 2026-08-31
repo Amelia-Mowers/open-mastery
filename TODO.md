@@ -9,13 +9,19 @@ a stale queue costs more than no queue, because it hides what is actually
 left. Long "shipped" narratives belong in memory or commit messages, not
 here: entries are one line plus a pointer. Last audited 2026-08-28.
 
-## MILESTONE: tutoring-center demo (the sellable cut)
+## MILESTONE: homeschool pilot (the sellable cut)
 
-Not K–12 — the middle-school band plus the manager's view (~2–3 months):
+PIVOT 2026-08-30: the target is HOMESCHOOL FAMILIES, not tutoring
+centers. The guide view is the PARENT's view. Plan: recruit pilot
+families starting the week of 2026-09-01 using the existing demo; the
+6–8 band WORKING by end of September 2026. Review throughput (Mia's) is
+the schedule — see the review-days note below.
+
+Not K–12 — the middle-school band plus the parent's view:
 
 - [ ] Slabs 10–15 authored (6–8 band). NEXT: 6–8.NS, then 8.EE/F
-      (slab-map.md). ~200 timelines; vet in fresh-eyes batches, recruit
-      pilot tutors as reviewers.
+      (slab-map.md). ~200 timelines; vet in fresh-eyes batches — pilot
+      PARENTS are candidate fresh-eyes reviewers once the queue exists.
       THE BINDING CONSTRAINT IS REVIEW, NOT AUTHORING (Mia, 2026-08-30:
       "authoring is the cheap part… it's been reviewing them that's been
       the bitch" — widgets take an afternoon; a hard review day covered
