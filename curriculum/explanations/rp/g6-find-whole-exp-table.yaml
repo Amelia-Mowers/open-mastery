@@ -4,9 +4,9 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{5*f}%", " of ? = ", "{f*k}"], cols: ["percent", "amount"], rows: [["{5*f}%", "{f*k}"], ["5%", "{k}"], ["100%", "{20*k}"]], reveal: "0" }, caption: "This time the KNOWN row is a part — the whole hides at 100%." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], reveal: "1", highlight: "1" }, caption: "{5*f}% of the number is {f*k}." }
-  - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{f}" } }, caption: "Step down to 5%: {f*k} ÷ {f} = {k}. 100% is twenty of those fives — so what is the WHOLE?", expect: { type: numeric, value: "{k}", prompt: "What goes in the next row?" } }
-  - { t: 13, patch: { reveal: "3", highlight: "3", factor: { from: "2", to: "3", text: "×20" } }, caption: "100% is twenty fives: {k} × 20 = {20*k}. The number is {20*k}.", expect: { type: numeric, value: "{20*k}", prompt: "What goes in the next row?" } }
+  - { t: 0, patch: { equation: ["{10*m}%", " of ? = ", "{m*h}"], cols: ["percent", "amount"], rows: [["{10*m}%", "{m*h}"], ["10%", "{h}"], ["100%", "{10*h}"]], reveal: "0" }, caption: "This time the KNOWN row is a part — the whole hides at 100%." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], reveal: "1", highlight: "1" }, caption: "{10*m}% of the number is {m*h}." }
+  - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{m}" } }, caption: "Step down to 10%: {m*h} ÷ {m} = {h}. 100% is ten of those tens — so what is the WHOLE?", expect: { type: numeric, value: "{h}", prompt: "{m*h} ÷ {m} — what is 10% worth?" } }
+  - { t: 13, patch: { reveal: "3", highlight: "3", factor: { from: "2", to: "3", text: "×10" } }, caption: "100% is ten tens: {h} × 10 = {10*h}. The number is {10*h}.", expect: { type: numeric, value: "{10*h}", prompt: "{h} × 10 — what is the whole?" } }
   - { t: 16, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

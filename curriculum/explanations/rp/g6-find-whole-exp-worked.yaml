@@ -4,10 +4,10 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{5*f}% of ? = {f*k}" }, caption: "Work backwards from the part to the whole." }
-  - { t: 4, patch: { line: "5% = {f*k} ÷ {f}", note: "÷ {f}" }, caption: "{5*f}% is {f} fives, so one five is {k}. So what is the WHOLE?", expect: { type: numeric, value: "{k}", prompt: "What number finishes this line?" } }
-  - { t: 6.5, patch: { line: "5% = {k}", note: "one five" }, caption: "One five is {k}." }
-  - { t: 8.5, patch: { line: "100% = 20 × {k}", note: "× 20" }, caption: "100% is 20 of those fives. So what is the WHOLE?", expect: { type: numeric, value: "{20*k}", prompt: "So what is the WHOLE?" } }
-  - { t: 12, patch: { line: "100% = {20*k}", note: "the whole" }, caption: "Build back up: the whole is {20*k}." }
+  - { t: 0, patch: { start: "{10*m}% of ? = {m*h}" }, caption: "Work backwards from the part to the whole." }
+  - { t: 4, patch: { line: "10% = {m*h} ÷ {m}", note: "÷ {m}" }, caption: "{10*m}% is {m} tens, so one ten is {h}.", expect: { type: numeric, value: "{h}", prompt: "{m*h} shared into {m} equal tens — how much is ONE ten worth?" } }
+  - { t: 6.5, patch: { line: "10% = {h}", note: "one ten" }, caption: "10% of the number is {h}." }
+  - { t: 8.5, patch: { line: "100% = 10 × {h}", note: "× 10" }, caption: "100% is ten of those tens. So what is the WHOLE?", expect: { type: numeric, value: "{10*h}", prompt: "Ten tens make the whole — what is it?" } }
+  - { t: 12, patch: { line: "100% = {10*h}", note: "the whole" }, caption: "Build back up: the whole is {10*h}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
