@@ -16,6 +16,15 @@ Not K–12 — the middle-school band plus the manager's view (~2–3 months):
 - [ ] Slabs 10–15 authored (6–8 band). NEXT: 6–8.NS, then 8.EE/F
       (slab-map.md). ~200 timelines; vet in fresh-eyes batches, recruit
       pilot tutors as reviewers.
+      THE BINDING CONSTRAINT IS REVIEW, NOT AUTHORING (Mia, 2026-08-30:
+      "authoring is the cheap part… it's been reviewing them that's been
+      the bitch" — widgets take an afternoon; a hard review day covered
+      ~25 timelines WITH fix-cycles). Schedule the band in REVIEW-DAYS
+      (~243 timelines left ≈ 10 of them at that rate, fewer if the
+      author-with-gates rule holds first-pass quality) and spend
+      engineering on review leverage: invariants that pre-judge, the
+      zoo's end-to-end page, and anything that cuts per-timeline review
+      seconds.
       MEASURED 2026-08-29: 18/110 sub-clauses = **16% of 6–8**. RP 9/12,
       EE 8/16, everything else 0. The two "DONE" slabs are done as
       teachable SPINES, not as full coverage — RP defers 6.RP.A.3.D, EE
