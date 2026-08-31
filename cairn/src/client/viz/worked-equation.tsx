@@ -19,8 +19,8 @@ export interface WorkedEquationConfig {
 }
 
 export interface WorkedEquationView {
-  /** append a line of working */
-  line?: string
+  /** append a line of working — or several as one emphasis group */
+  line?: string | string[]
   /** operation annotation for that line, e.g. "multiply both sides by -1" */
   note?: string
 }
@@ -146,11 +146,16 @@ export function createWorkedEquation(
     applyPatch: (patch) => {
       store.record('patch', patch)
       if (patch.line !== undefined && patch.line !== null) {
-        const entry: { text: string; note?: string } =
-          patch.note !== undefined && patch.note !== null
-            ? { text: String(patch.line), note: String(patch.note) }
-            : { text: String(patch.line) }
-        store.setState({ lines: [...store.getState().lines, entry] })
+        // an ARRAY of lines lands as one emphasis group (a multi-line
+        // opening: statement, given pair, question) — the note, if any,
+        // belongs to the first
+        const texts = Array.isArray(patch.line) ? patch.line : [patch.line]
+        const entries = texts.map((t, i) =>
+          i === 0 && patch.note !== undefined && patch.note !== null
+            ? { text: String(t), note: String(patch.note) }
+            : { text: String(t) },
+        )
+        store.setState({ lines: [...store.getState().lines, ...entries] })
       }
     },
     a11y: { role: 'img', label },

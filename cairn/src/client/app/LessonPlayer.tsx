@@ -422,7 +422,14 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
       element: w.render({ start }, 'lesson'),
       apply: (patch) => {
         if (!('line' in patch)) return
-        const view: { line?: string; note?: string } = { line: renderText(String(patch['line']), params) }
+        // an array of lines is one emphasis group (a multi-line opening) —
+        // String() would comma-join it into a single mangled line
+        const lv = patch['line']
+        const view: { line?: string | string[]; note?: string } = {
+          line: Array.isArray(lv)
+            ? lv.map((t) => renderText(String(t), params))
+            : renderText(String(lv), params),
+        }
         if ('note' in patch && patch['note'] != null) view.note = renderText(String(patch['note']), params)
         w.applyPatch(view)
       },
