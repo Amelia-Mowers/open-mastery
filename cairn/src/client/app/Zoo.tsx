@@ -355,7 +355,19 @@ function ZooAnswer({ demo, params }: { demo: ZooDemo; params: Params }) {
   // answer is a plain integer invites an answer that cannot be right.
   // An input is tied to the shape of the ANSWER, not to the skill.
   const isTwoTerm = new RegExp(`\\d\\s*\\*?\\s*${variable}\\s*[+-]\\s*\\d`).test(key)
-  const styles: Array<{ type: WidgetType; config: Record<string, unknown>; note: string }> = [
+  // a CHOICE key ("a") cannot be expressed in a text box — offering one
+  // grades typed letters against an option key and rejects "A" for "a".
+  // The item's own choice widget IS the answer space; render that.
+  const isChoice = (item.answer as { type?: string }).type === 'choice'
+  const styles: Array<{ type: WidgetType; config: Record<string, unknown>; note: string }> = isChoice
+    ? [
+        {
+          type: item.widget.type as WidgetType,
+          config: { ...evalConfig(item.widget.config ?? {}, params), seed: 'zoo' },
+          note: 'choice · guess-discounted, never check evidence',
+        },
+      ]
+    : [
     ...(isTwoTerm
       ? [
           {
