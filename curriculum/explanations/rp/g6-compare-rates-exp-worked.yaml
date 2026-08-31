@@ -9,4 +9,4 @@ timeline:
   - { t: 8.5, patch: { line: "B: ${(u+d)*a2} ÷ {a2} = ${u+d} each", note: "unit price" }, caption: "Pack B: one pencil costs ${u+d}. Compared one to one — which pack is the better buy?", expect: { type: numeric, value: "{u+d}", prompt: "So what does ONE Pack-B pencil cost?" } }
   - { t: 13, patch: { line: "${u} < ${u+d} — A is the better buy", note: "compare ONE to ONE" }, caption: "Now they're the same one thing: ${u} beats ${u+d}. Pack A wins." }
   - { t: 16, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
