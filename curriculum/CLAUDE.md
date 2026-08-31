@@ -40,6 +40,14 @@ numbers and objects.**
    question; ONE stressed word in caps where the stress does real work
    (ONE, BOTH, WHOLE, the REST); the question mark lands at the end of
    the caption that fronts the input asking it.
+7. **THE PROBLEM IS DEFINED IN THE FIRST FRAME.** The opening board
+   states everything the problem is — the given, the relationship in
+   words where one exists ("y is proportional to x"), and the question
+   line ("1 pound costs $?", "k = ?", "y = ? when x = 7") — as ONE
+   equal-emphasis group (a `line:` array in the t0 patch). A target that
+   lives only in captions until the board suddenly answers it was
+   reported three times in one session (missing-value, constant-k,
+   equation).
 
 The moments are fixed by the invariants — setup caption before a gate,
 prompt while it is open, confirmation after, one closing question with

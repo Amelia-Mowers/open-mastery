@@ -4,8 +4,8 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "x = {a} → y = {a*k}" }, caption: "One pair is enough to write the whole rule." }
-  - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "constant of proportionality" }, caption: "Find k first.", expect: { type: numeric, value: "{k}", prompt: "What is k for this table?" } }
+  - { t: 0, patch: { start: "y is proportional to x", line: ["when x = {a}, y = {a*k}", "y = ? when x = {c}"] }, caption: "Proportional means y is always the same multiple of x — one pair is enough to write the rule." }
+  - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "constant of proportionality" }, caption: "First, k — the number that multiplies x.", expect: { type: numeric, value: "{k}", prompt: "k is y ÷ x: {a*k} ÷ {a} — what does it come to?" } }
   - { t: 6.5, patch: { line: "k = {k}", note: "the constant" }, caption: "k = {k}." }
   - { t: 8, patch: { line: "y = {k}x", note: "the rule for EVERY x" }, caption: "With k known, one rule covers every x. What is that equation?", expect: { type: expr, value: "y = {k}x", prompt: "With k known, what is the equation linking y and x?" } }
   - { t: 12, patch: { line: "x = {c} → y = {k} × {c}", note: "use the rule" }, caption: "Now put x = {c} through the rule. So what does y come out to?" }
