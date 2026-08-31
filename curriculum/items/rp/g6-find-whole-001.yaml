@@ -2,17 +2,17 @@ id: g6.rp.find-whole.001
 skills: [g6.rp.find-whole]
 difficulty: 1
 representation: double-number-line
-params: { m: 4, h: 6 }
-generator: { m: { int: [2, 9] }, h: { int: [2, 9] } }
-widget: { type: numeric-input, config: { stem: "{10*m}% of a number is {m*h}. What is the number?" } }
-answer: { type: expr, value: "{10*h}", form: evaluated, integer: true }
+params: { n: 5, k: 24 }
+generator: { n: { set: [2, 4, 5, 10] }, k: { int: [3, 30] } }
+widget: { type: numeric-input, config: { stem: "{100/n}% of a number is {k}. What is the number?" } }
+answer: { type: expr, value: "{n*k}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-part
-    when: "{m*h}"
-    says: "{m*h} is the PART you were given. The question asks for the whole — the number that {10*m}% of it makes {m*h}."
+    when: "{k}"
+    says: "{k} is the PART you were given. The question asks for the whole — the number that {100/n}% of it makes {k}."
 hints:
-  - "{10*m}% is {m} tens, so 10% of the number is {m*h} ÷ {m} = {h}."
-  - "10% is {h}, and 100% is ten tens: {h} × 10 = {10*h}."
+  - "{100/n}% is the benchmark fraction 1/{n} — {k} is one of {n} equal parts."
+  - "All {n} parts: {k} × {n} = {n*k}."
 source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
-verify: "{10*m * answer == m*h * 100}"
+verify: "{(100/n) * answer == k * 100}"
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

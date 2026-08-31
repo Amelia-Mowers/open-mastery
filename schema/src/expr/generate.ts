@@ -6,6 +6,8 @@ import { type Result, ok, err } from '../result.ts'
 export interface ParamConstraint {
   /** integer in [lo, hi] */
   int?: [number, number]
+  /** explicit finite domain — benchmark denominators {2, 4, 5, 10}, say */
+  set?: number[]
   /** integer in [lo, hi] (used when the domain comes from another constraint, e.g. mult_of) */
   range?: [number, number]
   /** multiple of another param */
@@ -98,7 +100,9 @@ export function generateParams(
 
     let candidates: number[]
     const interval = c.int ?? c.range
-    if (c.mult_of !== undefined) {
+    if (c.set !== undefined) {
+      candidates = [...c.set]
+    } else if (c.mult_of !== undefined) {
       const baseR = resolve(c.mult_of)
       if (!baseR.ok) return baseR
       const base = baseR.value

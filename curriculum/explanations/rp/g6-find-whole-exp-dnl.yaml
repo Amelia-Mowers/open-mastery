@@ -4,9 +4,9 @@ representation: double-number-line
 widget: double-number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{10*m}%", " of ? = ", "{m*h}"], topLabel: "percent", bottomLabel: "amount", top: ["0%", "10%", "{10*m}%", "100%"], bottom: ["0", "{h}", "{m*h}", "{10*h}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "This time we know the part — the whole is hidden at 100%." }
-  - { t: 4.5, patch: { eqHighlight: ["0", "2"], topIn: true, bottomIn: true, reveal: ["0", "2"] }, caption: "{10*m}% lines up with {m*h}.", expect: { type: pick, value: ["0", "2"], prompt: "Which piece — or pieces — of the ratio pair up across the two lines?" } }
-  - { t: 9, patch: { eqHighlight: [], highlight: "1", reveal: ["0", "1", "2"] }, caption: "So the question the lines ask is: if 10% is {h}, what is 100%?", expect: { type: numeric, value: "{h}", prompt: "Step down to 10% — how much is that?", hint: "{m*h} shared into {m} equal tens." } }
-  - { t: 13.5, patch: { eqHighlight: ["1"], highlight: "3", reveal: ["0", "1", "2", "3"] }, caption: "100% is ten tens: {h} × 10 = {10*h}. The number is {10*h}." }
+  - { t: 0, patch: { equation: ["{100/n}%", " of ? = ", "{k}"], topLabel: "percent", bottomLabel: "amount", top: ["0%", "{100/n}%", "100%"], bottom: ["0", "{k}", "{n*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "This time we know the part — the whole is hidden at 100%." }
+  - { t: 4.5, patch: { eqHighlight: ["0", "2"], topIn: true, bottomIn: true, reveal: ["0", "1"] }, caption: "{100/n}% lines up with {k} — one benchmark part of the whole line.", expect: { type: pick, value: ["0", "2"], prompt: "Which piece — or pieces — of the ratio pair up across the two lines?" } }
+  - { t: 9, patch: { eqHighlight: [], highlight: "2" }, caption: "1/{n} of the line is {k} — so 100% is {n} of those parts. So what is the WHOLE?", expect: { type: numeric, value: "{n}", prompt: "{100/n}% fits into 100% how many times?", hint: "100 ÷ {100/n}." } }
+  - { t: 13.5, patch: { reveal: ["0", "1", "2"] }, caption: "{n} parts of {k}: the number is {n*k}." }
   - { t: 17, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

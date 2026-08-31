@@ -2,17 +2,17 @@ id: g6.rp.find-whole.002
 skills: [g6.rp.find-whole]
 difficulty: 2
 representation: ratio-table
-params: { m: 6, h: 5 }
-generator: { m: { int: [2, 9] }, h: { int: [3, 9] } }
-widget: { type: numeric-input, config: { stem: "A water tank is {10*m}% full and holds {m*h} liters right now. How many liters does the FULL tank hold?" } }
-answer: { type: expr, value: "{10*h}", form: evaluated, integer: true }
+params: { n: 4, k: 21 }
+generator: { n: { set: [2, 4, 5, 10] }, k: { int: [3, 30] } }
+widget: { type: numeric-input, config: { stem: "A water tank is {100/n}% full and holds {k} liters right now. How many liters does the FULL tank hold?" } }
+answer: { type: expr, value: "{n*k}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-part
-    when: "{m*h}"
-    says: "{m*h} liters is what is in the tank NOW — the {10*m}% part. The question asks what the full 100% tank holds."
+    when: "{k}"
+    says: "{k} liters is what is in the tank NOW — the {100/n}% part. The question asks what the full 100% tank holds."
 hints:
-  - "{10*m}% is {m} tens, so 10% of the number is {m*h} ÷ {m} = {h}."
-  - "10% is {h}, and 100% is ten tens: {h} × 10 = {10*h}."
+  - "{100/n}% full means the tank is 1/{n} full — {k} liters is one of {n} equal parts."
+  - "All {n} parts: {k} × {n} = {n*k} liters."
 source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
-verify: "{10*m * answer == m*h * 100}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+verify: "{(100/n) * answer == k * 100}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

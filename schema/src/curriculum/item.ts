@@ -9,14 +9,21 @@ export const constraintSchema = z
   .object({
     int: intPair.optional(),
     range: intPair.optional(),
+    /** explicit finite domain, for values with no interval shape —
+     * benchmark percents' denominators {2, 4, 5, 10}, say */
+    set: z.array(z.number().int()).min(1).optional(),
     mult_of: z.string().optional(),
     coprime: z.string().optional(),
     distinct: z.union([z.string(), z.array(z.string())]).optional(),
   })
   .strict()
   .refine(
-    (c) => c.int !== undefined || c.range !== undefined,
-    'every generated param needs an int or range domain',
+    (c) => c.int !== undefined || c.range !== undefined || c.set !== undefined,
+    'every generated param needs an int, range, or set domain',
+  )
+  .refine(
+    (c) => c.set === undefined || (c.int === undefined && c.range === undefined && c.mult_of === undefined),
+    'set is a complete domain — combining it with int/range/mult_of is ambiguous',
   )
 
 export const widgetRefSchema = z

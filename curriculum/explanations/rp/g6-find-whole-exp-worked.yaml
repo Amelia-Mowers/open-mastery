@@ -4,10 +4,9 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{10*m}% of ? = {m*h}" }, caption: "Work backwards from the part to the whole." }
-  - { t: 4, patch: { line: "10% = {m*h} ÷ {m}", note: "÷ {m}" }, caption: "{10*m}% is {m} tens, so one ten is {h}.", expect: { type: numeric, value: "{h}", prompt: "{m*h} shared into {m} equal tens — how much is ONE ten worth?" } }
-  - { t: 6.5, patch: { line: "10% = {h}", note: "one ten" }, caption: "10% of the number is {h}." }
-  - { t: 8.5, patch: { line: "100% = 10 × {h}", note: "× 10" }, caption: "100% is ten of those tens. So what is the WHOLE?", expect: { type: numeric, value: "{10*h}", prompt: "Ten tens make the whole — what is it?" } }
-  - { t: 12, patch: { line: "100% = {10*h}", note: "the whole" }, caption: "Build back up: the whole is {10*h}." }
+  - { t: 0, patch: { start: "{100/n}% of ? = {k}" }, caption: "Work backwards from the part — and read the percent as a FRACTION." }
+  - { t: 4, patch: { line: "{100/n}% = 1/{n}", note: "benchmark fraction" }, caption: "{100/n}% IS 1/{n}: the number is cut into {n} equal parts, and {k} is ONE of them. What move rebuilds the whole?", expect: { type: numeric, value: "{n}", prompt: "{100/n}% means one part out of how many equal parts?", hint: "100 ÷ {100/n}." } }
+  - { t: 8.5, patch: { line: "? = {k} × {n}", note: "the same part, {n} times" }, caption: "All {n} parts together. So what is the WHOLE?", expect: { type: op, value: "multiply {n}", prompt: "{k} is ONE of {n} equal parts. What move rebuilds the whole?" } }
+  - { t: 12, patch: { line: "? = {n*k}", note: "the whole" }, caption: "One part is {k}; {n} parts make {n*k}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

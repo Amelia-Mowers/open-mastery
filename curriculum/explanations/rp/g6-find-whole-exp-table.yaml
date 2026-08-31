@@ -4,9 +4,9 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{10*m}%", " of ? = ", "{m*h}"], cols: ["percent", "amount"], rows: [["{10*m}%", "{m*h}"], ["10%", "{h}"], ["100%", "{10*h}"]], reveal: "0" }, caption: "This time the KNOWN row is a part — the whole hides at 100%." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], reveal: "1", highlight: "1" }, caption: "{10*m}% of the number is {m*h}." }
-  - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{m}" } }, caption: "Step down to 10%: {m*h} ÷ {m} = {h}. 100% is ten of those tens — so what is the WHOLE?", expect: { type: numeric, value: "{h}", prompt: "{m*h} ÷ {m} — what is 10% worth?" } }
-  - { t: 13, patch: { reveal: "3", highlight: "3", factor: { from: "2", to: "3", text: "×10" } }, caption: "100% is ten tens: {h} × 10 = {10*h}. The number is {10*h}.", expect: { type: numeric, value: "{10*h}", prompt: "{h} × 10 — what is the whole?" } }
+  - { t: 0, patch: { equation: ["{100/n}%", " of ? = ", "{k}"], cols: ["percent", "amount"], rows: [["{100/n}%", "{k}"], ["100%", "{n*k}"]], reveal: "0" }, caption: "The KNOWN row is a benchmark part — the whole hides at 100%." }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], reveal: "1", highlight: "1" }, caption: "{100/n}% of the number is {k} — and {100/n}% is 1/{n}. How many such parts make the whole?" }
+  - { t: 8.5, patch: { eqHighlight: [], highlight: "2", factor: { from: "1", to: "2", text: "×{n}" } }, caption: "×{n} climbs from 1/{n} to the whole. So what is the WHOLE?", expect: { type: numeric, value: "{n}", prompt: "1/{n} of the number, times what, gives the whole?", hint: "All {n} parts." } }
+  - { t: 13, patch: { reveal: "2", highlight: "2" }, caption: "100% = {n} × {k} = {n*k}. The number is {n*k}." }
   - { t: 16, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
