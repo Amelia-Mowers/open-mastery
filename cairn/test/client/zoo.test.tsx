@@ -58,8 +58,11 @@ describe('widget zoo', () => {
       // caption survives) plus the item's answer space in faded mode
       expect(screen.getByText(/FINISH THIS ONE — FADED PHASE/)).toBeInTheDocument()
       expect(screen.getByText(/PRACTICE PROBLEM — EQUATION-INPUT/)).toBeInTheDocument()
-      // the input card is a real practice problem: the item's stem shows
-      expect(screen.getByText(/Solve: 7x = 21\./)).toBeInTheDocument()
+      // the input card is a real practice problem: the item's stem shows —
+      // and the MASTERY CHECK EXAMPLE card repeats it when the same item
+      // is also the check's hardest pick (this fixture's only item)
+      expect(screen.getAllByText(/Solve: 7x = 21\./).length).toBeGreaterThanOrEqual(1)
+      expect(screen.getByText(/MASTERY CHECK EXAMPLE/)).toBeInTheDocument()
       // the rep-matched item is equation-input: its faded + problem
       // renders are textboxes, and no answer key ships in the payload
       expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(2)
