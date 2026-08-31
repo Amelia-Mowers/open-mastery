@@ -25,6 +25,9 @@ export interface CompareInputConfig {
   aLabel?: string
   /** two-slot shorthand: label for the second computed slot */
   bLabel?: string
+  /** header over the value boxes naming WHAT goes in them (e.g.
+   * "constant of proportionality") — names the what, never the how */
+  fieldsLabel?: string
   /** the deciding question, e.g. "The better buy" / "Proportional?" */
   pickLabel?: string
   /** the options; `key` is the answer token the grader sees */
@@ -113,6 +116,11 @@ export const createCompareInput: WidgetFactory<
           <p data-testid="stem" style={{ font: "600 18px 'Lora', serif", color: '#2e2822' }}>
             {config.stem}
           </p>
+        )}
+        {config.fieldsLabel !== undefined && (
+          <div style={{ marginLeft: 190, font: "700 12.5px 'Nunito Sans', sans-serif", color: '#8b8070' }}>
+            {config.fieldsLabel}
+          </div>
         )}
         {fields.map((f, i) => (
           <Field key={i} slot={i} text={f.label} disabled={disabled} />

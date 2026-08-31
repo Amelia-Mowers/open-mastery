@@ -7,11 +7,12 @@ generator: { q: { int: [2, 9] }, j: { int: [2, 9], distinct: q }, r: { int: [2, 
 widget:
   type: compare-input
   config:
-    stem: "Is y proportional to x?  x = {r}, y = {r*q}.  x = {s}, y = {s*j}.  x = {t}, y = {t*q}.  Divide each pair, then decide."
+    stem: "Is y proportional to x? Find each pair's constant, then decide."
     fields:
-      - { label: "{r*q} ÷ {r}" }
-      - { label: "{s*j} ÷ {s}" }
-      - { label: "{t*q} ÷ {t}" }
+      - { label: "x = {r}, y = {r*q}" }
+      - { label: "x = {s}, y = {s*j}" }
+      - { label: "x = {t}, y = {t*q}" }
+    fieldsLabel: "constant of proportionality"
     pickLabel: "Proportional?"
     options:
       - { key: "yes", label: "Yes" }
