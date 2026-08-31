@@ -1361,6 +1361,61 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         }
       }
     }
+    // ---- A SURVIVING GATE MUST NOT COLLECT THE ITEM'S ANSWER ----
+    // The lead drops the final content step, so a gate on it never plays
+    // and may resolve to the answer (the design). But a gate that
+    // SURVIVES and collects the item's own answer makes the student
+    // answer the box's question twice — unit-rate's "what does ONE pound
+    // cost?" gate collected {b/a}, then the box asked for {b/a} again.
+    // Gate the move or an intermediate instead.
+    {
+      const ansSide = (() => {
+        if (typeof it.answer.value !== 'string' && typeof it.answer.value !== 'number') return null
+        const r = renderTemplate(String(it.answer.value), it.params as Env, { numberStyle: 'fraction' })
+        if (!r.ok) return null
+        return (r.value.split('=').pop() ?? '').trim()
+      })()
+      if (ansSide !== null) {
+        for (const skillId of it.skills) {
+          for (const e of explBySkill.get(skillId) ?? []) {
+            const content = e.timeline.filter(
+              (st) => st.patch !== undefined || st.caption !== undefined,
+            )
+            const needed = new Set<string>()
+            for (const step of e.timeline)
+              for (const src of [step.caption, ...Object.values(step.patch ?? {})]) {
+                if (typeof src !== 'string' || !src.includes('{')) continue
+                const pt = parseTemplate(src)
+                if (pt.ok) for (const id of templateIdentifiers(pt.value)) needed.add(id)
+              }
+            if (needed.size === 0) continue
+            if (![...needed].every((id) => id in it.params)) continue
+            content.slice(0, -1).forEach((st, i) => {
+              const ex = st.expect
+              if (ex === undefined || (ex.type !== 'numeric' && ex.type !== 'expr')) return
+              const gv = renderTemplate(String(ex.value), it.params as Env, { numberStyle: 'fraction' })
+              if (!gv.ok) return
+              const gateSide = (gv.value.split('=').pop() ?? '').trim()
+              // only a BARE-number collect is the double-ask: a gate for
+              // the substituted line ("3 · 5 + 2") evaluates to the
+              // answer but asks a different act, and the box (form:
+              // evaluated) would reject it
+              const bare = /^-?\d+(?:\/\d+)?$/
+              const same = bare.test(gateSide) && bare.test(ansSide)
+                ? exprEquivalentStrings(gateSide, ansSide)
+                : gateSide === ansSide
+              if (same)
+                push(
+                  'warning',
+                  'gate_takes_answer',
+                  `${it.id} ↔ ${e.id}.timeline[${i}]`,
+                  `this surviving gate collects the item's own answer (${ansSide}) — the student answers the box's question twice; gate the move or an intermediate, or put the resolving gate on the final (dropped) step`,
+                )
+            })
+          }
+        }
+      }
+    }
     if (it.generator != null) {
       const spec = it.generator as GeneratorSpec
       const fixed: Record<string, number | string> = {}
