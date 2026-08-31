@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{m}({variable} + {n})", " = ", "{m}{variable} + {m*n}"], cols: ["{variable}", "both forms"], rows: [["1", "{m*(1+n)}"], ["2", "{m*(2+n)}"], ["3", "{m*(3+n)}"]], reveal: "0" }, caption: "Equivalent means: same output for EVERY input. Test it." }
   - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "{variable} = 1: {m}(1 + {n}) = {m*(1+n)} — and {m}·1 + {m*n} = {m*(1+n)} too." }
-  - { t: 8.5, patch: { reveal: "2", highlight: "2" }, caption: "{variable} = 2: both forms give {m*(2+n)}. Do they agree for EVERY {variable}?", expect: { type: numeric, value: "{m*(2+n)}", prompt: "What goes in the next row?" } }
-  - { t: 13, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Every input agrees — {m}({variable} + {n}) and {m}{variable} + {m*n} are the same expression in two outfits.", expect: { type: numeric, value: "{m*(3+n)}", prompt: "What goes in the next row?" } }
+  - { t: 8.5, patch: { reveal: "2", highlight: "2" }, caption: "{variable} = 2: both forms give {m*(2+n)}. Do they agree for EVERY {variable}?", expect: { type: numeric, value: "{m*(2+n)}", prompt: "{variable} = 2: what does {m}({variable} + {n}) give?" } }
+  - { t: 13, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Every input agrees — {m}({variable} + {n}) and {m}{variable} + {m*n} are the same expression in two outfits.", expect: { type: numeric, value: "{m*(3+n)}", prompt: "And {variable} = 3 — what do both forms give?" } }
   - { t: 16, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
