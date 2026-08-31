@@ -4,9 +4,9 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{5*f}% of {20*g}" }, caption: "Percent means out of every 100." }
-  - { t: 4, patch: { line: "5% of {20*g} = {g}", note: "÷ 20" }, caption: "Start small: 5% is one twentieth of {20*g}. So what is {5*f}% of {20*g}?", expect: { type: numeric, value: "{g}", prompt: "What number finishes this line?" } }
-  - { t: 8.5, patch: { line: "{5*f}% = {f} × {g}", note: "{f} fives" }, caption: "{5*f}% is {f} of those fives. So what does that come to?", expect: { type: numeric, value: "{f*g}", prompt: "So what is {5*f}% of {20*g}?" } }
-  - { t: 12, patch: { line: "{5*f}% = {f*g}", note: "multiply" }, caption: "{5*f}% is {f} of those fives: {f*g}." }
+  - { t: 0, patch: { start: "{100/n}% of {n*w}" }, caption: "Percent means out of every 100 — and a benchmark percent IS a fraction." }
+  - { t: 4, patch: { line: "{100/n}% = 1/{n}", note: "benchmark fraction" }, caption: "{100/n}% IS 1/{n}: one of {n} equal parts of {n*w}. What move takes one part?", expect: { type: numeric, value: "{n}", prompt: "{100/n}% means one part out of how many equal parts?", hint: "100 ÷ {100/n}." } }
+  - { t: 8.5, patch: { line: "1/{n} of {n*w} = {n*w} ÷ {n}", note: "one part of {n}" }, caption: "One of {n} equal parts. So what is {100/n}% of {n*w}?", expect: { type: op, value: "divide {n}", prompt: "1/{n} of {n*w} — what move takes one part?" } }
+  - { t: 12, patch: { line: "= {w}", note: "the part" }, caption: "{100/n}% of {n*w} is {w}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

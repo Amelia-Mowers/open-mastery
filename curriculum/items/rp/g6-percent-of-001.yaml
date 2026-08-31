@@ -2,17 +2,17 @@ id: g6.rp.percent-of.001
 skills: [g6.rp.percent-of]
 difficulty: 1
 representation: worked-equation
-params: { f: 7, g: 3 }
-generator: { f: { int: [2, 19] }, g: { int: [1, 4] } }
-widget: { type: numeric-input, config: { stem: "What is {5*f}% of {20*g}?" } }
-answer: { type: expr, value: "{f*g}", form: evaluated, integer: true }
+params: { n: 4, w: 8 }
+generator: { n: { set: [2, 4, 5, 10] }, w: { int: [3, 30] } }
+widget: { type: numeric-input, config: { stem: "What is {100/n}% of {n*w}?" } }
+answer: { type: expr, value: "{w}", form: evaluated, integer: true }
 misconceptions:
   - id: used-the-percent-as-the-answer
-    when: "{5*f}"
-    says: "{5*f} is the PERCENT, not the amount. {5*f}% of {20*g} means {5*f} hundredths OF {20*g}."
+    when: "{100/n}"
+    says: "{100/n} is the PERCENT, not the amount. {100/n}% of {n*w} means 1/{n} OF {n*w}."
 hints:
-  - "5% of {20*g} is {20*g} ÷ 20 = {g}."
-  - "{5*f}% is {f} fives: {f} × {g} = {f*g}."
+  - "{100/n}% is the benchmark fraction 1/{n}."
+  - "1/{n} of {n*w}: {n*w} ÷ {n} = {w}."
 source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
-verify: "{answer * 100 == 5*f * 20*g}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{answer * n == n*w}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

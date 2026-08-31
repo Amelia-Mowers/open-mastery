@@ -2,17 +2,17 @@ id: g7.rp.percent-multistep.001
 skills: [g7.rp.percent-multistep]
 difficulty: 1
 representation: worked-equation
-params: { f: 5, g: 8 }
-generator: { f: { int: [2, 9] }, g: { int: [2, 9] } }
-widget: { type: numeric-input, config: { stem: "A ${20*g} game is on sale at {5*f}% off. What is the sale price?" } }
-answer: { type: expr, value: "{20*g - f*g}", form: evaluated, integer: true }
+params: { n: 4, p: 12 }
+generator: { n: { set: [2, 4, 5, 10] }, p: { int: [3, 30] } }
+widget: { type: numeric-input, config: { stem: "A ${n*p} game is on sale at {100/n}% off. What is the sale price?" } }
+answer: { type: expr, value: "{n*p - p}", form: evaluated, integer: true }
 misconceptions:
   - id: answered-the-discount
-    when: "{f*g}"
-    says: "{f*g} is the DISCOUNT — what you save. The question asks what you PAY: {20*g} minus the discount."
+    when: "{p}"
+    says: "${p} is the DISCOUNT — what you save. The question asks what you PAY: {n*p} minus the discount."
 hints:
-  - "First find the discount: {5*f}% of ${20*g}. (5% is ${g}.)"
-  - "The discount is ${f*g}. Subtract: {20*g} − {f*g} = {20*g - f*g}."
+  - "{100/n}% off is 1/{n} off: the discount is {n*p} ÷ {n} = ${p}."
+  - "Subtract it: {n*p} − {p} = {n*p - p}."
 source: { book: ccss-rp-progression, section: "7.RP.A.3" }
-verify: "{(20*g - answer) * 100 == 5*f * 20*g}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{(n*p - answer) * n == n*p}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

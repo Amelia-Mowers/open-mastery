@@ -4,9 +4,9 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["${20*g}", " at ", "{5*f}% off"], cols: ["percent", "dollars"], rows: [["100%", "{20*g}"], ["{5*f}%", "{f*g}"], ["{100-5*f}%", "{20*g - f*g}"]], reveal: "0" }, caption: "Price, discount, and what you pay — three rows of one table." }
-  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "100% is the full price: ${20*g}." }
-  - { t: 8.5, patch: { eqHighlight: ["2"], reveal: "2", highlight: "2" }, caption: "The discount row: {5*f}% is ${f*g}. You pay the rest — so what is the final price?", expect: { type: numeric, value: "{f*g}", prompt: "What goes in the next row?" } }
-  - { t: 13, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "You pay the REST: {100-5*f}% = ${20*g - f*g}.", expect: { type: numeric, value: "{20*g - f*g}", prompt: "What goes in the next row?" } }
+  - { t: 0, patch: { equation: ["${n*p}", " at ", "{100/n}% off"], cols: ["percent", "dollars"], rows: [["100%", "{n*p}"], ["{100/n}%", "{p}"], ["{100 - 100/n}%", "{n*p - p}"]], reveal: "0" }, caption: "Price, discount, and what you pay — three rows of one table." }
+  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "100% is the full price: ${n*p}. The discount is 1/{n} of it — how much comes off?" }
+  - { t: 8.5, patch: { eqHighlight: ["2"], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{n}" } }, caption: "The discount row: {100/n}% is ${p}. You pay the REST — so what is the final price?", expect: { type: numeric, value: "{p}", prompt: "1/{n} of ${n*p} — how much comes off?", hint: "{n*p} ÷ {n}." } }
+  - { t: 13, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "You pay the rest: {100 - 100/n}% = ${n*p - p}." }
   - { t: 16, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }

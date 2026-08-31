@@ -9,4 +9,4 @@ timeline:
   - { t: 8.5, patch: { line: "? = {k} × {n}", note: "the same part, {n} times" }, caption: "All {n} parts together. So what is the WHOLE?", expect: { type: op, value: "multiply {n}", prompt: "{k} is ONE of {n} equal parts. What move rebuilds the whole?" } }
   - { t: 12, patch: { line: "? = {n*k}", note: "the whole" }, caption: "One part is {k}; {n} parts make {n*k}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }

@@ -2,17 +2,17 @@ id: g6.rp.percent-of.002
 skills: [g6.rp.percent-of]
 difficulty: 2
 representation: double-number-line
-params: { m: 9, h: 4 }
-generator: { m: { int: [2, 19] }, h: { int: [2, 5] } }
-widget: { type: numeric-input, config: { stem: "What is {5*m}% of {40*h}?" } }
-answer: { type: expr, value: "{2*m*h}", form: evaluated, integer: true }
+params: { n: 5, w: 7 }
+generator: { n: { set: [2, 4, 5, 10] }, w: { int: [3, 30] } }
+widget: { type: numeric-input, config: { stem: "A class has {n*w} students, and {100/n}% of them walk to school. How many students walk?" } }
+answer: { type: expr, value: "{w}", form: evaluated, integer: true }
 misconceptions:
   - id: used-the-percent-as-the-answer
-    when: "{5*m}"
-    says: "{5*m} is the PERCENT, not the amount. {5*m}% of {40*h} means {5*m} hundredths OF {40*h}."
+    when: "{100/n}"
+    says: "{100/n} is the PERCENT, not a number of students. {100/n}% of {n*w} means 1/{n} OF the {n*w} students."
 hints:
-  - "5% of {40*h} is {40*h} ÷ 20 = {2*h}."
-  - "{5*m}% is {m} fives: {m} × {2*h} = {2*m*h}."
+  - "{100/n}% is the benchmark fraction 1/{n} — one of {n} equal groups."
+  - "1/{n} of {n*w}: {n*w} ÷ {n} = {w}."
 source: { book: ccss-rp-progression, section: "6.RP.A.3c" }
-verify: "{answer * 100 == 5*m * 40*h}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+verify: "{answer * n == n*w}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
