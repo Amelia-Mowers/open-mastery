@@ -7,7 +7,7 @@ generator: { a: { int: [1, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2,
 widget:
   type: pair-input
   config:
-    stem: "One batch is {a} cups : {b} muffins. A bakery makes {m} batches at once — write that row, cups and muffins."
+    stem: "One batch is {a} cups : {b} muffins. A bakery makes {m} batches at once — write that batch's ratio, cups and muffins."
     aLabel: "cups"
     bLabel: "muffins"
 answer: { type: ordered, value: ["{a*m}", "{b*m}"] }
