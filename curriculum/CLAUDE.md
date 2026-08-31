@@ -55,6 +55,23 @@ the box ([lead_ends_quiet], [double_ask], [gate_telegraph],
 [gate_takes_answer]). These guidelines govern what the words say at each
 of those moments.
 
+## Author the timeline AND its gates together, under the rules (2026-08-30)
+
+A full review day found the worked-equation timelines the most
+inconsistent content in the catalog — and the root cause was process,
+not carelessness: the boards were written first and the stepwise gates
+BOLTED ON after, each retrofit re-deciding what to ask, where the
+question sits, and what the board may reveal. Every fault class the day
+produced (vague prompts, double-asks, answer-collecting gates, answers
+printed beside the box, questions missing from frame one) is a seam
+from that retrofit.
+
+The rule going forward: **a timeline is authored in one sitting WITH its
+gates, its captions, and its closing question, against the standing
+rules** — the copy guidelines above, rule 7's first frame, the gate
+rules, and the invariants. A board without its gates is not a draft;
+it is half of one.
+
 ## Misconception diagnosis (2026-08-28) — the standard
 
 A wrong answer should tell the student WHAT THEY DID, not just that they
