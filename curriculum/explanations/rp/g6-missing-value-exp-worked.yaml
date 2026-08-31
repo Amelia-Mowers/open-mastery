@@ -4,8 +4,7 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a} pounds → ${b}" }, caption: "What we know: {a} pounds cost ${b}." }
-  - { t: 2, patch: { line: "{c} pounds → $?", note: "the question" }, caption: "Two steps: down to one pound, then up to {c}." }
+  - { t: 0, patch: { start: "{a} pounds → ${b}", line: "{c} pounds → $?" }, caption: "Two steps: down to one pound, then up to {c}." }
   - { t: 4, patch: { line: "1 pound → ${b} ÷ {a} = ${b/a}", note: "unit rate" }, caption: "Step 1: one pound costs ${b/a}. So what does {c} pounds cost?", expect: { type: numeric, value: "{b/a}", prompt: "${b} shared over {a} pounds — what does ONE pound cost?" } }
   - { t: 8.5, patch: { line: "{c} pounds → {c} × {b/a} = ${c*b/a}", note: "scale up" }, caption: "Step 2: {c} pounds costs ${c*b/a}.", expect: { type: numeric, value: "{c*b/a}", prompt: "So what does {c} pounds cost?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
