@@ -12,6 +12,9 @@ Access points (first edition):
 
 No public source repos exist (unlike OpenStax) — mining is from the
 published pages; keep per-record `source:` citations to grade/unit/lesson.
+**Every page we derive from gets a raw-HTML snapshot in `cache/`**
+(CC BY 4.0 permits it with attribution; the cache pins what we derived
+from against edition drift — see cache/README.md for the manifest).
 
 ## Representation inventory (widget-worthy diagrams)
 

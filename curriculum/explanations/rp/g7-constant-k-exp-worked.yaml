@@ -4,7 +4,7 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "y is proportional to x", line: ["when x = {a}, y = {a*k}", "k = ?"] }, caption: "Proportional means y is always the same multiple of x — that multiple is k." }
+  - { t: 0, patch: { start: "y is proportional to x", line: ["when x = {a}, y = {a*k}", "k multiplies x to give y", "k = ?"] }, caption: "Proportional means y is always the same multiple of x — that multiple is k." }
   - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "y ÷ x" }, caption: "Divide y by its x. So what is k?", expect: { type: op, value: "divide {a}", prompt: "k is y ÷ x — what do you do to the {a*k}?" } }
   - { t: 8.5, patch: { line: "k = {k}", note: "so y = {k}x" }, caption: "k = {k} — every x is multiplied by {k}: y = {k}x." }
   - { t: 11, handoff: { prompt: "Now you try." } }
