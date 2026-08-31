@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{a} pounds cost ${b}", line: "1 pound costs $?" }, caption: "What we know, and the question: all {a} pounds, then just ONE." }
-  - { t: 4, patch: { line: "1 pound costs ${b} ÷ {a}", note: "share equally" }, caption: "An equal share of the ${b}. So what does ONE pound cost?", expect: { type: op, value: "divide {a}", prompt: "From all {a} pounds to just ONE — what is the move?", hint: "Share ${b} equally among the {a} pounds.", misconceptions: [{ id: "multiplied-instead-of-divided", when: "multiply {a}", says: "Multiplying by {a} prices {a} pounds of {a} pounds — ONE pound is a SHARE of the ${b}: divide." }] } }
+  - { t: 4, patch: { line: "1 pound costs ${b} ÷ {a}", note: "share equally" }, caption: "An equal share of the ${b}. So what does ONE pound cost?", expect: { type: op, value: "divide {a}", prompt: "To find ONE pound's price, what do you do to the ${b}?", hint: "Share ${b} equally among the {a} pounds.", misconceptions: [{ id: "multiplied-instead-of-divided", when: "multiply {a}", says: "Multiplying by {a} prices {a} pounds of {a} pounds — ONE pound is a SHARE of the ${b}: divide." }] } }
   - { t: 8, patch: { line: "unit rate = ${b/a} per pound", note: "{b} ÷ {a} = {b/a}" }, caption: "${b/a} for one pound — that per-ONE number is the unit rate." }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
