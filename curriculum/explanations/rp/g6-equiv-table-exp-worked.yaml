@@ -8,4 +8,4 @@ timeline:
   - { t: 4, patch: { line: "{a}·{m} : {b}·{m}", note: "× {m} on BOTH — same multiplier, both quantities" }, caption: "Scale both quantities by the same number and the ratio stays equivalent. So what is the {m}-batch ratio — cups and muffins?", expect: { type: numeric, value: "{a*m}", prompt: "Scale up: {a} cups × {m} batches — how many cups?" } }
   - { t: 8.5, patch: { line: "{a*m} cups : {b*m} muffins", note: "{m} batches" }, caption: "{a*m} cups makes {b*m} muffins.", expect: { type: numeric, value: "{b*m}", prompt: "{a*m} cups is {m} batches — how many muffins is that?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
