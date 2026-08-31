@@ -4,7 +4,7 @@ representation: double-number-line
 widget: double-number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["y", " = k · ", "x"], topLabel: "x", bottomLabel: "y", top: ["0", "1", "{a}", "{c}"], bottom: ["0", "{k}", "{a*k}", "{c*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "A proportional pair of lines — k is hiding at x = 1." }
+  - { t: 0, patch: { equation: ["y", " = k · ", "x", ",  k = ?"], topLabel: "x", bottomLabel: "y", top: ["0", "1", "{a}", "{c}"], bottom: ["0", "{k}", "{a*k}", "{c*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "A proportional pair of lines — k is hiding at x = 1." }
   - { t: 4, patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "2", "3"] }, caption: "The x line carries {a} and {c}.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
   - { t: 8, patch: { eqHighlight: ["0"], bottomIn: true }, caption: "Each y sits below its x: {a*k} under {a}, {c*k} under {c}. To expose k from the pair ({a}, {a*k}) — what move?", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the BOTTOM line?" } }
   - { t: 12, patch: { eqHighlight: ["1"], highlight: "1" }, caption: "Every pair divides to the SAME number, and it sits over x = 1. So what is k?", expect: { type: op, value: "divide {a}", prompt: "k is y ÷ x. What do you do to {a*k} to expose k?", hint: "Divide the y by its own x." } }
