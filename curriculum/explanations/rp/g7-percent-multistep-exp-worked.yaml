@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { start: "${n*p} at {100/n}% off" }, caption: "Two steps: find the discount, then subtract it." }
   - { t: 4, patch: { line: "discount = {n*p} ÷ {n}", note: "1/{n} of the price" }, caption: "That is the discount — what you save.", expect: { type: numeric, value: "{p}", prompt: "{100/n}% is 1/{n} — what is 1/{n} of ${n*p}?", hint: "{n*p} ÷ {n}." } }
   - { t: 6.5, patch: { line: "discount = {p}", note: "what you save" }, caption: "The discount is ${p}." }
-  - { t: 8.5, patch: { line: "sale price = {n*p} − {p}", note: "the discount comes off" }, caption: "So what do you actually pay?", expect: { type: op, value: "subtract {p}", prompt: "From full price to sale price — what is the move?" } }
+  - { t: 8.5, patch: { line: "sale price = {n*p} − {p}", note: "the discount comes off" }, caption: "The discount comes off the full price. So what do you actually pay?" }
   - { t: 12, patch: { line: "sale price = {n*p - p}", note: "the rest" }, caption: "You pay ${n*p - p}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
