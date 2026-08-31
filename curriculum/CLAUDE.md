@@ -2,6 +2,51 @@
 
 
 
+## COPY GUIDELINES (2026-08-30) — every caption, prompt, and hint
+
+One session of review rejected the same fault a dozen times, so it is now
+a rule. The fault: copy about the ACT OF ANSWERING instead of the
+mathematics. "What number finishes this line?", "What goes in the next
+row?", "what is the missing value?", "what is the move?" all describe the
+interface or hedge the question — they could sit over any problem in the
+catalog, which is exactly what's wrong with them.
+
+**The test: could this sentence be pasted onto a different problem
+unchanged? Then it says nothing. Rewrite it with this problem's own
+numbers and objects.**
+
+1. **Ask the mathematical question with the actual quantities in it.**
+   "How much does each Pack-A pencil cost?" — never "What number finishes
+   this line?" The rendered values belong in the sentence: "$12 shared
+   over 3 pounds — what does ONE pound cost?"
+2. **Name what the move acts ON.** "To find ONE pound's price, what do
+   you do to the $90?" — the move applies to the dollars; "from all 6
+   pounds to just ONE — what is the move?" described the journey and
+   named the wrong noun.
+3. **The board is scenery, never the subject.** Lines, rows, boxes, and
+   steps are how the mathematics is displayed. Questions about them
+   ("finishes this line", "goes in the next row", "what line is left")
+   assess reading the screen, not the skill.
+4. **Speak a representation's language only while it is on screen.**
+   "row" belongs to a visible table; with a pair input it is a widget
+   holdover ("write the ratio", not "write the row"). Pans for the
+   balance, sides for the board, pieces for the tape — and none of them
+   anywhere else.
+5. **No meta-commentary about the method.** "The shortcut — one move
+   instead of two" editorializes; the method just IS ("What one factor
+   frees x?"). Same for praising, hedging, or narrating the lesson's
+   structure.
+6. **House voice:** short declaratives; an em-dash pivot into the
+   question; ONE stressed word in caps where the stress does real work
+   (ONE, BOTH, WHOLE, the REST); the question mark lands at the end of
+   the caption that fronts the input asking it.
+
+The moments are fixed by the invariants — setup caption before a gate,
+prompt while it is open, confirmation after, one closing question with
+the box ([lead_ends_quiet], [double_ask], [gate_telegraph],
+[gate_takes_answer]). These guidelines govern what the words say at each
+of those moments.
+
 ## Misconception diagnosis (2026-08-28) — the standard
 
 A wrong answer should tell the student WHAT THEY DID, not just that they
