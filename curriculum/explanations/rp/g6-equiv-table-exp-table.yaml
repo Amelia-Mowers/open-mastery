@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a} cups", " : ", "{b} muffins"], cols: ["cups", "muffins"], rows: [["{a}", "{b}"], ["{a*m}", "{b*m}"]], reveal: "0" }, caption: "A ratio: {a} cups of flour makes {b} muffins. Watch it become a table." }
   - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "One row = one batch: {a} cups, {b} muffins." }
-  - { t: 8, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "×{m}" } }, caption: "Multiply BOTH quantities by {m} — the ratio stays equivalent. So how many muffins for {a*m} cups?", expect: { type: numeric, value: "{b*m}", prompt: "How many muffins would {a*m} cups make?" } }
+  - { t: 8, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "×{m}" } }, caption: "Multiply BOTH quantities by {m} — the ratio stays equivalent. So what is the missing value in the new row?", expect: { type: numeric, value: "{b*m}", prompt: "How many muffins would {a*m} cups make?" } }
   - { t: 12.5, patch: { highlight: "2" }, caption: "{a*m} cups makes {b*m} muffins — the same recipe, just {m} batches." }
   - { t: 15, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
