@@ -9,4 +9,4 @@ timeline:
   - { t: 8.5, patch: { line: "1/{n} of {n*w} = {n*w} ÷ {n}", note: "one part of {n}" }, caption: "One of {n} equal parts. So what is {100/n}% of {n*w}?" }
   - { t: 12, patch: { line: "= {w}", note: "the part" }, caption: "{100/n}% of {n*w} is {w}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
