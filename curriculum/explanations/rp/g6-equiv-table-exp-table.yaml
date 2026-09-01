@@ -4,9 +4,16 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a} cups", " : ", "{b} muffins", "  →  ? : ?"], cols: ["cups", "muffins"], rows: [["{a}", "{b}"], ["{a*m}", "{b*m}"]], reveal: "0" }, caption: "A ratio: {a} cups of flour makes {b} muffins. Watch it become a table." }
-  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "One row = one batch: {a} cups, {b} muffins." }
-  - { t: 8, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "×{m}" } }, caption: "Multiply BOTH quantities by {m} — the ratio stays equivalent. So what does the new row read — cups and muffins?", expect: { type: numeric, value: "{b*m}", prompt: "How many muffins would {a*m} cups make?" } }
-  - { t: 12.5, patch: { highlight: "2" }, caption: "{a*m} cups makes {b*m} muffins — the same recipe, just {m} batches." }
+  - { t: 0, patch: { equation: ["{a} cups", " : ", "{b} muffins", "  →  ", "{a*m} cups", " : ", "?"], cols: ["cups", "muffins"], rows: [["{a}", "{b}"], ["{a*m}", "?"], ["{a*m}", "{b*m}"]], reveal: "1" }, caption: "{a} cups of flour makes {b} muffins. How many muffins would {a*m} cups make — the table carries the recipe there." }
+  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "2", highlight: "2" }, caption: "One row, one batch: {a} cups, {b} muffins. From {a} cups to {a*m} cups — times what?" }
+  - t: 8
+    patch: { eqHighlight: ["4"], factor: { from: "1", to: "2", text: "×{m}" }, highlight: "2" }
+    caption: "×{m} on the cups — and the SAME ×{m} on the muffins keeps the recipe. So {a*m} cups makes how many muffins?"
+    expect:
+      type: numeric
+      value: "{m}"
+      prompt: "From {a} cups to {a*m} cups — times what?"
+      hint: "{a*m} ÷ {a}."
+  - { t: 12, patch: { eqHighlight: [], reveal: "3", factor: { from: "1", to: "3", text: "×{m}" }, highlight: "3" }, caption: "{b} × {m} = {b*m}: {a*m} cups makes {b*m} muffins — the same recipe, {m} batches." }
   - { t: 15, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

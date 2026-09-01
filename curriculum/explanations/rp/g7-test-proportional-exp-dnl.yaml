@@ -5,9 +5,30 @@ widget: double-number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["y", " ÷ ", "x", " = same?"], topLabel: "x", bottomLabel: "y", top: ["0", "{a}", "{c}", "{e}"], bottom: ["0", "{a*k}", "{c*k}", "{e*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Proportional means the two lines stretch by ONE factor." }
-  - { t: 4, patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "1", "2", "3"] }, caption: "The x line: {a}, {c}, {e}.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
-  - { t: 8, patch: { eqHighlight: ["0"], bottomIn: true }, caption: "Each y below its x. The test: divide a y by its x — what does the first pair give?", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the BOTTOM line?" } }
-  - { t: 12, patch: { eqHighlight: [], highlight: "1" }, caption: "One pair gives {k}. If EVERY pair gives {k}, the lines stretch by one factor. Do they all match?", expect: { type: numeric, value: "{k}", prompt: "{a*k} ÷ {a} — what quotient?", hint: "y ÷ x." } }
-  - { t: 16, patch: { highlight: "2" }, caption: "Check the rest: {c*k} ÷ {c} = {k} and {e*k} ÷ {e} = {k} — the same everywhere → proportional." }
+  - t: 4
+    patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "1", "2", "3"] }
+    caption: "The x line: {a}, {c}, {e}."
+    expect:
+      type: pick
+      value: ["2"]
+      prompt: "The top line will carry the inputs. Which piece — or pieces — of y ÷ x is the input?"
+      hint: "y is made FROM x."
+  - t: 8
+    patch: { eqHighlight: ["0"], bottomIn: true }
+    caption: "Each y sits below its x. The test: divide a y by its x — what does the first pair give?"
+    expect:
+      type: pick
+      value: ["0"]
+      prompt: "x has its line. Which piece — or pieces — of the test still needs one?"
+      hint: "The outputs go below."
+  - t: 12
+    patch: { eqHighlight: [], highlight: "1" }
+    caption: "One pair gives {k}. If EVERY pair gives {k}, the lines stretch by one factor. Do they all match?"
+    expect:
+      type: numeric
+      value: "{k}"
+      prompt: "{a*k} ÷ {a} — what quotient?"
+      hint: "y ÷ x."
+  - { t: 16, patch: { eqHighlight: ["3"], highlight: "3" }, caption: "Check the rest: {c*k} ÷ {c} = {k} and {e*k} ÷ {e} = {k} — the same everywhere → proportional." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

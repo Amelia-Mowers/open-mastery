@@ -4,8 +4,23 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{n}", "³"], min: 0, max: "{n*n*n}", step: "{n*n}" , labelled: []}, caption: "{n}³ is a SQUARE taken {n} times: {n} jumps, each of size {n}²." }
-  - { t: 4, patch: { eqHighlight: ["0"], marker: "{n*n}", highlight: ["{n*n}"] }, caption: "One jump is a whole square: {n}² = {n*n}. The small 3 takes {n} of those jumps — where do they land?", expect: { type: numeric, value: "{n*n}", prompt: "One jump — a whole square: how far is that? Type the number." } }
-  - { t: 8, patch: { eqHighlight: ["1"], marker: "{n*n*n}", highlight: [] }, caption: "The small 3 says {n} of them: they land on {n*n*n}. {n}³ = {n*n*n}.", expect: { type: numeric, value: "{n*n*n}", prompt: "{n} jumps of {n}²: where do they land? Type the number." } }
-  - { t: 10.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+  - { t: 0, patch: { equation: ["{n}³", " = ", "?"], min: 0, max: "{n*n*n}", step: "{n*n}", labelled: [] }, caption: "{n}³ means three equal factors: {n} × {n} × {n}. The square — {n} × {n} — is ONE jump on this line." }
+  - t: 4
+    patch: { eqHighlight: ["0"], marker: "{n*n}", labelled: ["{n*n}"], highlight: ["{n*n}"] }
+    caption: "One jump: {n}² = {n*n}. Two factors spent — the LAST factor counts the jumps."
+    expect:
+      type: numeric
+      value: "{n*n}"
+      prompt: "{n} × {n} — how far does one square-jump reach?"
+      hint: "A whole square's worth: {n} rows of {n}."
+  - t: 8
+    patch: { eqHighlight: [], arcs: [{ from: 0, to: "{n*n}", label: "+{n*n}" }], highlight: [] }
+    caption: "{n} jumps, each +{n*n}. Where does the LAST one land?"
+    expect:
+      type: numeric
+      value: "{n}"
+      prompt: "{n}³ — the square used two of its factors. How many square-jumps does the LAST factor take?"
+      hint: "Three factors: {n} × {n} × {n}. Two made the jump size — the one left counts the jumps."
+  - { t: 12, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], marker: "{n*n*n}", labelled: ["{n*n}", "{n*n*n}"] }, caption: "{n} jumps of {n*n} land on {n*n*n}. {n}³ = {n*n*n}." }
+  - { t: 15, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

@@ -5,8 +5,45 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a} lb", " → ", "${b}", ", so {c} lb", " → ?"], cols: ["pounds", "dollars"], rows: [["{a}", "{b}"], ["1", "{b/a}"], ["{c}", "{c*b/a}"]], reveal: "0" }, caption: "One known pair unlocks every other row." }
-  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "The pair we know: {a} pounds costs ${b}." }
-  - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{a}" } }, caption: "Step down to ONE pound: ${b} ÷ {a} = ${b/a}. So what do {c} pounds cost?", expect: { type: numeric, value: "{b/a}", prompt: "${b} ÷ {a} — what does ONE pound cost?" } }
-  - { t: 13, patch: { reveal: "3", highlight: "3", factor: { from: "2", to: "3", text: "×{c}" } }, caption: "Now × {c}: {c} pounds costs ${c*b/a}.", expect: { type: numeric, value: "{c*b/a}", prompt: "{c} pounds at ${b/a} each — what do they cost?" } }
-  - { t: 16, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "The row we know: {a} pounds cost ${b}. To price ONE pound — what move shares out the ${b}?" }
+  - t: 8
+    patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "÷{a}" } }
+    caption: "÷{a} steps down to the ONE-pound row. So what does ONE pound cost?"
+    expect:
+      type: op
+      value: "divide {a}"
+      prompt: "To find ONE pound's price, what do you do to the ${b}?"
+      hint: "Share ${b} equally among the {a} pounds."
+      misconceptions:
+        - id: multiplied-instead-of-divided
+          when: "multiply {a}"
+          says: "Multiplying by {a} prices {a} pounds of {a} pounds — ONE pound is a SHARE of the ${b}: divide."
+  - t: 12
+    patch: { reveal: "2", highlight: "2" }
+    caption: "ONE pound costs ${b/a}. To price {c} pounds — what move climbs there?"
+    expect:
+      type: numeric
+      value: "{b/a}"
+      prompt: "What does ONE pound cost?"
+      hint: "${b} ÷ {a}."
+  - t: 16
+    patch: { factor: { from: "2", to: "3", text: "×{c}" } }
+    caption: "×{c} climbs from ONE pound to {c} pounds. So what do {c} pounds cost?"
+    expect:
+      type: op
+      value: "multiply {c}"
+      prompt: "From ONE pound to {c} pounds — what do you do to the ${b/a}?"
+      hint: "{c} pounds cost {c} times what ONE pound costs."
+      misconceptions:
+        - id: divided-instead-of-multiplied
+          when: "divide {c}"
+          says: "Dividing shares the ONE-pound price into {c} pieces — {c} pounds together cost {c} TIMES one pound: multiply."
+  - t: 20
+    patch: { reveal: "3", highlight: "3" }
+    caption: "{c} pounds cost ${c*b/a}."
+    expect:
+      type: numeric
+      value: "{c*b/a}"
+      prompt: "{c} pounds at ${b/a} each — what do they cost?"
+  - { t: 23, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

@@ -3,7 +3,9 @@ skills: [g6.ee.evaluate]
 difficulty: 1
 representation: worked-equation
 params: { a: 3, b: 5, c: 4, variable: x }
-generator: { a: { int: [2, 9] }, b: { int: [1, 20] }, c: { int: [2, 9] } }
+# c starts at 3: the ratio-table lesson feeds rows 1 and 2 before "{c}",
+# so c = 2 would duplicate a row and re-ask an answered gate
+generator: { a: { int: [2, 9] }, b: { int: [1, 20] }, c: { int: [3, 9] } }
 widget: { type: numeric-input, config: { stem: "Evaluate {a}{variable} + {b} when {variable} = {c}." } }
 answer: { type: expr, value: "{a*c+b}", form: evaluated, integer: true }
 misconceptions:
@@ -18,4 +20,4 @@ hints:
   - "{a} × {c} + {b} = {a*c} + {b} = {a*c+b}."
 source: { book: ccss-ee-progression, section: "6.EE.A.2c" }
 verify: "{answer - b == a*c}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

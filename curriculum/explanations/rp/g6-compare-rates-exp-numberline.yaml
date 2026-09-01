@@ -4,9 +4,23 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["A: {a1} for ${u*a1}", "  vs  ", "B: {a2} for ${(u+d)*a2}"], min: 0, max: "{u+d+1}", step: 1 , labelled: []}, caption: "Two offers. Put both UNIT prices on one line — then the comparison is just position." }
-  - { t: 4, patch: { eqHighlight: ["0"], marker: "{u}", highlight: ["{u}"] }, caption: "Pack A: ${u*a1} ÷ {a1} = ${u} each.", expect: { type: numeric, value: "{u}", prompt: "One pencil from pack A: what does it cost? Type the number." } }
-  - { t: 8.5, patch: { eqHighlight: ["2"], highlight: ["{u}", "{u+d}"] }, caption: "So the question the line asks is: which mark sits further LEFT?", expect: { type: numeric, value: "{u+d}", prompt: "What does one pencil cost in pack B?", hint: "Share ${(u+d)*a2} across {a2} pencils." } }
-  - { t: 13, patch: { eqHighlight: [], marker: "{u}" }, caption: "${u} sits LEFT of ${u+d} — cheaper per pencil. Pack A is the better buy." }
+  - { t: 0, patch: { equation: ["A: {a1} for ${u*a1}", "  vs  ", "B: {a2} for ${(u+d)*a2}", " — better buy?"], min: 0, max: "{u+d+1}", step: 1, labelled: [] }, caption: "Two offers on one line of dollar marks — the cheaper pencil sits closer to $0." }
+  - t: 4
+    patch: { eqHighlight: ["0"], marker: "{u}", highlight: ["{u}"], labelled: ["0", "{u}"] }
+    caption: "Pack A: ${u*a1} ÷ {a1} = ${u} each."
+    expect:
+      type: numeric
+      value: "{u}"
+      prompt: "Pack A: {a1} pencils for ${u*a1} — what does ONE pencil cost?"
+      hint: "Share ${u*a1} across the {a1} pencils."
+  - t: 8.5
+    patch: { eqHighlight: ["2"], marker: "{u+d}", highlight: ["{u}", "{u+d}"], labelled: ["0", "{u}", "{u+d}"] }
+    caption: "Pack B: ${(u+d)*a2} ÷ {a2} = ${u+d} each. Both prices sit on the line — which pack charges less for ONE pencil, which is the better buy?"
+    expect:
+      type: numeric
+      value: "{u+d}"
+      prompt: "Pack B: {a2} pencils for ${(u+d)*a2} — and ONE Pack-B pencil?"
+      hint: "Share ${(u+d)*a2} across the {a2} pencils."
+  - { t: 13, patch: { eqHighlight: [], marker: "{u}" }, caption: "${u} sits closer to $0 than ${u+d} — Pack A is the better buy." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

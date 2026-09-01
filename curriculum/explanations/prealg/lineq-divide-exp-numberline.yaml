@@ -4,7 +4,7 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], min: 0, max: "{b}", step: "{b/a}", labelled: [], marker: 0 }, caption: "A bare line, starting at 0. The equation says how the jumps go." }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], min: "{min(0, b)}", max: "{max(0, b)}", step: "{abs(b/a)}", labelled: [], marker: 0 }, caption: "A bare line, starting at 0. The equation says how the jumps go." }
   - t: 3.5
     patch: { eqHighlight: ["0", "1"], labelled: ["0"] }
     caption: "{a}{variable} means {a} equal jumps, each one {variable} long."
@@ -15,12 +15,27 @@ timeline:
       hint: "The number written in front of {variable} counts them."
   - t: 7
     patch: { eqHighlight: ["3"], marker: "{b}", labelled: ["0", "{b}"] }
-    caption: "= {b}: the jumps must finish exactly on {b}. So what is {variable}?"
+    caption: "= {b}: the jumps finish exactly on {b} — {a} of them covering the whole trip."
     expect:
       type: pick
       value: ["3"]
       prompt: "Which piece — or pieces — says where the jumps must FINISH?"
       hint: "Whatever is on the far side of the equals sign is the landing place."
-  - { t: 10.5, patch: { eqHighlight: [], arcs: [{ from: 0, to: "{b/a}", label: "+{b/a}" }], marker: "{b/a}", labelled: ["0", "{b/a}", "{b}"] }, caption: "Split the trip into {a} equal jumps: each one is {b/a}. So {variable} = {b/a}." }
-  - { t: 13, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+  - t: 10.5
+    patch: { eqHighlight: [], arcs: [{ from: 0, to: "{b/a}" }] }
+    caption: "{b} shared into {a} equal jumps. So how long is ONE jump — what is {variable}?"
+    expect:
+      type: op
+      value: "divide {a}"
+      prompt: "To find ONE jump's length, what do you do to {b}?"
+      hint: "The whole trip {b} is covered by {a} equal jumps."
+      misconceptions:
+        - id: subtracted-the-coefficient
+          when: "subtract {a}"
+          says: "Taking {a} away from {b} shortens the trip — it does not cut it into {a} EQUAL jumps. Undo a multiply with a divide."
+        - id: multiplied-instead-of-divided
+          when: "multiply {a}"
+          says: "Multiplying by {a} makes the trip {a} times longer. To find ONE jump, divide."
+  - { t: 14, patch: { marker: "{b/a}", labelled: ["0", "{b/a}", "{b}"], highlight: ["{b/a}"] }, caption: "Each jump is {b} ÷ {a} = {b/a}. {variable} = {b/a}." }
+  - { t: 16.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

@@ -4,9 +4,16 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["${n*p}", " at ", "{100/n}% off"], cols: ["percent", "dollars"], rows: [["100%", "{n*p}"], ["{100/n}%", "{p}"], ["{100 - 100/n}%", "{n*p - p}"]], reveal: "0" }, caption: "Price, discount, and what you pay — three rows of one table." }
-  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "100% is the full price: ${n*p}. The discount is 1/{n} of it — how much comes off?" }
-  - { t: 8.5, patch: { eqHighlight: ["2"], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{n}" } }, caption: "The discount row: {100/n}% is ${p}. You pay the REST — so what is the final price?", expect: { type: numeric, value: "{p}", prompt: "1/{n} of ${n*p} — how much comes off?", hint: "{n*p} ÷ {n}." } }
-  - { t: 13, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "You pay the rest: {100 - 100/n}% = ${n*p - p}." }
+  - { t: 0, patch: { equation: ["${n*p}", " at ", "{100/n}% off", ",  you pay $?"], cols: ["percent", "dollars"], rows: [["100%", "{n*p}"], ["{100/n}%", "{p}"], ["{100 - 100/n}%", "{n*p - p}"]], reveal: "0" }, caption: "Price, discount, and what you pay — three rows of one table." }
+  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "The table starts at 100%: the full ${n*p}." }
+  - t: 8.5
+    patch: { eqHighlight: ["2"], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "÷{n}" } }
+    caption: "The discount: {100/n}% of the price is ${p} off. You pay the REST — so what is the final price?"
+    expect:
+      type: numeric
+      value: "{p}"
+      prompt: "How many dollars does the {100/n}% discount take off the ${n*p}?"
+      hint: "{100/n}% is 1/{n} of the price — {n*p} ÷ {n}."
+  - { t: 13, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "You pay the rest: {100 - 100/n}% of the price — ${n*p - p}." }
   - { t: 16, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

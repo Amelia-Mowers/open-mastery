@@ -5,7 +5,7 @@
  * interaction mid-timeline, and handoff into faded/practice — with an
  * optional looping "show me another way" chain. Captions are the source of
  * truth and are rendered by the player. */
-import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { speech } from '../tts/speech'
 import { VoiceControl, VoiceGenSpinner } from '../tts/VoiceToggle'
 import type { ReactElement } from 'react'
@@ -132,6 +132,10 @@ function hangerSetup(
     if (!p || !('copies' in p) || !('shapeLabel' in p) || !('weight' in p)) continue
     const copies = evalNumber(p['copies'], params)
     if (copies === null || copies < 1 || copies > 14) return null
+    // a hanger cannot hang negative weight — negative instances (e.g.
+    // divide.002 arriving via "show me differently") get caption-only
+    const weightValue = evalNumber(p['weight'], params)
+    if (weightValue !== null && weightValue < 0) return null
     return {
       copies,
       shapeLabel: renderText(String(p['shapeLabel']), params),
@@ -405,9 +409,10 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
     return {
       element: w.render({ value }, 'lesson'),
       apply: (patch) => {
-        const view: { flip?: boolean; resolve?: boolean } = {}
+        const view: { flip?: boolean; resolve?: boolean; landingLabel?: boolean } = {}
         if ('flip' in patch) view.flip = patch['flip'] === true
         if ('resolve' in patch) view.resolve = patch['resolve'] === true
+        if ('landingLabel' in patch) view.landingLabel = patch['landingLabel'] === true
         w.applyPatch(view)
       },
     }
@@ -462,21 +467,18 @@ export function LessonPlayer({
   // segments cover the content steps; a trailing handoff-only step is the
   // resting point, not a segment of its own
   const contentSteps = steps.filter((s) => s.patch !== undefined || s.caption !== undefined)
-  // optimistic voice: synthesize this lesson's captions ahead of playback.
+  // optimistic voice: prefetch this lesson's captions ahead of playback.
   // Keyed on a STRING — the params object is a fresh identity every
   // render, and depending on it refired this on each frame
   const paramsKey = JSON.stringify(params)
-  // …and re-offer them when the voice is switched ON mid-lesson
-  const voiceOn = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
   useEffect(() => {
-    if (!voiceOn) return
     speech.pregenerate(
       contentSteps
         .map((s) => (s.caption !== undefined ? renderText(s.caption, params) : ''))
         .filter((t) => t !== ''),
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [explanation.id, paramsKey, voiceOn])
+  }, [explanation.id, paramsKey])
   const lastContentT = contentSteps[contentSteps.length - 1]?.t ?? 0
 
   const [preamble, setPreamble] = useState(intro !== undefined)
@@ -569,7 +571,7 @@ export function LessonPlayer({
     const id = setInterval(() => {
       setTime((t) => {
         const next = t + (TICK_MS / 1000) * speed
-        if (caption !== '' && !speech.finished(caption)) {
+        if (caption !== '' && !speech.finished([caption])) {
           const boundary = nextCaptionT(t)
           if (next >= boundary) return Math.min(next, boundary - 0.001)
         }
@@ -728,15 +730,13 @@ export function LessonPlayer({
 }
 
 
-/** Voice: read each caption as it lands (opt-in; a no-op while off). */
+/** Voice: read each caption as it lands. Narration always runs (mute
+ * only zeroes the gain), so this never re-fires on mute changes. */
 function SpeakCaption({ text }: { text: string }) {
-  // re-speak when the voice turns ON mid-caption — otherwise enabling
-  // sits silent until the next step
-  const on = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
   useEffect(() => {
-    if (on && text !== '') void speech.speak(text)
-    return () => speech.stop()
-  }, [text, on])
+    if (text !== '') void speech.speak([text])
+  }, [text])
+  useEffect(() => () => speech.stop(), [])
   return null
 }
 

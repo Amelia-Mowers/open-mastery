@@ -4,9 +4,31 @@ representation: double-number-line
 widget: double-number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{p}/{q} mi", " in ", "1/{r} hr", "  →  ? mi in 1 hr"], topLabel: "miles", bottomLabel: "hours", top: ["0", "{p}/{q}", "{p*r/q}"], bottom: ["0", "1/{r}", "1"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Fractions of a mile, fractions of an hour — the lines still work." }
-  - { t: 4, patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }, caption: "Miles on top: {p}/{q}.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
-  - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "It happened in 1/{r} of an hour. Stretched to a WHOLE hour, how many miles?", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — belong on the BOTTOM line?" } }
-  - { t: 12, patch: { eqHighlight: [], highlight: "2", reveal: ["0", "1", "2"] }, caption: "Stretch × {r} out to a WHOLE hour: {p*r/q} miles per hour." }
-  - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+  - { t: 0, patch: { equation: ["{p}/{q} mi", " in ", "1/{r} hr", "  →  ? mi in 1 hr"], topLabel: "miles", bottomLabel: "hours", top: ["0", "{p}/{q}", "{p*r/q}"], bottom: ["0", "1/{r}", "1"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "A fraction of a mile in a fraction of an hour — ONE whole hour is the target." }
+  - t: 4
+    patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }
+    caption: "Miles on top: {p}/{q}."
+    expect:
+      type: pick
+      value: ["0"]
+      prompt: "Which piece — or pieces — of the rate counts MILES?"
+      hint: "Look for the mi."
+  - t: 8
+    patch: { eqHighlight: ["2"], bottomIn: true }
+    caption: "It happened in just 1/{r} of an hour — a small slice of the whole hour."
+    expect:
+      type: pick
+      value: ["2"]
+      prompt: "Miles have their line. Which piece — or pieces — tells the TIME it took?"
+      hint: "Look for the hr."
+  - t: 12
+    patch: { eqHighlight: [], highlight: "2" }
+    caption: "{r} slices of 1/{r} fill the hour — so {r} copies of {p}/{q} of a mile fill the distance. How many miles in the WHOLE hour?"
+    expect:
+      type: numeric
+      value: "{r}"
+      prompt: "1/{r} of an hour — how many of those slices make the WHOLE hour?"
+      hint: "The hour line runs 0, 1/{r}, … up to 1."
+  - { t: 16, patch: { reveal: ["0", "1", "2"], eqHighlight: ["3"] }, caption: "{p}/{q} × {r} = {p*r/q}: {p*r/q} miles per hour." }
+  - { t: 19.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

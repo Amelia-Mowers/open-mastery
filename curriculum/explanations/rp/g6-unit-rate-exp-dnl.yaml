@@ -4,10 +4,10 @@ representation: double-number-line
 widget: double-number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a} pounds", " → ", "${b}", ",  1 pound → $?"], topLabel: "pounds", bottomLabel: "dollars", top: ["0", "1", "{a}"], bottom: ["0", "{b/a}", "{b}"], topIn: false, bottomIn: false, reveal: ["0", "2"] }, caption: "{a} pounds cost ${b}. Watch the lines find the price of ONE." }
-  - { t: 4, patch: { eqHighlight: ["0"], topIn: true }, caption: "Pounds on top — 0, 1, and {a}.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
+  - { t: 0, patch: { equation: ["{a} pounds", " → ", "${b}", ",  1 pound → $?"], topLabel: "pounds", bottomLabel: "dollars", top: ["0", "1", "{a}"], bottom: ["0", "{b/a}", "{b}"], topIn: false, bottomIn: false, reveal: ["0", "2"] }, caption: "{a} pounds cost ${b}. Pounds ride the top line — dollars sit below." }
+  - { t: 4, patch: { eqHighlight: ["0"], topIn: true }, caption: "Pounds on top — 0 to {a}, with the ONE we want in between.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
   - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "Dollars below: ${b} lines up under {a} pounds. To price ONE pound — what move shares out the ${b}?", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — belong on the BOTTOM line?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: "1" }, caption: "Split ${b} into {a} equal shares — one per pound. So what does ONE pound cost?", expect: { type: op, value: "divide {a}", prompt: "ONE pound is an equal share of the ${b}. What do you do to {b}?", hint: "Share ${b} equally among the {a} pounds.", misconceptions: [{ id: "multiplied-instead-of-divided", when: "multiply {a}", says: "Multiplying by {a} prices {a} pounds of {a} pounds — ONE pound is a SHARE of the ${b}: divide." }] } }
   - { t: 16, patch: { reveal: ["0", "1", "2"] }, caption: "1 pound lines up with ${b/a}. That is the unit rate." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

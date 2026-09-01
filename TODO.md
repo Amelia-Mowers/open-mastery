@@ -49,6 +49,11 @@ Not K–12 — the middle-school band plus the parent's view:
       (content-addressed .ogg), worker/model machinery deleted, coverage
       is a loud CI gate (voice:check in demo-pages.yml). Curriculum copy
       changes now require render + upload before the deploy passes.
+- [ ] Widgets silently ignore unknown/unsupported patch keys (found in
+      the 2026-09-01 review sweep: ratio-table drops `cols` patches,
+      area-model drops `height` patches — both authored as if they
+      worked). Fail loudly per the house rule: throw or validator-warn
+      ([unknown_patch_key]) on a patch key the widget does not apply.
 - [ ] Per-problem difficulty analytics (enabled by discrete pools):
       (itemId, paramHash) now has repeated observations — aggregate
       per-instance correct rates in the guide view; later IRT-style

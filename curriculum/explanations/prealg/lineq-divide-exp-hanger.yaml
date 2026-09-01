@@ -4,10 +4,38 @@ representation: hanger-diagram
 widget: hanger-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], copies: "{a}", shapeLabel: "{variable}", weight: "{b}", shapesIn: false, weightIn: false }, caption: "Here is the problem in symbols. Watch it become a hanger." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], shapesIn: true }, caption: "{a}{variable} means {a} shapes hanging — each one is {variable}.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation becomes the hanging shapes?" } }
-  - { t: 8, patch: { eqHighlight: ["3"], weightIn: true }, caption: "= {b}: the other side holds a weight of {b}. It balances.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — make the weight on the other side?" } }
-  - { t: 12, patch: { eqHighlight: [], split: true, share: "{b/a}" }, caption: "Share {b} into {a} equal pieces — the hanger stays balanced. So what is {variable}?", expect: { type: op, value: "divide {a}", prompt: "To find each shape's piece, what do you do to {b}?", hint: "Every shape gets the same share of the {b}.", misconceptions: [ { id: subtracted-the-coefficient, when: "subtract {a}", says: "Taking {a} away from {b} is not sharing it — the {b} splits into {a} EQUAL pieces. Undo a multiply with a divide." }, { id: multiplied-instead-of-divided, when: "multiply {a}", says: "Multiplying by {a} makes the weight {a} times heavier. To find one piece, divide." } ] } }
-  - { t: 16, patch: { reveal: true }, caption: "Each {variable} balances one piece: {variable} = {b/a}." }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], copies: "{a}", shapeLabel: "{variable}", weight: "{b}", shapesIn: false, weightIn: false }, caption: "{a} matching shapes against one weight — the equation hangs in balance." }
+  - t: 4
+    patch: { eqHighlight: ["0", "1"], shapesIn: true }
+    caption: "{a}{variable} means {a} shapes hanging — each one is {variable}."
+    expect:
+      type: pick
+      value: ["0", "1"]
+      prompt: "Which piece — or pieces — of the equation becomes the hanging shapes?"
+      hint: "The count and the unknown it multiplies."
+  - t: 8
+    patch: { eqHighlight: ["3"], weightIn: true }
+    caption: "= {b}: the other side holds a weight of {b}. It balances."
+    expect:
+      type: pick
+      value: ["3"]
+      prompt: "Which piece — or pieces — make the weight on the other side?"
+      hint: "The lone number after the equals sign."
+  - t: 12
+    patch: { eqHighlight: [], split: true, share: "?" }
+    caption: "{b} split into {a} equal pieces — the hanger stays balanced. So what is {variable}?"
+    expect:
+      type: op
+      value: "divide {a}"
+      prompt: "To find each shape's piece, what do you do to {b}?"
+      hint: "Every shape gets the same share of the {b}."
+      misconceptions:
+        - id: subtracted-the-coefficient
+          when: "subtract {a}"
+          says: "Taking {a} away from {b} is not sharing it — the {b} splits into {a} EQUAL pieces. Undo a multiply with a divide."
+        - id: multiplied-instead-of-divided
+          when: "multiply {a}"
+          says: "Multiplying by {a} makes the weight {a} times heavier. To find one piece, divide."
+  - { t: 16, patch: { share: "{b/a}", reveal: true }, caption: "Each {variable} balances one piece: {variable} = {b/a}." }
   - { t: 18.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

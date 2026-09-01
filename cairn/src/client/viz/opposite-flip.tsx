@@ -20,11 +20,15 @@ export interface OppositeFlipParams {
 export interface OppositeFlipView {
   /** draw the flip arc from b across 0 to -b */
   flip?: boolean
+  /** print the landing value under its point (withhold while a gate
+   * still asks where the flip lands — the position may show, the number
+   * must not) */
+  landingLabel?: boolean
   /** land the answer: solid dot at -b */
   resolve?: boolean
 }
 
-type FlipState = { flip: boolean; resolve: boolean; selected: number | null }
+type FlipState = { flip: boolean; resolve: boolean; landingLabel: boolean; selected: number | null }
 
 const label = (p: OppositeFlipParams): string =>
   `Number line showing ${p.value} and its opposite across zero`
@@ -36,7 +40,7 @@ export interface OppositeFlipAnswer {
 export function createOppositeFlip(
   config: OppositeFlipConfig = {},
 ): WidgetInstance<OppositeFlipParams, OppositeFlipAnswer, OppositeFlipView> {
-  const store = new WidgetStore<FlipState>({ flip: false, resolve: false, selected: null })
+  const store = new WidgetStore<FlipState>({ flip: false, resolve: false, landingLabel: true, selected: null })
 
   function View({ params, mode }: { params: OppositeFlipParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
@@ -177,7 +181,16 @@ export function createOppositeFlip(
           {state.flip && (
             <g data-point-neg style={{ animation: 'cairn-rise 0.4s ease both', animationDelay: '0.25s' }}>
               <circle cx={x(-b)} cy="105" r="9" fill={state.resolve ? '#4f7f5d' : '#f3e4d4'} stroke="#b05f28" strokeWidth={state.resolve ? 0 : 2.5} style={{ transition: 'fill 0.4s ease' }} />
-              <text x={x(-b)} y="134" textAnchor="middle" style={{ font: "700 17px 'Lora', Georgia, serif", fill: state.resolve ? '#3f6a4d' : '#8a4d1d' }}>
+              <text
+                x={x(-b)}
+                y="134"
+                textAnchor="middle"
+                style={{
+                  font: "700 17px 'Lora', Georgia, serif",
+                  fill: state.resolve ? '#3f6a4d' : '#8a4d1d',
+                  opacity: state.landingLabel ? 1 : 0,
+                }}
+              >
                 {-b}
               </text>
             </g>
@@ -199,6 +212,7 @@ export function createOppositeFlip(
       const next: Partial<FlipState> = {}
       if (patch.flip !== undefined) next.flip = patch.flip === true
       if (patch.resolve !== undefined) next.resolve = patch.resolve === true
+      if (patch.landingLabel !== undefined) next.landingLabel = patch.landingLabel === true
       store.setState(next)
     },
     a11y: { role: 'img', label },

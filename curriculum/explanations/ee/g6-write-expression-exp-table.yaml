@@ -4,8 +4,23 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{p} more than ", "{a} × {variable}"], cols: ["{variable}", "{a}{variable} + {p}"], rows: [["2", "{2*a+p}"], ["5", "{5*a+p}"]], reveal: "0" }, caption: "One phrase, every number. Watch the expression compute." }
-  - { t: 4.5, patch: { eqHighlight: ["1"], reveal: "1", highlight: "1" }, caption: "If the number is 2: {a}·2 + {p} = {2*a+p}. What expression says it for EVERY number?", expect: { type: numeric, value: "{2*a+p}", prompt: "Feed it 2: {a}·2 + {p} makes what?" } }
-  - { t: 9, patch: { eqHighlight: ["0"], reveal: "2", highlight: "2" }, caption: "If it's 5: {a}·5 + {p} = {5*a+p}. The expression {a}{variable} + {p} says it for EVERY number.", expect: { type: numeric, value: "{5*a+p}", prompt: "If the number is 5: {a}·5 + {p} — what does it make?" } }
-  - { t: 12, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+  - { t: 0, patch: { equation: ["{p} more than ", "{a} × {variable}", " → ", "?"], cols: ["{variable}", "?"], rows: [["2", "{2*a+p}"], ["5", "{5*a+p}"]], reveal: "0" }, caption: "'{p} more than {a} times a number' works on ANY number. Feed it 2 first." }
+  - t: 4.5
+    patch: { eqHighlight: ["1"], reveal: "1", highlight: "1" }
+    caption: "{a}·2 + {p} = {2*a+p}. Now feed it 5."
+    expect:
+      type: numeric
+      value: "{2*a+p}"
+      prompt: "Feed it 2: {a} × 2, then {p} more — what comes out?"
+      hint: "Multiply first, then add the {p}."
+  - t: 9
+    patch: { eqHighlight: ["0"], reveal: "2", highlight: "2" }
+    caption: "{a}·5 + {p} = {5*a+p}. The same moves every time — times {a}, then + {p}. What expression says that for EVERY {variable}?"
+    expect:
+      type: numeric
+      value: "{5*a+p}"
+      prompt: "Feed it 5: {a} × 5, then {p} more — what comes out?"
+      hint: "Same moves, new number."
+  - { t: 13, patch: { equation: ["{p} more than ", "{a} × {variable}", " → ", "{a}{variable} + {p}"], eqHighlight: ["3"] }, caption: "Times {a}, then {p} more: {a}{variable} + {p}." }
+  - { t: 16, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

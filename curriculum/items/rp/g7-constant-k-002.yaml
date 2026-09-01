@@ -2,8 +2,10 @@ id: g7.rp.constant-k.002
 skills: [g7.rp.constant-k]
 difficulty: 2
 representation: ratio-table
-params: { k: 5, a: 6, c: 2 }
-generator: { k: { int: [2, 9] }, a: { int: [3, 9] }, c: { int: [2, 9] } }
+# a < c on EVERY instance: the dnl timeline's x-axis is 0, 1, {a}, {c} and
+# tick order must ascend (the old domains allowed a=c and c<a)
+params: { k: 5, a: 3, c: 8 }
+generator: { k: { int: [2, 9] }, a: { int: [2, 5] }, c: { int: [6, 12] } }
 widget: { type: numeric-input, config: { stem: "y is proportional to x. When x = {a}, y = {a*k}. What is the constant of proportionality?" } }
 answer: { type: expr, value: "{k}", form: evaluated, integer: true }
 misconceptions:
@@ -15,4 +17,4 @@ hints:
   - "k = y ÷ x = {a*k} ÷ {a} = {k}."
 source: { book: ccss-rp-progression, section: "7.RP.A.2b" }
 verify: "{answer * a == a*k}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

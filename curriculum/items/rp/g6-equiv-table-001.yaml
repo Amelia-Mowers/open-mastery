@@ -3,7 +3,7 @@ skills: [g6.rp.equiv-table]
 difficulty: 1
 representation: double-number-line
 params: { a: 2, b: 12, m: 3 }
-generator: { a: { int: [1, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
+generator: { a: { int: [2, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
 widget:
   type: pair-input
   config:

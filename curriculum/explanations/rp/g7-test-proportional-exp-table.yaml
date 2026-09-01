@@ -4,10 +4,16 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["y", " ÷ ", "x", " = same?" ], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]], reveal: "0" }, caption: "Is this table proportional? There is ONE test." }
-  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "3" }, caption: "Divide y by x in every row.", expect: { type: numeric, value: "{e*k}", prompt: "{a} pairs with {a*k}, and {c} with {c*k}. What y pairs with x = {e}?" } }
-  - { t: 8, patch: { eqHighlight: [], highlight: "1" }, caption: "First row: {a*k} ÷ {a}. Hold that number in mind." }
-  - { t: 12, patch: { highlight: "2" }, caption: "Row two: {c*k} ÷ {c} = {k} — same again. Does the LAST row match too?", expect: { type: numeric, value: "{k}", prompt: "{c*k} ÷ {c} — what do you get?", hint: "The same quotient as the row above, if it is proportional." } }
-  - { t: 16, patch: { highlight: "3" }, caption: "{e*k} ÷ {e} = {k}. Same in EVERY row → proportional, with k = {k}." }
-  - { t: 19.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+  - { t: 0, patch: { equation: ["y", " ÷ ", "x", " = same?" ], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]], reveal: "1" }, caption: "Is this table proportional? ONE test decides: y ÷ x, row by row." }
+  - t: 4
+    patch: { eqHighlight: ["0", "2"], reveal: "2", highlight: "2" }
+    caption: "Row 1 gives {k}. Row two: {c*k} ÷ {c} = {k} — the SAME. Will the last row keep it up?"
+    expect:
+      type: numeric
+      value: "{k}"
+      prompt: "Row 1: {a*k} ÷ {a} — what quotient?"
+      hint: "y ÷ x."
+  - { t: 8, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "Row three: {e} and {e*k}. {e*k} ÷ {e} — does it match, and is the table proportional?" }
+  - { t: 12, patch: { eqHighlight: ["3"], highlight: null }, caption: "{e*k} ÷ {e} = {k}. Same in EVERY row → proportional, with k = {k}." }
+  - { t: 15, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

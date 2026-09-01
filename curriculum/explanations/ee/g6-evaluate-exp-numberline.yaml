@@ -4,39 +4,31 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}"], min: "{b}", max: "{a*c+b}", step: "{c}", labelled: [] }, caption: "A bare line. The expression says where to stand and how far to jump." }
+  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}", " → ", "?"], min: "{b}", max: "{a*c+b}", step: "{c}", labelled: [] }, caption: "{a}{variable} + {b} when {variable} = {c}: a place to stand, then {a} equal jumps." }
   - t: 4
     patch: { eqHighlight: ["1"], marker: "{b}", labelled: ["{b}"] }
-    caption: "The + {b} is where we stand before any jumps."
+    caption: "The + {b} is where we stand before any jumps. {a}{variable} adds the jumps."
     expect:
       type: pick
       value: ["1"]
       prompt: "Which piece — or pieces — of the expression says where to START?"
       hint: "One part is added on no matter what {variable} is. That is the start."
   - t: 8
-    patch: { eqHighlight: ["0"], arcs: [{ from: "{b}", to: "{b+c}" }, { from: "{b+c}", to: "{b+2*c}" }, { from: "{b+2*c}", to: "{a*c+b}" }], labelled: ["{b}"] }
-    caption: "{a}{variable} means {a} jumps — here they are, waiting to be measured."
-    expect:
-      type: pick
-      value: ["0"]
-      prompt: "Which piece — or pieces — says HOW MANY jumps to take?"
-      hint: "The number written in front of {variable} counts them."
-  - t: 12
-    patch: { eqHighlight: ["2"], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }, { from: "{b+c}", to: "{b+2*c}", label: "+{c}" }, { from: "{b+2*c}", to: "{a*c+b}", label: "+{c}" }], labelled: ["{b}"] }
-    caption: "{variable} = {c}, so every one of them is a jump of {c}."
+    patch: { eqHighlight: ["2"], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }], labelled: ["{b}"] }
+    caption: "{variable} = {c}, so each jump is {c} — the first one is drawn. Where does it land?"
     expect:
       type: pick
       value: ["2"]
       prompt: "Which piece — or pieces — tells how FAR each jump goes?"
       hint: "The value given for {variable} is the size of a single jump."
-  - t: 16
-    patch: { eqHighlight: [], arcs: [{ from: "{b}", to: "{b+c}", label: "+{c}" }, { from: "{b+c}", to: "{b+2*c}", label: "+{c}" }, { from: "{b+2*c}", to: "{a*c+b}", label: "+{c}" }], marker: "{b+c}", labelled: ["{b}", "{b+c}"] }
-    caption: "The first jump lands on {b+c}. So what is it worth?"
+  - t: 12
+    patch: { eqHighlight: [], marker: "{b+c}", labelled: ["{b}", "{b+c}"] }
+    caption: "The first jump lands on {b+c} — the rest of the {a} jumps match it. So what is {a}{variable} + {b}?"
     expect:
       type: numeric
       value: "{b+c}"
-      prompt: "Where does the FIRST jump land?"
-      hint: "{c} on from {b}."
-  - { t: 20, patch: { marker: "{a*c+b}", labelled: ["{b}", "{b+c}", "{b+2*c}", "{a*c+b}"] }, caption: "Keep going: all {a} jumps of {c} from {b} reach {a*c+b}. {a}·{c} + {b} = {a*c+b}." }
-  - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+      prompt: "The first jump: {c} on from {b} — where does it land?"
+      hint: "{b} plus one jump of {c}."
+  - { t: 16, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}", " → ", "{a*c+b}"], eqHighlight: ["4"], marker: "{a*c+b}", labelled: ["{b}", "{b+c}", "{a*c+b}"] }, caption: "All {a} jumps of {c} from {b} reach {a*c+b}. {a}·{c} + {b} = {a*c+b}." }
+  - { t: 19, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

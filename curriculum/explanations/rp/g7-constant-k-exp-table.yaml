@@ -4,10 +4,20 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["y", " = k · ", "x", ",  k = ?"], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["1", "{k}"]], reveal: "0" }, caption: "A proportional table hides one number: k. Let's find it." }
-  - { t: 4, patch: { eqHighlight: ["2", "0"], reveal: "2" }, caption: "Every row pairs an x with its y.", expect: { type: numeric, value: "{c*k}", prompt: "Row 1 pairs {a} with {a*k}. What y pairs with x = {c}?" } }
-  - { t: 8, patch: { eqHighlight: ["1"], highlight: "1" }, caption: "Every row should divide to the SAME number." }
-  - { t: 12, patch: { highlight: "2" }, caption: "So the question the table asks is: every row divides to the SAME number — which one?" }
-  - { t: 16, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "k = {k}: the y when x is 1 — the unit rate with its grown-up name." }
-  - { t: 19.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+  - { t: 0, patch: { equation: ["y", " = k · ", "x", ",  k = ?"], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["1", "{k}"]], reveal: "1" }, caption: "y = k · x: ONE number k turns every x into its y." }
+  - { t: 4, patch: { eqHighlight: ["1"], highlight: "1" }, caption: "Row 1: k turned {a} into {a*k}." }
+  - t: 8
+    patch: { reveal: "2", highlight: "2" }
+    caption: "÷ {a} frees it: k = {a*k} ÷ {a}. Row 2 agrees — {c*k} ÷ {c} lands on the SAME number. So what is k?"
+    expect:
+      type: op
+      value: "divide {a}"
+      prompt: "k · {a} = {a*k}. To get k back out of the {a*k}, what do you do?"
+      hint: "Undo the × {a}."
+      misconceptions:
+        - id: multiplied-instead-of-divided
+          when: "multiply {a}"
+          says: "× {a} is the move k already made — it built {a*k} FROM k. To get k back, undo it: divide."
+  - { t: 12, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "k = {k} — the y when x is 1. y = {k}x fits every row." }
+  - { t: 15, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

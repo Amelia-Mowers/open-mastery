@@ -4,10 +4,31 @@ representation: double-number-line
 widget: double-number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a} cups", " : ", "{b} muffins", "  →  ? : ?"], topLabel: "cups", bottomLabel: "muffins", top: ["0", "{a}", "{a*m}"], bottom: ["0", "{b}", "{b*m}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Two quantities that travel together. Watch each get its own line." }
-  - { t: 4, patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }, caption: "{a} cups sits on the top line.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
-  - { t: 8, patch: { eqHighlight: ["2"], bottomIn: true }, caption: "{b} muffins sits right below it — one ratio, one aligned pair. Sliding right to {a*m} cups — what factor stretches BOTH lines?", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — belong on the BOTTOM line?" } }
-  - { t: 12, patch: { eqHighlight: [], highlight: "2" }, caption: "× {m} stretches BOTH lines together. So what does the stretched pair read — cups and muffins?", expect: { type: numeric, value: "{m}", prompt: "From {a} cups to {a*m} cups — times what?", hint: "{a*m} ÷ {a}." } }
+  - { t: 0, patch: { equation: ["{a} cups", " : ", "{b} muffins", "  →  ? : ?"], topLabel: "cups", bottomLabel: "muffins", top: ["0", "{a}", "{a*m}"], bottom: ["0", "{b}", "{b*m}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Cups will ride the TOP line, muffins the BOTTOM — one above the other, so a pair reads at a glance." }
+  - t: 4
+    patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }
+    caption: "{a} cups sits on the top line."
+    expect:
+      type: pick
+      value: ["0"]
+      prompt: "Which piece — or pieces — belong on the TOP line?"
+      hint: "The top line carries the cups."
+  - t: 8
+    patch: { eqHighlight: ["2"], bottomIn: true }
+    caption: "{b} muffins sits right below it — one ratio, one aligned pair. Sliding right to {a*m} cups — what factor stretches BOTH lines?"
+    expect:
+      type: pick
+      value: ["2"]
+      prompt: "Which piece — or pieces — belong on the BOTTOM line?"
+      hint: "Right under its partner on the top line."
+  - t: 12
+    patch: { eqHighlight: [], highlight: "2" }
+    caption: "× {m} stretches BOTH lines together. So what does the stretched pair read — cups and muffins?"
+    expect:
+      type: numeric
+      value: "{m}"
+      prompt: "From {a} cups to {a*m} cups — times what?"
+      hint: "{a*m} ÷ {a}."
   - { t: 16, patch: { reveal: ["0", "1", "2"] }, caption: "Slide right ×{m}: {a*m} cups lines up with {b*m} muffins." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

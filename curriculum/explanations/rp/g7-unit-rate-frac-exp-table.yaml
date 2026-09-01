@@ -4,8 +4,23 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{p}/{q} mi", " in ", "1/{r} hr", "  →  ? mi in 1 hr"], cols: ["miles", "hours"], rows: [["{p}/{q}", "1/{r}"], ["{p*r/q}", "1"]], reveal: "0" }, caption: "Fraction rows scale exactly like whole-number rows." }
-  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "The pair we know: {p}/{q} mile in 1/{r} hour. Stretched to a WHOLE hour — how many miles?", expect: { type: pick, value: ["0", "2"], prompt: "Which piece — or pieces — of the rate go into the table's first row?" } }
-  - { t: 8.5, patch: { eqHighlight: [], reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "×{r}" } }, caption: "× {r} stretches to a WHOLE hour: {p*r/q} miles per hour.", expect: { type: numeric, value: "{p*r/q}", prompt: "× {r} to reach a whole hour — how many miles?" } }
-  - { t: 12, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+  - { t: 0, patch: { equation: ["{p}/{q} mi", " in ", "1/{r} hr", "  →  ? mi in 1 hr"], cols: ["miles", "hours"], rows: [["{p}/{q}", "1/{r}"], ["{p*r/q}", "1"]], reveal: "0" }, caption: "{p}/{q} of a mile in 1/{r} of an hour — the question: miles in ONE whole hour." }
+  - t: 4
+    patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }
+    caption: "The pair we know: {p}/{q} mile in 1/{r} hour. A WHOLE hour is many of those slices."
+    expect:
+      type: pick
+      value: ["0", "2"]
+      prompt: "Which piece — or pieces — of the rate go into the table's first row?"
+      hint: "The miles and the hours it took."
+  - t: 8
+    patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "×{r}" }, highlight: "1" }
+    caption: "× {r} of everything: {r} slices make the hour, and {r} copies of {p}/{q} make the miles. So how many miles in ONE hour?"
+    expect:
+      type: numeric
+      value: "{r}"
+      prompt: "1/{r} of an hour — how many of those make the WHOLE hour?"
+      hint: "1/{r} + 1/{r} + … until you reach 1."
+  - { t: 12, patch: { reveal: "2", highlight: "2" }, caption: "{p}/{q} × {r} = {p*r/q}: {p*r/q} miles in ONE hour." }
+  - { t: 15, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

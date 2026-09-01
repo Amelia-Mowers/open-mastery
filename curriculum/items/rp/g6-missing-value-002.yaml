@@ -1,7 +1,10 @@
 id: g6.rp.missing-value.002
 skills: [g6.rp.missing-value]
 difficulty: 2
-representation: double-number-line
+# u,v,w (recipe) cannot feed the a,b,c pounds timelines — declaring the
+# dnl representation promised a lesson this item's identifiers cannot
+# fill with its own numbers
+representation: null
 params: { u: 3, v: 4, w: 8 }
 generator: { u: { int: [2, 4] }, v: { int: [2, 6], distinct: u }, w: { mult_of: v, range: [8, 24] } }
 widget: { type: numeric-input, config: { stem: "A recipe uses {u} cups of rice to serve {v} people. How many cups serve {w} people?" } }
@@ -15,4 +18,4 @@ hints:
   - "Scale the cups the same way: {u} × {w/v} = {u*w/v}."
 source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
 verify: "{answer * v == u * w}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

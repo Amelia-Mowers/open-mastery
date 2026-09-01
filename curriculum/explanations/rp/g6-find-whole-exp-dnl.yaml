@@ -4,9 +4,9 @@ representation: double-number-line
 widget: double-number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{100/n}%", " of ? = ", "{k}"], topLabel: "percent", bottomLabel: "amount", top: ["0%", "{100/n}%", "100%"], bottom: ["0", "{k}", "{n*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "This time we know the part — the whole is hidden at 100%." }
-  - { t: 4.5, patch: { eqHighlight: ["0", "2"], topIn: true, bottomIn: true, reveal: ["0", "1"] }, caption: "{100/n}% lines up with {k} — one benchmark part of the whole line.", expect: { type: pick, value: ["0", "2"], prompt: "Which piece — or pieces — of the ratio pair up across the two lines?" } }
-  - { t: 9, patch: { eqHighlight: [], highlight: "2" }, caption: "1/{n} of the line is {k} — so 100% is {n} of those parts. So what is the WHOLE?", expect: { type: numeric, value: "{n}", prompt: "{100/n}% fits into 100% how many times?", hint: "100 ÷ {100/n}." } }
+  - { t: 0, patch: { equation: ["{100/n}%", " of ? = ", "{k}"], topLabel: "percent", bottomLabel: "amount", top: ["0%", "{100/n}%", "100%"], bottom: ["0", "{k}", "{n*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "The part is known: {k} is {100/n}% of the number. Percent rides the top line; amount sits below — the WHOLE hides at 100%." }
+  - { t: 4.5, patch: { eqHighlight: ["0", "2"], topIn: true, bottomIn: true, reveal: ["0", "1"] }, caption: "{100/n}% lines up with {k} — one benchmark part of the whole line.", expect: { type: pick, value: ["0", "2"], prompt: "Which piece — or pieces — make the pair we KNOW: the percent with its amount?" } }
+  - { t: 9, patch: { eqHighlight: [], highlight: "2" }, caption: "1/{n} of the line is {k} — so 100% is {n} of those parts. So what is the WHOLE?", expect: { type: numeric, value: "{n}", prompt: "{k} is {100/n}% of the number — how many copies of {k} build the WHOLE?", hint: "Count the {100/n}% steps up to 100%." } }
   - { t: 13.5, patch: { reveal: ["0", "1", "2"] }, caption: "{n} parts of {k}: the number is {n*k}." }
   - { t: 17, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

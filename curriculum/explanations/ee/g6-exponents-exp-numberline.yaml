@@ -4,8 +4,15 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{c}", "²"], min: 0, max: "{c*c}", step: "{c}" , labelled: []}, caption: "{c}² means {c} jumps, each as big as the number itself. Where does the FIRST jump land?" }
-  - { t: 4, patch: { eqHighlight: ["0"], marker: "{c}", highlight: ["{c}"] }, caption: "The base {c} is the jump size: one jump lands on {c}. The small 2 says take {c} jumps — where do they land?", expect: { type: numeric, value: "{c}", prompt: "One jump: where does it land? Type the number." } }
-  - { t: 8, patch: { eqHighlight: ["1"], marker: "{c*c}", highlight: [] }, caption: "The small 2 says take {c} jumps: they land on {c*c}. {c}² = {c*c}.", expect: { type: numeric, value: "{c*c}", prompt: "{c} jumps of {c}: where do they land? Type the number." } }
-  - { t: 10.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+  - { t: 0, patch: { equation: ["{c}²", " = ", "?"], min: 0, max: "{c*c}", step: "{c}", labelled: [] }, caption: "{c}² means two equal factors: {c} × {c} — on this line, {c} jumps of {c}." }
+  - t: 4
+    patch: { eqHighlight: ["0"], marker: "{c}", labelled: ["{c}"], highlight: ["{c}"] }
+    caption: "One jump lands on {c}. {c} jumps in all — where do they land? That is {c}²."
+    expect:
+      type: numeric
+      value: "{c}"
+      prompt: "{c}² — how far does ONE jump go?"
+      hint: "The base is both the jump size and the jump count."
+  - { t: 8, patch: { equation: ["{c}²", " = ", "{c*c}"], eqHighlight: ["2"], arcs: [{ from: 0, to: "{c}", label: "+{c}" }], marker: "{c*c}", labelled: ["{c}", "{c*c}"], highlight: [] }, caption: "{c} jumps of {c} land on {c*c}. {c}² = {c*c}." }
+  - { t: 11, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

@@ -4,10 +4,10 @@ representation: envelopes-counters
 widget: envelope-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], envelopes: "{a}", counters: "{b}", envelopesIn: false, countersIn: false }, caption: "Here is the problem in symbols. Watch what each piece MEANS." }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], envelopes: "{a}", counters: "{b}", envelopesIn: false, countersIn: false }, caption: "Envelopes all alike, sharing one pile of counters — the equation says how many of each." }
   - { t: 4, patch: { eqHighlight: ["0", "1"], envelopesIn: true }, caption: "{a}{variable} means {a} envelopes — each hiding the same amount, {variable}.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation becomes the envelopes?" } }
-  - { t: 8.5, patch: { eqHighlight: ["3"], countersIn: true }, caption: "= {b} means: all together, they hold {b} counters.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — tell how many counters there are in all?" } }
+  - { t: 8.5, patch: { eqHighlight: ["3"], countersIn: true }, caption: "= {b} means: all together, they hold {b} counters — red ones count below zero.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — tell how many counters there are in all?" } }
   - { t: 13, patch: { eqHighlight: [], partition: true }, caption: "So the question the envelopes ask is: {b} counters shared into {a} groups gives WHAT?", expect: { type: op, value: "divide {a}", prompt: "To find what ONE envelope holds, what do you do to {b}?", hint: "Every envelope gets the same share of the {b}." , misconceptions: [ { id: subtracted-the-coefficient, when: "subtract {a}", says: "Taking {a} counters away is not sharing them — the {b} counters are dealt equally into {a} envelopes. Undo a multiply with a divide." }, { id: multiplied-instead-of-divided, when: "multiply {a}", says: "Multiplying by {a} makes MORE counters. To find one envelope's share, divide." } ] } }
   - { t: 17, patch: { reveal: true }, caption: "Every envelope holds {b/a}. So {variable} = {b/a}." }
   - { t: 19.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

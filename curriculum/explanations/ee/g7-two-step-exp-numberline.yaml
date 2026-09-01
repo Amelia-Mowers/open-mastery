@@ -4,9 +4,31 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], min: "{b}", max: "{a*ans+b}", step: "{ans}" , labelled: []}, caption: "Here is the problem in symbols. Watch it become a start and some jumps." }
-  - { t: 4, patch: { eqHighlight: ["1"], marker: "{b}", highlight: ["{b}"] }, caption: "The + {b} is the starting point.", expect: { type: numeric, value: "{b}", prompt: "Where does the walk START?" } }
-  - { t: 8, patch: { eqHighlight: ["0", "3"], marker: "{ans+b}", highlight: ["{b}", "{ans+b}"] }, caption: "{a}{variable} must cover the rest: {a*ans+b} − {b} = {a*ans}, shared by {a} equal jumps. So what is {variable}?", expect: { type: numeric, value: "{ans+b}", prompt: "One jump from the start: where does it land? Type the number." } }
-  - { t: 12, patch: { eqHighlight: [], marker: "{a*ans+b}", highlight: [] }, caption: "{a} jumps of {ans} from {b} reach {a*ans+b}. So {variable} = {ans}.", expect: { type: numeric, value: "{a*ans+b}", prompt: "Where must the jumps FINISH? Type the number." } }
-  - { t: 14.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], min: "{min(b, a*ans+b)}", max: "{max(b, a*ans+b)}", step: "{abs(ans)}", labelled: [] }, caption: "{a}{variable} + {b} = {a*ans+b}: a start, then {a} equal jumps to the finish." }
+  - t: 4
+    patch: { eqHighlight: ["1"], marker: "{b}", labelled: ["{b}"] }
+    caption: "The + {b} is the starting point — the walk begins at {b}."
+    expect:
+      type: numeric
+      value: "{b}"
+      prompt: "{a}{variable} + {b} — where does the walk start?"
+      hint: "The part that is there before any jumps."
+  - t: 8
+    patch: { eqHighlight: ["0", "3"], labelled: ["{b}", "{a*ans+b}"], highlight: ["{b}", "{a*ans+b}"] }
+    caption: "From {b} to {a*ans+b}: the {a} jumps add {a*ans} altogether."
+    expect:
+      type: numeric
+      value: "{a*ans}"
+      prompt: "The walk starts at {b} and finishes at {a*ans+b}. What number do the {a} jumps add altogether?"
+      hint: "{a*ans+b} minus the {b} already there."
+  - t: 12
+    patch: { eqHighlight: ["0"], arcs: [{ from: "{b}", to: "{ans+b}", label: "{ans}" }], marker: "{ans+b}", labelled: ["{b}", "{ans+b}", "{a*ans+b}"], highlight: [] }
+    caption: "{a*ans} shared by {a} equal jumps — each jump is one {variable}. So what is {variable}?"
+    expect:
+      type: numeric
+      value: "{ans+b}"
+      prompt: "{a*ans} split into {a} equal jumps — where does the FIRST jump land?"
+      hint: "One jump's share of {a*ans}, added to {b}."
+  - { t: 16, patch: { eqHighlight: [], marker: "{a*ans+b}" }, caption: "Each jump adds {ans}: {a} of them from {b} reach {a*ans+b}. {variable} = {ans}." }
+  - { t: 19, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

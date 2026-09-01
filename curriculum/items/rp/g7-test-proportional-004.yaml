@@ -2,29 +2,32 @@ id: g7.rp.test-proportional.004
 skills: [g7.rp.test-proportional]
 difficulty: 3
 representation: double-number-line
-params: { k: 3, j: 7, a: 2, c: 6, e: 9 }
-generator: { k: { int: [2, 9] }, j: { int: [2, 9], distinct: k }, a: { int: [2, 4] }, c: { int: [5, 7] }, e: { int: [8, 12] } }
+# DISJOINT identifiers on purpose: this table is NOT proportional, so it
+# must never feed the proportional walkthrough timelines (which conclude
+# "→ proportional" and would render data that is not this problem's).
+params: { m: 3, w: 7, f: 2, g: 6, h: 9 }
+generator: { m: { int: [2, 9] }, w: { int: [2, 9], distinct: m }, f: { int: [2, 4] }, g: { int: [5, 7] }, h: { int: [8, 12] } }
 widget:
   type: compare-input
   config:
     stem: "Is y proportional to x? Find each pair's constant, then decide."
     fields:
-      - { label: "x = {a}, y = {a*k}" }
-      - { label: "x = {c}, y = {c*k}" }
-      - { label: "x = {e}, y = {e*j}" }
+      - { label: "x = {f}, y = {f*m}" }
+      - { label: "x = {g}, y = {g*m}" }
+      - { label: "x = {h}, y = {h*w}" }
     fieldsLabel: "constant of proportionality"
     pickLabel: "Proportional?"
     options:
       - { key: "yes", label: "Yes" }
       - { key: "no", label: "No" }
-answer: { type: ordered, value: ["{k}", "{k}", "{j}", "no"] }
+answer: { type: ordered, value: ["{m}", "{m}", "{w}", "no"] }
 misconceptions:
   - id: said-yes-past-a-mismatch
-    when: "{k}, {k}, {j}, yes"
-    says: "Two matching pairs are not enough — the last pair gives {j}, not {k}. Every pair must divide to the same constant."
+    when: "{m}, {m}, {w}, yes"
+    says: "Two matching pairs are not enough — the last pair gives {w}, not {m}. Every pair must divide to the same constant."
 hints:
   - "Divide each y by its x, all three — the breaker can hide anywhere."
-  - "{a*k} ÷ {a} = {k} and {c*k} ÷ {c} = {k}, but {e*j} ÷ {e} = {j} — not proportional."
+  - "{f*m} ÷ {f} = {m} and {g*m} ÷ {g} = {m}, but {h*w} ÷ {h} = {w} — not proportional."
 source: { book: ccss-rp-progression, section: "7.RP.A.2a" }
-verify: "{(e*j) * a != (a*k) * e}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-30 }
+verify: "{(h*w) * f != (f*m) * h}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

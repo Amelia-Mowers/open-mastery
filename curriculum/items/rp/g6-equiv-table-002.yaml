@@ -3,7 +3,7 @@ skills: [g6.rp.equiv-table]
 difficulty: 2
 representation: worked-equation
 params: { a: 3, b: 8, m: 4 }
-generator: { a: { int: [1, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
+generator: { a: { int: [2, 6] }, b: { int: [2, 12], distinct: a }, m: { int: [2, 6] } }
 widget:
   type: pair-input
   config:
