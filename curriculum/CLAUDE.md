@@ -548,6 +548,21 @@ superscripts and reads the board's `start` line, because the fix belongs
 in the check, not in the pedagogy. Never reword a sound question to
 appease a lint.
 
+## Inverse-operation lessons: AFTER-STATE FIRST, the undo grows the picture (2026-09-01)
+
+For a lesson whose move is an inverse operation (x − 9 = 12, x/4 = 7…),
+the stronger tape/diagram shape is: open on the AFTER state the equation
+describes (the bar IS what's left — one section, {d}, braced
+"{variable} − {p}"), gate the undo move, and let its confirm PERFORM it
+— the bar grows by the returned piece and the brace relabels to
+{variable}. The picture does the operation instead of narrating a
+static part-part-whole; the resolution sits on the dropped step for the
+box. First instance: sub-solve.exp-tape (redesigned per review).
+
+Prefer this shape for new inverse-operation timelines. The static-build
+versions already vetted (add-solve.exp-tape) stand — retrofit only on
+review, not in a sweep.
+
 ## Decomposition BUILDS the diagram, then asks what it makes obvious
 
 A decomposition step is construction, not annotation. The diagram starts
