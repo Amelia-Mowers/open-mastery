@@ -319,7 +319,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         'balance-scale': ['leftIn', 'rightIn'],
         // for a tape the CELLS are the picture — hiding only the brace total
         // still hands the student a finished bar
-        'tape-diagram': ['cellsIn'],
+        'tape-diagram': ['cellsIn', 'removed'],
         'hanger-diagram': ['shapesIn', 'weightIn'],
         'envelope-model': ['envelopesIn', 'countersIn'],
         'double-number-line': ['topIn', 'bottomIn'],
