@@ -1,7 +1,8 @@
 /** The voice control — a mute button + volume slider that sits in the
  * player control rows (lesson and stepwise), beside the speed control.
- * The voice is ON by default; errors show on the button — a silent mute
- * is not an option. */
+ * Narration always runs and paces the lesson; MUTE only silences it, so
+ * unmuting picks up mid-line instead of restarting. Errors show on the
+ * speaker — a silent mute is not an option. */
 import { useSyncExternalStore } from 'react'
 import { speech, VOICE_FEATURE } from './speech'
 
@@ -37,22 +38,19 @@ export function VoiceControl() {
   const err = state.model === 'error'
   const title = err
     ? `The voice could not play: ${state.message ?? 'unknown error'} — click the speaker to retry`
-    : state.enabled
-      ? 'Reading the lesson aloud — click the speaker to mute'
-      : 'Voice muted — click the speaker to hear lessons read aloud'
+    : state.muted
+      ? 'Voice muted — click the speaker to hear lessons read aloud'
+      : 'Reading the lesson aloud — click the speaker to mute'
   return (
-    <div className={'voice-ctl' + (state.enabled ? '' : ' voice-ctl-off') + (err ? ' voice-ctl-err' : '')} title={title}>
+    <div className={'voice-ctl' + (state.muted ? ' voice-ctl-off' : '') + (err ? ' voice-ctl-err' : '')} title={title}>
       <button
         type="button"
         className="btn btn-quiet voice-mute"
-        aria-pressed={!state.enabled}
-        aria-label={state.enabled ? 'Mute the voice' : 'Unmute the voice'}
-        onClick={() => {
-          if (state.enabled && !err) speech.disable()
-          else speech.enable()
-        }}
+        aria-pressed={state.muted}
+        aria-label={state.muted ? 'Unmute the voice' : 'Mute the voice'}
+        onClick={() => speech.setMuted(!state.muted && !err)}
       >
-        <SpeakerIcon muted={!state.enabled} level={state.volume} />
+        <SpeakerIcon muted={state.muted} level={state.volume} />
       </button>
       <input
         type="range"
@@ -63,7 +61,7 @@ export function VoiceControl() {
         aria-label="Voice volume"
         onChange={(e) => {
           speech.setVolume(Number(e.currentTarget.value) / 100)
-          if (!state.enabled) speech.enable() // reaching for volume means they want sound
+          if (state.muted) speech.setMuted(false) // reaching for volume means they want sound
         }}
       />
     </div>
@@ -72,13 +70,13 @@ export function VoiceControl() {
 
 
 /** A quiet spinner under the caption while its audio is still on the
- * wire — visible only when the voice is on and the sound has not
- * started. Usually gone before it is seen; it matters on slow links. */
+ * wire — visible only when unmuted and the sound has not started.
+ * Usually gone before it is seen; it matters on slow links. */
 export function VoiceGenSpinner() {
   if (!VOICE_FEATURE) return null
   // eslint-disable-next-line react-hooks/rules-of-hooks
   const state = useSyncExternalStore(speech.subscribe, speech.getState, speech.getState)
-  if (!state.enabled || !state.generating) return null
+  if (state.muted || !state.generating) return null
   return (
     <span className="voice-gen" role="status" aria-label="Fetching the voice">
       <i aria-hidden />

@@ -549,10 +549,11 @@ function Session({
   /** an alternative explanation playing in the lesson slot */
   const [overlay, setOverlay] = useState<OverlayExplanation | null>(null)
 
-  // restore the voice preference (on by default) — but never in the zoo,
+  // narration is always on (mute only silences it) — except the zoo,
   // where dozens of autoplaying players would all speak at once
   useEffect(() => {
-    if (urlParam('view') !== 'zoo') speech.warm()
+    if (urlParam('view') === 'zoo') speech.deactivate()
+    else speech.warm()
   }, [])
 
   const refresh = useCallback(() => {

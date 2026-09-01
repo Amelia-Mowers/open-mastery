@@ -10,7 +10,7 @@
 import { readdirSync, readFileSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-import { createRepo, uploadFiles, listFiles } from '@huggingface/hub'
+import { createRepo, uploadFiles, listFiles, deleteFiles } from '@huggingface/hub'
 
 import { homedir } from 'node:os'
 const repoName = process.argv[2] ?? 'AmeliaMowers/cairn-voice'
@@ -38,13 +38,25 @@ try {
 
 // FORCE=1 re-uploads everything (content-addressed names never change,
 // so a re-render with different audio — e.g. q8 → fp32 — is invisible
-// to the name diff and needs a forced push)
+// to the name diff and needs a forced push). PRUNE=1 deletes remote
+// .ogg files the local corpus no longer contains (a re-enumeration —
+// e.g. sentence-level → snippet-level — orphans every old name).
 const have = new Set()
-if (!process.env.FORCE)
-  for await (const f of listFiles({ repo, accessToken: token })) have.add(f.path)
+for await (const f of listFiles({ repo, accessToken: token })) have.add(f.path)
 
 const local = readdirSync(dir).filter((f) => f.endsWith('.ogg'))
-const todo = local.filter((f) => !have.has(f))
+const todo = local.filter((f) => process.env.FORCE || !have.has(f))
+
+if (process.env.PRUNE) {
+  const localSet = new Set(local)
+  const stale = [...have].filter((f) => f.endsWith('.ogg') && !localSet.has(f))
+  console.log(`pruning ${stale.length} stale remote file(s)`)
+  const DEL_BATCH = 500
+  for (let i = 0; i < stale.length; i += DEL_BATCH) {
+    await deleteFiles({ repo, accessToken: token, paths: stale.slice(i, i + DEL_BATCH) })
+    console.log(`pruned ${Math.min(i + DEL_BATCH, stale.length)}/${stale.length}`)
+  }
+}
 console.log(`${local.length} local files, ${todo.length} to upload`)
 
 const BATCH = 200

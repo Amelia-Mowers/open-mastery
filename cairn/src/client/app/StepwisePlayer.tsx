@@ -95,11 +95,9 @@ export function StepwisePlayer({
     [explanation],
   )
 
-  // optimistic voice: synthesize every caption and gate question this
+  // optimistic voice: prefetch every caption and gate question this
   // lead will show, so speech starts WITH each step
-  const voiceOn = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
   useEffect(() => {
-    if (!voiceOn) return
     const texts: string[] = []
     for (const st of steps) {
       if (st.caption !== undefined) texts.push(renderText(st.caption, params))
@@ -107,7 +105,7 @@ export function StepwisePlayer({
     }
     speech.pregenerate(texts.filter((t) => t !== ''))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [explanation.id, voiceOn])
+  }, [explanation.id])
   const widget = useMemo(() => createLessonWidget(explanation, params), [explanation.id])
   const [applied, setApplied] = useState(0)
   const [unlocked, setUnlocked] = useState<ReadonlySet<number>>(new Set())
@@ -166,13 +164,14 @@ export function StepwisePlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waitingOn !== null ? applied : -1])
 
-  // the frontier is still being read aloud — stages wait for the voice.
-  // (Fixed cadence clipped every caption longer than stepDelayMs.)
+  // the frontier is still being read aloud — stages wait for the voice
+  // (muted narration still runs and still paces; fixed cadence clipped
+  // every caption longer than stepDelayMs)
   const narrating = useSyncExternalStore(
     speech.subscribe,
     () => {
       const s = speech.getState()
-      return s.enabled && s.model !== 'error' && (s.speaking || s.generating)
+      return s.model !== 'error' && (s.speaking || s.generating)
     },
     () => false,
   )
@@ -392,7 +391,7 @@ export function StepwisePlayer({
       >
         {view.caption}
       </p>
-      <SpeakLine text={waitingOn !== null ? `${view.caption} ${gatePrompt(waitingOn)}` : view.caption} />
+      <SpeakLine caption={view.caption} prompt={waitingOn !== null ? gatePrompt(waitingOn) : ''} />
       <VoiceGenSpinner />
       <SmoothHeight>
       {/* scrub through what has played so far; the frontier stays put */}
@@ -588,20 +587,24 @@ export function StepwisePlayer({
 }
 
 
-/** Voice: read the caption — and the open gate's question — as they land.
- * When a gate closes, the line loses its question but keeps its caption:
- * nothing new to say, so let the tail play out instead of re-reading the
- * caption and having the next step clip it. */
-function SpeakLine({ text }: { text: string }) {
-  const on = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
-  const last = useRef('')
+/** Voice: read the caption and the open gate's question as they land —
+ * each is its own corpus snippet, spoken only when IT is new. A gate
+ * opening under an already-read caption speaks just the question; a gate
+ * closing speaks nothing (the line lost its question — let the tail play
+ * out instead of re-reading and having the next step clip it). */
+function SpeakLine({ caption, prompt }: { caption: string; prompt: string }) {
+  const prevCaption = useRef<string | null>(null)
+  const prevPrompt = useRef('')
   useEffect(() => {
-    const prev = last.current
-    last.current = text
-    if (!on || text.trim() === '') return
-    if (prev !== text && prev.startsWith(text)) return // gate closed — the caption was already read
-    void speech.speak(text) // speak() itself cancels whatever is mid-air
-  }, [text, on])
+    const captionChanged = prevCaption.current !== caption
+    const promptChanged = prevPrompt.current !== prompt
+    prevCaption.current = caption
+    prevPrompt.current = prompt
+    const parts: string[] = []
+    if (captionChanged && caption.trim() !== '') parts.push(caption)
+    if (prompt.trim() !== '' && (promptChanged || captionChanged)) parts.push(prompt)
+    if (parts.length > 0) void speech.speak(parts) // speak() cancels whatever is mid-air
+  }, [caption, prompt])
   useEffect(() => () => speech.stop(), [])
   return null
 }

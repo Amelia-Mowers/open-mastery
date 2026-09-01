@@ -1,8 +1,11 @@
-/** ONE enumerator for every sentence the app can speak — all
+/** ONE enumerator for every snippet the app can speak — all
  * explanations × all feeding items × every discrete pool instance,
- * captions + gate prompts + handoffs. The corpus renderer synthesizes
- * this list and the coverage check compares it to the published
- * manifest; sharing the walk is what makes the check a guarantee. */
+ * captions + gate prompts + handoffs, each rendered WHOLE (one audio
+ * file per snippet; no sentence splitting — that was a relic of
+ * streaming on-device synthesis and made playback piecewise). The
+ * corpus renderer synthesizes this list and the coverage check compares
+ * it to the published manifest; sharing the walk is what makes the
+ * check a guarantee. */
 import { createHash } from 'node:crypto'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -12,7 +15,7 @@ import { buildIndex } from '../src/core/curriculum.ts'
 import { practiceItems, poolSeeds } from '../src/core/select.ts'
 import { feedableParams } from '../src/site/core.ts'
 import { renderText } from '../src/client/app/render.ts'
-import { mathToSpeech, splitSentences } from '../src/client/tts/speech.ts'
+import { mathToSpeech } from '../src/client/tts/speech.ts'
 
 /** sentence → corpus filename (content-addressed; the client derives the
  * same name with crypto.subtle in src/client/tts/speech.ts) */
@@ -65,8 +68,10 @@ export function corpusSentences(): string[] {
           if (st.caption !== undefined) texts.push(renderText(st.caption, params))
           if (st.expect?.prompt !== undefined) texts.push(renderText(st.expect.prompt, params))
           if (st.handoff?.prompt !== undefined) texts.push(renderText(st.handoff.prompt, params))
-          for (const t of texts)
-            for (const sentence of splitSentences(mathToSpeech(t))) sentences.add(sentence)
+          for (const t of texts) {
+            const snippet = mathToSpeech(t)
+            if (snippet !== '') sentences.add(snippet)
+          }
         }
       }
     }
