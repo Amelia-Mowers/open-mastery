@@ -50,4 +50,4 @@ timeline:
       prompt: "Look at the bar: {p+d} across, and {p} of it is the second piece. How long is the first piece?"
       hint: "Cover the {p} section. What is left of the {p+d}?"
   - { t: 24, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-01 }
