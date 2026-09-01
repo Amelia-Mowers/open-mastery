@@ -29,6 +29,10 @@ jobs:
         working-directory: schema
       - run: npm ci
         working-directory: cairn
+      # every speakable sentence must exist in the published voice corpus
+      # (the client fetches pre-rendered audio; there is no fallback)
+      - run: npm run voice:check
+        working-directory: cairn
       - run: npm run build:demo
         working-directory: cairn
       - uses: actions/upload-pages-artifact@v3

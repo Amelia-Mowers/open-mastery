@@ -10,16 +10,17 @@
     "server": "node src/server/main.ts",
     "dev": "vite",
     "build": "vite build",
-    "build:demo": "node scripts/build-demo-bundle.mjs && vite build --mode demo && node -e \"const fs=require('fs');fs.renameSync('dist-demo/demo.html','dist-demo/index.html');for(const f of fs.readdirSync('dist-demo/assets'))if(f.endsWith('.wasm'))fs.unlinkSync('dist-demo/assets/'+f)\""
+    "build:demo": "node scripts/build-demo-bundle.mjs && vite build --mode demo && node -e \"const fs=require('fs');fs.renameSync('dist-demo/demo.html','dist-demo/index.html')\"",
+    "voice:check": "node --experimental-transform-types scripts/check-voice-coverage.ts"
   },
   "dependencies": {
     "@openmastery/schema": "file:../schema",
-    "kokoro-js": "^1.2.1",
     "react": "^19.1.0",
     "react-dom": "^19.1.0"
   },
   "devDependencies": {
     "@huggingface/hub": "^2.16.1",
+    "kokoro-js": "^1.2.1",
     "@testing-library/jest-dom": "^6.6.3",
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^14.6.1",

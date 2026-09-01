@@ -1,30 +1,27 @@
-/** Local text-to-speech for young readers: Kokoro-82M (Apache-2.0)
- * running fully in the browser via kokoro-js — on-device like everything
- * else in the demo; no audio, no text ever leaves the machine.
+/** Voice for young readers: every sentence the app can speak is
+ * PRE-RENDERED at build time (Kokoro-82M, scripts/render-voice-corpus.ts)
+ * and published to a public dataset repo. The client just fetches the
+ * sentence's content-addressed .ogg and plays it — no model download, no
+ * on-device synthesis, instant first sound. Requests carry only the
+ * SHA-256 of the sentence text (every student on the same lesson fetches
+ * the same public file); answers and progress still never leave the
+ * machine.
  *
- * The model AUTOLOADS in the background when a session starts (q8 ~40MB
- * on wasm, fp16 ~80MB on WebGPU; cached by the browser after the first
- * visit), so flipping the voice on is instant. Speaking itself stays
- * opt-in. Synthesis is OPTIMISTIC: players hand the service the captions
- * they are about to show and it pre-generates into an in-memory cache,
- * so the voice starts with the step instead of seconds behind it.
- *
- * NO SILENT FALLBACKS: a load or synthesis failure surfaces on the
- * toggle as an error state, never as quiet muteness. */
+ * Coverage is a build-time guarantee (scripts/check-voice-coverage.ts):
+ * a sentence missing from the corpus fails the build. If one is somehow
+ * missing at runtime anyway, the fetch 404s and the error surfaces on
+ * the toggle — NO SILENT FALLBACKS, a mute voice must say why. */
 
 export interface SpeechState {
-  model: 'cold' | 'loading' | 'ready' | 'error'
-  /** download progress while loading */
-  pct: number
+  /** kept for the toggle: 'ready' from birth (nothing to load), 'error'
+   * when a fetch or playback failed */
+  model: 'ready' | 'error'
   /** the student turned the voice on */
   enabled: boolean
   speaking: boolean
-  /** synthesis in flight for the line on screen — audio not started yet */
+  /** audio for the line on screen still fetching — sound not started */
   generating: boolean
-  /** estimated progress of that synthesis (0..100; an ESTIMATE from
-   * measured ms-per-character, capped at 95 until it really finishes) */
-  genPct: number
-  /** why the model is unavailable, when model === 'error' */
+  /** why the voice is unavailable, when model === 'error' */
   message?: string
 }
 
@@ -51,159 +48,51 @@ export function mathToSpeech(text: string): string {
   )
 }
 
-/** Sentences are the synthesis unit: the first one starts playing while
- * the rest generate — first sound arrives in one short inference, not
- * after the whole caption. Also makes cache hits finer-grained. */
+/** Sentences are the corpus unit: finer-grained cache hits, and the
+ * first sentence plays while the rest are still arriving. */
 export function splitSentences(text: string): string[] {
   const parts = text.match(/[^.!?]+[.!?]*\s*/g) ?? [text]
   return parts.map((p) => p.trim()).filter((p) => p !== '')
 }
 
-/** master switch: OFF until the pre-rendered corpus is live — the
- * cutover commit flips this back on. While off: no toggle, no autoload,
- * no synthesis, nothing. */
-export const VOICE_FEATURE = false
+export const VOICE_FEATURE = true
+
+/** where render-voice-corpus.ts publishes to (upload-voice-corpus.mjs) */
+const CORPUS_URL = 'https://huggingface.co/datasets/AmeliaMowers/cairn-voice/resolve/main/'
 
 const PREF_KEY = 'cairn.voice'
-/** pre-generated utterances kept in memory (a caption is ~100-500KB) */
-const CACHE_MAX = 48
-/** synthesized audio persisted across visits — replaying a lesson costs
- * a lookup, not a synthesis */
-const DB_NAME = 'cairn-tts'
-const DB_STORE = 'utterances'
-const DB_MAX = 400
+/** decoded utterances kept in memory; the browser HTTP cache holds the
+ * compressed bytes beyond that */
+const CACHE_MAX = 64
+/** prefetches in flight at once */
+const PREFETCH_CONCURRENCY = 3
 
-type Utterance = { audio: Float32Array; rate: number }
-
-/** IndexedDB write-through for the utterance cache. Persistence is a
- * CONVENIENCE layer: every path fails soft to synthesis, so a broken or
- * unavailable DB costs latency, never correctness. */
-class UtteranceStore {
-  private db: Promise<IDBDatabase | null> | null = null
-
-  private open(): Promise<IDBDatabase | null> {
-    this.db ??= new Promise((resolve) => {
-      try {
-        const req = indexedDB.open(DB_NAME, 1)
-        req.onupgradeneeded = () => {
-          const db = req.result
-          if (!db.objectStoreNames.contains(DB_STORE)) {
-            const store = db.createObjectStore(DB_STORE, { keyPath: 'key' })
-            store.createIndex('added', 'added')
-          }
-        }
-        req.onsuccess = () => resolve(req.result)
-        req.onerror = () => resolve(null)
-      } catch {
-        resolve(null)
-      }
-    })
-    return this.db
-  }
-
-  async get(key: string): Promise<Utterance | null> {
-    const db = await this.open()
-    if (!db) return null
-    return new Promise((resolve) => {
-      try {
-        const req = db.transaction(DB_STORE).objectStore(DB_STORE).get(key)
-        req.onsuccess = () => {
-          const row = req.result as { pcm: ArrayBuffer; rate: number } | undefined
-          resolve(row ? { audio: new Float32Array(row.pcm), rate: row.rate } : null)
-        }
-        req.onerror = () => resolve(null)
-      } catch {
-        resolve(null)
-      }
-    })
-  }
-
-  put(key: string, u: Utterance): void {
-    void this.open().then((db) => {
-      if (!db) return
-      try {
-        const tx = db.transaction(DB_STORE, 'readwrite')
-        const store = tx.objectStore(DB_STORE)
-        store.put({ key, rate: u.rate, pcm: u.audio.buffer.slice(0), added: Date.now() })
-        // prune oldest beyond the cap, cheaply, in the same transaction
-        const count = store.count()
-        count.onsuccess = () => {
-          if (count.result <= DB_MAX) return
-          const cursor = store.index('added').openCursor()
-          let toDrop = count.result - DB_MAX
-          cursor.onsuccess = () => {
-            const c = cursor.result
-            if (!c || toDrop <= 0) return
-            c.delete()
-            toDrop--
-            c.continue()
-          }
-        }
-      } catch {
-        /* persistence is optional */
-      }
-    })
-  }
+/** sentence → corpus filename: sha256 hex, first 20 chars (must match
+ * fileOf() in scripts/render-voice-corpus.ts) */
+async function fileOf(sentence: string): Promise<string> {
+  const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(sentence))
+  return (
+    [...new Uint8Array(digest)]
+      .map((b) => b.toString(16).padStart(2, '0'))
+      .join('')
+      .slice(0, 20) + '.ogg'
+  )
 }
 
 class SpeechService {
-  private state: SpeechState = { model: 'cold', pct: 0, enabled: false, speaking: false, generating: false, genPct: 0 }
+  private state: SpeechState = { model: 'ready', enabled: false, speaking: false, generating: false }
   private listeners = new Set<() => void>()
-  /** the engine lives in a Web Worker — see tts.worker.ts; main-thread
-   * generation janked every interaction while pregen ran */
-  private worker: Worker | null = null
-  private ready = false
-  private rpcId = 0
-  private pending = new Map<number, { resolve: (u: Utterance) => void; reject: (e: Error) => void }>()
   private ctx: AudioContext | null = null
   private sources: AudioBufferSourceNode[] = []
-  /** monotonic id so a stale synthesis never plays over a newer one */
+  /** monotonic id so a stale fetch never plays over a newer one */
   private turn = 0
-  /** normalized text → synthesized audio, insertion-ordered for LRU */
-  private cache = new Map<string, Utterance>()
-  private store = new UtteranceStore()
-  /** texts queued for optimistic synthesis, in arrival order */
-  private pregenQueue: string[] = []
-  private pregenRunning = false
-  /** THE generation lock: wasm inference pegs cores, and concurrent
-   * inferences froze a whole machine — every generate(), live or
-   * optimistic, must pass through here, one at a time */
-  private genLock: Promise<void> = Promise.resolve()
-
-  /** measured synthesis cost, refined by EMA over real generations —
-   * feeds the progress estimate */
-  private msPerChar = 45
-  private genTimer: ReturnType<typeof setInterval> | null = null
-
-  private generateLocked(key: string): Promise<Utterance> {
-    const run = this.genLock.then(async () => {
-      const started = performance.now()
-      const out = await this.generateInWorker(key)
-      const elapsed = performance.now() - started
-      if (key.length > 0) this.msPerChar = 0.7 * this.msPerChar + 0.3 * (elapsed / key.length)
-      return out
-    })
-    this.genLock = run.then(
-      () => undefined,
-      () => undefined,
-    )
-    return run
-  }
-
-  private startGenProgress(chars: number): void {
-    this.stopGenProgress()
-    const started = performance.now()
-    const eta = Math.max(300, chars * this.msPerChar)
-    this.genTimer = setInterval(() => {
-      const pct = Math.min(95, Math.round(((performance.now() - started) / eta) * 100))
-      if (this.state.generating) this.set({ genPct: pct })
-    }, 120)
-  }
-
-  private stopGenProgress(): void {
-    if (this.genTimer !== null) clearInterval(this.genTimer)
-    this.genTimer = null
-  }
+  /** sentence → decoded audio, insertion-ordered for LRU */
+  private cache = new Map<string, AudioBuffer>()
+  /** sentences being fetched right now (dedupes speak vs prefetch) */
+  private inFlight = new Map<string, Promise<AudioBuffer>>()
+  /** sentences queued for optimistic prefetch, in arrival order */
+  private prefetchQueue: string[] = []
+  private prefetching = 0
 
   subscribe = (fn: () => void): (() => void) => {
     this.listeners.add(fn)
@@ -223,64 +112,11 @@ class SpeechService {
     }
   }
 
-  /** Load the model WITHOUT turning the voice on — called when a session
-   * starts so the later toggle is instant. Safe to call repeatedly. */
+  /** Restore the saved preference when a session starts. (Nothing to
+   * download any more — the name survives from the on-device era.) */
   warm(): void {
     if (!VOICE_FEATURE) return
-    // never in tests: jsdom would boot the whole phonemizer and try to
-    // download the model on every client E2E render
-    if (typeof process !== 'undefined' && process.env?.['VITEST'] !== undefined) return
-    if (typeof Worker === 'undefined') {
-      this.set({ model: 'error', message: 'this browser cannot run the voice (no workers)' })
-      return
-    }
-    if (this.worker) return
-    this.set({ model: 'loading', pct: 0 })
-    const w = new Worker(new URL('./tts.worker.ts', import.meta.url), { type: 'module' })
-    this.worker = w
-    w.onmessage = (ev: MessageEvent) => {
-      const msg = ev.data as {
-        type: string
-        pct?: number
-        id?: number
-        audio?: Float32Array
-        rate?: number
-        message?: string
-      }
-      if (msg.type === 'progress') this.set({ model: 'loading', pct: msg.pct ?? 0 })
-      else if (msg.type === 'ready') {
-        this.ready = true
-        this.set({ model: 'ready', pct: 100 })
-        if (this.prefOn()) this.set({ enabled: true })
-        void this.drainPregen()
-      } else if (msg.type === 'error') {
-        // fail loudly ON THE TOGGLE: whoever wanted a voice must be told
-        // why there isn't one, not left in silence
-        this.set({ model: 'error', message: msg.message ?? 'unknown error' })
-      } else if (msg.type === 'audio' && msg.id !== undefined) {
-        this.pending.get(msg.id)?.resolve({ audio: msg.audio!, rate: msg.rate! })
-        this.pending.delete(msg.id)
-      } else if (msg.type === 'fail' && msg.id !== undefined) {
-        this.pending.get(msg.id)?.reject(new Error(msg.message ?? 'synthesis failed'))
-        this.pending.delete(msg.id)
-      }
-    }
-    w.onerror = (e) => {
-      this.set({ model: 'error', message: e.message || 'the voice worker crashed' })
-    }
-    w.postMessage({ type: 'warm' })
-  }
-
-  private generateInWorker(key: string): Promise<Utterance> {
-    return new Promise((resolve, reject) => {
-      if (!this.worker) {
-        reject(new Error('voice worker not started'))
-        return
-      }
-      const id = ++this.rpcId
-      this.pending.set(id, { resolve, reject })
-      this.worker.postMessage({ type: 'generate', id, text: key })
-    })
+    if (this.prefOn()) this.set({ enabled: true })
   }
 
   enable(): void {
@@ -290,15 +126,15 @@ class SpeechService {
     } catch {
       /* preference is a convenience only */
     }
-    this.set({ enabled: true })
+    // a fetch error is stale the moment the student retries the toggle
+    this.set({ enabled: true, model: 'ready', message: undefined })
     // audio needs a user gesture; the toggle click IS one — claim it
     this.ctx ??= new AudioContext()
     if (this.ctx.state === 'suspended') void this.ctx.resume()
-    this.warm()
   }
 
   disable(): void {
-    this.pregenQueue.length = 0
+    this.prefetchQueue.length = 0
     this.stop()
     try {
       localStorage.setItem(PREF_KEY, 'off')
@@ -308,55 +144,35 @@ class SpeechService {
     this.set({ enabled: false })
   }
 
-  /** Optimistically synthesize upcoming lines into the cache. Cheap to
-   * call with the same list repeatedly; a no-op until the model is
-   * ready. Runs strictly one synthesis at a time, and always yields to a
-   * live speak() call. */
-  pregenerate(texts: string[]): void {
-    // no synthesis while the voice is off — this ran unconditionally
-    // once, and the zoo's dozens of mounted players queued enough
-    // inference to freeze a machine
-    if (!this.state.enabled) return
-    for (const t of texts) {
-      for (const sentence of splitSentences(mathToSpeech(t))) {
-        if (this.pregenQueue.length >= 32) return // bounded: upcoming steps only
-        if (this.cache.has(sentence) || this.pregenQueue.includes(sentence)) continue
-        this.pregenQueue.push(sentence)
-      }
-    }
-    void this.drainPregen()
-  }
-
-  private async drainPregen(): Promise<void> {
-    if (this.pregenRunning || !this.ready) return
-    this.pregenRunning = true
+  private async fetchUtterance(sentence: string): Promise<AudioBuffer> {
+    const cached = this.cache.get(sentence)
+    if (cached) return cached
+    const pending = this.inFlight.get(sentence)
+    if (pending) return pending
+    const job = (async () => {
+      const file = await fileOf(sentence)
+      const res = await fetch(CORPUS_URL + file)
+      if (!res.ok)
+        throw new Error(
+          `no audio in the voice corpus for “${sentence}” (${res.status} on ${file})`,
+        )
+      const bytes = await res.arrayBuffer()
+      this.ctx ??= new AudioContext()
+      const buf = await this.ctx.decodeAudioData(bytes)
+      this.put(sentence, buf)
+      return buf
+    })()
+    this.inFlight.set(sentence, job)
     try {
-      while (this.pregenQueue.length > 0) {
-        // the voice going off, or a live utterance, releases the engine
-        if (!this.state.enabled || this.state.speaking) break
-        const key = this.pregenQueue.shift()!
-        if (this.cache.has(key)) continue
-        try {
-          const persisted = await this.store.get(key)
-          if (persisted) {
-            this.put(key, persisted, false)
-            continue
-          }
-          this.put(key, await this.generateLocked(key))
-        } catch {
-          // pre-generation is best-effort; the live path will retry and
-          // surface the error if it is real
-        }
-      }
+      return await job
     } finally {
-      this.pregenRunning = false
+      this.inFlight.delete(sentence)
     }
   }
 
-  private put(key: string, u: Utterance, persist = true): void {
-    this.cache.delete(key)
-    this.cache.set(key, u)
-    if (persist) this.store.put(key, u)
+  private put(sentence: string, buf: AudioBuffer): void {
+    this.cache.delete(sentence)
+    this.cache.set(sentence, buf)
     while (this.cache.size > CACHE_MAX) {
       const oldest = this.cache.keys().next().value
       if (oldest === undefined) break
@@ -364,73 +180,85 @@ class SpeechService {
     }
   }
 
-  private async obtain(key: string): Promise<Utterance> {
-    let u = this.cache.get(key) ?? (await this.store.get(key)) ?? null
-    if (u) {
-      if (!this.cache.has(key)) this.put(key, u, false)
-      return u
+  /** Optimistically fetch upcoming lines into the cache. Cheap to call
+   * with the same list repeatedly; a no-op while the voice is off.
+   * Best-effort: the live speak() path surfaces any real error. */
+  pregenerate(texts: string[]): void {
+    if (!this.state.enabled) return
+    for (const t of texts) {
+      for (const sentence of splitSentences(mathToSpeech(t))) {
+        if (this.prefetchQueue.length >= 32) break // bounded: upcoming steps only
+        if (this.cache.has(sentence) || this.inFlight.has(sentence)) continue
+        if (this.prefetchQueue.includes(sentence)) continue
+        this.prefetchQueue.push(sentence)
+      }
     }
-    u = await this.generateLocked(key)
-    this.put(key, u)
-    return u
+    this.drainPrefetch()
   }
 
-  /** Speak, cancelling whatever is mid-air. SENTENCE-PIPELINED: the
-   * first sentence plays as soon as it exists; the rest synthesize
-   * during playback and are scheduled gaplessly on the audio clock. */
+  private drainPrefetch(): void {
+    while (this.prefetching < PREFETCH_CONCURRENCY && this.prefetchQueue.length > 0) {
+      if (!this.state.enabled) return
+      const sentence = this.prefetchQueue.shift()!
+      this.prefetching++
+      void this.fetchUtterance(sentence)
+        .catch(() => {
+          /* prefetch is best-effort; speak() will retry and surface it */
+        })
+        .finally(() => {
+          this.prefetching--
+          this.drainPrefetch()
+        })
+    }
+  }
+
+  /** Speak, cancelling whatever is mid-air. All sentences fetch in
+   * parallel; each is scheduled gaplessly on the audio clock as soon as
+   * it and its predecessors exist. */
   async speak(text: string): Promise<void> {
-    if (!this.state.enabled || !this.ready) return
+    if (!this.state.enabled) return
     const sentences = splitSentences(mathToSpeech(text))
     if (sentences.length === 0) return
     const myTurn = ++this.turn
     this.stopSources()
-    const cold = !this.cache.has(sentences[0]!)
-    this.set({ speaking: true, generating: cold, genPct: 0 })
-    if (cold) this.startGenProgress(sentences[0]!.length)
+    this.set({ speaking: true, generating: !this.cache.has(sentences[0]!) })
     try {
       this.ctx ??= new AudioContext()
       if (this.ctx.state === 'suspended') await this.ctx.resume()
+      const fetches = sentences.map((s) => this.fetchUtterance(s))
       let nextStart = 0
       let remaining = sentences.length
-      for (const sentence of sentences) {
-        const u = await this.obtain(sentence)
+      for (const fetchJob of fetches) {
+        const buf = await fetchJob
         if (myTurn !== this.turn) return // superseded mid-pipeline
-        if (this.state.generating) {
-          this.stopGenProgress()
-          this.set({ generating: false, genPct: 100 })
-        }
-        const buf = this.ctx.createBuffer(1, u.audio.length, u.rate)
-        buf.getChannelData(0).set(u.audio)
+        if (this.state.generating) this.set({ generating: false })
         const src = this.ctx.createBufferSource()
         src.buffer = buf
         src.connect(this.ctx.destination)
         src.onended = () => {
           remaining--
-          if (myTurn === this.turn && remaining === 0) {
-            this.set({ speaking: false })
-            void this.drainPregen()
-          }
+          if (myTurn === this.turn && remaining === 0) this.set({ speaking: false })
         }
         const at = Math.max(this.ctx.currentTime, nextStart)
         src.start(at)
         nextStart = at + buf.duration
         this.sources.push(src)
-        // the loop continues DURING playback: the next sentence
-        // synthesizes while this one is heard
       }
     } catch (e) {
       if (myTurn !== this.turn) return
-      this.stopGenProgress()
-      this.set({ model: 'error', message: e instanceof Error ? e.message : String(e), generating: false, genPct: 0 })
+      this.set({
+        model: 'error',
+        message: e instanceof Error ? e.message : String(e),
+        speaking: false,
+        generating: false,
+      })
     }
   }
 
   stop(): void {
     this.turn++
     this.stopSources()
-    this.stopGenProgress()
-    if (this.state.speaking || this.state.generating) this.set({ speaking: false, generating: false, genPct: 0 })
-    void this.drainPregen()
+    if (this.state.speaking || this.state.generating) this.set({ speaking: false, generating: false })
   }
 
   private stopSources(): void {

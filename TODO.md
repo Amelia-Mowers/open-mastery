@@ -42,12 +42,13 @@ Not K–12 — the middle-school band plus the parent's view:
       trees) or G (scale drawings, angle figures). Those cost like the
       FIRST slab. Run the §6c slab-kickoff checklist (GOLDEN_WIDGET.md)
       before sizing: IM first, fleet last.
-- [ ] Voice corpus pre-render (design agreed 2026-09-01): discrete pools
-      make the spoken-text space finite (~15K sentences ≈ 133MB opus).
-      Build script renders via kokoro-js in node; runtime becomes
-      fetch-and-play and the worker/model-download machinery is DELETED.
-      BLOCKED ON: hosting choice for ~133MB (HF dataset repo suggested —
-      same trust boundary as the model; not the Pages artifact).
+- [x] Voice corpus pre-render (SHIPPED 2026-09-01): 8,185 sentences
+      rendered fp32 on GPU (scripts/render-voice-corpus-gpu.sh, ~55min
+      full rebuild) and published to the HF dataset repo
+      AmeliaMowers/cairn-voice; runtime is fetch-and-play
+      (content-addressed .ogg), worker/model machinery deleted, coverage
+      is a loud CI gate (voice:check in demo-pages.yml). Curriculum copy
+      changes now require render + upload before the deploy passes.
 - [ ] Per-problem difficulty analytics (enabled by discrete pools):
       (itemId, paramHash) now has repeated observations — aggregate
       per-instance correct rates in the guide view; later IRT-style

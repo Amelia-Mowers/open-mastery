@@ -647,13 +647,6 @@ body {
 .profile-chip { font-weight: 700; }
 
 .voice-gen { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 2px 0 4px; }
-.voice-gen-bar {
-  width: 120px; height: 5px; border-radius: 3px; background: #eee5d8; overflow: hidden;
-}
-.voice-gen-bar > span {
-  display: block; height: 100%; background: #b05f28; border-radius: 3px;
-  transition: width 0.15s linear;
-}
 .voice-gen i {
   width: 14px; height: 14px; border-radius: 50%;
   border: 2px solid #d8cdbb; border-top-color: #b05f28;

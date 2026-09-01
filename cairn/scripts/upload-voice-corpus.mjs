@@ -36,8 +36,12 @@ try {
   console.log('repo exists:', repoName)
 }
 
+// FORCE=1 re-uploads everything (content-addressed names never change,
+// so a re-render with different audio — e.g. q8 → fp32 — is invisible
+// to the name diff and needs a forced push)
 const have = new Set()
-for await (const f of listFiles({ repo, accessToken: token })) have.add(f.path)
+if (!process.env.FORCE)
+  for await (const f of listFiles({ repo, accessToken: token })) have.add(f.path)
 
 const local = readdirSync(dir).filter((f) => f.endsWith('.ogg'))
 const todo = local.filter((f) => !have.has(f))
