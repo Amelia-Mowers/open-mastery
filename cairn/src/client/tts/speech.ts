@@ -59,6 +59,11 @@ export function splitSentences(text: string): string[] {
   return parts.map((p) => p.trim()).filter((p) => p !== '')
 }
 
+/** master switch: OFF until the pre-rendered corpus is live — the
+ * cutover commit flips this back on. While off: no toggle, no autoload,
+ * no synthesis, nothing. */
+export const VOICE_FEATURE = false
+
 const PREF_KEY = 'cairn.voice'
 /** pre-generated utterances kept in memory (a caption is ~100-500KB) */
 const CACHE_MAX = 48
@@ -221,6 +226,7 @@ class SpeechService {
   /** Load the model WITHOUT turning the voice on — called when a session
    * starts so the later toggle is instant. Safe to call repeatedly. */
   warm(): void {
+    if (!VOICE_FEATURE) return
     // never in tests: jsdom would boot the whole phonemizer and try to
     // download the model on every client E2E render
     if (typeof process !== 'undefined' && process.env?.['VITEST'] !== undefined) return
@@ -278,6 +284,7 @@ class SpeechService {
   }
 
   enable(): void {
+    if (!VOICE_FEATURE) return
     try {
       localStorage.setItem(PREF_KEY, 'on')
     } catch {

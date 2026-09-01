@@ -3,9 +3,11 @@
  * is instant; while it is still downloading the button says so; errors
  * show on the button — a silent mute is not an option. */
 import { useSyncExternalStore } from 'react'
-import { speech } from './speech'
+import { speech, VOICE_FEATURE } from './speech'
 
 export function VoiceToggle() {
+  if (!VOICE_FEATURE) return null
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const state = useSyncExternalStore(speech.subscribe, speech.getState, speech.getState)
   const label =
     state.model === 'error'
@@ -45,6 +47,8 @@ export function VoiceToggle() {
  * being made — visible only when the voice is on and synthesis is
  * mid-flight. The bar is an estimate from measured synthesis speed. */
 export function VoiceGenSpinner() {
+  if (!VOICE_FEATURE) return null
+  // eslint-disable-next-line react-hooks/rules-of-hooks
   const state = useSyncExternalStore(speech.subscribe, speech.getState, speech.getState)
   if (!state.enabled || !state.generating) return null
   return (
