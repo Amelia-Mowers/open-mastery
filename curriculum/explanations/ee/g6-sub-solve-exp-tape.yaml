@@ -4,7 +4,7 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{d}", "{p}"], total: "{variable} − {p}", cellsIn: 0, totalIn: false }, caption: "{variable} had {p} taken away. The bar will show what is LEFT." }
+  - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{d}", "{p}"], total: "{variable} − {p}", cellsIn: 0, totalIn: false, removed: [2] }, caption: "{variable} had {p} taken away. The bar will show what is LEFT." }
   - t: 4
     patch: { eqHighlight: ["3"], cellsIn: 1, totalIn: true, highlight: ["1"] }
     caption: "The bar holds {d} — everything left after the {p} came off. The brace reads {variable} − {p}."
@@ -14,7 +14,7 @@ timeline:
       prompt: "Which piece — or pieces — of the equation is the bar you can SEE?"
       hint: "The equation says what remains after the subtraction."
   - t: 8
-    patch: { eqHighlight: ["1"], cellsIn: 2, total: "{variable}", highlight: ["2"] }
+    patch: { eqHighlight: ["1"], cellsIn: 2, total: "{variable}", highlight: ["2"], removed: [] }
     caption: "The {p} goes back on and the bar is WHOLE again: {variable}. So how long is {variable}?"
     expect:
       type: op
