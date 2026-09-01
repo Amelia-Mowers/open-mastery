@@ -5,9 +5,9 @@ widget: tape-diagram
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{b}", totalIn: false , cellsIn: 0}, caption: "Here is the problem in symbols. Watch it become a tape." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], highlight: ["1"] , cellsIn: "{a}"}, caption: "{a}{variable} means {a} equal parts — each part is one {variable}.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation tell how many equal parts the tape has?" } }
+  - { t: 4, patch: { eqHighlight: ["0", "1"], highlight: ["1"] , cellsIn: "{a}"}, caption: "{a}{variable} means {a} equal parts — each part is one {variable}.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation tell how many equal parts the tape has?" } }
   - { t: 8, patch: { eqHighlight: ["3"], totalIn: true, highlight: [] }, caption: "= {b}: all the parts together make {b}.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation tell what ALL the parts add up to?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: ["1"] }, caption: "So the question the tape asks is: {b} split into {a} equal parts gives WHAT?", expect: { type: op, value: "divide {a}", prompt: "To find ONE part, what do you do to {b}?", hint: "The whole {b} is shared equally between {a} parts." , misconceptions: [ { id: subtracted-the-coefficient, when: "subtract {a}", says: "Taking {a} away from {b} is not sharing it — the tape splits {b} into {a} EQUAL parts. Undo a multiply with a divide." }, { id: multiplied-instead-of-divided, when: "multiply {a}", says: "Multiplying by {a} makes the tape {a} times longer. To find ONE part, divide." } ] } }
-  - { t: 16, patch: { partLabel: "{b/a}", highlight: [] }, caption: "{b} ÷ {a} = {b/a}. Each part — each {variable} — is {b/a}." }
+  - { t: 16, patch: { partLabel: "{variable}", total: "{b/a}", removed: "others", highlight: ["1"] }, caption: "{b} ÷ {a} = {b/a}: the tape shrinks to ONE part. One {variable} is {b/a}." }
   - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }

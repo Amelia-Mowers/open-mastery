@@ -34,4 +34,4 @@ timeline:
       prompt: "Look at the bar: {d} and the returned {p} together — how long is {variable}?"
       hint: "Put the two sections together."
   - { t: 16, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-01 }

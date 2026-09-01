@@ -243,7 +243,7 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
           highlight?: number[]
           totalIn?: boolean
           cellsIn?: number | null
-          removed?: number[]
+          removed?: number[] | 'others'
           totalOp?: { op: 'add' | 'subtract' | 'multiply' | 'divide'; by: string } | null
         } = {}
         if ('partLabel' in patch) view.partLabel = renderText(String(patch['partLabel']), params)
@@ -253,9 +253,12 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
           view.cellsIn = patch['cellsIn'] === null ? null : evalNumber(patch['cellsIn'], params)
         if ('removed' in patch) {
           const raw = patch['removed']
-          view.removed = Array.isArray(raw)
-            ? raw.map((v) => evalNumber(v, params)).filter((x): x is number => x !== null)
-            : []
+          view.removed =
+            raw === 'others' // every section but the first (solve-reduction)
+              ? 'others'
+              : Array.isArray(raw)
+                ? raw.map((v) => evalNumber(v, params)).filter((x): x is number => x !== null)
+                : []
         }
         if ('totalOp' in patch) {
           const o = patch['totalOp'] as { op?: unknown; by?: unknown } | null

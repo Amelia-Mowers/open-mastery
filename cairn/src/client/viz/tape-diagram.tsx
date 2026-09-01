@@ -44,7 +44,7 @@ export interface TapeDiagramView {
    * The section COLLAPSES (width → 0) and the bar shrinks, because that is
    * what taking a piece off actually looks like — the tape's equivalent of
    * the balance's op badge, so a step that asks for a move shows it. */
-  removed?: number[]
+  removed?: number[] | 'others'
   /** an operation applied to the total, e.g. { op: 'subtract', by: '8' } */
   totalOp?: { op: 'add' | 'subtract' | 'multiply' | 'divide'; by: string } | null
 }
@@ -61,7 +61,7 @@ type TapeState = {
   raw: string
   totalIn: boolean
   cellsIn: number | null
-  removed: number[]
+  removed: number[] | 'others'
   totalOp: { op: string; by: string } | null
 }
 
@@ -195,8 +195,14 @@ export function createTapeDiagram(
     // so collapsing one only lets the others expand — the bar has to lose
     // that share of its own width, or "take the 8 off" looks like "the x
     // piece got bigger", which is the opposite of what the move means.
+    // 'others' = every section but the first — the solve-reduction for
+    // {a}x = b tapes, where {a} is a template and indices can't be authored
+    const removedList =
+      state.removed === 'others'
+        ? Array.from({ length: Math.max(0, n - 1) }, (_, i) => i + 2)
+        : state.removed
     const alive = Array.from({ length: n }, (_, i) => i + 1).filter(
-      (k) => !state.removed.includes(k),
+      (k) => !removedList.includes(k),
     ).length
     const barWidth = n > 0 ? `${(alive / n) * 100}%` : '100%'
     return (
@@ -217,7 +223,7 @@ export function createTapeDiagram(
         >
           {Array.from({ length: n }, (_, i) => {
             const arrived = state.cellsIn === null || i < state.cellsIn
-            const gone = state.removed.includes(i + 1)
+            const gone = removedList.includes(i + 1)
             return (
               <div
                 key={i}
@@ -313,7 +319,12 @@ export function createTapeDiagram(
       if (patch.cellsIn !== undefined)
         next.cellsIn = patch.cellsIn === null ? null : Number(patch.cellsIn)
       if (patch.removed !== undefined)
-        next.removed = Array.isArray(patch.removed) ? patch.removed.map(Number) : []
+        next.removed =
+          patch.removed === 'others'
+            ? 'others' // resolved against the live part count at render
+            : Array.isArray(patch.removed)
+              ? patch.removed.map(Number)
+              : []
       if (patch.totalOp !== undefined) next.totalOp = patch.totalOp ?? null
       store.setState(next)
     },
