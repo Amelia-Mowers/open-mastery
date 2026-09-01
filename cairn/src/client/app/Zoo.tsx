@@ -4,6 +4,7 @@
  * clearly-labeled fallbacks for widgets the curriculum hasn't adopted yet.
  * Each demo autoplays; the handoff button replays it. */
 import { useEffect, useState } from 'react'
+import { speech } from '../tts/speech'
 import { LessonPlayer } from './LessonPlayer'
 import { StepwisePlayer, hasExpects } from './StepwisePlayer'
 import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry'
@@ -289,6 +290,18 @@ export function Zoo({ api }: { api: CairnApi }) {
   })()
   const [demos, setDemos] = useState<ZooDemo[] | null>(null)
   const [index, setIndex] = useState<Record<string, Array<{ id: string; skillName: string; vetted: boolean }>>>({})
+  // voice scoping: the FULL grid mounts dozens of autoplaying players
+  // that would all speak over each other — suspend narration for the
+  // grid; the single-explanation view (?exp=) narrates its one player,
+  // which is the timeline-vetting flow
+  useEffect(() => {
+    if (only) {
+      speech.warm()
+      return
+    }
+    speech.setSuspended(true)
+    return () => speech.setSuspended(false)
+  }, [only])
   useEffect(() => {
     if (only) {
       void api.demoFor(only).then((d) =>

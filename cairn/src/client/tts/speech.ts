@@ -140,17 +140,23 @@ class SpeechService {
     for (const fn of this.listeners) fn()
   }
 
-  /** Tests and the zoo: no fetching, no speaking, no pacing. */
-  deactivate(): void {
-    this.active = false
-    this.stop()
+  /** The full zoo grid mounts dozens of autoplaying players that would
+   * all speak at once — while suspended, nothing fetches, speaks, or
+   * paces. Scoped and reversible (the single-explanation zoo view and
+   * the student app both narrate). */
+  private suspended = false
+  setSuspended(on: boolean): void {
+    this.suspended = on
+    if (on) this.stop()
   }
 
+  private gestureClaimed = false
   /** Session start: claim the first user gesture for the AudioContext —
    * always-on narration has no toggle click to piggyback the browser's
-   * audio-gesture requirement on. */
+   * audio-gesture requirement on. Idempotent. */
   warm(): void {
-    if (!VOICE_FEATURE || !this.active) return
+    if (!VOICE_FEATURE || !this.active || this.gestureClaimed) return
+    this.gestureClaimed = true
     const claim = () => {
       document.removeEventListener('pointerdown', claim)
       const ctx = this.ensureCtx()
@@ -239,7 +245,7 @@ class SpeechService {
    * with the same list repeatedly. Best-effort: the live speak() path
    * surfaces any real error. */
   pregenerate(texts: string[]): void {
-    if (!this.active) return
+    if (!this.active || this.suspended) return
     for (const t of texts) {
       const snippet = mathToSpeech(t)
       if (snippet === '') continue
@@ -275,11 +281,13 @@ class SpeechService {
 
   /** Has this line's narration played to the end? Players hold a lesson
    * stage open until its line has been HEARD (muted playback still
-   * counts — the rhythm never depends on the volume). Inactive or
-   * errored voices count as finished so the lesson never waits on a
-   * voice that cannot speak. */
+   * counts — the rhythm never depends on the volume). Inactive and
+   * suspended voices count as finished, and a line whose fetch FAILED is
+   * marked finished individually — one bad snippet must not silence the
+   * pacing of every later line (it used to: the error state latched and
+   * finished() said yes forever, so autoplay clipped every narration). */
   finished(parts: string[]): boolean {
-    if (!this.active || this.state.model === 'error') return true
+    if (!this.active || this.suspended) return true
     const key = this.keyOf(parts)
     return key === '' || this.doneKey === key
   }
@@ -288,7 +296,7 @@ class SpeechService {
    * cancelling whatever is mid-air. Each snippet is one corpus file;
    * they fetch in parallel and schedule gaplessly on the audio clock. */
   async speak(parts: string[]): Promise<void> {
-    if (!this.active) return
+    if (!this.active || this.suspended) return
     const snippets = parts.map((p) => mathToSpeech(p)).filter((s) => s !== '')
     const key = snippets.join('\n')
     const myTurn = ++this.turn
@@ -317,7 +325,10 @@ class SpeechService {
       for (const fetchJob of fetches) {
         const buf = await fetchJob
         if (myTurn !== this.turn) return // superseded mid-line
-        if (this.state.generating) this.set({ generating: false })
+        // a working line clears a previous line's error — errors are
+        // per-line, never a latch on the whole voice
+        if (this.state.generating || this.state.model === 'error')
+          this.set({ generating: false, model: 'ready', message: undefined })
         const src = ctx.createBufferSource()
         src.buffer = buf
         src.connect(this.gain!)
@@ -335,6 +346,9 @@ class SpeechService {
       }
     } catch (e) {
       if (myTurn !== this.turn) return
+      // THIS line cannot play: surface why on the control, mark the line
+      // finished so the lesson moves past it instead of holding forever
+      this.doneKey = key
       this.set({
         model: 'error',
         message: e instanceof Error ? e.message : String(e),

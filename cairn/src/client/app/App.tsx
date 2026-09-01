@@ -549,11 +549,10 @@ function Session({
   /** an alternative explanation playing in the lesson slot */
   const [overlay, setOverlay] = useState<OverlayExplanation | null>(null)
 
-  // narration is always on (mute only silences it) — except the zoo,
-  // where dozens of autoplaying players would all speak at once
+  // narration is always on (mute only silences it); the zoo scopes its
+  // own voice — the full grid suspends, the single-explanation view speaks
   useEffect(() => {
-    if (urlParam('view') === 'zoo') speech.deactivate()
-    else speech.warm()
+    speech.warm()
   }, [])
 
   const refresh = useCallback(() => {
