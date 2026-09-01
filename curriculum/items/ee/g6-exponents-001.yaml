@@ -3,7 +3,7 @@ skills: [g6.ee.exponents]
 difficulty: 1
 representation: area-model
 params: { c: 6 }
-generator: { c: { int: [2, 12] } }
+generator: { c: { int: [3, 12] } }
 widget: { type: numeric-input, config: { stem: "Evaluate: {c}²." } }
 answer: { type: expr, value: "{c*c}", form: evaluated, integer: true }
 misconceptions:

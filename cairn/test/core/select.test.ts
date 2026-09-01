@@ -56,27 +56,40 @@ describe('selector (§5)', () => {
     expect(ranked[0]).toBe(SKILL_B)
   })
 
-  it('instantiate: authored params first, then fresh generator isomorphs; never a blocked (itemId, paramHash)', () => {
+  it('instantiate: authored params first, then POOL isomorphs — a closed pool runs dry rather than invent', () => {
     const item = cur.items.get('alg1.linear.solve-one-step.001')!
     const blocked = new Set<string>()
-    const first = instantiate(item, blocked, 1, 32)!
+    const first = instantiate(item, blocked, 1)!
     expect(first.paramHash).toBe(paramHash(item.params))
     blocked.add(instanceKey(first.itemId, first.paramHash))
-    for (let round = 0; round < 20; round++) {
-      const next = instantiate(item, blocked, 1000 + round * 97, 32)!
-      expect(next).not.toBeNull()
+    let fresh = 0
+    for (let round = 0; round < 40; round++) {
+      const next = instantiate(item, blocked, 1000 + round * 97)
+      if (next === null) break
       expect(blocked.has(instanceKey(next.itemId, next.paramHash))).toBe(false)
       blocked.add(instanceKey(next.itemId, next.paramHash))
       // isomorph params satisfy the item's own constraints
       const { a, b } = next.params as { a: number; b: number }
       expect(b % a).toBe(0)
     }
+    for (let round = 0; round < 40; round++) {
+      const next = instantiate(item, blocked, round)
+      if (next === null) break
+      blocked.add(instanceKey(next.itemId, next.paramHash))
+      fresh++
+    }
+    // the pool is USABLE (several distinct instances) and CLOSED (finite —
+    // discrete problems are what per-instance analytics and pre-rendered
+    // voice need)
+    expect(blocked.size).toBeGreaterThanOrEqual(6)
+    expect(blocked.size).toBeLessThanOrEqual(20)
+    expect(instantiate(item, blocked, 7)).toBeNull()
   })
 
   it('instantiate: a generator-less item runs dry once its authored instance is used', () => {
     const faded = cur.items.get('alg1.linear.solve-one-step.f01')!
     const key = instanceKey(faded.id, paramHash(faded.params))
-    expect(instantiate(faded, new Set([key]), 1, 32)).toBeNull()
+    expect(instantiate(faded, new Set([key]), 1)).toBeNull()
   })
 
   it('checks are capstones: the hardest base item comes first', () => {

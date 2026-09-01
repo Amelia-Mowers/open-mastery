@@ -590,7 +590,7 @@ function instantiateFor(
     return 0
   })
   for (const item of ordered) {
-    const inst = instantiate(item, blocked, seedFor(session), pol.selector.isomorphSeedTries)
+    const inst = instantiate(item, blocked, seedFor(session))
     if (inst) return inst
   }
   return null

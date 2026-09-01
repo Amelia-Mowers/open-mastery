@@ -38,7 +38,7 @@ describe.skipIf(!has)('lesson widgets build across the generator range', () => {
       for (let seed = 0; seed < 12; seed++) {
         // an instance's params, as a student would actually meet them
         const inst = items
-          .map((it) => instantiate(it, new Set(), 1000 + seed * 37, 6))
+          .map((it) => instantiate(it, new Set(), 1000 + seed * 37))
           .filter((i) => i !== null)
         const fed = feedableParams(e, inst.map((i) => i!.params))
         if (fed === null) continue // a different form — cannot feed this board

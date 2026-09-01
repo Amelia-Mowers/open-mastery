@@ -42,6 +42,16 @@ Not K–12 — the middle-school band plus the parent's view:
       trees) or G (scale drawings, angle figures). Those cost like the
       FIRST slab. Run the §6c slab-kickoff checklist (GOLDEN_WIDGET.md)
       before sizing: IM first, fleet last.
+- [ ] Voice corpus pre-render (design agreed 2026-09-01): discrete pools
+      make the spoken-text space finite (~15K sentences ≈ 133MB opus).
+      Build script renders via kokoro-js in node; runtime becomes
+      fetch-and-play and the worker/model-download machinery is DELETED.
+      BLOCKED ON: hosting choice for ~133MB (HF dataset repo suggested —
+      same trust boundary as the model; not the Pages artifact).
+- [ ] Per-problem difficulty analytics (enabled by discrete pools):
+      (itemId, paramHash) now has repeated observations — aggregate
+      per-instance correct rates in the guide view; later IRT-style
+      calibration per instance instead of per-item difficulty tiers.
 - [ ] Build step 5: real site server (SQLite SiteStore, auth/enrollment).
 - [ ] Guide v2: per-student drill-in (their map + event timeline),
       intervention actions (clear a flag, assign focus), real auth

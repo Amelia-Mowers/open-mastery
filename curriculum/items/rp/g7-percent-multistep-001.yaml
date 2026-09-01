@@ -3,7 +3,7 @@ skills: [g7.rp.percent-multistep]
 difficulty: 1
 representation: worked-equation
 params: { n: 4, p: 12 }
-generator: { n: { set: [2, 4, 5, 10] }, p: { int: [3, 30] } }
+generator: { n: { set: [4, 5, 10] }, p: { int: [3, 30] } }
 widget: { type: numeric-input, config: { stem: "A ${n*p} game is on sale at {100/n}% off. What is the sale price?" } }
 answer: { type: expr, value: "{n*p - p}", form: evaluated, integer: true }
 misconceptions:

@@ -3,7 +3,7 @@ skills: [g6.rp.missing-value]
 difficulty: 2
 representation: double-number-line
 params: { u: 3, v: 4, w: 8 }
-generator: { u: { int: [2, 4] }, v: { int: [2, 6] }, w: { mult_of: v, range: [8, 24] } }
+generator: { u: { int: [2, 4] }, v: { int: [2, 6], distinct: u }, w: { mult_of: v, range: [8, 24] } }
 widget: { type: numeric-input, config: { stem: "A recipe uses {u} cups of rice to serve {v} people. How many cups serve {w} people?" } }
 answer: { type: expr, value: "{u*w/v}", form: evaluated, integer: true }
 misconceptions:

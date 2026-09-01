@@ -17,22 +17,49 @@ export interface ItemInstance {
   paramHash: string
 }
 
-/** The authored instance if unused, else a generated isomorph whose
- * (itemId, paramHash) is not blocked. Deterministic per seedBase. */
+/** Every item serves from a DISCRETE POOL of instances: the authored
+ * params plus generator seeds 1..ISOMORPH_POOL-1. A closed pool makes
+ * each instance a stable, repeatable problem — (itemId, paramHash) gets
+ * observations across students, so per-problem difficulty is measurable
+ * (an open seed space shows every instance once and can calibrate
+ * nothing) — and makes complete pre-rendering (voice) and complete
+ * validation (every servable instance swept) possible. */
+export const ISOMORPH_POOL = 20
+
+/** the pool's seeds, in canonical order (0 = the authored params) */
+export function poolSeeds(): number[] {
+  return Array.from({ length: ISOMORPH_POOL - 1 }, (_, i) => i + 1)
+}
+
+/** The authored instance if unused, else the first unblocked pool
+ * isomorph, rotation offset by seedBase for session variety. */
 export function instantiate(
   item: Item,
   blocked: ReadonlySet<string>,
   seedBase: number,
-  tries: number,
 ): ItemInstance | null {
   const authored = { itemId: item.id, params: item.params, paramHash: paramHash(item.params) }
   if (!blocked.has(instanceKey(authored.itemId, authored.paramHash))) return authored
+  // a hand-authored pool replaces the generator: each listed instance is
+  // a chosen problem (curated difficulty), walked in rotation
+  const hand = (item as { isomorphs?: Array<Record<string, number | string>> }).isomorphs
+  if (hand != null && hand.length > 0) {
+    for (let i = 0; i < hand.length; i++) {
+      const params = hand[(seedBase + i) % hand.length]!
+      const hash = paramHash(params)
+      if (!blocked.has(instanceKey(item.id, hash)))
+        return { itemId: item.id, params, paramHash: hash }
+    }
+    return null
+  }
   if (item.generator == null) return null
   const spec = item.generator as GeneratorSpec
   const fixed: Record<string, number | string> = {}
   for (const [k, v] of Object.entries(item.params)) if (!(k in spec)) fixed[k] = v
-  for (let i = 0; i < tries; i++) {
-    const g = generateParams(spec, fixed, seedBase + i)
+  const seeds = poolSeeds()
+  for (let i = 0; i < seeds.length; i++) {
+    const seed = seeds[(seedBase + i) % seeds.length]!
+    const g = generateParams(spec, fixed, seed)
     if (!g.ok) return null // total by CI; a failing generator is a bundle bug
     const hash = paramHash(g.value)
     if (!blocked.has(instanceKey(item.id, hash)))

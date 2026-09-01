@@ -177,6 +177,29 @@ names their own move: that exemption was what let a telling caption and a
 "Do it" prompt stack into one dead step), and `[gate_moves_nothing]` (a
 gate whose patch does not change the diagram).
 
+## Items serve from a DISCRETE POOL (2026-09-01)
+
+Every item's servable instances are a CLOSED set: the authored `params`
+plus either generator seeds 1–19 (ISOMORPH_POOL) or a hand-authored
+`isomorphs:` list of explicit param sets (mutually exclusive with
+`generator`). Three things this buys:
+
+- **Per-problem analytics**: (itemId, paramHash) is a stable problem id
+  with repeated observations across students — per-instance difficulty
+  is measurable; an open seed space shows every instance once and can
+  calibrate nothing.
+- **Complete validation**: the CI sweep covers EVERY servable instance
+  (the day it landed it caught seven live misconception collisions the
+  old 5-seed sweep missed — c=2 where 2c = c², b=0 where b = −b, 50%-off
+  where discount = sale price).
+- **Complete pre-rendering**: a finite text space makes build-time voice
+  synthesis possible (~15K sentences for the whole catalog).
+
+**Prefer `isomorphs:` when difficulty matters**: random draws are swingy
+(3×5 and 13×12 as the "same" problem). A curated list pins each
+instance's difficulty — and misconception `when`s must avoid colliding
+on every LISTED set, which the validator checks exactly.
+
 ## The skill graph derives from STANDARDS, not textbooks
 
 Textbooks implement the standards; deriving our graph from a textbook

@@ -3,7 +3,7 @@ skills: [g7.rp.percent-multistep]
 difficulty: 2
 representation: ratio-table
 params: { n: 5, p: 45 }
-generator: { n: { set: [2, 4, 5, 10] }, p: { int: [20, 60] } }
+generator: { n: { set: [4, 5, 10] }, p: { int: [20, 60] } }
 widget: { type: numeric-input, config: { stem: "A ${n*p} console is on sale at {100/n}% off. What is the sale price?" } }
 answer: { type: expr, value: "{n*p - p}", form: evaluated, integer: true }
 misconceptions:

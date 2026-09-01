@@ -96,7 +96,7 @@ export const policyV1 = {
     /** avoid re-serving any of the last N instances */
     recentWindow: 5,
     /** bounded search for a fresh isomorph paramHash */
-    isomorphSeedTries: 32,
+
   },
 
   fsrs: {

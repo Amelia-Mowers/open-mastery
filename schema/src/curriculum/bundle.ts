@@ -74,7 +74,11 @@ function exprEquivalentStrings(aSrc: string, bSrc: string): boolean {
 export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issue[] {
   const profile = opts.profile ?? 'release'
   const gate: 'error' | 'warning' = profile === 'release' ? 'error' : 'warning'
-  const seeds = opts.generatorSeeds ?? [1, 2, 3, 4, 5]
+  // sweep the engine's ENTIRE discrete isomorph pool (seeds 1..19 plus
+  // the authored params checked separately): every instance a student
+  // can be served is validated — misconception collisions, verify
+  // relations, integer answers, the lot
+  const seeds = opts.generatorSeeds ?? Array.from({ length: 19 }, (_, i) => i + 1)
   const issues: Issue[] = []
   const push = (severity: Issue['severity'], code: string, where: string, message: string) =>
     issues.push({ severity, code, where, message })
@@ -1416,7 +1420,28 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         }
       }
     }
-    if (it.generator != null) {
+    if (it.isomorphs != null && it.generator != null)
+      push(
+        'error',
+        'isomorph_pool',
+        it.id,
+        'isomorphs and generator both define the pool — pick one (a hand-authored list replaces the generator)',
+      )
+    if (it.isomorphs != null) {
+      const baseKeys = [...Object.keys(it.params)].sort().join(',')
+      it.isomorphs.forEach((iso, i) => {
+        const keys = [...Object.keys(iso)].sort().join(',')
+        if (keys !== baseKeys)
+          push(
+            'error',
+            'isomorph_pool',
+            `${it.id}.isomorphs[${i}]`,
+            `param keys (${keys}) differ from the authored params (${baseKeys})`,
+          )
+        else checkInstance(iso as Env, `${it.id} (isomorph ${i})`)
+      })
+    }
+    if (it.generator != null && it.isomorphs == null) {
       const spec = it.generator as GeneratorSpec
       const fixed: Record<string, number | string> = {}
       for (const [k, v] of Object.entries(it.params)) if (!(k in spec)) fixed[k] = v

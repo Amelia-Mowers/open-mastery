@@ -114,6 +114,14 @@ export const itemSchema = z
     representation: z.string().min(1).nullish(),
     params: z.record(z.string(), paramValueSchema),
     generator: z.record(z.string(), constraintSchema).nullish(),
+    /** HAND-AUTHORED isomorph pool: explicit param sets that ARE the
+     * item's discrete instances (with the authored `params` first).
+     * Mutually exclusive with `generator` — random draws swing in
+     * difficulty (3×5 vs 13×12 as the "same" problem); a curated list
+     * pins each instance, which also makes per-instance analytics and
+     * pre-rendered voice exact. Every listed set is validated like the
+     * authored one. */
+    isomorphs: z.array(z.record(z.string(), paramValueSchema)).optional(),
     widget: widgetRefSchema,
     answer: answerSchema,
     rubric: rubricSchema.nullish().default(null),

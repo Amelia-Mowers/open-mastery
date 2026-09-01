@@ -3,7 +3,7 @@ skills: [g7.ee.distribute-solve]
 difficulty: 2
 representation: worked-equation
 params: { a: 4, b: 3, ans: -2, variable: x }
-generator: { a: { int: [2, 9] }, b: { int: [1, 9] }, ans: { int: [-9, -2] } }
+generator: { a: { int: [2, 9] }, b: { int: [1, 9] }, ans: { int: [-19, -11] } }
 widget: { type: equation-input, config: { stem: "Solve: {a}({variable} + {b}) = {a*(ans+b)}." } }
 answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, form: evaluated, integer: true }
 misconceptions:
