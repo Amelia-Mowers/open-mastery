@@ -11,9 +11,18 @@
  * Output: cairn/voice-corpus/ (gitignored — it is published to the HF
  * dataset repo, not the git repo). Run niced; this is hours of CPU on
  * first build:  nice -n 19 node scripts/render-voice-corpus.ts
+ *
+ * GPU (~20x): VOICE_DEVICE=cuda, with the CUDA 12 runtime + cuDNN 9 on
+ * the loader path (NixOS has neither by default — the .so files from
+ * NVIDIA's pip wheels work; see scripts/render-voice-corpus-gpu.sh):
+ *   VOICE_DEVICE=cuda LD_LIBRARY_PATH=~/.cache/cairn-cuda-libs:/run/opengl-driver/lib \
+ *     node --experimental-transform-types scripts/render-voice-corpus.ts
+ * ffmpeg encodes run in a small async pool either way, off the
+ * synthesis critical path.
  */
 import { createHash } from 'node:crypto'
-import { execFileSync } from 'node:child_process'
+import { execFile } from 'node:child_process'
+import { promisify } from 'node:util'
 import { mkdirSync, writeFileSync, existsSync, unlinkSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
@@ -94,11 +103,16 @@ if (missing.length === 0) {
   process.exit(0)
 }
 
+const device = process.env.VOICE_DEVICE ?? 'cpu'
+if (device !== 'cpu' && device !== 'cuda')
+  throw new Error(`VOICE_DEVICE must be cpu or cuda, got: ${device}`)
+
 const { KokoroTTS } = await import('kokoro-js')
 const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
-  dtype: 'q8',
-  device: 'cpu',
+  dtype: device === 'cuda' ? 'fp32' : 'q8',
+  device,
 })
+console.log(`synthesizing on ${device} (${device === 'cuda' ? 'fp32' : 'q8'})`)
 
 function wavBytes(audio: Float32Array, rate: number): Buffer {
   const pcm = Buffer.alloc(audio.length * 2)
@@ -122,18 +136,42 @@ function wavBytes(audio: Float32Array, rate: number): Buffer {
   return Buffer.concat([h, pcm])
 }
 
-let done = 0
-for (const sentence of missing) {
-  const out = await tts.generate(sentence, { voice: 'af_heart' })
-  const wav = join(outDir, '_tmp.wav')
-  writeFileSync(wav, wavBytes(out.audio as Float32Array, out.sampling_rate))
-  execFileSync('ffmpeg', [
+// synthesis is single-flight (one model session); ffmpeg encodes run in
+// a bounded async pool so they overlap the next generation
+const execFileP = promisify(execFile)
+const ENCODE_POOL = 4
+const inFlight = new Set<Promise<void>>()
+let tmpSeq = 0
+
+async function encode(sentence: string, audio: Float32Array, rate: number): Promise<void> {
+  const wav = join(outDir, `_tmp${tmpSeq++}.wav`)
+  writeFileSync(wav, wavBytes(audio, rate))
+  await execFileP('ffmpeg', [
     '-y', '-loglevel', 'error', '-i', wav,
     '-c:a', 'libopus', '-b:a', '24k', '-ac', '1',
     join(outDir, fileOf(sentence)),
   ])
   unlinkSync(wav)
-  done++
-  if (done % 25 === 0) console.log(`${done}/${missing.length}  (${sentence.slice(0, 40)}…)`)
 }
+
+let done = 0
+let encodeError: unknown = null
+const t0 = Date.now()
+for (const sentence of missing) {
+  if (encodeError != null) throw encodeError
+  const out = await tts.generate(sentence, { voice: 'af_heart' })
+  const job = encode(sentence, out.audio as Float32Array, out.sampling_rate).catch((e: unknown) => {
+    encodeError = e
+  })
+  inFlight.add(job)
+  void job.finally(() => inFlight.delete(job))
+  if (inFlight.size >= ENCODE_POOL) await Promise.race(inFlight)
+  done++
+  if (done % 25 === 0) {
+    const rate = done / ((Date.now() - t0) / 1000)
+    console.log(`${done}/${missing.length}  ${rate.toFixed(1)}/s  (${sentence.slice(0, 40)}…)`)
+  }
+}
+await Promise.all(inFlight)
+if (encodeError != null) throw encodeError
 console.log(`DONE: ${done} synthesized; corpus at ${outDir}`)

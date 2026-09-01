@@ -43,4 +43,4 @@ timeline:
           says: "Multiplying by {a} prices {a} pounds of {a} pounds — ONE pound is a SHARE of the ${b}: divide."
   - { t: 20, patch: { partLabel: "1 pound", total: "${b/a}", removed: "others", highlight: ["1"] }, caption: "${b} ÷ {a} = ${b/a}: one piece — ONE pound — costs ${b/a}. That is the unit rate." }
   - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-01 }
