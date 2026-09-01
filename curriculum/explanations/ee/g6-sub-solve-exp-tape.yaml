@@ -4,50 +4,34 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{p}", "{d}"], total: "{variable}", cellsIn: 0, totalIn: false }, caption: "An empty bar. Here {variable} is the WHOLE thing — watch the pieces arrive." }
+  - { t: 0, patch: { equation: ["{variable}", " − {p}", " = ", "{d}"], cells: ["{d}", "{p}"], total: "{variable} − {p}", cellsIn: 0, totalIn: false }, caption: "{variable} had {p} taken away. The bar will show what is LEFT." }
   - t: 4
-    patch: { eqHighlight: ["1"], cellsIn: 1, highlight: ["1"] }
-    caption: "{p} was taken away — that is one piece of the bar."
-    expect:
-      type: pick
-      value: ["1"]
-      prompt: "Which piece — or pieces — of the equation goes in the FIRST section — the part taken away?"
-      hint: "Something was subtracted. That amount is still part of the whole bar."
-  - t: 8
-    patch: { eqHighlight: ["3"], cellsIn: 2, highlight: ["2"] }
-    caption: "{d} is what remained — the second piece."
+    patch: { eqHighlight: ["3"], cellsIn: 1, totalIn: true, highlight: ["1"] }
+    caption: "The bar holds {d} — everything left after the {p} came off. The brace reads {variable} − {p}."
     expect:
       type: pick
       value: ["3"]
-      prompt: "Which piece — or pieces — goes in the SECOND section — what was left over?"
-      hint: "After the subtraction, this is the amount still there."
-  - t: 12
-    patch: { eqHighlight: ["0"], totalIn: true, highlight: [] }
-    caption: "Both pieces together are the whole bar: {variable}."
-    expect:
-      type: pick
-      value: ["0"]
-      prompt: "Which piece — or pieces — of the equation is the WHOLE bar?"
-      hint: "The bar started as one thing before anything was taken from it."
-  - t: 16
-    patch: { eqHighlight: [], highlight: ["1", "2"] }
-    caption: "The two sections sit end to end — together they are the whole bar. So how long is it?"
+      prompt: "Which piece — or pieces — of the equation is the bar you can SEE?"
+      hint: "The equation says what remains after the subtraction."
+  - t: 8
+    patch: { eqHighlight: ["1"], cellsIn: 2, total: "{variable}", highlight: ["2"] }
+    caption: "The {p} goes back on and the bar is WHOLE again: {variable}. So how long is {variable}?"
     expect:
       type: op
       value: "add {p}"
-      prompt: "To rebuild the whole bar, what do you do to {d}?"
-      hint: "The two sections sit end to end — put them back together."
+      prompt: "To undo the − {p} and see all of {variable}, what do you do?"
+      hint: "Put back what was taken."
       misconceptions:
         - id: subtracted-instead-of-added
           when: "subtract {p}"
-          says: "Taking {p} away again makes the bar shorter. The {p} section is part of the whole — put it back."
-  - t: 20
+          says: "Taking {p} away again makes the bar even shorter. The − {p} is undone by putting the {p} back."
+  - t: 12
     patch: { eqHighlight: [], highlight: ["1", "2"] }
-    caption: "{p} + {d} = {p+d}. The whole bar — {variable} — is {p+d}."
+    caption: "{d} + {p} = {p+d}. The whole bar — {variable} — is {p+d}."
     expect:
       type: numeric
       value: "{p+d}"
-      prompt: "Look at the bar: {p} in one section, {d} in the other. How long is the whole bar?"
-      hint: "Put the two pieces back together."
-  - { t: 24, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+      prompt: "Look at the bar: {d} and the returned {p} together — how long is {variable}?"
+      hint: "Put the two sections together."
+  - { t: 16, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
