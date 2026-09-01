@@ -1,41 +1,38 @@
-/** The voice switch that lives in the player chrome. Opt-in: the first
- * press downloads the on-device model (progress shown on the button);
- * errors show on the button too — a silent mute is not an option. */
-import { useEffect, useSyncExternalStore } from 'react'
+/** The voice switch — lives in the app header so it is one control,
+ * everywhere. The model autoloads in the background, so the usual press
+ * is instant; while it is still downloading the button says so; errors
+ * show on the button — a silent mute is not an option. */
+import { useSyncExternalStore } from 'react'
 import { speech } from './speech'
 
 export function VoiceToggle() {
   const state = useSyncExternalStore(speech.subscribe, speech.getState, speech.getState)
-  // a student who turned the voice on gets it back next visit (the model
-  // is already in the browser cache, so this is a fast warm load)
-  useEffect(() => {
-    if (state.kind === 'off' && speech.prefOn()) void speech.enable().catch(() => undefined)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
   const label =
-    state.kind === 'off'
-      ? '🔇 voice'
-      : state.kind === 'loading'
-        ? `voice ${state.pct}%…`
-        : state.kind === 'error'
-          ? 'voice failed'
+    state.model === 'error'
+      ? '⚠ voice'
+      : state.enabled
+        ? state.model === 'loading'
+          ? `🔉 ${state.pct}%…`
           : state.speaking
-            ? '🔊 voice'
-            : '🔉 voice'
+            ? '🔊 voice on'
+            : '🔉 voice on'
+        : '🔇 voice off'
+  const title =
+    state.model === 'error'
+      ? `The voice could not start: ${state.message ?? 'unknown error'}`
+      : state.enabled
+        ? state.model === 'loading'
+          ? 'Voice is on — finishing the one-time download'
+          : 'Reading the lesson aloud — click to turn off'
+        : 'Read lessons aloud (on-device; nothing leaves this computer)'
   return (
     <button
       className="btn btn-quiet voice-toggle"
-      aria-pressed={state.kind === 'ready'}
-      title={
-        state.kind === 'error'
-          ? `The voice could not start: ${state.message}`
-          : state.kind === 'loading'
-            ? 'Downloading the voice — happens once, stays on this device'
-            : 'Read the lesson aloud (downloads a voice to this device the first time)'
-      }
+      aria-pressed={state.enabled}
+      title={title}
       onClick={() => {
-        if (state.kind === 'ready') speech.disable()
-        else void speech.enable().catch(() => undefined)
+        if (state.enabled) speech.disable()
+        else speech.enable()
       }}
     >
       {label}

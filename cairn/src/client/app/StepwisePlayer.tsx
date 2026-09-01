@@ -90,6 +90,18 @@ export function StepwisePlayer({
     () => explanation.timeline.filter((st) => st.patch !== undefined || st.caption !== undefined),
     [explanation],
   )
+
+  // optimistic voice: synthesize every caption and gate question this
+  // lead will show, so speech starts WITH each step
+  useEffect(() => {
+    const texts: string[] = []
+    for (const st of steps) {
+      if (st.caption !== undefined) texts.push(renderText(st.caption, params))
+      if (st.expect?.prompt !== undefined) texts.push(renderText(st.expect.prompt, params))
+    }
+    speech.pregenerate(texts.filter((t) => t !== ''))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [explanation.id])
   const widget = useMemo(() => createLessonWidget(explanation, params), [explanation.id])
   const [applied, setApplied] = useState(0)
   const [unlocked, setUnlocked] = useState<ReadonlySet<number>>(new Set())

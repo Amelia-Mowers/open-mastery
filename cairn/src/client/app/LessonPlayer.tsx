@@ -7,7 +7,6 @@
  * truth and are rendered by the player. */
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { speech } from '../tts/speech'
-import { VoiceToggle } from '../tts/VoiceToggle'
 import type { ReactElement } from 'react'
 import type { Explanation } from '@openmastery/schema'
 import type { WidgetInstance } from '../widgets/contract'
@@ -459,6 +458,18 @@ export function LessonPlayer({
   // segments cover the content steps; a trailing handoff-only step is the
   // resting point, not a segment of its own
   const contentSteps = steps.filter((s) => s.patch !== undefined || s.caption !== undefined)
+  // optimistic voice: synthesize this lesson's captions ahead of playback.
+  // Keyed on a STRING — the params object is a fresh identity every
+  // render, and depending on it refired this on each frame
+  const paramsKey = JSON.stringify(params)
+  useEffect(() => {
+    speech.pregenerate(
+      contentSteps
+        .map((s) => (s.caption !== undefined ? renderText(s.caption, params) : ''))
+        .filter((t) => t !== ''),
+    )
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [explanation.id, paramsKey])
   const lastContentT = contentSteps[contentSteps.length - 1]?.t ?? 0
 
   const [preamble, setPreamble] = useState(intro !== undefined)
@@ -637,7 +648,6 @@ export function LessonPlayer({
       </p>
       <SpeakCaption text={caption} />
       <div className="lesson-controls">
-        <VoiceToggle />
         <button
           className="btn btn-round"
           aria-label={playing ? 'Pause' : 'Play'}
@@ -701,4 +711,10 @@ function SpeakCaption({ text }: { text: string }) {
     return () => speech.stop()
   }, [text])
   return null
+}
+
+/** Voice: optimistically synthesize every caption this lesson will show,
+ * so each starts WITH its step instead of seconds behind it. */
+export function pregenCaptions(texts: string[]): void {
+  speech.pregenerate(texts)
 }
