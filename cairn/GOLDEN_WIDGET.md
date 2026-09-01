@@ -148,3 +148,17 @@ Run this once per slab, before the first skill is written:
 6. Curriculum adoption: an explanation using it (its final content step
    must BE the resolution — the stepwise lead truncates it), items whose
    `representation:` matches, `verify:` on those items.
+
+
+## Invisible, never absent (2026-09-01)
+
+When a widget hides content that will appear later — an unfilled label,
+an unarrived value, a staged annotation — make it TRANSPARENT
+(`color: transparent`, `opacity: 0`, or a `\u00A0` placeholder glyph),
+never empty or unmounted. Empty content collapses its line box and the
+whole element changes size when the real content lands: the divide
+tape's blank sections (`partLabel: ""`) shrank the bar's height until
+the labels arrived. Layout is part of the staging promise — the shape
+the student will fill must already be the shape they see. (Deliberate
+size ANIMATION — the tape's removed-section collapse — is the
+exception: there the size change IS the meaning.)

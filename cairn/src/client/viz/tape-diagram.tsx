@@ -252,7 +252,10 @@ export function createTapeDiagram(
                   animationDelay: `${i * 0.05}s`,
                 }}
               >
-                {cells ? cells[i] : partLabel}
+                {/* an EMPTY label must still hold a glyph: '' collapses
+                    the text line and the whole bar changes height —
+                    invisible content, never absent content */}
+                {(cells ? cells[i] : partLabel) || '\u00A0'}
               </div>
             )
           })}
