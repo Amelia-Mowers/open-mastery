@@ -7,6 +7,7 @@
  * truth and are rendered by the player. */
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { speech } from '../tts/speech'
+import { VoiceGenSpinner } from '../tts/VoiceToggle'
 import type { ReactElement } from 'react'
 import type { Explanation } from '@openmastery/schema'
 import type { WidgetInstance } from '../widgets/contract'
@@ -529,13 +530,27 @@ export function LessonPlayer({
     appliedRef.current = stepIdx
   }, [stepIdx, widget, steps])
 
-  // autoplay: advance until the handoff time, then rest there
+  // autoplay: advance until the handoff time, then rest there.
+  // With the voice on, a step HOLDS at the next caption boundary until
+  // its audio finishes — fixed timestamps raced long utterances and the
+  // caption change cut them off mid-sentence.
+  const nextCaptionT = (t: number): number => {
+    for (const st of steps)
+      if (st.t > t + 0.001 && (st.caption !== undefined || st.handoff !== undefined))
+        return st.t
+    return Infinity
+  }
   useEffect(() => {
     if (!playing || preamble) return
     const speed = SPEEDS[speedIdx]!
     const id = setInterval(() => {
       setTime((t) => {
         const next = t + (TICK_MS / 1000) * speed
+        const voice = speech.getState()
+        if (voice.enabled && (voice.speaking || voice.generating)) {
+          const boundary = nextCaptionT(t)
+          if (next >= boundary) return Math.min(next, boundary - 0.001)
+        }
         if (next >= handoffT) {
           setPlaying(false)
           return handoffT
@@ -650,6 +665,7 @@ export function LessonPlayer({
         {caption}
       </p>
       <SpeakCaption text={caption} />
+      <VoiceGenSpinner />
       <div className="lesson-controls">
         <button
           className="btn btn-round"
@@ -709,10 +725,13 @@ export function LessonPlayer({
 
 /** Voice: read each caption as it lands (opt-in; a no-op while off). */
 function SpeakCaption({ text }: { text: string }) {
+  // re-speak when the voice turns ON mid-caption — otherwise enabling
+  // sits silent until the next step
+  const on = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
   useEffect(() => {
-    if (text !== '') void speech.speak(text)
+    if (on && text !== '') void speech.speak(text)
     return () => speech.stop()
-  }, [text])
+  }, [text, on])
   return null
 }
 

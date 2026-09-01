@@ -14,6 +14,7 @@
  * server-graded evidence. */
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { speech } from '../tts/speech'
+import { VoiceGenSpinner } from '../tts/VoiceToggle'
 import type { Explanation, TimelineStep, StepExpect } from '@openmastery/schema'
 import { diagnose, gradeAnswer, type AnswerSpec } from '../../core/graders'
 import { createLessonWidget } from './LessonPlayer'
@@ -367,6 +368,7 @@ export function StepwisePlayer({
         {view.caption}
       </p>
       <SpeakLine text={waitingOn !== null ? `${view.caption} ${gatePrompt(waitingOn)}` : view.caption} />
+      <VoiceGenSpinner />
       <SmoothHeight>
       {/* scrub through what has played so far; the frontier stays put */}
       {applied > 1 && (
@@ -560,9 +562,10 @@ export function StepwisePlayer({
 
 /** Voice: read the caption — and the open gate's question — as they land. */
 function SpeakLine({ text }: { text: string }) {
+  const on = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
   useEffect(() => {
-    if (text.trim() !== '') void speech.speak(text)
+    if (on && text.trim() !== '') void speech.speak(text)
     return () => speech.stop()
-  }, [text])
+  }, [text, on])
   return null
 }

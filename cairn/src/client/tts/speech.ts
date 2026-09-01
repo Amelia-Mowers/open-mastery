@@ -19,6 +19,11 @@ export interface SpeechState {
   /** the student turned the voice on */
   enabled: boolean
   speaking: boolean
+  /** synthesis in flight for the line on screen — audio not started yet */
+  generating: boolean
+  /** estimated progress of that synthesis (0..100; an ESTIMATE from
+   * measured ms-per-character, capped at 95 until it really finishes) */
+  genPct: number
   /** why the model is unavailable, when model === 'error' */
   message?: string
 }
@@ -46,15 +51,14 @@ export function mathToSpeech(text: string): string {
   )
 }
 
-type Kokoro = {
-  generate: (
-    text: string,
-    opts: { voice: string },
-  ) => Promise<{ audio: Float32Array; sampling_rate: number }>
+/** Sentences are the synthesis unit: the first one starts playing while
+ * the rest generate — first sound arrives in one short inference, not
+ * after the whole caption. Also makes cache hits finer-grained. */
+export function splitSentences(text: string): string[] {
+  const parts = text.match(/[^.!?]+[.!?]*\s*/g) ?? [text]
+  return parts.map((p) => p.trim()).filter((p) => p !== '')
 }
 
-const VOICE = 'af_heart'
-const MODEL = 'onnx-community/Kokoro-82M-v1.0-ONNX'
 const PREF_KEY = 'cairn.voice'
 /** pre-generated utterances kept in memory (a caption is ~100-500KB) */
 const CACHE_MAX = 48
@@ -138,12 +142,16 @@ class UtteranceStore {
 }
 
 class SpeechService {
-  private state: SpeechState = { model: 'cold', pct: 0, enabled: false, speaking: false }
+  private state: SpeechState = { model: 'cold', pct: 0, enabled: false, speaking: false, generating: false, genPct: 0 }
   private listeners = new Set<() => void>()
-  private tts: Kokoro | null = null
-  private loading: Promise<void> | null = null
+  /** the engine lives in a Web Worker — see tts.worker.ts; main-thread
+   * generation janked every interaction while pregen ran */
+  private worker: Worker | null = null
+  private ready = false
+  private rpcId = 0
+  private pending = new Map<number, { resolve: (u: Utterance) => void; reject: (e: Error) => void }>()
   private ctx: AudioContext | null = null
-  private source: AudioBufferSourceNode | null = null
+  private sources: AudioBufferSourceNode[] = []
   /** monotonic id so a stale synthesis never plays over a newer one */
   private turn = 0
   /** normalized text → synthesized audio, insertion-ordered for LRU */
@@ -157,16 +165,39 @@ class SpeechService {
    * optimistic, must pass through here, one at a time */
   private genLock: Promise<void> = Promise.resolve()
 
+  /** measured synthesis cost, refined by EMA over real generations —
+   * feeds the progress estimate */
+  private msPerChar = 45
+  private genTimer: ReturnType<typeof setInterval> | null = null
+
   private generateLocked(key: string): Promise<Utterance> {
     const run = this.genLock.then(async () => {
-      const out = await this.tts!.generate(key, { voice: VOICE })
-      return { audio: out.audio, rate: out.sampling_rate }
+      const started = performance.now()
+      const out = await this.generateInWorker(key)
+      const elapsed = performance.now() - started
+      if (key.length > 0) this.msPerChar = 0.7 * this.msPerChar + 0.3 * (elapsed / key.length)
+      return out
     })
     this.genLock = run.then(
       () => undefined,
       () => undefined,
     )
     return run
+  }
+
+  private startGenProgress(chars: number): void {
+    this.stopGenProgress()
+    const started = performance.now()
+    const eta = Math.max(300, chars * this.msPerChar)
+    this.genTimer = setInterval(() => {
+      const pct = Math.min(95, Math.round(((performance.now() - started) / eta) * 100))
+      if (this.state.generating) this.set({ genPct: pct })
+    }, 120)
+  }
+
+  private stopGenProgress(): void {
+    if (this.genTimer !== null) clearInterval(this.genTimer)
+    this.genTimer = null
   }
 
   subscribe = (fn: () => void): (() => void) => {
@@ -193,42 +224,57 @@ class SpeechService {
     // never in tests: jsdom would boot the whole phonemizer and try to
     // download the model on every client E2E render
     if (typeof process !== 'undefined' && process.env?.['VITEST'] !== undefined) return
-    if (this.tts || this.loading) return
+    if (typeof Worker === 'undefined') {
+      this.set({ model: 'error', message: 'this browser cannot run the voice (no workers)' })
+      return
+    }
+    if (this.worker) return
     this.set({ model: 'loading', pct: 0 })
-    this.loading = (async () => {
-      try {
-        const { KokoroTTS, env } = await import('kokoro-js')
-        // the ONNX runtime's 21MB wasm comes from the CDN (exact version
-        // pinned), not our Pages artifact — bundling it made every
-        // deploy ship it and slowed Pages activation to minutes. Same
-        // tradeoff as the model itself, which streams from the HF hub.
-        const ortEnv = (env as { backends?: { onnx?: { wasm?: { wasmPaths?: string } } } })
-          .backends?.onnx?.wasm
-        if (ortEnv)
-          ortEnv.wasmPaths =
-            'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0-dev.20250409-89f8206ba4/dist/'
-        const hasWebGpu = typeof (navigator as { gpu?: unknown }).gpu !== 'undefined'
-        const tts = await KokoroTTS.from_pretrained(MODEL, {
-          // fp16 on WebGPU (~80MB), q8 on wasm (~40MB) — fp32 is ~300MB
-          // and was a mistake to ever default to
-          dtype: hasWebGpu ? 'fp16' : 'q8',
-          device: hasWebGpu ? 'webgpu' : 'wasm',
-          progress_callback: (p: unknown) => {
-            const prog = (p as { progress?: unknown }).progress
-            if (typeof prog === 'number') this.set({ model: 'loading', pct: Math.round(prog) })
-          },
-        })
-        this.tts = tts as unknown as Kokoro
+    const w = new Worker(new URL('./tts.worker.ts', import.meta.url), { type: 'module' })
+    this.worker = w
+    w.onmessage = (ev: MessageEvent) => {
+      const msg = ev.data as {
+        type: string
+        pct?: number
+        id?: number
+        audio?: Float32Array
+        rate?: number
+        message?: string
+      }
+      if (msg.type === 'progress') this.set({ model: 'loading', pct: msg.pct ?? 0 })
+      else if (msg.type === 'ready') {
+        this.ready = true
         this.set({ model: 'ready', pct: 100 })
         if (this.prefOn()) this.set({ enabled: true })
         void this.drainPregen()
-      } catch (e) {
+      } else if (msg.type === 'error') {
         // fail loudly ON THE TOGGLE: whoever wanted a voice must be told
         // why there isn't one, not left in silence
-        this.set({ model: 'error', message: e instanceof Error ? e.message : String(e) })
-        this.loading = null
+        this.set({ model: 'error', message: msg.message ?? 'unknown error' })
+      } else if (msg.type === 'audio' && msg.id !== undefined) {
+        this.pending.get(msg.id)?.resolve({ audio: msg.audio!, rate: msg.rate! })
+        this.pending.delete(msg.id)
+      } else if (msg.type === 'fail' && msg.id !== undefined) {
+        this.pending.get(msg.id)?.reject(new Error(msg.message ?? 'synthesis failed'))
+        this.pending.delete(msg.id)
       }
-    })()
+    }
+    w.onerror = (e) => {
+      this.set({ model: 'error', message: e.message || 'the voice worker crashed' })
+    }
+    w.postMessage({ type: 'warm' })
+  }
+
+  private generateInWorker(key: string): Promise<Utterance> {
+    return new Promise((resolve, reject) => {
+      if (!this.worker) {
+        reject(new Error('voice worker not started'))
+        return
+      }
+      const id = ++this.rpcId
+      this.pending.set(id, { resolve, reject })
+      this.worker.postMessage({ type: 'generate', id, text: key })
+    })
   }
 
   enable(): void {
@@ -265,16 +311,17 @@ class SpeechService {
     // inference to freeze a machine
     if (!this.state.enabled) return
     for (const t of texts) {
-      if (this.pregenQueue.length >= 24) break // bounded: upcoming steps only
-      const key = mathToSpeech(t)
-      if (key === '' || this.cache.has(key) || this.pregenQueue.includes(key)) continue
-      this.pregenQueue.push(key)
+      for (const sentence of splitSentences(mathToSpeech(t))) {
+        if (this.pregenQueue.length >= 32) return // bounded: upcoming steps only
+        if (this.cache.has(sentence) || this.pregenQueue.includes(sentence)) continue
+        this.pregenQueue.push(sentence)
+      }
     }
     void this.drainPregen()
   }
 
   private async drainPregen(): Promise<void> {
-    if (this.pregenRunning || !this.tts) return
+    if (this.pregenRunning || !this.ready) return
     this.pregenRunning = true
     try {
       while (this.pregenQueue.length > 0) {
@@ -310,58 +357,84 @@ class SpeechService {
     }
   }
 
-  /** Speak, cancelling whatever is mid-air. A no-op unless enabled and
-   * the model is ready (autoload means "ready" is the common case). */
+  private async obtain(key: string): Promise<Utterance> {
+    let u = this.cache.get(key) ?? (await this.store.get(key)) ?? null
+    if (u) {
+      if (!this.cache.has(key)) this.put(key, u, false)
+      return u
+    }
+    u = await this.generateLocked(key)
+    this.put(key, u)
+    return u
+  }
+
+  /** Speak, cancelling whatever is mid-air. SENTENCE-PIPELINED: the
+   * first sentence plays as soon as it exists; the rest synthesize
+   * during playback and are scheduled gaplessly on the audio clock. */
   async speak(text: string): Promise<void> {
-    if (!this.state.enabled || !this.tts) return
-    const key = mathToSpeech(text)
-    if (key === '') return
+    if (!this.state.enabled || !this.ready) return
+    const sentences = splitSentences(mathToSpeech(text))
+    if (sentences.length === 0) return
     const myTurn = ++this.turn
-    this.stopSource()
-    this.set({ speaking: true })
+    this.stopSources()
+    const cold = !this.cache.has(sentences[0]!)
+    this.set({ speaking: true, generating: cold, genPct: 0 })
+    if (cold) this.startGenProgress(sentences[0]!.length)
     try {
-      let u = this.cache.get(key) ?? (await this.store.get(key)) ?? null
-      if (u && !this.cache.has(key)) this.put(key, u, false)
-      if (!u) {
-        u = await this.generateLocked(key)
-        this.put(key, u)
-      }
-      if (myTurn !== this.turn) return // a newer utterance superseded this one
       this.ctx ??= new AudioContext()
       if (this.ctx.state === 'suspended') await this.ctx.resume()
-      const buf = this.ctx.createBuffer(1, u.audio.length, u.rate)
-      buf.getChannelData(0).set(u.audio)
-      const src = this.ctx.createBufferSource()
-      src.buffer = buf
-      src.connect(this.ctx.destination)
-      src.onended = () => {
-        if (myTurn === this.turn) {
-          this.set({ speaking: false })
-          void this.drainPregen()
+      let nextStart = 0
+      let remaining = sentences.length
+      for (const sentence of sentences) {
+        const u = await this.obtain(sentence)
+        if (myTurn !== this.turn) return // superseded mid-pipeline
+        if (this.state.generating) {
+          this.stopGenProgress()
+          this.set({ generating: false, genPct: 100 })
         }
+        const buf = this.ctx.createBuffer(1, u.audio.length, u.rate)
+        buf.getChannelData(0).set(u.audio)
+        const src = this.ctx.createBufferSource()
+        src.buffer = buf
+        src.connect(this.ctx.destination)
+        src.onended = () => {
+          remaining--
+          if (myTurn === this.turn && remaining === 0) {
+            this.set({ speaking: false })
+            void this.drainPregen()
+          }
+        }
+        const at = Math.max(this.ctx.currentTime, nextStart)
+        src.start(at)
+        nextStart = at + buf.duration
+        this.sources.push(src)
+        // the loop continues DURING playback: the next sentence
+        // synthesizes while this one is heard
       }
-      this.source = src
-      src.start()
     } catch (e) {
       if (myTurn !== this.turn) return
-      this.set({ model: 'error', message: e instanceof Error ? e.message : String(e) })
+      this.stopGenProgress()
+      this.set({ model: 'error', message: e instanceof Error ? e.message : String(e), generating: false, genPct: 0 })
     }
   }
 
   stop(): void {
     this.turn++
-    this.stopSource()
-    if (this.state.speaking) this.set({ speaking: false })
+    this.stopSources()
+    this.stopGenProgress()
+    if (this.state.speaking || this.state.generating) this.set({ speaking: false, generating: false, genPct: 0 })
     void this.drainPregen()
   }
 
-  private stopSource(): void {
-    try {
-      this.source?.stop()
-    } catch {
-      /* already ended */
+  private stopSources(): void {
+    for (const src of this.sources) {
+      try {
+        src.stop()
+      } catch {
+        /* already ended */
+      }
     }
-    this.source = null
+    this.sources = []
   }
 }
 

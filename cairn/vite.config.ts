@@ -5,6 +5,7 @@ import react from '@vitejs/plugin-react'
 // relative base for GitHub Pages, dist-demo/). The normal build never
 // references the demo entry, so answer keys never reach real deployments.
 export default defineConfig(({ mode }) => ({
+  worker: { format: 'es' },
   plugins: [react()],
   base: mode === 'demo' ? './' : '/',
   server: {
