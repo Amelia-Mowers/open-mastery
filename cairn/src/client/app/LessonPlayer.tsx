@@ -5,7 +5,7 @@
  * interaction mid-timeline, and handoff into faded/practice — with an
  * optional looping "show me another way" chain. Captions are the source of
  * truth and are rendered by the player. */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { speech } from '../tts/speech'
 import type { ReactElement } from 'react'
 import type { Explanation } from '@openmastery/schema'
@@ -462,14 +462,17 @@ export function LessonPlayer({
   // Keyed on a STRING — the params object is a fresh identity every
   // render, and depending on it refired this on each frame
   const paramsKey = JSON.stringify(params)
+  // …and re-offer them when the voice is switched ON mid-lesson
+  const voiceOn = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
   useEffect(() => {
+    if (!voiceOn) return
     speech.pregenerate(
       contentSteps
         .map((s) => (s.caption !== undefined ? renderText(s.caption, params) : ''))
         .filter((t) => t !== ''),
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [explanation.id, paramsKey])
+  }, [explanation.id, paramsKey, voiceOn])
   const lastContentT = contentSteps[contentSteps.length - 1]?.t ?? 0
 
   const [preamble, setPreamble] = useState(intro !== undefined)

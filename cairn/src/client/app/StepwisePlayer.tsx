@@ -12,7 +12,7 @@
  * uses): timelines already display their own resolutions, so expects leak
  * nothing the walkthrough doesn't. The ITEM answer below remains
  * server-graded evidence. */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { speech } from '../tts/speech'
 import type { Explanation, TimelineStep, StepExpect } from '@openmastery/schema'
 import { diagnose, gradeAnswer, type AnswerSpec } from '../../core/graders'
@@ -93,7 +93,9 @@ export function StepwisePlayer({
 
   // optimistic voice: synthesize every caption and gate question this
   // lead will show, so speech starts WITH each step
+  const voiceOn = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
   useEffect(() => {
+    if (!voiceOn) return
     const texts: string[] = []
     for (const st of steps) {
       if (st.caption !== undefined) texts.push(renderText(st.caption, params))
@@ -101,7 +103,7 @@ export function StepwisePlayer({
     }
     speech.pregenerate(texts.filter((t) => t !== ''))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [explanation.id])
+  }, [explanation.id, voiceOn])
   const widget = useMemo(() => createLessonWidget(explanation, params), [explanation.id])
   const [applied, setApplied] = useState(0)
   const [unlocked, setUnlocked] = useState<ReadonlySet<number>>(new Set())
