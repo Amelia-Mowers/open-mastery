@@ -13,14 +13,16 @@
  * the toggle — NO SILENT FALLBACKS, a mute voice must say why. */
 
 export interface SpeechState {
-  /** kept for the toggle: 'ready' from birth (nothing to load), 'error'
-   * when a fetch or playback failed */
+  /** 'ready' from birth (nothing to load), 'error' when a fetch or
+   * playback failed */
   model: 'ready' | 'error'
-  /** the student turned the voice on */
+  /** the voice is unmuted (ON BY DEFAULT; the mute button flips it) */
   enabled: boolean
   speaking: boolean
   /** audio for the line on screen still fetching — sound not started */
   generating: boolean
+  /** playback volume 0..1 (the in-player slider) */
+  volume: number
   /** why the voice is unavailable, when model === 'error' */
   message?: string
 }
@@ -61,6 +63,7 @@ export const VOICE_FEATURE = true
 const CORPUS_URL = 'https://huggingface.co/datasets/AmeliaMowers/cairn-voice/resolve/main/'
 
 const PREF_KEY = 'cairn.voice'
+const VOL_KEY = 'cairn.voice.vol'
 /** decoded utterances kept in memory; the browser HTTP cache holds the
  * compressed bytes beyond that */
 const CACHE_MAX = 64
@@ -79,13 +82,33 @@ async function fileOf(sentence: string): Promise<string> {
   )
 }
 
+function storedVolume(): number {
+  try {
+    const v = Number(localStorage.getItem(VOL_KEY))
+    if (Number.isFinite(v) && v >= 0 && v <= 1 && localStorage.getItem(VOL_KEY) !== null) return v
+  } catch {
+    /* preference is a convenience only */
+  }
+  return 1
+}
+
 class SpeechService {
-  private state: SpeechState = { model: 'ready', enabled: false, speaking: false, generating: false }
+  private state: SpeechState = {
+    model: 'ready',
+    enabled: false,
+    speaking: false,
+    generating: false,
+    volume: storedVolume(),
+  }
   private listeners = new Set<() => void>()
   private ctx: AudioContext | null = null
+  private gain: GainNode | null = null
   private sources: AudioBufferSourceNode[] = []
   /** monotonic id so a stale fetch never plays over a newer one */
   private turn = 0
+  /** the last text whose narration PLAYED TO THE END — players pace
+   * lesson stages on this via finished() */
+  private doneText: string | null = null
   /** sentence → decoded audio, insertion-ordered for LRU */
   private cache = new Map<string, AudioBuffer>()
   /** sentences being fetched right now (dedupes speak vs prefetch) */
@@ -104,11 +127,12 @@ class SpeechService {
     for (const fn of this.listeners) fn()
   }
 
+  /** the voice is ON unless it was explicitly muted */
   prefOn(): boolean {
     try {
-      return localStorage.getItem(PREF_KEY) === 'on'
+      return localStorage.getItem(PREF_KEY) !== 'off'
     } catch {
-      return false
+      return true
     }
   }
 
@@ -116,7 +140,40 @@ class SpeechService {
    * download any more — the name survives from the on-device era.) */
   warm(): void {
     if (!VOICE_FEATURE) return
-    if (this.prefOn()) this.set({ enabled: true })
+    // never in tests: jsdom E2E renders would fetch real audio
+    if (typeof process !== 'undefined' && process.env?.['VITEST'] !== undefined) return
+    if (this.prefOn()) {
+      this.set({ enabled: true })
+      // default-on has no toggle click to piggyback the AudioContext
+      // gesture requirement on — claim the first click anywhere instead
+      const claim = () => {
+        document.removeEventListener('pointerdown', claim)
+        const ctx = this.ensureCtx()
+        if (ctx.state === 'suspended') void ctx.resume()
+      }
+      document.addEventListener('pointerdown', claim)
+    }
+  }
+
+  private ensureCtx(): AudioContext {
+    if (!this.ctx) {
+      this.ctx = new AudioContext()
+      this.gain = this.ctx.createGain()
+      this.gain.gain.value = this.state.volume
+      this.gain.connect(this.ctx.destination)
+    }
+    return this.ctx
+  }
+
+  setVolume(v: number): void {
+    const vol = Math.max(0, Math.min(1, v))
+    try {
+      localStorage.setItem(VOL_KEY, String(vol))
+    } catch {
+      /* preference is a convenience only */
+    }
+    if (this.gain) this.gain.gain.value = vol
+    this.set({ volume: vol })
   }
 
   enable(): void {
@@ -126,11 +183,11 @@ class SpeechService {
     } catch {
       /* preference is a convenience only */
     }
-    // a fetch error is stale the moment the student retries the toggle
+    // a fetch error is stale the moment the student retries the button
     this.set({ enabled: true, model: 'ready', message: undefined })
-    // audio needs a user gesture; the toggle click IS one — claim it
-    this.ctx ??= new AudioContext()
-    if (this.ctx.state === 'suspended') void this.ctx.resume()
+    // audio needs a user gesture; the unmute click IS one — claim it
+    const ctx = this.ensureCtx()
+    if (ctx.state === 'suspended') void ctx.resume()
   }
 
   disable(): void {
@@ -157,8 +214,7 @@ class SpeechService {
           `no audio in the voice corpus for “${sentence}” (${res.status} on ${file})`,
         )
       const bytes = await res.arrayBuffer()
-      this.ctx ??= new AudioContext()
-      const buf = await this.ctx.decodeAudioData(bytes)
+      const buf = await this.ensureCtx().decodeAudioData(bytes)
       this.put(sentence, buf)
       return buf
     })()
@@ -212,19 +268,44 @@ class SpeechService {
     }
   }
 
+  /** Has this text's narration played to the end? Players hold a lesson
+   * stage open until its line has been HEARD — muted or errored voices
+   * count as finished so the lesson never waits on a voice that cannot
+   * speak. */
+  finished(text: string): boolean {
+    if (!this.state.enabled || this.state.model === 'error') return true
+    return this.doneText === text
+  }
+
   /** Speak, cancelling whatever is mid-air. All sentences fetch in
    * parallel; each is scheduled gaplessly on the audio clock as soon as
    * it and its predecessors exist. */
   async speak(text: string): Promise<void> {
     if (!this.state.enabled) return
     const sentences = splitSentences(mathToSpeech(text))
-    if (sentences.length === 0) return
     const myTurn = ++this.turn
+    this.doneText = null
     this.stopSources()
+    if (sentences.length === 0) {
+      this.doneText = text
+      return
+    }
     this.set({ speaking: true, generating: !this.cache.has(sentences[0]!) })
     try {
-      this.ctx ??= new AudioContext()
-      if (this.ctx.state === 'suspended') await this.ctx.resume()
+      const ctx = this.ensureCtx()
+      if (ctx.state === 'suspended') {
+        // the browser gates audio on a user gesture; give resume a beat,
+        // then let the lesson move on unvoiced rather than hang on a
+        // context that cannot start until the next click
+        await Promise.race([ctx.resume(), new Promise((r) => setTimeout(r, 250))])
+        if ((ctx.state as string) !== 'running') {
+          if (myTurn === this.turn) {
+            this.doneText = text
+            this.set({ speaking: false, generating: false })
+          }
+          return
+        }
+      }
       const fetches = sentences.map((s) => this.fetchUtterance(s))
       let nextStart = 0
       let remaining = sentences.length
@@ -232,14 +313,17 @@ class SpeechService {
         const buf = await fetchJob
         if (myTurn !== this.turn) return // superseded mid-pipeline
         if (this.state.generating) this.set({ generating: false })
-        const src = this.ctx.createBufferSource()
+        const src = ctx.createBufferSource()
         src.buffer = buf
-        src.connect(this.ctx.destination)
+        src.connect(this.gain!)
         src.onended = () => {
           remaining--
-          if (myTurn === this.turn && remaining === 0) this.set({ speaking: false })
+          if (myTurn === this.turn && remaining === 0) {
+            this.doneText = text
+            this.set({ speaking: false })
+          }
         }
-        const at = Math.max(this.ctx.currentTime, nextStart)
+        const at = Math.max(ctx.currentTime, nextStart)
         src.start(at)
         nextStart = at + buf.duration
         this.sources.push(src)

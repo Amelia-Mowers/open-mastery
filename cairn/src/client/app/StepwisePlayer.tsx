@@ -14,7 +14,7 @@
  * server-graded evidence. */
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { speech } from '../tts/speech'
-import { VoiceGenSpinner } from '../tts/VoiceToggle'
+import { VoiceControl, VoiceGenSpinner } from '../tts/VoiceToggle'
 import type { Explanation, TimelineStep, StepExpect } from '@openmastery/schema'
 import { diagnose, gradeAnswer, type AnswerSpec } from '../../core/graders'
 import { createLessonWidget } from './LessonPlayer'
@@ -31,6 +31,9 @@ export interface StepwiseResult {
 
 const STEP_DELAY_MS = 1700
 const CONFIRM_DELAY_MS = 350
+/** pause after a narration finishes before the next step — the reading
+ * already paced the stage, so only a breath is added */
+const VOICE_TAIL_MS = 450
 
 /** does this (possibly truncated) timeline make a stepwise problem? */
 export const hasExpects = (timeline: ReadonlyArray<TimelineStep>): boolean =>
@@ -163,7 +166,25 @@ export function StepwisePlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waitingOn !== null ? applied : -1])
 
-  // advance: apply non-gated steps on a cadence; gated steps wait for input
+  // the frontier is still being read aloud — stages wait for the voice.
+  // (Fixed cadence clipped every caption longer than stepDelayMs.)
+  const narrating = useSyncExternalStore(
+    speech.subscribe,
+    () => {
+      const s = speech.getState()
+      return s.enabled && s.model !== 'error' && (s.speaking || s.generating)
+    },
+    () => false,
+  )
+
+  // advance: apply non-gated steps on a cadence; gated steps wait for
+  // input; while narration is mid-air the step holds, then takes a short
+  // breath instead of the full cadence (the narration WAS the pacing).
+  // Steps that spoke nothing (patch-only) keep the normal cadence.
+  const heldForVoice = useRef(false)
+  useEffect(() => {
+    heldForVoice.current = false
+  }, [applied])
   useEffect(() => {
     if (pending === null) {
       if (!endNotified.current) {
@@ -173,17 +194,21 @@ export function StepwisePlayer({
       return
     }
     if (waitingOn !== null) return
+    if (narrating) {
+      heldForVoice.current = true // SpeakLine (a child) starts speech before this effect runs
+      return
+    }
     const confirm = pending.expect !== undefined
     const timer = setTimeout(
       () => {
         if (pending.patch && widget) widget.apply(pending.patch)
         setApplied((n) => n + 1)
       },
-      applied === 0 ? 0 : confirm ? CONFIRM_DELAY_MS : stepDelayMs,
+      applied === 0 ? 0 : confirm ? CONFIRM_DELAY_MS : heldForVoice.current ? VOICE_TAIL_MS : stepDelayMs,
     )
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [applied, waitingOn === null])
+  }, [applied, waitingOn === null, narrating])
 
   // scrub view: a fresh widget replayed to the reviewed step (the live
   // widget keeps its state untouched underneath)
@@ -371,29 +396,32 @@ export function StepwisePlayer({
       <VoiceGenSpinner />
       <SmoothHeight>
       {/* scrub through what has played so far; the frontier stays put */}
-      {applied > 1 && (
-        <div className="stepwise-track" role="group" aria-label="Steps so far">
-          {steps.slice(0, applied).map((_, i) => (
-            <button
-              key={i}
-              type="button"
-              data-step-dot={i}
-              className={
-                (scrub === null ? i === applied - 1 : i === scrub)
-                  ? 'stepwise-dot stepwise-dot-on'
-                  : 'stepwise-dot'
-              }
-              aria-label={`Step ${i + 1} of ${applied}`}
-              onClick={() => setScrub(i === applied - 1 ? null : i)}
-            />
-          ))}
-          {scrub !== null && (
-            <button type="button" className="btn btn-quiet" data-testid="stepwise-resume" onClick={() => setScrub(null)}>
-              Back to now
-            </button>
-          )}
-        </div>
-      )}
+      <div className="stepwise-track-row">
+        {applied > 1 && (
+          <div className="stepwise-track" role="group" aria-label="Steps so far">
+            {steps.slice(0, applied).map((_, i) => (
+              <button
+                key={i}
+                type="button"
+                data-step-dot={i}
+                className={
+                  (scrub === null ? i === applied - 1 : i === scrub)
+                    ? 'stepwise-dot stepwise-dot-on'
+                    : 'stepwise-dot'
+                }
+                aria-label={`Step ${i + 1} of ${applied}`}
+                onClick={() => setScrub(i === applied - 1 ? null : i)}
+              />
+            ))}
+            {scrub !== null && (
+              <button type="button" className="btn btn-quiet" data-testid="stepwise-resume" onClick={() => setScrub(null)}>
+                Back to now
+              </button>
+            )}
+          </div>
+        )}
+        <VoiceControl />
+      </div>
       {gatesAhead && scrub === null && (
         <div className="stepwise-gate" data-testid="stepwise-gate">
           {waitingOn === null ? (
@@ -560,12 +588,20 @@ export function StepwisePlayer({
 }
 
 
-/** Voice: read the caption — and the open gate's question — as they land. */
+/** Voice: read the caption — and the open gate's question — as they land.
+ * When a gate closes, the line loses its question but keeps its caption:
+ * nothing new to say, so let the tail play out instead of re-reading the
+ * caption and having the next step clip it. */
 function SpeakLine({ text }: { text: string }) {
   const on = useSyncExternalStore(speech.subscribe, () => speech.getState().enabled, () => false)
+  const last = useRef('')
   useEffect(() => {
-    if (on && text.trim() !== '') void speech.speak(text)
-    return () => speech.stop()
+    const prev = last.current
+    last.current = text
+    if (!on || text.trim() === '') return
+    if (prev !== text && prev.startsWith(text)) return // gate closed — the caption was already read
+    void speech.speak(text) // speak() itself cancels whatever is mid-air
   }, [text, on])
+  useEffect(() => () => speech.stop(), [])
   return null
 }

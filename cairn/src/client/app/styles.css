@@ -646,6 +646,19 @@ body {
 .profile-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 10px 0 14px; }
 .profile-chip { font-weight: 700; }
 
+.voice-ctl { display: inline-flex; align-items: center; gap: 4px; }
+.voice-mute { padding: 5px 6px; line-height: 0; color: #7a6f61; }
+.voice-mute:hover { color: #b05f28; }
+.voice-ctl-off .voice-vol { opacity: 0.4; }
+.voice-ctl-err .voice-mute { color: #a04026; }
+.voice-vol {
+  width: 60px; height: 4px; margin: 0;
+  accent-color: #b05f28; cursor: pointer;
+}
+.stepwise-track-row { display: flex; align-items: center; gap: 10px; margin: 2px 0; }
+.stepwise-track-row .stepwise-track { flex: 1; }
+.stepwise-track-row .voice-ctl { margin-left: auto; }
+
 .voice-gen { display: flex; justify-content: center; align-items: center; gap: 8px; margin: 2px 0 4px; }
 .voice-gen i {
   width: 14px; height: 14px; border-radius: 50%;

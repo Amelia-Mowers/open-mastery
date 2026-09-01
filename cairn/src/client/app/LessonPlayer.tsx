@@ -7,7 +7,7 @@
  * truth and are rendered by the player. */
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { speech } from '../tts/speech'
-import { VoiceGenSpinner } from '../tts/VoiceToggle'
+import { VoiceControl, VoiceGenSpinner } from '../tts/VoiceToggle'
 import type { ReactElement } from 'react'
 import type { Explanation } from '@openmastery/schema'
 import type { WidgetInstance } from '../widgets/contract'
@@ -533,10 +533,30 @@ export function LessonPlayer({
     appliedRef.current = stepIdx
   }, [stepIdx, widget, steps])
 
+  // the caption sticks: latest step at/before now that HAS one; the symbolic
+  // equation banner and its highlighted spans stick the same way
+  let caption = ''
+  let equation: string[] | null = null
+  let eqHighlight: number[] = []
+  for (let i = 0; i <= stepIdx; i++) {
+    const st = steps[i]!
+    if (st.caption !== undefined) caption = renderText(st.caption, params)
+    const patch = st.patch
+    if (patch) {
+      if (Array.isArray(patch['equation']))
+        equation = (patch['equation'] as unknown[]).map((seg) => renderText(String(seg), params))
+      if (Array.isArray(patch['eqHighlight']))
+        eqHighlight = (patch['eqHighlight'] as unknown[])
+          .map((v) => Number(v))
+          .filter((v) => Number.isInteger(v))
+    }
+  }
+
   // autoplay: advance until the handoff time, then rest there.
-  // With the voice on, a step HOLDS at the next caption boundary until
-  // its audio finishes — fixed timestamps raced long utterances and the
-  // caption change cut them off mid-sentence.
+  // With the voice on, the clock HOLDS at the next caption boundary until
+  // the current caption's narration has PLAYED TO THE END (finished(), not
+  // a sampled speaking flag — the flag has a not-yet-started window right
+  // after a caption lands, and racing through it clipped narrations).
   const nextCaptionT = (t: number): number => {
     for (const st of steps)
       if (st.t > t + 0.001 && (st.caption !== undefined || st.handoff !== undefined))
@@ -549,8 +569,7 @@ export function LessonPlayer({
     const id = setInterval(() => {
       setTime((t) => {
         const next = t + (TICK_MS / 1000) * speed
-        const voice = speech.getState()
-        if (voice.enabled && (voice.speaking || voice.generating)) {
+        if (caption !== '' && !speech.finished(caption)) {
           const boundary = nextCaptionT(t)
           if (next >= boundary) return Math.min(next, boundary - 0.001)
         }
@@ -562,7 +581,8 @@ export function LessonPlayer({
       })
     }, TICK_MS)
     return () => clearInterval(id)
-  }, [playing, preamble, speedIdx, handoffT])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [playing, preamble, speedIdx, handoffT, caption])
 
   const seek = (target: number) => {
     setPlaying(false)
@@ -584,25 +604,6 @@ export function LessonPlayer({
     return (time - start) / (end - start)
   }
   const currentSegIdx = contentSteps.reduce((acc, s, i) => (s.t <= time + 1e-9 ? i : acc), 0)
-
-  // the caption sticks: latest step at/before now that HAS one; the symbolic
-  // equation banner and its highlighted spans stick the same way
-  let caption = ''
-  let equation: string[] | null = null
-  let eqHighlight: number[] = []
-  for (let i = 0; i <= stepIdx; i++) {
-    const st = steps[i]!
-    if (st.caption !== undefined) caption = renderText(st.caption, params)
-    const patch = st.patch
-    if (patch) {
-      if (Array.isArray(patch['equation']))
-        equation = (patch['equation'] as unknown[]).map((seg) => renderText(String(seg), params))
-      if (Array.isArray(patch['eqHighlight']))
-        eqHighlight = (patch['eqHighlight'] as unknown[])
-          .map((v) => Number(v))
-          .filter((v) => Number.isInteger(v))
-    }
-  }
 
   if (preamble && intro) {
     return (
@@ -701,6 +702,7 @@ export function LessonPlayer({
         >
           {SPEEDS[speedIdx]}×
         </button>
+        <VoiceControl />
       </div>
       {reachedEnd && tail !== 'none' && (
         <div className="answer-row handoff-row">

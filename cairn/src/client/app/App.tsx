@@ -1,7 +1,6 @@
 /** Student session shell: a thin loop over the site server. */
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { speech } from '../tts/speech'
-import { VoiceToggle } from '../tts/VoiceToggle'
 import type { Explanation } from '@openmastery/schema'
 import { SiteApi, type AttemptOutcome, type CairnApi, type ServerNext } from './api'
 import { LessonPlayer } from './LessonPlayer'
@@ -441,7 +440,6 @@ function Header({
         </button>
       )}
       <span className="spacer" />
-      <VoiceToggle />
       {onToggleView && (
         <button className="btn btn-quiet" onClick={onToggleView}>
           {view === 'dashboard' ? 'Back to work' : 'My cairn'}
@@ -551,10 +549,10 @@ function Session({
   /** an alternative explanation playing in the lesson slot */
   const [overlay, setOverlay] = useState<OverlayExplanation | null>(null)
 
-  // the voice model warms in the background so the toggle is instant;
-  // speaking stays opt-in
+  // restore the voice preference (on by default) — but never in the zoo,
+  // where dozens of autoplaying players would all speak at once
   useEffect(() => {
-    speech.warm()
+    if (urlParam('view') !== 'zoo') speech.warm()
   }, [])
 
   const refresh = useCallback(() => {
