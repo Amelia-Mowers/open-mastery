@@ -6,6 +6,8 @@
  * optional looping "show me another way" chain. Captions are the source of
  * truth and are rendered by the player. */
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { speech } from '../tts/speech'
+import { VoiceToggle } from '../tts/VoiceToggle'
 import type { ReactElement } from 'react'
 import type { Explanation } from '@openmastery/schema'
 import type { WidgetInstance } from '../widgets/contract'
@@ -633,7 +635,9 @@ export function LessonPlayer({
       >
         {caption}
       </p>
+      <SpeakCaption text={caption} />
       <div className="lesson-controls">
+        <VoiceToggle />
         <button
           className="btn btn-round"
           aria-label={playing ? 'Pause' : 'Play'}
@@ -687,4 +691,14 @@ export function LessonPlayer({
       {body}
     </section>
   )
+}
+
+
+/** Voice: read each caption as it lands (opt-in; a no-op while off). */
+function SpeakCaption({ text }: { text: string }) {
+  useEffect(() => {
+    if (text !== '') void speech.speak(text)
+    return () => speech.stop()
+  }, [text])
+  return null
 }

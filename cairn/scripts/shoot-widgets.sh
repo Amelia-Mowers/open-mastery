@@ -6,7 +6,7 @@
 set -e
 OUT=${1:?out dir}
 PORT=${2:-4890}
-CHROMIUM=${CHROMIUM:-/nix/store/cyw9j7gm65p1768q6vhaax20jlkvpb27-chromium-149.0.7827.114/bin/chromium}
+CHROMIUM=${CHROMIUM:-$(ls -d /nix/store/*chromium-*/bin/chromium 2>/dev/null | sort | tail -1)}
 mkdir -p "$OUT/each"
 cd "$(dirname "$0")/.."
 [ -f dist-demo/index.html ] || npm run build:demo

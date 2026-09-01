@@ -13,6 +13,7 @@
  * nothing the walkthrough doesn't. The ITEM answer below remains
  * server-graded evidence. */
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { speech } from '../tts/speech'
 import type { Explanation, TimelineStep, StepExpect } from '@openmastery/schema'
 import { diagnose, gradeAnswer, type AnswerSpec } from '../../core/graders'
 import { createLessonWidget } from './LessonPlayer'
@@ -351,6 +352,7 @@ export function StepwisePlayer({
       >
         {view.caption}
       </p>
+      <SpeakLine text={waitingOn !== null ? `${view.caption} ${gatePrompt(waitingOn)}` : view.caption} />
       <SmoothHeight>
       {/* scrub through what has played so far; the frontier stays put */}
       {applied > 1 && (
@@ -539,4 +541,14 @@ export function StepwisePlayer({
       </SmoothHeight>
     </div>
   )
+}
+
+
+/** Voice: read the caption — and the open gate's question — as they land. */
+function SpeakLine({ text }: { text: string }) {
+  useEffect(() => {
+    if (text.trim() !== '') void speech.speak(text)
+    return () => speech.stop()
+  }, [text])
+  return null
 }

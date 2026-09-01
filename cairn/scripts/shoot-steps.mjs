@@ -105,9 +105,12 @@ ${frames
 const pagePath = join(dist, '_steps.html')
 writeFileSync(pagePath, page)
 
+// a pinned store path gets garbage-collected; resolve a live one
+import { globSync } from 'node:fs'
 const CHROMIUM =
   process.env.CHROMIUM ??
-  '/nix/store/cyw9j7gm65p1768q6vhaax20jlkvpb27-chromium-149.0.7827.114/bin/chromium'
+  globSync('/nix/store/*chromium-*/bin/chromium').sort().at(-1) ??
+  'chromium'
 try {
   execFileSync(
     CHROMIUM,
