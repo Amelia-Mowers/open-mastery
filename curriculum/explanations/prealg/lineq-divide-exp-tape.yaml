@@ -46,4 +46,4 @@ timeline:
           says: "Multiplying by {a} makes the tape {a} times longer. To find ONE part, divide."
   - { t: 20, patch: { partLabel: "{variable}", total: "{b/a}", removed: "others", highlight: ["1"] }, caption: "{b} ÷ {a} = {b/a}: the tape shrinks to ONE part. One {variable} is {b/a}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-01 }

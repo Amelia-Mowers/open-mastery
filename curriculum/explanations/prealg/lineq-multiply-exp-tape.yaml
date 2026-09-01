@@ -4,11 +4,43 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", "/{a}", " = ", "{b}"], parts: "{a}", partLabel: "?", total: "{variable}", totalIn: false , cellsIn: 0}, caption: "Here is the problem in symbols. Watch it become a tape." }
-  - { t: 4, patch: { eqHighlight: ["0"], totalIn: true }, caption: "{variable} is the WHOLE tape — the amount we want.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation is the WHOLE tape — the amount we want?" } }
-  - { t: 8, patch: { eqHighlight: ["1"], highlight: ["1"] , cellsIn: "{a}"}, caption: "/{a} cuts it into {a} equal parts.", expect: { type: pick, value: ["1"], prompt: "Which piece — or pieces — of the equation cut the tape into equal parts?" } }
-  - { t: 12, patch: { eqHighlight: ["3"], partLabel: "{b}" }, caption: "= {b} says one part is {b}.", expect: { type: numeric, value: "{b}", prompt: "How big is each part?" } }
-  - { t: 16, patch: { eqHighlight: [], highlight: [] }, caption: "So the question the tape asks is: {a} parts of {b} make WHAT?", expect: { type: op, value: "multiply {a}", prompt: "To find the whole tape, what do you do to {b}?", hint: "There are {a} equal parts, each one {b}." , misconceptions: [ { id: divided-instead-of-multiplied, when: "divide {a}", says: "{variable} is already cut into {a} parts — dividing again makes them smaller. To rebuild the whole, multiply." } ] } }
-  - { t: 19.5, patch: { total: "{variable} = {a*b}" }, caption: "{a} parts of {b} make {a*b}. {variable} = {a*b}." }
-  - { t: 22, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+  - { t: 0, patch: { equation: ["{variable}", "/{a}", " = ", "{b}"], parts: "{a}", partLabel: "", total: "{variable}", totalIn: false, removed: "others" }, caption: "A tape of equal parts — the equation says how many." }
+  - t: 4
+    patch: { removed: [], eqHighlight: ["1"] }
+    caption: "{a} equal parts — and the equation says what ONE is worth."
+    expect:
+      type: numeric
+      value: "{a}"
+      prompt: "{variable}/{a} — how many equal parts does {variable} split into?"
+      hint: "The number under {variable} counts the parts."
+  - t: 8
+    patch: { eqHighlight: ["3"], partLabel: "{b}", highlight: ["1"] }
+    caption: "Each part is {b}."
+    expect:
+      type: pick
+      value: ["3"]
+      prompt: "Which piece — or pieces — of the equation is ONE part worth?"
+      hint: "The lone number after the equals sign."
+  - t: 12
+    patch: { eqHighlight: ["0"], totalIn: true, highlight: [] }
+    caption: "All {a} parts together are the whole: {variable}."
+    expect:
+      type: pick
+      value: ["0"]
+      prompt: "Which piece — or pieces — of the equation is the WHOLE bar?"
+      hint: "The unknown that the parts build."
+  - t: 16
+    patch: { eqHighlight: [], highlight: ["1"] }
+    caption: "{a} parts of {b}, end to end. So what is {variable}?"
+    expect:
+      type: op
+      value: "multiply {a}"
+      prompt: "ONE part is {b}, and {variable} is ALL {a} of them. What move rebuilds {variable}?"
+      hint: "{a} parts, each worth {b}."
+      misconceptions:
+        - id: divided-instead-of-multiplied
+          when: "divide {a}"
+          says: "{variable} is already cut into {a} parts — dividing again makes them smaller. To rebuild the whole, multiply."
+  - { t: 20, patch: { total: "{a*b}", highlight: [] }, caption: "{b} × {a} = {a*b}. The whole bar — {variable} — is {a*b}." }
+  - { t: 23, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
