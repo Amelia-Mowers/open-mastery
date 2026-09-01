@@ -10,7 +10,7 @@
     "server": "node src/server/main.ts",
     "dev": "vite",
     "build": "vite build",
-    "build:demo": "node scripts/build-demo-bundle.mjs && vite build --mode demo && node -e \"require('fs').renameSync('dist-demo/demo.html','dist-demo/index.html')\""
+    "build:demo": "node scripts/build-demo-bundle.mjs && vite build --mode demo && node -e \"const fs=require('fs');fs.renameSync('dist-demo/demo.html','dist-demo/index.html');for(const f of fs.readdirSync('dist-demo/assets'))if(f.endsWith('.wasm'))fs.unlinkSync('dist-demo/assets/'+f)\""
   },
   "dependencies": {
     "@openmastery/schema": "file:../schema",

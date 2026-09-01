@@ -197,7 +197,16 @@ class SpeechService {
     this.set({ model: 'loading', pct: 0 })
     this.loading = (async () => {
       try {
-        const { KokoroTTS } = await import('kokoro-js')
+        const { KokoroTTS, env } = await import('kokoro-js')
+        // the ONNX runtime's 21MB wasm comes from the CDN (exact version
+        // pinned), not our Pages artifact — bundling it made every
+        // deploy ship it and slowed Pages activation to minutes. Same
+        // tradeoff as the model itself, which streams from the HF hub.
+        const ortEnv = (env as { backends?: { onnx?: { wasm?: { wasmPaths?: string } } } })
+          .backends?.onnx?.wasm
+        if (ortEnv)
+          ortEnv.wasmPaths =
+            'https://cdn.jsdelivr.net/npm/onnxruntime-web@1.22.0-dev.20250409-89f8206ba4/dist/'
         const hasWebGpu = typeof (navigator as { gpu?: unknown }).gpu !== 'undefined'
         const tts = await KokoroTTS.from_pretrained(MODEL, {
           // fp16 on WebGPU (~80MB), q8 on wasm (~40MB) — fp32 is ~300MB
