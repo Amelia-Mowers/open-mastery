@@ -4,10 +4,23 @@ representation: cube-model
 widget: cube-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{n}", "³"], n: "{n}", slices: 1 }, caption: "{n}³ means three equal factors. Start with what you know: the square." }
-  - { t: 4, patch: { eqHighlight: ["0"], count: "{n*n}" }, caption: "An {n} × {n} square: {n*n} small squares.", expect: { type: numeric, value: "{n*n}", prompt: "How many small squares in all now?" } }
-  - { t: 8, patch: { eqHighlight: ["1"], slices: 2, count: "2 × {n*n}" }, caption: "The small 3 says: take that WHOLE square again — a second slice behind it.", expect: { type: numeric, value: "2 * {n*n}", prompt: "How many small squares in all now?" } }
-  - { t: 12, patch: { slices: "{n}", count: null }, caption: "So the question the cube asks is: {n} slices of {n*n} make WHAT?", expect: { type: numeric, value: "{n}", prompt: "How many slices are stacked? Count them.", hint: "The small 3 said take the square this many times." } }
-  - { t: 16, patch: { count: "{n*n*n}" }, caption: "{n} slices of {n*n}: {n}³ = {n*n} × {n} = {n*n*n}.", expect: { type: numeric, value: "{n*n*n}", prompt: "How many small squares in all now?" } }
-  - { t: 18.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-27 }
+  - { t: 0, patch: { equation: ["{n}³", " = ", "?"], n: "{n}", slices: 1 }, caption: "{n}³ means three equal factors: {n} × {n} × {n}. The square holds the first two." }
+  - t: 4
+    patch: { eqHighlight: ["0"], count: "{n*n}" }
+    caption: "{n} × {n} = {n*n}. Two factors down — ONE still waiting."
+    expect:
+      type: numeric
+      value: "{n*n}"
+      prompt: "{n} × {n} — how many small squares make the square?"
+      hint: "{n} rows of {n}."
+  - t: 8
+    patch: { eqHighlight: [], slices: "{n}" }
+    caption: "{n} slices of {n*n} — all three factors in the picture. So what does {n}³ equal?"
+    expect:
+      type: numeric
+      value: "{n}"
+      prompt: "{n}³ — the square spent two of its factors. How many slices does the LAST factor stack?"
+      hint: "The three factors are {n} × {n} × {n}. The square used two — the factor left over counts the slices."
+  - { t: 12, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], count: "{n*n*n}" }, caption: "{n*n} × {n} = {n*n*n}. {n}³ = {n*n*n}." }
+  - { t: 15, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
