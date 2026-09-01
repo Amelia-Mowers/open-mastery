@@ -2,3 +2,4 @@ node_modules/
 dist/
 dist-demo/
 src/client/demo/bundle.json
+voice-corpus/

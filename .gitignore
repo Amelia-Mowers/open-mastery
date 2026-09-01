@@ -6,3 +6,4 @@ cairn/src/client/demo/bundle.json
 .claude/
 *.log
 .git-local-archive/
+voice-corpus/
