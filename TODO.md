@@ -49,6 +49,14 @@ Not K–12 — the middle-school band plus the parent's view:
       (content-addressed .ogg), worker/model machinery deleted, coverage
       is a loud CI gate (voice:check in demo-pages.yml). Curriculum copy
       changes now require render + upload before the deploy passes.
+- [ ] Voice display/speech escape (designed 2026-09-02, build when first
+      needed): `[[shown|spoken]]` in captions/prompts — display side in
+      the caption renderer, spoken side inside mathToSpeech (shared with
+      the corpus enumerator, so hashing/coverage stay correct by
+      construction). Square brackets — `{}` is cairn-expr. The default
+      stays the heuristic (bare "?" → "what", "$?" → "unknown price");
+      the escape is the per-caption override for readings the rules get
+      wrong. Do NOT migrate existing copy to it wholesale.
 - [ ] Widgets silently ignore unknown/unsupported patch keys (found in
       the 2026-09-01 review sweep: ratio-table drops `cols` patches,
       area-model drops `height` patches — both authored as if they
