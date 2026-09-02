@@ -1,6 +1,96 @@
-import { useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { WidgetFactory, WidgetInstance, WidgetMode } from './contract'
 import { WidgetStore } from './store'
+
+/** One jump arc, drawn in REAL PIXELS (measured via ResizeObserver) so
+ * the arrowhead can sit exactly on the curve's end tangent. A stretched
+ * viewBox plus a fixed-angle head never matched — the arrival angle
+ * depends on the arc's pixel width, so any guessed rotation reads as a
+ * head glued on (reported twice). jsdom (no ResizeObserver) renders at a
+ * fallback width; tests assert structure, not geometry. */
+function ArcHop({ forward, label }: { forward: boolean; label?: string | undefined }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [w, setW] = useState(0)
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    setW(el.clientWidth)
+    if (typeof ResizeObserver === 'undefined') return
+    const ro = new ResizeObserver(() => setW(el.clientWidth))
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+  const W = w > 8 ? w : 120 // fallback before measurement / in jsdom
+  const H = 44
+  const m = 3 // inset so round caps don't clip
+  const baseY = H - 4
+  // quadratic S → C → E along the hop, in pixels
+  const S = { x: forward ? m : W - m, y: baseY }
+  const E = { x: forward ? W - m : m, y: baseY }
+  const C = { x: W / 2, y: -6 }
+  // trim the dashed curve ~9px short of E (the head continues it):
+  // near t=1 the speed is ~2·|E−C|, so back off dt ≈ 9 / (2·|E−C|)
+  const dEC = Math.hypot(E.x - C.x, E.y - C.y)
+  const t = Math.max(0.55, 1 - 9 / (2 * dEC))
+  // de Casteljau: the sub-curve S→C'→Q(t)
+  const lerp = (a: { x: number; y: number }, b: { x: number; y: number }, k: number) => ({
+    x: a.x + (b.x - a.x) * k,
+    y: a.y + (b.y - a.y) * k,
+  })
+  const C1 = lerp(S, C, t)
+  const Qt = lerp(lerp(S, C, t), lerp(C, E, t), t)
+  // head: filled triangle at E, rotated onto the true end tangent (E − C)
+  const ang = Math.atan2(E.y - C.y, E.x - C.x)
+  const dir = { x: Math.cos(ang), y: Math.sin(ang) }
+  const perp = { x: -dir.y, y: dir.x }
+  const L = 11
+  const half = 4.5
+  const b1 = { x: E.x - dir.x * L + perp.x * half, y: E.y - dir.y * L + perp.y * half }
+  const b2 = { x: E.x - dir.x * L - perp.x * half, y: E.y - dir.y * L - perp.y * half }
+  return (
+    <div ref={ref} style={{ width: '100%', height: '100%' }}>
+      {label !== undefined && (
+        <span
+          data-arc-label
+          style={{
+            position: 'absolute',
+            left: '50%',
+            bottom: '100%',
+            transform: 'translate(-50%, 6px)',
+            font: "700 16px 'Lora', Georgia, serif",
+            color: '#b05f28',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          {label}
+        </span>
+      )}
+      <svg
+        aria-hidden
+        viewBox={`0 0 ${W} ${H}`}
+        preserveAspectRatio="none"
+        style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', overflow: 'visible' }}
+      >
+        <path
+          d={`M ${S.x} ${S.y} Q ${C1.x} ${C1.y} ${Qt.x} ${Qt.y}`}
+          fill="none"
+          stroke="#b05f28"
+          strokeWidth="3"
+          strokeDasharray="7 6"
+          strokeLinecap="round"
+        />
+        <path
+          data-arc-head
+          d={`M ${E.x} ${E.y} L ${b1.x} ${b1.y} L ${b2.x} ${b2.y} Z`}
+          fill="#b05f28"
+          stroke="#b05f28"
+          strokeWidth="2"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  )
+}
 
 export interface NumberLineConfig {
   min: number
@@ -140,66 +230,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   animation: 'cairn-pop 0.45s ease both',
                 }}
               >
-                {a.label !== undefined && (
-                  <span
-                    data-arc-label
-                    style={{
-                      position: 'absolute',
-                      left: '50%',
-                      bottom: '100%',
-                      transform: 'translate(-50%, 6px)',
-                      font: "700 16px 'Lora', Georgia, serif",
-                      color: '#b05f28',
-                      whiteSpace: 'nowrap',
-                    }}
-                  >
-                    {a.label}
-                  </span>
-                )}
-                <svg
-                  aria-hidden
-                  viewBox="0 0 100 44"
-                  preserveAspectRatio="none"
-                  style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}
-                >
-                  <path
-                    d={`M ${forward ? 0 : 100} 42 Q 50 -10 ${forward ? 99 : 1} 36`}
-                    fill="none"
-                    stroke="#b05f28"
-                    strokeWidth="3"
-                    strokeDasharray="7 6"
-                    strokeLinecap="round"
-                    vectorEffect="non-scaling-stroke"
-                  />
-                </svg>
-                {/* the head is a round-capped chevron whose vertex TOUCHES
-                    DOWN on the tick — drawn in its own unstretched SVG so
-                    it reads as the curve's tip at any arc width (a filled
-                    triangle at a fixed angle never matched the stretched
-                    curve's tangent) */}
-                <svg
-                  aria-hidden
-                  data-arc-head
-                  width="18"
-                  height="18"
-                  viewBox="0 0 18 18"
-                  style={{
-                    position: 'absolute',
-                    left: forward ? '100%' : 0,
-                    bottom: -7,
-                    transform: 'translateX(-50%)',
-                    overflow: 'visible',
-                  }}
-                >
-                  <path
-                    d={forward ? 'M 2.5 4 L 9 14 L 15 9' : 'M 15.5 4 L 9 14 L 3 9'}
-                    fill="none"
-                    stroke="#b05f28"
-                    strokeWidth="3"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
+                <ArcHop forward={forward} label={a.label} />
               </div>
             )
           })}
