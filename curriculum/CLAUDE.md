@@ -1,6 +1,27 @@
 # Curriculum authoring notes
 
+## RULE 0 — the lesson must TEACH the subject, not just represent it (Mia, 2026-09-02)
 
+Every rule below is a mechanical proxy for one judgment: would a student
+who does NOT yet understand the subject come out of this timeline
+understanding it? Author and review from that student's perspective —
+walk the gates as someone meeting the idea for the first time, and ask
+what answering them actually teaches.
+
+- **A representation being viable is not enough.** A picture can render,
+  decompose, gate cleanly, and pass every invariant while still failing
+  to teach the SOLUTION to the problem or the skill's method. Not every
+  viable representation is one that teaches — pick the one whose moves
+  ARE the method (see "Pick the representation that can SHOW the
+  operation", and the compare-rates line redesign: the old version
+  needed implicit division just to build the picture, so the picture
+  could not teach the division).
+- **The gates trace the path of understanding, not the path of
+  rendering.** Each answer the student gives should be a step of the
+  method they will carry into practice — having walked the lesson is
+  having solved one.
+- When a rule below and this one conflict, THIS one wins — and the rule
+  below needs fixing (never reword sound pedagogy to appease a lint).
 
 ## COPY GUIDELINES (2026-08-30) — every caption, prompt, and hint
 
