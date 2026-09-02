@@ -11,7 +11,7 @@ timeline:
     expect:
       type: numeric
       value: "{b}"
-      prompt: "{p}/{q}{variable} = {b} — where on the line does {p}/{q} of {variable} sit?"
+      prompt: "Where on the line does {p}/{q} of {variable} sit?"
       hint: "The equation names the landing spot."
   - t: 7.5
     patch: { eqHighlight: [], highlight: ["{b/p}"], marker: "{b/p}", labelled: ["0", "{b/p}", "{b}"], jumps: { size: "{b/p}", count: "{q}", shown: 1 } }
@@ -23,4 +23,4 @@ timeline:
       hint: "Split {b} into {p} equal pieces."
   - { t: 11.5, patch: { marker: "{q*b/p}", highlight: ["{q*b/p}"], labelled: ["0", "{b/p}", "{b}", "{q*b/p}"], jumps: { size: "{b/p}", count: "{q}", shown: "all" } }, caption: "{q} parts of {b/p}, end to end: {q} × {b/p} = {q*b/p}. {variable} = {q*b/p}." }
   - { t: 14, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }

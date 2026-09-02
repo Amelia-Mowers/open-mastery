@@ -23,4 +23,4 @@ timeline:
       hint: "Two equal factors: the base is the size AND the count."
   - { t: 12, patch: { equation: ["{c}²", " = ", "{c*c}"], eqHighlight: ["2"], marker: "{c*c}", labelled: ["{c}", "{c*c}"] }, caption: "{c} jumps of {c} land on {c*c}. {c}² = {c*c}." }
   - { t: 15, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }

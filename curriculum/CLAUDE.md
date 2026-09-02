@@ -666,16 +666,16 @@ move (divide/multiply/reciprocal) substitute the op gate for step 3 —
 the jumps still draw as that confirm. Arc labels ("+{c}") are the step
 size and always allowed; "no line labels" means TICK values.
 
-**A GIVEN is never gated.** A template slot whose value is stated
-verbatim in the problem (evaluate's "x = 4" IS the step amount) is
-carried by a plain step, not a gate — "x = 4 — how far does each jump
-go?" prints its own answer (Mia, live). Gate the nearest thing that
-must be WORKED OUT instead (the first landing, {b}+{c}). Notation-
-DECODE gates (the exponent's implied count, the coefficient as jump
-count) stay legitimate — but the notation lives on the highlighted
-banner; the prompt must not restate it next to the question ("3x — how
-many jumps?" leaks; "How many jumps of {c} in all?" with 3x highlighted
-asks).
+**THE PROMPT NEVER PRE-SAYS THE IMPORTANT NUMBER (Mia, 2026-09-02).**
+It is fine for a gate's answer to be a number already on the string —
+finding and applying it IS the decomposition ("x = 4" answers "how far
+does each jump go?"; the coefficient answers "how many?"). The fault is
+the prompt RESTATING the string next to the question: "x = 4 — how far
+does each jump go?", "n/7 = 6 — ONE part is how long?", "5/6y = 15 —
+where does 5/6 of y sit?" all hand over which number matters. Ask
+plainly; the banner carries the string; the hint may point at it (help
+the student chose). Highlighting the relevant piece DURING the gate is
+the same pre-say — highlight it at the confirm.
 
 ## Decomposition steps pair the symbol with its region
 

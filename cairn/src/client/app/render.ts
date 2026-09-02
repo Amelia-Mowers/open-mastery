@@ -51,14 +51,14 @@ export function adaptNumberLinePatch(
 ): {
   highlight?: number[]
   marker?: number | null
-  arcs?: Array<{ from: number; to: number; label?: string }> | null
+  arcs?: Array<{ from: number; to: number; label?: string; color?: string; below?: boolean }> | null
   labelled?: number[] | null
   axis?: { min: number; max: number; step: number } | null
 } {
   const out: {
     highlight?: number[]
     marker?: number | null
-    arcs?: Array<{ from: number; to: number; label?: string }> | null
+    arcs?: Array<{ from: number; to: number; label?: string; color?: string; below?: boolean }> | null
     labelled?: number[] | null
     axis?: { min: number; max: number; step: number } | null
   } = {}
@@ -88,20 +88,26 @@ export function adaptNumberLinePatch(
       ? raw.map((v) => evalNumber(v, params)).filter((n): n is number => n !== null)
       : null
   }
+  type Arc = { from: number; to: number; label?: string; color?: string; below?: boolean }
+  const deco = (o: { color?: unknown; below?: unknown }, arc: Arc): Arc => {
+    if (typeof o.color === 'string') arc.color = o.color
+    if (o.below === true) arc.below = true
+    return arc
+  }
   if ('arcs' in patch) {
     const raw = patch['arcs']
     out.arcs = Array.isArray(raw)
       ? raw
           .map((a) => {
-            const o = a as { from?: unknown; to?: unknown; label?: unknown }
+            const o = a as { from?: unknown; to?: unknown; label?: unknown; color?: unknown; below?: unknown }
             const from = evalNumber(o.from, params)
             const to = evalNumber(o.to, params)
             if (from === null || to === null) return null
-            return o.label === undefined
-              ? { from, to }
-              : { from, to, label: renderText(String(o.label), params) }
+            const arc: Arc = { from, to }
+            if (o.label !== undefined) arc.label = renderText(String(o.label), params)
+            return deco(o, arc)
           })
-          .filter((a): a is { from: number; to: number; label?: string } => a !== null)
+          .filter((a): a is Arc => a !== null)
       : null
   }
   // `jumps` is authoring sugar over `arcs`: a programmatic run of equal
@@ -111,24 +117,41 @@ export function adaptNumberLinePatch(
   // the run are drawn (a count-gate's confirm raises it; 'all'/omitted =
   // every jump); sizes may be negative (jumps walk left).
   if ('jumps' in patch) {
-    const j = patch['jumps'] as
-      | { size?: unknown; count?: unknown; shown?: unknown; from?: unknown; label?: unknown }
-      | null
-    if (j === null) out.arcs = []
+    type JumpSpec = {
+      size?: unknown
+      count?: unknown
+      shown?: unknown
+      from?: unknown
+      label?: unknown
+      color?: unknown
+      below?: unknown
+    }
+    const raw = patch['jumps'] as JumpSpec | JumpSpec[] | null
+    if (raw === null) out.arcs = []
     else {
-      const size = evalNumber(j.size, params)
-      const count = evalNumber(j.count, params)
-      const start = j.from === undefined ? 0 : evalNumber(j.from, params)
-      const shown =
-        j.shown === undefined || j.shown === 'all' ? count : evalNumber(j.shown, params)
-      if (size !== null && count !== null && start !== null && shown !== null) {
+      // one spec or an ARRAY of series (two offers on one line, each
+      // with its own size/count/color/side), concatenated in order
+      const specs = Array.isArray(raw) ? raw : [raw]
+      const arcs: Arc[] = []
+      let ok = true
+      for (const j of specs) {
+        const size = evalNumber(j.size, params)
+        const count = evalNumber(j.count, params)
+        const start = j.from === undefined ? 0 : evalNumber(j.from, params)
+        const shown =
+          j.shown === undefined || j.shown === 'all' ? count : evalNumber(j.shown, params)
+        if (size === null || count === null || start === null || shown === null) {
+          ok = false
+          break
+        }
         const label = j.label === undefined ? undefined : renderText(String(j.label), params)
-        out.arcs = Array.from({ length: Math.max(0, Math.min(shown, count)) }, (_, i) =>
-          label === undefined
-            ? { from: start + i * size, to: start + (i + 1) * size }
-            : { from: start + i * size, to: start + (i + 1) * size, label },
-        )
+        for (let i = 0; i < Math.max(0, Math.min(shown, count)); i++) {
+          const arc: Arc = { from: start + i * size, to: start + (i + 1) * size }
+          if (label !== undefined) arc.label = label
+          arcs.push(deco(j, arc))
+        }
       }
+      if (ok) out.arcs = arcs
     }
   }
   return out

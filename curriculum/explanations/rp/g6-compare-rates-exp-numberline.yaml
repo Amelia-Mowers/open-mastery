@@ -4,23 +4,42 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["A: {a1} for ${u*a1}", "  vs  ", "B: {a2} for ${(u+d)*a2}", " — better buy?"], min: 0, max: "{u+d+1}", step: 1, labelled: [] }, caption: "Two offers on one line of dollar marks — the cheaper pencil sits closer to $0." }
+  - { t: 0, patch: { equation: ["A: {a1} pencils, ${u*a1}", "  vs  ", "B: {a2} pencils, ${(u+d)*a2}", " — better buy?"], min: 0, max: "{max(u*a1, (u+d)*a2)}", step: "{max(u*a1, (u+d)*a2)}", labelled: [] }, caption: "Two offers on one line — A above, B below. Whole prices first." }
   - t: 4
-    patch: { eqHighlight: ["0"], marker: "{u}", highlight: ["{u}"], labelled: ["0", "{u}"], arcs: [{ from: 0, to: "{u}", label: "A" }] }
-    caption: "Pack A: ${u*a1} ÷ {a1} = ${u} each — the span from $0 to ${u} is ONE Pack-A pencil."
+    patch: { eqHighlight: ["0"], jumps: { size: "{u*a1}", count: 1, label: "A: ${u*a1}" } }
+    caption: "Offer A, whole: one span of ${u*a1}, above the line."
+    expect:
+      type: pick
+      value: ["0"]
+      prompt: "Which piece — or pieces — is the WHOLE of offer A?"
+      hint: "Everything A gives and costs, in one piece."
+  - t: 8
+    patch: { eqHighlight: ["2"], jumps: [{ size: "{u*a1}", count: 1, label: "A: ${u*a1}" }, { size: "{(u+d)*a2}", count: 1, label: "B: ${(u+d)*a2}", color: "#3f6a4d", below: true }] }
+    caption: "Offer B, whole: one span of ${(u+d)*a2}, below the line."
+    expect:
+      type: pick
+      value: ["2"]
+      prompt: "Which piece — or pieces — is the WHOLE of offer B?"
+      hint: "Everything B gives and costs, in one piece."
+  - t: 12
+    patch: { eqHighlight: ["0"], jumps: [{ size: "{u}", count: "{a1}" }, { size: "{(u+d)*a2}", count: 1, label: "B: ${(u+d)*a2}", color: "#3f6a4d", below: true }] }
+    caption: "A's span cuts into {a1} equal pieces — one per pencil."
     expect:
       type: numeric
-      value: "{u}"
-      prompt: "Pack A: {a1} pencils for ${u*a1} — what does ONE pencil cost?"
-      hint: "Share ${u*a1} across the {a1} pencils."
-  - t: 8.5
-    patch: { eqHighlight: ["2"], marker: "{u+d}", highlight: ["{u}", "{u+d}"], labelled: ["0", "{u}", "{u+d}"], arcs: [{ from: 0, to: "{u}", label: "A" }, { from: 0, to: "{u+d}", label: "B" }] }
-    caption: "Pack B: ${(u+d)*a2} ÷ {a2} = ${u+d} each. Two spans from $0 — which pack charges less for ONE pencil, which is the better buy?"
+      value: "{a1}"
+      prompt: "How many equal pieces does A's span cut into?"
+      hint: "One piece per pencil in the pack."
+  - t: 16
+    patch: { eqHighlight: ["2"], jumps: [{ size: "{u}", count: "{a1}" }, { size: "{u+d}", count: "{a2}", color: "#3f6a4d", below: true }] }
+    caption: "B's span cuts into {a2} equal pieces the same way."
     expect:
       type: numeric
-      value: "{u+d}"
-      prompt: "Pack B: {a2} pencils for ${(u+d)*a2} — and ONE Pack-B pencil?"
-      hint: "Share ${(u+d)*a2} across the {a2} pencils."
-  - { t: 13, patch: { eqHighlight: [], marker: "{u}" }, caption: "${u} sits closer to $0 than ${u+d} — Pack A is the better buy." }
-  - { t: 15.5, handoff: { prompt: "Now you try." } }
+      value: "{a2}"
+      prompt: "How many equal pieces does B's span cut into?"
+      hint: "One piece per pencil in the pack."
+  - t: 20
+    patch: { eqHighlight: ["3"], axis: { min: 0, max: "{u+d}", step: "{gcd(u, d)}" }, jumps: [{ size: "{u}", count: 1 }, { size: "{u+d}", count: 1, color: "#3f6a4d", below: true }], labelled: [] }
+    caption: "Keep just the FIRST piece of each and zoom IN: ONE pencil against ONE pencil. So which pack is the better buy?"
+  - { t: 24, patch: { jumps: [{ size: "{u}", count: 1, label: "A: ${u}" }, { size: "{u+d}", count: 1, label: "B: ${u+d}", color: "#3f6a4d", below: true }], labelled: ["{u}", "{u+d}"] }, caption: "ONE Pack-A pencil: ${u}. ONE Pack-B pencil: ${u+d}. The shorter piece costs less — A is the better buy." }
+  - { t: 27, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

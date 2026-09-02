@@ -14,15 +14,15 @@ timeline:
       prompt: "Which piece — or pieces — of the expression says where to START?"
       hint: "One part is added on no matter what {variable} is. That is the start."
   - t: 8
-    patch: { eqHighlight: ["0"], jumps: { size: "{c}", count: "{a}", shown: 1, from: "{b}", label: "+{c}" }, labelled: ["{b}", "{b+c}"] }
-    caption: "One jump of {c}, drawn to {b+c}."
+    patch: { eqHighlight: ["2"], jumps: { size: "{c}", count: "{a}", shown: 1, from: "{b}", label: "+{c}" }, labelled: ["{b}", "{b+c}"] }
+    caption: "Each jump is {c} — the first one, drawn to {b+c}."
     expect:
       type: numeric
-      value: "{b+c}"
-      prompt: "One jump of {c} from {b} — where does it land?"
-      hint: "{b} plus one jump of {c}."
+      value: "{c}"
+      prompt: "How far does each jump go?"
+      hint: "The value given for {variable} is the size of a single jump."
   - t: 12
-    patch: { jumps: { size: "{c}", count: "{a}", from: "{b}", label: "+{c}" } }
+    patch: { eqHighlight: ["0"], jumps: { size: "{c}", count: "{a}", from: "{b}", label: "+{c}" } }
     caption: "All the jumps drawn, end to end. So what is {a}{variable} + {b}?"
     expect:
       type: numeric

@@ -8,7 +8,17 @@ import { WidgetStore } from './store'
  * depends on the arc's pixel width, so any guessed rotation reads as a
  * head glued on (reported twice). jsdom (no ResizeObserver) renders at a
  * fallback width; tests assert structure, not geometry. */
-function ArcHop({ forward, label }: { forward: boolean; label?: string | undefined }) {
+function ArcHop({
+  forward,
+  label,
+  color = '#b05f28',
+  below = false,
+}: {
+  forward: boolean
+  label?: string | undefined
+  color?: string | undefined
+  below?: boolean | undefined
+}) {
   const ref = useRef<HTMLDivElement>(null)
   const [w, setW] = useState(0)
   useEffect(() => {
@@ -23,11 +33,11 @@ function ArcHop({ forward, label }: { forward: boolean; label?: string | undefin
   const W = w > 8 ? w : 120 // fallback before measurement / in jsdom
   const H = 44
   const m = 3 // inset so round caps don't clip
-  const baseY = H - 4
+  const baseY = below ? 4 : H - 4
   // quadratic S → C → E along the hop, in pixels
   const S = { x: forward ? m : W - m, y: baseY }
   const E = { x: forward ? W - m : m, y: baseY }
-  const C = { x: W / 2, y: -6 }
+  const C = { x: W / 2, y: below ? H + 6 : -6 }
   // trim the dashed curve ~9px short of E (the head continues it):
   // near t=1 the speed is ~2·|E−C|, so back off dt ≈ 9 / (2·|E−C|)
   const dEC = Math.hypot(E.x - C.x, E.y - C.y)
@@ -55,10 +65,10 @@ function ArcHop({ forward, label }: { forward: boolean; label?: string | undefin
           style={{
             position: 'absolute',
             left: '50%',
-            bottom: '100%',
-            transform: 'translate(-50%, 6px)',
+            ...(below ? { top: '100%' } : { bottom: '100%' }),
+            transform: below ? 'translate(-50%, -6px)' : 'translate(-50%, 6px)',
             font: "700 16px 'Lora', Georgia, serif",
-            color: '#b05f28',
+            color,
             whiteSpace: 'nowrap',
           }}
         >
@@ -74,7 +84,7 @@ function ArcHop({ forward, label }: { forward: boolean; label?: string | undefin
         <path
           d={`M ${S.x} ${S.y} Q ${C1.x} ${C1.y} ${Qt.x} ${Qt.y}`}
           fill="none"
-          stroke="#b05f28"
+          stroke={color}
           strokeWidth="3"
           strokeDasharray="7 6"
           strokeLinecap="round"
@@ -82,8 +92,8 @@ function ArcHop({ forward, label }: { forward: boolean; label?: string | undefin
         <path
           data-arc-head
           d={`M ${E.x} ${E.y} L ${b1.x} ${b1.y} L ${b2.x} ${b2.y} Z`}
-          fill="#b05f28"
-          stroke="#b05f28"
+          fill={color}
+          stroke={color}
           strokeWidth="2"
           strokeLinejoin="round"
         />
@@ -115,7 +125,7 @@ export interface NumberLineView {
   marker?: number | null
   /** the MOVE: an arc from → to with its label above ("+ 4"), so a jump is
    * shown happening instead of a landing spot merely being highlighted */
-  arcs?: Array<{ from: number; to: number; label?: string }> | null
+  arcs?: Array<{ from: number; to: number; label?: string; color?: string; below?: boolean }> | null
   /** progressive labelling: only these ticks show their number (plus any
    * marked/arc endpoints). Without it a line that spans the answer PRINTS
    * the answer before the student has done anything. */
@@ -126,7 +136,7 @@ type NumberLineState = {
   value: number | null
   highlight: number[]
   marker: number | null
-  arcs: Array<{ from: number; to: number; label?: string }>
+  arcs: Array<{ from: number; to: number; label?: string; color?: string; below?: boolean }>
   labelled: number[] | null
   axis: { min: number; max: number; step: number } | null
 }
@@ -161,7 +171,17 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
     const disabled = mode === 'review'
     const current = state.value ?? config.min
     return (
-      <div style={{ fontFamily: "'Lora', serif", minWidth: 300, flex: '1 1 300px', maxWidth: 560 }}>
+      <div
+        style={{
+          fontFamily: "'Lora', serif",
+          minWidth: 300,
+          flex: '1 1 300px',
+          maxWidth: 560,
+          // below-the-line arcs (a second series) dip into the space the
+          // caption would otherwise use — reserve it
+          paddingBottom: state.arcs.some((a) => a.below === true) ? 56 : 0,
+        }}
+      >
         {params.prompt && <div style={{ color: '#5c5245', marginBottom: 8 }}>{params.prompt}</div>}
         <div
           role="slider"
@@ -205,11 +225,14 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
               (it only needs to span the gap); the head is an HTML triangle
               that cannot be distorted; the label sits above the box. */}
           {state.arcs.map((a, i) => {
-            // ticks are centred inside equal flex cells, so tick i sits at
-            // (i + 0.5)/n of the width — not i/(n-1)
+            // arcs are VALUE-positioned on the tick scale (ticks are
+            // centred in equal flex cells, so value v sits at
+            // ((v − min)/step + 0.5)/n) — an arc may land between ticks
+            // (two series with different unit sizes share one line)
+            const ax = state.axis ?? config
             const at = (v: number) => {
-              const k = ticks.indexOf(v)
-              return k < 0 ? -1 : (k + 0.5) / ticks.length
+              if (v < ax.min - 1e-9 || v > ax.max + 1e-9) return -1
+              return ((v - ax.min) / ax.step + 0.5) / ticks.length
             }
             const p1 = at(a.from)
             const p2 = at(a.to)
@@ -225,12 +248,13 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   position: 'absolute',
                   left: `${left * 100}%`,
                   width: `${width * 100}%`,
-                  bottom: 'calc(100% - 4px)',
-                  height: 44,
+                  ...(a.below === true
+                    ? { top: 4, height: 44 }
+                    : { bottom: 'calc(100% - 4px)', height: 44 }),
                   animation: 'cairn-pop 0.45s ease both',
                 }}
               >
-                <ArcHop forward={forward} label={a.label} />
+                <ArcHop forward={forward} label={a.label} color={a.color} below={a.below} />
               </div>
             )
           })}

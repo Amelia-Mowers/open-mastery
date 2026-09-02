@@ -4,31 +4,53 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], min: "{min(b, a*ans+b)}", max: "{max(b, a*ans+b)}", step: "{abs(ans)}", labelled: [] }, caption: "{a}{variable} + {b} = {a*ans+b}: a start, then {a} equal jumps to the finish." }
+  - { t: 0, patch: { equation: ["{a}", "{variable}", " + {b}", " = ", "{a*ans+b}"], min: "{min(0, a*ans)}", max: "{max(0, a*ans)}", step: "{abs(ans)}", labelled: [], marker: 0 }, caption: "A bare line, starting at 0. Two things sit on {variable}: the × {a} and the + {b}." }
   - t: 4
-    patch: { eqHighlight: ["1"], marker: "{b}", labelled: ["{b}"] }
-    caption: "The + {b} is the starting point — the walk begins at {b}."
+    patch: { equation: ["{a}", "{variable}", " = ", "{a*ans}"], eqHighlight: ["3"], labelled: ["0"] }
+    caption: "− {b} on both sides: {a}{variable} = {a*ans}. Now it is a jumps problem."
     expect:
-      type: numeric
-      value: "{b}"
-      prompt: "{a}{variable} + {b} — where does the walk start?"
-      hint: "The part that is there before any jumps."
+      type: op
+      value: "subtract {b}"
+      prompt: "To leave only the {a} jumps of {variable} on the left, what do you do to BOTH sides?"
+      hint: "The + {b} came last, so it leaves first — take it off both sides."
+      misconceptions:
+        - id: divided-before-clearing
+          when: "divide {a}"
+          says: "Dividing now shares the + {b} too — clear the + {b} first, then share what is left."
+        - id: added-instead-of-subtracted
+          when: "add {b}"
+          says: "Adding {b} again buries the jumps deeper. The + {b} is undone by taking {b} OFF both sides."
   - t: 8
-    patch: { eqHighlight: ["0", "3"], labelled: ["{b}", "{a*ans+b}"], highlight: ["{b}", "{a*ans+b}"] }
-    caption: "From {b} to {a*ans+b}: the {a} jumps add {a*ans} altogether."
+    patch: { eqHighlight: ["0", "1"], jumps: { size: "{ans}", count: "{a}", shown: 1 } }
+    caption: "{a}{variable} means {a} equal jumps, each one {variable} long — here is the first."
     expect:
-      type: numeric
-      value: "{a*ans}"
-      prompt: "The walk starts at {b} and finishes at {a*ans+b}. What number do the {a} jumps add altogether?"
-      hint: "{a*ans+b} minus the {b} already there."
+      type: pick
+      value: ["0"]
+      prompt: "Which piece — or pieces — of the equation says how many jumps to take?"
+      hint: "The number written in front of {variable} counts them."
   - t: 12
-    patch: { eqHighlight: ["0"], arcs: [{ from: "{b}", to: "{ans+b}", label: "{ans}" }], marker: "{ans+b}", labelled: ["{b}", "{ans+b}", "{a*ans+b}"], highlight: [] }
-    caption: "{a*ans} shared by {a} equal jumps — each jump is one {variable}. So what is {variable}?"
+    patch: { eqHighlight: ["3"], marker: "{a*ans}", labelled: ["0", "{a*ans}"] }
+    caption: "= {a*ans}: the jumps finish exactly on {a*ans} — {a} of them covering the whole trip."
     expect:
-      type: numeric
-      value: "{ans+b}"
-      prompt: "{a*ans} split into {a} equal jumps — where does the FIRST jump land?"
-      hint: "One jump's share of {a*ans}, added to {b}."
-  - { t: 16, patch: { eqHighlight: [], marker: "{a*ans+b}" }, caption: "Each jump adds {ans}: {a} of them from {b} reach {a*ans+b}. {variable} = {ans}." }
-  - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+      type: pick
+      value: ["3"]
+      prompt: "Which piece — or pieces — says where the jumps must FINISH?"
+      hint: "Whatever is on the far side of the equals sign is the landing place."
+  - t: 16
+    patch: { eqHighlight: [], jumps: { size: "{ans}", count: "{a}", shown: "all" } }
+    caption: "{a*ans} cut into {a} equal jumps, the whole trip covered. So how long is ONE jump — what is {variable}?"
+    expect:
+      type: op
+      value: "divide {a}"
+      prompt: "To find ONE jump's length, what do you do to {a*ans}?"
+      hint: "The whole trip {a*ans} is covered by {a} equal jumps."
+      misconceptions:
+        - id: subtracted-the-coefficient
+          when: "subtract {a}"
+          says: "Taking {a} away from {a*ans} shortens the trip — it does not cut it into {a} EQUAL jumps. Undo a multiply with a divide."
+        - id: multiplied-instead-of-divided
+          when: "multiply {a}"
+          says: "Multiplying by {a} makes the trip {a} times longer. To find ONE jump, divide."
+  - { t: 20, patch: { marker: "{ans}", labelled: ["0", "{ans}", "{a*ans}"], highlight: ["{ans}"] }, caption: "Each jump is {a*ans} ÷ {a} = {ans}. {variable} = {ans}." }
+  - { t: 23, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

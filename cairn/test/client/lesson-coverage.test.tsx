@@ -71,9 +71,18 @@ describe.skipIf(!has)('every curriculum explanation renders a live lesson', () =
         for (let i = 0; i <= n; i++) ticks.add(ax.min + i * ax.step)
       }
       setAxis(setup)
+      let range = { min: setup.min, max: setup.max }
       const check = (v: unknown, what: string) => {
         const num = evalNumber(v, params as never)
         if (num !== null && !ticks.has(num)) bad.push(`${e.id}: ${what} ${num} is not on the axis`)
+      }
+      // arcs are VALUE-positioned (they may land between ticks — two
+      // series with different unit sizes share one line), so their
+      // endpoints need only sit within the active axis range
+      const checkRange = (v: unknown, what: string) => {
+        const num = evalNumber(v, params as never)
+        if (num !== null && (num < range.min - 1e-9 || num > range.max + 1e-9))
+          bad.push(`${e.id}: ${what} ${num} is outside the axis range`)
       }
       for (const st of e.timeline) {
         const p = st.patch as Record<string, unknown> | undefined
@@ -85,22 +94,27 @@ describe.skipIf(!has)('every curriculum explanation renders a live lesson', () =
           const step = evalNumber(a['step'], params as never)
           if (min === null || max === null || step === null || step <= 0 || max <= min)
             bad.push(`${e.id}: axis patch does not evaluate to a valid axis`)
-          else setAxis({ min, max, step })
+          else {
+            setAxis({ min, max, step })
+            range = { min, max }
+          }
         }
         if (Array.isArray(p['labelled'])) for (const v of p['labelled']) check(v, 'labelled')
         if (p['marker'] != null) check(p['marker'], 'marker')
         if (Array.isArray(p['arcs']))
           for (const a of p['arcs'] as Array<Record<string, unknown>>) {
-            check(a['from'], 'arc from')
-            check(a['to'], 'arc to')
+            checkRange(a['from'], 'arc from')
+            checkRange(a['to'], 'arc to')
           }
-        const j = p['jumps'] as Record<string, unknown> | null | undefined
-        if (j != null && typeof j === 'object') {
-          const size = evalNumber(j['size'], params as never)
-          const count = evalNumber(j['count'], params as never)
-          const start = j['from'] === undefined ? 0 : evalNumber(j['from'], params as never)
-          if (size !== null && count !== null && start !== null)
-            for (let i = 0; i <= count; i++) check(start + i * size, `jump tick ${i}`)
+        const jraw = p['jumps'] as Record<string, unknown> | Array<Record<string, unknown>> | null | undefined
+        if (jraw != null && typeof jraw === 'object') {
+          for (const j of Array.isArray(jraw) ? jraw : [jraw]) {
+            const size = evalNumber(j['size'], params as never)
+            const count = evalNumber(j['count'], params as never)
+            const start = j['from'] === undefined ? 0 : evalNumber(j['from'], params as never)
+            if (size !== null && count !== null && start !== null)
+              for (let i = 0; i <= count; i++) checkRange(start + i * size, `jump point ${i}`)
+          }
         }
       }
     }

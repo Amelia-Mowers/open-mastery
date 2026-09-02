@@ -11,7 +11,7 @@ timeline:
     expect:
       type: numeric
       value: "{b}"
-      prompt: "{variable}/{a} = {b} — ONE of the {a} equal parts is how long?"
+      prompt: "ONE of the {a} equal parts is how long?"
       hint: "The equation names it."
   - t: 7
     patch: { eqHighlight: ["0"], jumps: { size: "{b}", count: "{a}", shown: "all", label: "{b}" } }
@@ -27,4 +27,4 @@ timeline:
           says: "{variable} is already cut into {a} parts — dividing again makes them smaller. To rebuild the whole, multiply."
   - { t: 10.5, patch: { eqHighlight: [], marker: "{a*b}", highlight: ["{a*b}"], labelled: ["0", "{b}", "{a*b}"] }, caption: "{a} jumps of {b} reach {a*b}. {variable} = {a*b}." }
   - { t: 13, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }
