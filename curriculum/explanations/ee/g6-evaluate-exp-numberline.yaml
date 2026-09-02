@@ -31,4 +31,4 @@ timeline:
       hint: "The number in front of {variable} counts the jumps."
   - { t: 16, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}", " → ", "{a*c+b}"], eqHighlight: ["4"], marker: "{a*c+b}", labelled: ["{b}", "{b+c}", "{a*c+b}"] }, caption: "{a} jumps of {c} from {b} reach {a*c+b}. {a}·{c} + {b} = {a*c+b}." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }

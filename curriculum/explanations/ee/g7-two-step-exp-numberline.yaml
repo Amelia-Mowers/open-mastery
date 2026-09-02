@@ -11,7 +11,7 @@ timeline:
     expect:
       type: op
       value: "subtract {b}"
-      prompt: "To leave only the {a} jumps of {variable} on the left, what do you do to BOTH sides?"
+      prompt: "To leave only the {a}{variable} on the left, what do you do to BOTH sides?"
       hint: "The + {b} came last, so it leaves first — take it off both sides."
       misconceptions:
         - id: divided-before-clearing
@@ -29,7 +29,7 @@ timeline:
       prompt: "Which piece — or pieces — of the equation says how many jumps to take?"
       hint: "The number written in front of {variable} counts them."
   - t: 12
-    patch: { eqHighlight: ["3"], marker: "{a*ans}", labelled: ["0", "{a*ans}"] }
+    patch: { eqHighlight: ["3"], marker: "{a*ans}", labelled: ["0", "{a*ans}"], jumps: { size: "{ans}", count: "{a}", shown: "all" } }
     caption: "= {a*ans}: the jumps finish exactly on {a*ans} — {a} of them covering the whole trip."
     expect:
       type: pick
@@ -37,7 +37,7 @@ timeline:
       prompt: "Which piece — or pieces — says where the jumps must FINISH?"
       hint: "Whatever is on the far side of the equals sign is the landing place."
   - t: 16
-    patch: { eqHighlight: [], jumps: { size: "{ans}", count: "{a}", shown: "all" } }
+    patch: { eqHighlight: [], highlight: ["{ans}"] }
     caption: "{a*ans} cut into {a} equal jumps, the whole trip covered. So how long is ONE jump — what is {variable}?"
     expect:
       type: op
