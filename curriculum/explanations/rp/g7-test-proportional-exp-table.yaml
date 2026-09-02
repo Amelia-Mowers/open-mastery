@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["y", " ÷ ", "x", " = same?" ], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k}"], ["{e}", "{e*k}"]], reveal: "1" }, caption: "Is this table proportional? ONE test decides: y ÷ x, row by row." }
   - t: 4
     patch: { eqHighlight: ["0", "2"], reveal: "2", highlight: "2" }
-    caption: "Row 1 gives {k}. Row two: {c*k} ÷ {c} = {k} — the SAME. Will the last row keep it up?"
+    caption: "Row 1 gives {k}. Row two: {c*k} ÷ {c} = {k} — the SAME so far."
     expect:
       type: numeric
       value: "{k}"

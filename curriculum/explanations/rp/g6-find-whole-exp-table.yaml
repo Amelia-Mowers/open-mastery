@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["{100/n}%", " of ? = ", "{k}"], cols: ["percent", "amount"], rows: [["{100/n}%", "{k}"], ["100%", "{n*k}"]], reveal: "0" }, caption: "A benchmark part is known — the whole hides at 100%." }
   - t: 4
     patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }
-    caption: "{100/n}% of the number is {k} — and {100/n}% is 1/{n}. How many such parts make the whole?"
+    caption: "{100/n}% of the number is {k} — and {100/n}% is 1/{n} of it."
     expect:
       type: pick
       value: ["0", "2"]

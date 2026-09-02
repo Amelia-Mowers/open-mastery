@@ -629,6 +629,23 @@ annotate it, it is not a decomposition. Two corollaries:
   lesson for the standard — the full G6–8 page cache is local at
   `sources/illustrative-mathematics/cache/` (g#-u#-l#.html); cite it.
 
+## Captions SUMMARIZE; prompts ASK (2026-09-02, supersedes "caption poses")
+
+A caption explains the step that just confirmed. The gate prompt below
+it asks the next question. They must never ask the same thing — the
+duplicate read live as the same sentence twice on one screen. The ONE
+caption that asks is the penultimate step's: the problem's own question,
+left in the air for the answer box ([lead_ends_quiet]). Every other
+caption ends on a statement.
+
+This supersedes the older "scene-setting captions come BEFORE their
+gate / put the question in the air" phrasing for non-closing steps.
+Invariants: [caption_prompt_dup] (the caption on screen while a gate is
+open asks the gate's own question), [caption_preempts] (any
+non-penultimate caption ending on a question mark). The vetted
+exp-worked timelines predate this rule and carry standing warnings —
+retrofit on review, not in a sweep.
+
 ## The jump-walk standard timeline (2026-09-02, Mia's template)
 
 Every number-line walk lesson is a VARIANT of one gate sequence — do not

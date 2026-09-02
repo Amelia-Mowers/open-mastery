@@ -7,14 +7,14 @@ timeline:
   - { t: 0, patch: { equation: ["{a} lb", " → ", "${b}", ", so {c} lb", " → ?"], cols: ["pounds", "dollars"], rows: [["{a}", "{b}"], ["1", "{b/a}"], ["{c}", "{c*b/a}"]], reveal: "0" }, caption: "One known pair unlocks every other row." }
   - t: 4
     patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }
-    caption: "The row we know: {a} pounds cost ${b}. To price ONE pound — what move shares out the ${b}?"
+    caption: "The row we know: {a} pounds cost ${b}."
     expect:
       type: pick
       value: ["0", "2"]
       prompt: "Which piece — or pieces — make the pair we KNOW: the pounds with their price?"
   - t: 8
     patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "÷{a}" } }
-    caption: "÷{a} steps down to the ONE-pound row. So what does ONE pound cost?"
+    caption: "÷{a} steps down to the ONE-pound row."
     expect:
       type: op
       value: "divide {a}"
@@ -26,7 +26,7 @@ timeline:
           says: "Multiplying by {a} prices {a} pounds of {a} pounds — ONE pound is a SHARE of the ${b}: divide."
   - t: 12
     patch: { reveal: "2", highlight: "2" }
-    caption: "ONE pound costs ${b/a}. To price {c} pounds — what move climbs there?"
+    caption: "ONE pound costs ${b/a} — the {c}-pound row is within reach."
     expect:
       type: numeric
       value: "{b/a}"

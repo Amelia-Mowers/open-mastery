@@ -15,7 +15,7 @@ timeline:
       hint: "y is made FROM x."
   - t: 8
     patch: { eqHighlight: ["0"], bottomIn: true }
-    caption: "Each y sits below its x. The test: divide a y by its x — what does the first pair give?"
+    caption: "Each y sits below its x. The test: divide a y by its x."
     expect:
       type: pick
       value: ["0"]

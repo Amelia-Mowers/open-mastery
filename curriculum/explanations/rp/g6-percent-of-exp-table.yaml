@@ -14,7 +14,7 @@ timeline:
       prompt: "Which piece — or pieces — is the WHOLE the table starts from?"
   - t: 8
     patch: { eqHighlight: ["0"], factor: { from: "1", to: "2", text: "{n} parts" } }
-    caption: "{n} equal parts below the whole. To step down to ONE of them — what move?"
+    caption: "{n} equal parts sit below the whole."
     expect:
       type: numeric
       value: "{n}"

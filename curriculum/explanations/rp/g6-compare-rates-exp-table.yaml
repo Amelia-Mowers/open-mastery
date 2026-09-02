@@ -5,7 +5,7 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["A: {a1} for ${u*a1}", "  vs  ", "B: {a2} for ${(u+d)*a2}", " — better buy?"], cols: ["how many", "cost"], rows: [["A: {a1}", "${u*a1}"], ["A: 1", "${u}"], ["B: {a2}", "${(u+d)*a2}"], ["B: 1", "${u+d}"]], reveal: "0" }, caption: "Two offers. Neither says what ONE pencil costs — take each down to one." }
-  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "Pack A: {a1} pencils, ${u*a1}. So what does ONE Pack-A pencil cost?" }
+  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "Pack A first: {a1} pencils for ${u*a1}." }
   - t: 8
     patch: { reveal: "2", highlight: "2" }
     caption: "${u*a1} shared over {a1} pencils: ${u} each."
@@ -14,7 +14,7 @@ timeline:
       value: "{u}"
       prompt: "{a1} pencils cost ${u*a1} — what does ONE Pack-A pencil cost?"
       hint: "Share ${u*a1} equally across the {a1} pencils."
-  - { t: 12, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Pack B: {a2} pencils, ${(u+d)*a2}. So what does ONE Pack-B pencil cost?" }
+  - { t: 12, patch: { eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "Pack A is priced. Pack B: {a2} pencils for ${(u+d)*a2}." }
   - t: 16
     patch: { eqHighlight: [], reveal: "4", highlight: "4" }
     caption: "${(u+d)*a2} over {a2} pencils: ${u+d} each. ONE pencil: ${u} against ${u+d} — which pack is the better buy?"

@@ -15,7 +15,7 @@ timeline:
       hint: "The base {n} is the jump size."
   - t: 8
     patch: { jumps: { size: "{n}", count: "{n}", label: "+{n}" } }
-    caption: "{n} jumps of {n}. Where does the last one land?"
+    caption: "{n} jumps of {n}, end to end."
     expect:
       type: numeric
       value: "{n}"

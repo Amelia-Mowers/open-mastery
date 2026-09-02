@@ -591,6 +591,58 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
             `the step before the closing caption asks the same question ('${q1.slice(0, 50)}') the closing caption asks — one closing question is enough`,
           )
       }
+      // CAPTIONS SUMMARIZE; PROMPTS ASK (Mia, 2026-09-02). A caption
+      // explains the step that just confirmed; the gate prompt below it
+      // asks the next question. Only the PENULTIMATE step's caption asks
+      // — the problem's own question, for the box. Two faults:
+      // [caption_prompt_dup] — the caption on screen while a gate is
+      // open asks the gate's own question (seen live: "4 jumps of 4.
+      // Where does the last one land?" over a prompt asking the same);
+      // [caption_preempts] — any non-penultimate caption ending on a
+      // question mark.
+      for (const e of explBySkill.get(s.id) ?? []) {
+        const content = e.timeline.filter(
+          (st) => st.patch !== undefined || st.caption !== undefined,
+        )
+        if (content.length < 2) continue
+        const closingIdx = content.length - 2
+        const normQ = (t: string): string =>
+          t
+            .toLowerCase()
+            .replace(/[^a-z0-9?]+/g, ' ')
+            .trim()
+        for (let i = 0; i < content.length; i++) {
+          const ex = content[i]!.expect
+          if (ex?.prompt === undefined) continue
+          let visible = ''
+          for (let j = 0; j < i; j++) {
+            const c = content[j]!.caption
+            if (c !== undefined) visible = c
+          }
+          const vq = visible.match(/([^.!?]*\?)\s*$/)
+          if (!vq) continue
+          const q = normQ(vq[1]!)
+          const p = normQ(ex.prompt)
+          if (q.length > 8 && (p === q || p.endsWith(q) || q.endsWith(p)))
+            push(
+              'warning',
+              'caption_prompt_dup',
+              `${e.id}.timeline[${i}]`,
+              `the caption on screen while this gate is open already asks its question ('${vq[1]!.trim().slice(0, 50)}') — captions summarize the confirmed step; the prompt asks`,
+            )
+        }
+        for (let i = 0; i < content.length; i++) {
+          if (i === closingIdx) continue
+          const cap = (content[i]!.caption ?? '').trim()
+          if (cap === '' || !/\?\s*$/.test(cap)) continue
+          push(
+            'warning',
+            'caption_preempts',
+            `${e.id}.timeline[${i}]`,
+            `this caption ends on a question ('${cap.slice(-50)}') but only the penultimate step asks (the problem's own question, for the box) — captions summarize and explain; the gate prompt asks the next question`,
+          )
+        }
+      }
       // A misconception belongs to the MOVE, not the picture: the same op
       // gate across a skill's representations meets the same predictable
       // errors, so a diagnosis authored on one timeline and absent on

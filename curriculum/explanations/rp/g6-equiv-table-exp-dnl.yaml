@@ -15,7 +15,7 @@ timeline:
       hint: "The top line carries the cups."
   - t: 8
     patch: { eqHighlight: ["2"], bottomIn: true }
-    caption: "{b} muffins sits right below it — one ratio, one aligned pair. Sliding right to {a*m} cups — what factor stretches BOTH lines?"
+    caption: "{b} muffins sits right below it — one ratio, one aligned pair, sliding right toward {a*m} cups."
     expect:
       type: pick
       value: ["2"]

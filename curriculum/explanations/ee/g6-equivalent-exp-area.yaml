@@ -4,7 +4,7 @@ representation: area-model
 widget: area-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{m}", "({variable} + {n})"], height: "{m}", parts: ["{variable}", "{n}"], fillRows: "0", heightIn: false, partsIn: false }, caption: "{m}({variable} + {n}) is a rectangle waiting to be drawn. How tall, how wide?" }
+  - { t: 0, patch: { equation: ["{m}", "({variable} + {n})"], height: "{m}", parts: ["{variable}", "{n}"], fillRows: "0", heightIn: false, partsIn: false }, caption: "{m}({variable} + {n}) is a rectangle waiting to be drawn." }
   - t: 4
     patch: { eqHighlight: ["0"], heightIn: true }
     caption: "The number out front is the HEIGHT: {m} rows."

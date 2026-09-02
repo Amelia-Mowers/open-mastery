@@ -5,7 +5,7 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a} cups", " : ", "{b} muffins", "  →  ", "{a*m} cups", " : ", "?"], cols: ["cups", "muffins"], rows: [["{a}", "{b}"], ["{a*m}", "?"], ["{a*m}", "{b*m}"]], reveal: "1" }, caption: "{a} cups of flour makes {b} muffins. How many muffins would {a*m} cups make — the table carries the recipe there." }
-  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "2", highlight: "2" }, caption: "One row, one batch: {a} cups, {b} muffins. From {a} cups to {a*m} cups — times what?" }
+  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "2", highlight: "2" }, caption: "One row, one batch: {a} cups, {b} muffins — and the {a*m}-cup batch waiting." }
   - t: 8
     patch: { eqHighlight: ["4"], factor: { from: "1", to: "2", text: "×{m}" }, highlight: "2" }
     caption: "×{m} on the cups — and the SAME ×{m} on the muffins keeps the recipe. So {a*m} cups makes how many muffins?"
