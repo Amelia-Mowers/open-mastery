@@ -29,6 +29,9 @@ export interface SpeechState {
   /** narration still runs while muted — only the gain is zeroed */
   muted: boolean
   speaking: boolean
+  /** transport pause: the audio clock is frozen mid-line (speaking may
+   * still be true — the line resumes where it stopped) */
+  paused: boolean
   /** audio for the line on screen still fetching — sound not started */
   generating: boolean
   /** playback volume 0..1 (the in-player slider) */
@@ -111,6 +114,7 @@ class SpeechService {
     model: 'ready',
     muted: storedMuted(),
     speaking: false,
+    paused: false,
     generating: false,
     volume: storedVolume(),
   }
@@ -125,6 +129,11 @@ class SpeechService {
   /** the last line (joined snippet key) that PLAYED TO THE END — players
    * pace lesson stages on this via finished() */
   private doneKey: string | null = null
+  /** the line currently on (or headed for) the audio clock — lets a
+   * player ask whether the sounding audio is ITS line (the service is a
+   * singleton; another player's narration must not light this one's
+   * transport) */
+  private lineKey: string | null = null
   /** snippet → decoded audio, insertion-ordered for LRU */
   private cache = new Map<string, AudioBuffer>()
   /** snippets being fetched right now (dedupes speak vs prefetch) */
@@ -211,11 +220,13 @@ class SpeechService {
   pause(): void {
     this.pausedByUser = true
     if (this.ctx && this.ctx.state === 'running') void this.ctx.suspend()
+    if (!this.state.paused) this.set({ paused: true })
   }
 
   resume(): void {
     this.pausedByUser = false
     if (this.ctx && this.ctx.state === 'suspended') void this.ctx.resume()
+    if (this.state.paused) this.set({ paused: false })
   }
 
   /** Played fraction (0..1) of the line currently on the audio clock, or
@@ -311,6 +322,11 @@ class SpeechService {
     return key === '' || this.doneKey === key
   }
 
+  /** Is this line the one the voice is currently speaking (or loading)? */
+  speaksLine(parts: string[]): boolean {
+    return this.lineKey !== null && this.lineKey === this.keyOf(parts)
+  }
+
   /** Speak a line — one or more whole snippets played back to back —
    * cancelling whatever is mid-air. Each snippet is one corpus file;
    * they fetch in parallel and schedule gaplessly on the audio clock. */
@@ -320,6 +336,7 @@ class SpeechService {
     const key = snippets.join('\n')
     const myTurn = ++this.turn
     this.doneKey = null
+    this.lineKey = key
     this.stopSources()
     this.lineStartAt = 0
     this.lineEndAt = 0
@@ -387,6 +404,7 @@ class SpeechService {
   stop(): void {
     this.turn++
     this.stopSources()
+    this.lineKey = null
     this.lineStartAt = 0
     this.lineEndAt = 0
     if (this.state.speaking || this.state.generating) this.set({ speaking: false, generating: false })

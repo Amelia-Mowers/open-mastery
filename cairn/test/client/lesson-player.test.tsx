@@ -91,12 +91,14 @@ describe('explanation player', () => {
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
   })
 
-  it('pause/play toggles; seeking pauses; speed control cycles', () => {
+  it('pause/play toggles; seeking PLAYS from the landed step; speed control cycles', () => {
     render(<LessonPlayer explanation={balanceExp} params={P} kind="lesson" onDone={() => {}} />)
     expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument()
-    goToStep(2, 4)
+    fireEvent.click(screen.getByRole('button', { name: 'Pause' }))
     expect(screen.getByRole('button', { name: 'Play' })).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: 'Play' }))
+    // a section click restarts playback from that step — the transport
+    // shows the true state (playing), not the pre-click pause
+    goToStep(2, 4)
     expect(screen.getByRole('button', { name: 'Pause' })).toBeInTheDocument()
     const speed = screen.getByRole('button', { name: /Playback speed/ })
     expect(speed).toHaveTextContent('1×')

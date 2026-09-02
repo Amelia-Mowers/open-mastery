@@ -5,7 +5,7 @@
  * interaction mid-timeline, and handoff into faded/practice — with an
  * optional looping "show me another way" chain. Captions are the source of
  * truth and are rendered by the player. */
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { speech } from '../tts/speech'
 import { VoiceControl, VoiceGenSpinner } from '../tts/VoiceToggle'
 import type { ReactElement } from 'react'
@@ -490,7 +490,22 @@ export function LessonPlayer({
   const [playing, setPlaying] = useState(autoplay && intro === undefined)
   /** narration follows the transport: silent until played (or scrubbed) */
   const [voiceLive, setVoiceLive] = useState(autoplay)
+  /** bumped by section clicks so the landed step's line restarts from its
+   * beginning even when the caption text is unchanged */
+  const [speakCue, setSpeakCue] = useState(0)
   const [speedIdx, setSpeedIdx] = useState(0)
+  // the play/pause button shows the ACTUAL state: running clock OR audio
+  // actually sounding for THIS player's line (the voice is a singleton —
+  // another card's narration must not light this transport)
+  const captionRef = useRef('')
+  const audioActive = useSyncExternalStore(
+    speech.subscribe,
+    () => {
+      const s = speech.getState()
+      return s.speaking && !s.paused && speech.speaksLine([captionRef.current])
+    },
+    () => false,
+  )
   /** the handoff row stays once the end has been reached, even when scrubbing back */
   const [reachedEnd, setReachedEnd] = useState(false)
   const endNotified = useRef(false)
@@ -559,6 +574,7 @@ export function LessonPlayer({
           .filter((v) => Number.isInteger(v))
     }
   }
+  captionRef.current = caption
 
   // autoplay: advance until the handoff time, then rest there.
   // With the voice on, the clock HOLDS at the next caption boundary until
@@ -596,18 +612,19 @@ export function LessonPlayer({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [playing, preamble, speedIdx, handoffT, caption])
 
+  /** jump to a step and PLAY from its beginning — clock and narration
+   * restart together, and the play button reflects it */
   const seek = (target: number) => {
-    setPlaying(false)
-    // scrubbing narrates the step you land on (the click is a gesture —
-    // clear any transport pause so the line is heard)
+    speech.resume() // the click is a gesture; clear any transport pause
     setVoiceLive(true)
-    speech.resume()
+    setSpeakCue((c) => c + 1) // re-speak even when the landed caption text is unchanged
     let targetIdx = -1
     for (let i = 0; i < steps.length; i++) if (steps[i]!.t <= target + 1e-9) targetIdx = i
     if (targetIdx < appliedRef.current) {
       setEpoch((e) => e + 1) // fresh widget; patches replay from the top
     }
     setTime(target)
+    setPlaying(true)
   }
 
   /** fill fraction of content segment i — the clock's position, except
@@ -693,27 +710,30 @@ export function LessonPlayer({
       >
         {caption}
       </p>
-      <SpeakCaption text={caption} live={voiceLive} />
+      <SpeakCaption text={caption} live={voiceLive} cue={speakCue} />
       <VoiceGenSpinner />
       <div className="lesson-controls">
         <button
           className="btn btn-round"
-          aria-label={playing ? 'Pause' : 'Play'}
+          aria-label={playing || audioActive ? 'Pause' : 'Play'}
           onClick={() => {
-            if (playing) {
+            if (playing || audioActive) {
               // pause the narration WITH the lesson — resume picks the
               // audio up mid-word on the frozen audio clock
               speech.pause()
               setPlaying(false)
               return
             }
-            if (time >= handoffT) seek(0)
+            if (time >= handoffT) {
+              seek(0) // restart: seek plays
+              return
+            }
             speech.resume()
             setVoiceLive(true)
             setPlaying(true)
           }}
         >
-          {playing ? '❚❚' : '▶'}
+          {playing || audioActive ? '❚❚' : '▶'}
         </button>
         <div className="step-track" role="group" aria-label="Lesson timeline">
           {contentSteps.map((s, i) => (
@@ -765,11 +785,13 @@ export function LessonPlayer({
 /** Voice: read each caption as it lands. Narration always runs (mute
  * only zeroes the gain), so this never re-fires on mute changes — but it
  * follows the transport: silent until the player has been started or
- * scrubbed (`live`), so a mounted-but-unstarted player says nothing. */
-function SpeakCaption({ text, live }: { text: string; live: boolean }) {
+ * scrubbed (`live`), so a mounted-but-unstarted player says nothing.
+ * `cue` bumps re-speak the line from its beginning (a section click on
+ * the step already showing). */
+function SpeakCaption({ text, live, cue }: { text: string; live: boolean; cue: number }) {
   useEffect(() => {
     if (live && text !== '') void speech.speak([text])
-  }, [text, live])
+  }, [text, live, cue])
   useEffect(() => () => speech.stop(), [])
   return null
 }
