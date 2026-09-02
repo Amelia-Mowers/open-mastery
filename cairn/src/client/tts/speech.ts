@@ -45,6 +45,12 @@ export interface SpeechState {
 export function mathToSpeech(text: string): string {
   return (
     text
+      // unknowns are SPOKEN; question marks are intonation. "$?" and a
+      // free-standing "?" (after space/=/→/:) mean "the unknown"; a "?"
+      // attached to a word, paren, or quote ends a question and must
+      // stay for Kokoro's rising inflection.
+      .replace(/\$\?/g, 'unknown price')
+      .replace(/(^|[\s=:→⟶])\?/g, '$1what')
       // money: "$28" → "28 dollars" (glyph-first order reads as "dollar 28")
       .replace(/\$(\d+(?:\.\d+)?)/g, '$1 dollars')
       // simple fractions: "3/4" → "3 over 4" (digits only — don't touch dates or units)
