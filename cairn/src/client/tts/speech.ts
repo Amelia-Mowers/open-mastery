@@ -11,8 +11,9 @@
  * THE VOICE IS ALWAYS ON. Narration always plays and always paces the
  * lesson clock; MUTE just silences it (gain 0) — so muting and unmuting
  * never restarts a line and never changes the lesson's rhythm. The only
- * true off-switch is deactivate(), for tests and the zoo (dozens of
- * autoplaying players), where nothing fetches or speaks at all.
+ * true off-switches are the VITEST guard and setSuspended() (the zoo's
+ * full grid — dozens of autoplaying players), where nothing fetches,
+ * speaks, or paces.
  *
  * Coverage is a build-time guarantee (scripts/check-voice-coverage.ts):
  * a snippet missing from the corpus fails the build. If one is somehow
