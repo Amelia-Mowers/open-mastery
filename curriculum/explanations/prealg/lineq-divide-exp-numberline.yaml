@@ -14,7 +14,7 @@ timeline:
       prompt: "Which piece — or pieces — of the equation says how many jumps to take?"
       hint: "The number written in front of {variable} counts them."
   - t: 7
-    patch: { eqHighlight: ["3"], marker: "{b}", labelled: ["0", "{b}"] }
+    patch: { eqHighlight: ["3"], marker: "{b}", labelled: ["0", "{b}"], jumps: { size: "{b/a}", count: "{a}", shown: "all" } }
     caption: "= {b}: the jumps finish exactly on {b} — {a} of them covering the whole trip."
     expect:
       type: pick
@@ -22,7 +22,7 @@ timeline:
       prompt: "Which piece — or pieces — says where the jumps must FINISH?"
       hint: "Whatever is on the far side of the equals sign is the landing place."
   - t: 10.5
-    patch: { eqHighlight: [], jumps: { size: "{b/a}", count: "{a}", shown: "all" } }
+    patch: { eqHighlight: [], highlight: ["{b/a}"] }
     caption: "{b} cut into {a} equal jumps, the whole trip covered. So how long is ONE jump — what is {variable}?"
     expect:
       type: op
