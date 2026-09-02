@@ -62,9 +62,15 @@ describe.skipIf(!has)('every curriculum explanation renders a live lesson', () =
       const params = fed as Record<string, unknown>
       const setup = numberLineSetup(e.timeline as never, params as never)
       if (!setup) continue
-      const ticks = new Set<number>()
-      const n = Math.round((setup.max - setup.min) / setup.step)
-      for (let i = 0; i <= n; i++) ticks.add(setup.min + i * setup.step)
+      // the axis can RESCALE mid-lesson (`axis` patch — the zoom-out
+      // move); every named value checks against the axis ACTIVE at its step
+      let ticks = new Set<number>()
+      const setAxis = (ax: { min: number; max: number; step: number }) => {
+        ticks = new Set<number>()
+        const n = Math.round((ax.max - ax.min) / ax.step)
+        for (let i = 0; i <= n; i++) ticks.add(ax.min + i * ax.step)
+      }
+      setAxis(setup)
       const check = (v: unknown, what: string) => {
         const num = evalNumber(v, params as never)
         if (num !== null && !ticks.has(num)) bad.push(`${e.id}: ${what} ${num} is not on the axis`)
@@ -72,6 +78,15 @@ describe.skipIf(!has)('every curriculum explanation renders a live lesson', () =
       for (const st of e.timeline) {
         const p = st.patch as Record<string, unknown> | undefined
         if (!p) continue
+        if (p['axis'] != null && typeof p['axis'] === 'object') {
+          const a = p['axis'] as Record<string, unknown>
+          const min = evalNumber(a['min'], params as never)
+          const max = evalNumber(a['max'], params as never)
+          const step = evalNumber(a['step'], params as never)
+          if (min === null || max === null || step === null || step <= 0 || max <= min)
+            bad.push(`${e.id}: axis patch does not evaluate to a valid axis`)
+          else setAxis({ min, max, step })
+        }
         if (Array.isArray(p['labelled'])) for (const v of p['labelled']) check(v, 'labelled')
         if (p['marker'] != null) check(p['marker'], 'marker')
         if (Array.isArray(p['arcs']))
@@ -79,6 +94,14 @@ describe.skipIf(!has)('every curriculum explanation renders a live lesson', () =
             check(a['from'], 'arc from')
             check(a['to'], 'arc to')
           }
+        const j = p['jumps'] as Record<string, unknown> | null | undefined
+        if (j != null && typeof j === 'object') {
+          const size = evalNumber(j['size'], params as never)
+          const count = evalNumber(j['count'], params as never)
+          const start = j['from'] === undefined ? 0 : evalNumber(j['from'], params as never)
+          if (size !== null && count !== null && start !== null)
+            for (let i = 0; i <= count; i++) check(start + i * size, `jump tick ${i}`)
+        }
       }
     }
     expect(bad, bad.join('; ')).toEqual([])

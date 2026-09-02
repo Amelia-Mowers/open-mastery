@@ -23,4 +23,4 @@ timeline:
       hint: "A square is as wide as it is tall: {c} again."
   - { t: 12, patch: { equation: ["{c}²", " = ", "{c*c}"], eqHighlight: ["2"], count: "{c*c}" }, caption: "{c} rows of {c}: {c} × {c} = {c*c}. {c}² = {c*c}." }
   - { t: 15, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }

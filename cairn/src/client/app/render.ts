@@ -53,18 +53,31 @@ export function adaptNumberLinePatch(
   marker?: number | null
   arcs?: Array<{ from: number; to: number; label?: string }> | null
   labelled?: number[] | null
+  axis?: { min: number; max: number; step: number } | null
 } {
   const out: {
     highlight?: number[]
     marker?: number | null
     arcs?: Array<{ from: number; to: number; label?: string }> | null
     labelled?: number[] | null
+    axis?: { min: number; max: number; step: number } | null
   } = {}
   if ('highlight' in patch) {
     const raw = patch['highlight']
     out.highlight = Array.isArray(raw)
       ? raw.map((v) => evalNumber(v, params)).filter((n): n is number => n !== null)
       : []
+  }
+  // a mid-lesson rescale: {min,max,step} templates evaluated per instance
+  if ('axis' in patch) {
+    const a = patch['axis'] as { min?: unknown; max?: unknown; step?: unknown } | null
+    if (a === null) out.axis = null
+    else {
+      const min = evalNumber(a.min, params)
+      const max = evalNumber(a.max, params)
+      const step = evalNumber(a.step, params)
+      if (min !== null && max !== null && step !== null) out.axis = { min, max, step }
+    }
   }
   if ('marker' in patch) {
     out.marker = patch['marker'] == null ? null : evalNumber(patch['marker'], params)

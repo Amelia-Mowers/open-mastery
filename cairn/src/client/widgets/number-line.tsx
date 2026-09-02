@@ -17,6 +17,10 @@ export interface NumberLineAnswer {
 }
 
 export interface NumberLineView {
+  /** rescale the line mid-lesson (the zoom-out move: the first story's
+   * whole span becomes one step of the bigger one). Ticks, arcs, marker
+   * and labels all re-read the active axis. */
+  axis?: { min: number; max: number; step: number } | null
   highlight?: number[]
   marker?: number | null
   /** the MOVE: an arc from → to with its label above ("+ 4"), so a jump is
@@ -34,6 +38,7 @@ type NumberLineState = {
   marker: number | null
   arcs: Array<{ from: number; to: number; label?: string }>
   labelled: number[] | null
+  axis: { min: number; max: number; step: number } | null
 }
 
 const label = (params: NumberLineParams): string =>
@@ -50,8 +55,7 @@ function ticksOf(config: NumberLineConfig): number[] {
 export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer, NumberLineView, NumberLineConfig> = (
   config,
 ): WidgetInstance<NumberLineParams, NumberLineAnswer, NumberLineView> => {
-  const store = new WidgetStore<NumberLineState>({ value: null, highlight: [], marker: null, arcs: [], labelled: null })
-  const ticks = ticksOf(config)
+  const store = new WidgetStore<NumberLineState>({ value: null, highlight: [], marker: null, arcs: [], labelled: null, axis: null })
 
   const clamp = (v: number) => Math.min(config.max, Math.max(config.min, v))
 
@@ -63,6 +67,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
 
   function View({ params, mode }: { params: NumberLineParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
+    const ticks = ticksOf(state.axis ?? config)
     const disabled = mode === 'review'
     const current = state.value ?? config.min
     return (
@@ -277,6 +282,11 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
       if (patch.marker !== undefined) next.marker = patch.marker ?? null
       if (patch.arcs !== undefined) next.arcs = patch.arcs ?? []
       if (patch.labelled !== undefined) next.labelled = patch.labelled ?? null
+      if (patch.axis !== undefined) {
+        const a = patch.axis
+        next.axis =
+          a !== null && a.step > 0 && a.max > a.min && (a.max - a.min) / a.step <= 40 ? a : null
+      }
       store.setState(next)
     },
     a11y: { role: 'slider', label },
