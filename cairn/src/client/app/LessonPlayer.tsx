@@ -367,11 +367,13 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
     return {
       element: w.render({ n }, 'lesson'),
       apply: (patch) => {
-        const view: { slices?: number | null; count?: string | null } = {}
+        const view: { slices?: number | null; count?: string | null; rowsIn?: boolean; colsIn?: boolean } = {}
         if ('slices' in patch)
           view.slices = patch['slices'] === null ? null : evalNumber(patch['slices'], params)
         if ('count' in patch)
           view.count = patch['count'] === null ? null : renderText(String(patch['count']), params)
+        if ('rowsIn' in patch) view.rowsIn = patch['rowsIn'] === true
+        if ('colsIn' in patch) view.colsIn = patch['colsIn'] === true
         w.applyPatch(view as Record<string, unknown>)
       },
     }

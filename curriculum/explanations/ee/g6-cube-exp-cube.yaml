@@ -4,23 +4,39 @@ representation: cube-model
 widget: cube-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{n}³", " = ", "?"], n: "{n}", slices: 1 }, caption: "{n}³ means three equal factors: {n} × {n} × {n}. The square holds the first two." }
+  - { t: 0, patch: { equation: ["{n}³", " = ", "?"], n: "{n}", slices: 1, rowsIn: false, colsIn: false }, caption: "{n}³ means three equal factors: {n} × {n} × {n}. Build it — start with one square face." }
   - t: 4
-    patch: { eqHighlight: ["0"], count: "{n*n}" }
-    caption: "{n} × {n} = {n*n}. Two factors down — ONE still waiting."
-    expect:
-      type: numeric
-      value: "{n*n}"
-      prompt: "{n} × {n} — how many small squares make the square?"
-      hint: "{n} rows of {n}."
-  - t: 8
-    patch: { eqHighlight: [], slices: "{n}" }
-    caption: "{n} slices of {n*n} — all three factors in the picture. So what does {n}³ equal?"
+    patch: { eqHighlight: ["0"], rowsIn: true }
+    caption: "{n} rows — the first factor of {n} is the side length."
     expect:
       type: numeric
       value: "{n}"
-      prompt: "{n}³ — the square spent two of its factors. How many slices does the LAST factor stack?"
-      hint: "The three factors are {n} × {n} × {n}. The square used two — the factor left over counts the slices."
-  - { t: 12, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], count: "{n*n*n}" }, caption: "{n*n} × {n} = {n*n*n}. {n}³ = {n*n*n}." }
-  - { t: 15, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+      prompt: "{n}³ — how many rows does the square face have?"
+      hint: "The base {n} is the side length."
+  - t: 8
+    patch: { colsIn: true }
+    caption: "{n} columns — the second factor. A {n} × {n} face."
+    expect:
+      type: numeric
+      value: "{n}"
+      prompt: "{n} rows down — how many columns across?"
+      hint: "A square is as wide as it is tall: {n} again."
+  - t: 12
+    patch: { count: "{n*n}" }
+    caption: "{n} × {n} = {n*n} small squares in the face. Two factors down — ONE still waiting."
+    expect:
+      type: numeric
+      value: "{n*n}"
+      prompt: "{n} rows of {n} — how many small squares in the whole face?"
+      hint: "Count by rows: {n} rows, {n} in each."
+  - t: 16
+    patch: { eqHighlight: [], slices: "{n}" }
+    caption: "{n} faces of {n*n} — all three factors in the picture. So what does {n}³ equal?"
+    expect:
+      type: numeric
+      value: "{n}"
+      prompt: "The LAST factor stacks copies of the face — how many faces make the cube?"
+      hint: "The three factors are {n} × {n} × {n}. The face spent two — the factor left over counts the stack."
+  - { t: 20, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], count: "{n*n*n}" }, caption: "{n*n} small squares in each face, {n} faces deep: {n*n} × {n} = {n*n*n}. {n}³ = {n*n*n}." }
+  - { t: 23, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
