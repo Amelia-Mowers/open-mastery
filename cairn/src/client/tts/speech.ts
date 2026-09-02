@@ -221,6 +221,54 @@ class SpeechService {
   private lineStartAt = 0
   private lineEndAt = 0
 
+  /** a fade in flight: its sources still sound while the gain ramps down */
+  private fading: { timer: ReturnType<typeof setTimeout>; sources: AudioBufferSourceNode[] } | null =
+    null
+
+  private settleFade(): void {
+    if (!this.fading) return
+    clearTimeout(this.fading.timer)
+    for (const s of this.fading.sources) {
+      try {
+        s.stop()
+      } catch {
+        /* already ended */
+      }
+    }
+    this.fading = null
+    if (this.ctx && this.gain) {
+      const g = this.gain.gain
+      g.cancelScheduledValues(this.ctx.currentTime)
+      g.setValueAtTime(this.state.muted ? 0 : this.state.volume, this.ctx.currentTime)
+    }
+  }
+
+  /** Fade the current line out quickly and stop — used when the student's
+   * action (a correct gate answer) makes the rest of the line moot. A
+   * hard stop() mid-word reads as a glitch; a short ramp reads as the
+   * lesson moving on. */
+  fadeOut(ms = 220): void {
+    if (!this.active) return
+    if (!this.ctx || !this.gain || !this.state.speaking) {
+      this.stop()
+      return
+    }
+    this.settleFade()
+    this.turn++ // supersede: nothing pending may mark this line done or restart it
+    this.lineKey = null
+    this.lineStartAt = 0
+    this.lineEndAt = 0
+    const g = this.gain.gain
+    const now = this.ctx.currentTime
+    g.cancelScheduledValues(now)
+    g.setValueAtTime(g.value, now)
+    g.linearRampToValueAtTime(0.0001, now + ms / 1000)
+    const sources = this.sources
+    this.sources = []
+    this.set({ speaking: false, generating: false })
+    this.fading = { timer: setTimeout(() => this.settleFade(), ms + 30), sources }
+  }
+
   /** Pause narration mid-word: suspending the AudioContext freezes the
    * audio clock, so resume() continues exactly where it stopped. */
   pause(): void {
@@ -341,6 +389,7 @@ class SpeechService {
     const snippets = parts.map((p) => mathToSpeech(p)).filter((s) => s !== '')
     const key = snippets.join('\n')
     const myTurn = ++this.turn
+    this.settleFade() // a new line reclaims full gain from any fade in flight
     this.doneKey = null
     this.lineKey = key
     this.stopSources()
@@ -409,6 +458,7 @@ class SpeechService {
 
   stop(): void {
     this.turn++
+    this.settleFade()
     this.stopSources()
     this.lineKey = null
     this.lineStartAt = 0

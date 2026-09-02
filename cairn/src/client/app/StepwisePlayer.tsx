@@ -231,6 +231,9 @@ export function StepwisePlayer({
   const shownWidget = scrub === null ? widget : scrubWidget
 
   const unlock = () => {
+    // the gate is answered — the rest of its narration is moot: fade it
+    // and let the confirm play immediately instead of holding the step
+    speech.fadeOut()
     setTries(0)
     setMove({ op: null, by: '' })
     setTyped('')
