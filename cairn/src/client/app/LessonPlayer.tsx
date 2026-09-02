@@ -493,6 +493,10 @@ export function LessonPlayer({
   /** bumped by section clicks so the landed step's line restarts from its
    * beginning even when the caption text is unchanged */
   const [speakCue, setSpeakCue] = useState(0)
+  /** render driver while the clock is CLAMPED at a boundary: setTime with
+   * an unchanged value bails out of re-rendering, and the segment bar
+   * tracks speech.progress() — which only updates on render */
+  const [, setPulse] = useState(0)
   const [speedIdx, setSpeedIdx] = useState(0)
   // the play/pause button shows the ACTUAL state: running clock OR audio
   // actually sounding for THIS player's line (the voice is a singleton —
@@ -607,6 +611,9 @@ export function LessonPlayer({
         }
         return next
       })
+      // repaint even when the clock clamped to the same value (batched
+      // with setTime, so this adds no renders while time is moving)
+      setPulse((n) => n + 1)
     }, TICK_MS)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
