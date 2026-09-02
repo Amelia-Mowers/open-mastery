@@ -163,7 +163,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                   style={{ width: '100%', height: '100%', display: 'block', overflow: 'visible' }}
                 >
                   <path
-                    d={`M ${forward ? 0 : 100} 42 Q 50 -10 ${forward ? 100 : 0} 42`}
+                    d={`M ${forward ? 0 : 100} 42 Q 50 -10 ${forward ? 99 : 1} 36`}
                     fill="none"
                     stroke="#b05f28"
                     strokeWidth="3"
@@ -172,21 +172,34 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                     vectorEffect="non-scaling-stroke"
                   />
                 </svg>
-                <span
+                {/* the head is a round-capped chevron whose vertex TOUCHES
+                    DOWN on the tick — drawn in its own unstretched SVG so
+                    it reads as the curve's tip at any arc width (a filled
+                    triangle at a fixed angle never matched the stretched
+                    curve's tangent) */}
+                <svg
                   aria-hidden
                   data-arc-head
+                  width="18"
+                  height="18"
+                  viewBox="0 0 18 18"
                   style={{
                     position: 'absolute',
                     left: forward ? '100%' : 0,
-                    bottom: 0,
-                    transform: `translate(-50%, 6px) rotate(${forward ? 34 : -34}deg)`,
-                    width: 0,
-                    height: 0,
-                    borderLeft: '5px solid transparent',
-                    borderRight: '5px solid transparent',
-                    borderTop: '10px solid #b05f28',
+                    bottom: -7,
+                    transform: 'translateX(-50%)',
+                    overflow: 'visible',
                   }}
-                />
+                >
+                  <path
+                    d={forward ? 'M 2.5 4 L 9 14 L 15 9' : 'M 15.5 4 L 9 14 L 3 9'}
+                    fill="none"
+                    stroke="#b05f28"
+                    strokeWidth="3"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
               </div>
             )
           })}
