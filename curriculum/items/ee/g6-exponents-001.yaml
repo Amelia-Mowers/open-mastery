@@ -1,7 +1,7 @@
 id: g6.ee.exponents.001
 skills: [g6.ee.exponents]
 difficulty: 1
-representation: area-model
+representation: cube-model
 params: { c: 6 }
 generator: { c: { int: [3, 12] } }
 widget: { type: numeric-input, config: { stem: "Evaluate: {c}²." } }

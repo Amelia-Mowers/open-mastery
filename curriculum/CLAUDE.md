@@ -608,6 +608,27 @@ Staging flags exist for this: `cellsIn` (tape sections),
 a board written line by line IS the construction — and the number line's
 jumps play the same role.
 
+## The reference decomposition is g6.ee.cube.exp-cube (2026-09-02)
+
+The FULL standard, end to end: a blank square face opens under
+`{n}³ = ?`; each gate reads one piece off the equation and its confirm
+ADDS that piece to the picture (rows → dividers + side label, columns →
+dividers + label, face count, stack); the plain resolution completes the
+banner. Mia's test for it: could the student have drawn the diagram
+themselves by answering the gates? If the picture pre-exists and gates
+annotate it, it is not a decomposition. Two corollaries:
+
+- **A subset skill's picture is the parent picture's PREFIX.** {c}² is
+  exp-cube stopped at one slice — exp-square IS the cube timeline minus
+  the stack, on the same widget. Don't re-derive a lesser build.
+- **The widget must CARRY the staging keys the build needs** (cube-model
+  grew rowsIn/colsIn + dimension labels for this). If the widget can't
+  stage a piece, that's a widget gap to fill, not a reason to hand the
+  picture over finished.
+- Match the build order to the Illustrative Mathematics first-edition
+  lesson for the standard — the full G6–8 page cache is local at
+  `sources/illustrative-mathematics/cache/` (g#-u#-l#.html); cite it.
+
 ## Decomposition steps pair the symbol with its region
 
 Lessons open on the raw symbolic equation (`equation` segments) and

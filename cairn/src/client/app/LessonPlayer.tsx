@@ -362,7 +362,7 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
         break
       }
     }
-    if (n === null || n < 2 || n > 8) return null
+    if (n === null || n < 2 || n > 12) return null
     const w = createCubeModel()
     return {
       element: w.render({ n }, 'lesson'),

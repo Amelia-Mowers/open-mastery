@@ -1,0 +1,26 @@
+id: g6.ee.exponents.exp-square
+skill: g6.ee.exponents
+representation: cube-model
+widget: cube-model
+params_from: item
+timeline:
+  - { t: 0, patch: { equation: ["{c}²", " = ", "?"], n: "{c}", slices: 1, rowsIn: false, colsIn: false }, caption: "{c}² means two equal factors: {c} × {c}. Build it — start with one empty square." }
+  - t: 4
+    patch: { eqHighlight: ["0"], rowsIn: true }
+    caption: "{c} rows — the first factor of {c} is the side length."
+    expect:
+      type: numeric
+      value: "{c}"
+      prompt: "{c}² — how many rows does the square have?"
+      hint: "The base {c} is the side length."
+  - t: 8
+    patch: { colsIn: true }
+    caption: "{c} columns — the second factor. A {c} × {c} square of {c*c} little squares. So what is {c}²?"
+    expect:
+      type: numeric
+      value: "{c}"
+      prompt: "{c} rows down — how many columns across?"
+      hint: "A square is as wide as it is tall: {c} again."
+  - { t: 12, patch: { equation: ["{c}²", " = ", "{c*c}"], eqHighlight: ["2"], count: "{c*c}" }, caption: "{c} rows of {c}: {c} × {c} = {c*c}. {c}² = {c*c}." }
+  - { t: 15, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

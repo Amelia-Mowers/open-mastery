@@ -7,7 +7,7 @@ import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
 
 export interface CubeModelParams {
-  /** edge length, 2..8 */
+  /** edge length, 2..12 */
   n: number
 }
 
@@ -38,7 +38,7 @@ export function createCubeModel(): WidgetInstance<CubeModelParams, null, CubeMod
 
   function View({ params, mode: _mode }: { params: CubeModelParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
-    const n = Math.max(2, Math.min(8, Math.round(params.n)))
+    const n = Math.max(2, Math.min(12, Math.round(params.n)))
     const u = Math.min(30, Math.max(16, Math.floor(180 / n)))
     const d = Math.max(6, Math.round(u * 0.42)) // per-slice depth offset
     const face = n * u
