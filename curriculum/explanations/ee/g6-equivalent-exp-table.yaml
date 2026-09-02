@@ -5,7 +5,14 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{m}({variable} + {n})", " = ", "?"], cols: ["{variable}", "{m}({variable} + {n})"], rows: [["1", "{m*(1+n)}"], ["2", "{m*(2+n)}"], ["3", "{m*(3+n)}"]], reveal: "0" }, caption: "Equivalent means: same output for EVERY input. What always matches {m}({variable} + {n})?" }
-  - { t: 4, patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }, caption: "{variable} = 1: {m}(1 + {n}) = {m*(1+n)}." }
+  - t: 4
+    patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }
+    caption: "{variable} = 1: {m}(1 + {n}) = {m*(1+n)}."
+    expect:
+      type: numeric
+      value: "{m*(1+n)}"
+      prompt: "{variable} = 1: {m}(1 + {n}) — what comes out?"
+      hint: "Add inside the parentheses first, then multiply by {m}."
   - t: 8.5
     patch: { reveal: "2", highlight: "2" }
     caption: "{variable} = 2: {m}(2 + {n}) = {m*(2+n)}."
@@ -13,7 +20,7 @@ timeline:
       type: numeric
       value: "{m*(2+n)}"
       prompt: "{variable} = 2: what does {m}({variable} + {n}) give?"
-      hint: "Add inside the parentheses first, then multiply by {m}."
+      hint: "Same moves: parentheses first, then × {m}."
   - t: 13
     patch: { reveal: "3", highlight: "3" }
     caption: "Every input agrees. What expanded expression — no parentheses — makes this SAME table?"
@@ -24,4 +31,4 @@ timeline:
       hint: "3 + {n}, taken {m} times."
   - { t: 17, patch: { equation: ["{m}({variable} + {n})", " = ", "{m}{variable} + {m*n}"], eqHighlight: ["2"] }, caption: "{m}{variable} + {m*n} matches for every {variable}: {m}({variable} + {n}) = {m}{variable} + {m*n}." }
   - { t: 20, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

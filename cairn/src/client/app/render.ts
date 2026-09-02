@@ -91,6 +91,33 @@ export function adaptNumberLinePatch(
           .filter((a): a is { from: number; to: number; label?: string } => a !== null)
       : null
   }
+  // `jumps` is authoring sugar over `arcs`: a programmatic run of equal
+  // arcs whose count/size come from the INSTANCE (a fixed-length authored
+  // arc list can never draw "{a} jumps" honestly across the pool).
+  // { size, count, shown?, from?, label? } — `shown` stages how many of
+  // the run are drawn (a count-gate's confirm raises it; 'all'/omitted =
+  // every jump); sizes may be negative (jumps walk left).
+  if ('jumps' in patch) {
+    const j = patch['jumps'] as
+      | { size?: unknown; count?: unknown; shown?: unknown; from?: unknown; label?: unknown }
+      | null
+    if (j === null) out.arcs = []
+    else {
+      const size = evalNumber(j.size, params)
+      const count = evalNumber(j.count, params)
+      const start = j.from === undefined ? 0 : evalNumber(j.from, params)
+      const shown =
+        j.shown === undefined || j.shown === 'all' ? count : evalNumber(j.shown, params)
+      if (size !== null && count !== null && start !== null && shown !== null) {
+        const label = j.label === undefined ? undefined : renderText(String(j.label), params)
+        out.arcs = Array.from({ length: Math.max(0, Math.min(shown, count)) }, (_, i) =>
+          label === undefined
+            ? { from: start + i * size, to: start + (i + 1) * size }
+            : { from: start + i * size, to: start + (i + 1) * size, label },
+        )
+      }
+    }
+  }
   return out
 }
 

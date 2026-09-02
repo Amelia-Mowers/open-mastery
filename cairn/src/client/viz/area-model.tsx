@@ -20,9 +20,16 @@ export interface AreaModelView {
   highlight?: number[]
   /** unit-grid build-up: tint the first n rows of numeric cells (null = none) */
   fillRows?: number | null
+  /** decomposition staging (default true): height label + horizontal unit
+   * rows arrive with their gate */
+  heightIn?: boolean
+  /** width partition: column borders, width labels, vertical unit lines */
+  partsIn?: boolean
 }
 
 type AreaState = {
+  heightIn: boolean
+  partsIn: boolean
   products: string[] | null
   highlight: number[]
   fillRows: number | null
@@ -41,7 +48,7 @@ export interface AreaModelConfig {
 export function createAreaModel(
   config: AreaModelConfig = {},
 ): WidgetInstance<AreaModelParams, { raw: string; value: number | null } | null, AreaModelView> {
-  const store = new WidgetStore<AreaState & { raw: string }>({ products: null, highlight: [], fillRows: null, raw: '' })
+  const store = new WidgetStore<AreaState & { raw: string }>({ heightIn: true, partsIn: true, products: null, highlight: [], fillRows: null, raw: '' })
 
   /** small positive integer, or null — numeric dimensions get a unit grid
    * and proportional sizing so "6 rows of 6" LOOKS like 6 rows of 6 */
@@ -73,10 +80,12 @@ export function createAreaModel(
     const boxW = totalUnits * unit
     const grid = (w: string): string | undefined => {
       if (!h || dim(w) === null) return undefined
-      return (
-        `repeating-linear-gradient(90deg, #e4dbc9 0, #e4dbc9 1px, transparent 1px, transparent ${unit}px), ` +
-        `repeating-linear-gradient(0deg, #e4dbc9 0, #e4dbc9 1px, transparent 1px, transparent ${unit}px)`
-      )
+      const layers: string[] = []
+      if (state.partsIn)
+        layers.push(`repeating-linear-gradient(90deg, #e4dbc9 0, #e4dbc9 1px, transparent 1px, transparent ${unit}px)`)
+      if (state.heightIn)
+        layers.push(`repeating-linear-gradient(0deg, #e4dbc9 0, #e4dbc9 1px, transparent 1px, transparent ${unit}px)`)
+      return layers.length > 0 ? layers.join(', ') : undefined
     }
     return (
       <div role="img" aria-label={label(effParams)} style={{ width: boxW + 56, maxWidth: '100%', margin: '0 auto' }}>
@@ -92,6 +101,8 @@ export function createAreaModel(
                 font: "600 19px 'Lora', Georgia, serif",
                 color: '#5c5245',
                 paddingBottom: 4,
+                opacity: state.partsIn ? 1 : 0,
+                transition: 'opacity 0.35s ease',
               }}
             >
               {w}
@@ -109,6 +120,8 @@ export function createAreaModel(
               justifyContent: 'center',
               font: "600 22px 'Lora', Georgia, serif",
               color: '#5c5245',
+              opacity: state.heightIn ? 1 : 0,
+              transition: 'opacity 0.35s ease',
             }}
           >
             {effParams.height}
@@ -140,7 +153,7 @@ export function createAreaModel(
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    borderRight: i < cols - 1 ? '2px dashed #8b6a4d' : 'none',
+                    borderRight: i < cols - 1 && state.partsIn ? '2px dashed #8b6a4d' : 'none',
                     backgroundColor: highlighted ? '#f7e6d4' : 'transparent',
                     backgroundImage: grid(effParams.parts[i]!),
                     font: "600 clamp(16px, 4vw, 24px) 'Lora', Georgia, serif",
@@ -224,6 +237,8 @@ export function createAreaModel(
       if (patch.products !== undefined) next.products = patch.products ?? null
       if (patch.highlight !== undefined) next.highlight = patch.highlight ?? []
       if (patch.fillRows !== undefined) next.fillRows = patch.fillRows
+      if (patch.heightIn !== undefined) next.heightIn = patch.heightIn === true
+      if (patch.partsIn !== undefined) next.partsIn = patch.partsIn === true
       store.setState(next)
     },
     a11y: { role: 'img', label },

@@ -5,7 +5,13 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{100/n}%", " of ", "{n*w}"], cols: ["percent", "amount"], rows: [["100%", "{n*w}"], ["{100/n}%", "{w}"]], reveal: "0" }, caption: "Percent rows are ratio rows: percent beside amount." }
-  - { t: 4, patch: { eqHighlight: ["2"], reveal: "1", highlight: "1" }, caption: "100% is the whole: {n*w}. {100/n}% is ONE of its equal benchmark parts." }
+  - t: 4
+    patch: { eqHighlight: ["2"], reveal: "1", highlight: "1" }
+    caption: "100% is the whole: {n*w}. {100/n}% is ONE of its equal benchmark parts."
+    expect:
+      type: pick
+      value: ["2"]
+      prompt: "Which piece — or pieces — is the WHOLE the table starts from?"
   - t: 8
     patch: { eqHighlight: ["0"], factor: { from: "1", to: "2", text: "{n} parts" } }
     caption: "{n} equal parts below the whole. To step down to ONE of them — what move?"
@@ -28,4 +34,4 @@ timeline:
           says: "×{n} builds {n} wholes — {100/n}% is one PART of the whole: divide."
   - { t: 16, patch: { reveal: "2", highlight: "2" }, caption: "{100/n}% of {n*w} = {w}." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

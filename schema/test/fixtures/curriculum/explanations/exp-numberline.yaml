@@ -5,6 +5,6 @@ widget: number-line
 params_from: item
 timeline:
   - { t: 0, caption: "Here is {b} on a number line." }
-  - { t: 3, caption: "{a} equal jumps land exactly on {b} — each jump is {b/a}, so {variable} = {b/a}." }
+  - { t: 3, patch: { marker: "{b}" }, caption: "{a} equal jumps land exactly on {b} — each jump is {b/a}, so {variable} = {b/a}." }
   - { t: 6, handoff: { prompt: "Now you try." } }
 review: { status: vetted }

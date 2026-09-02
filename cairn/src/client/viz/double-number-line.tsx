@@ -30,6 +30,9 @@ export interface DoubleNumberLineView {
   /** staged decomposition: bring each line in as its quantity is explained */
   topIn?: boolean
   bottomIn?: boolean
+  /** a ×k badge between the lines at tick `at` — the multiplicative move
+   * made visible (mirror of ratio-table's factor arrow) */
+  factor?: { at: number; text: string } | null
 }
 
 export interface DoubleNumberLineAnswer {
@@ -42,6 +45,7 @@ type DnlState = {
   highlight: number | null
   topIn: boolean
   bottomIn: boolean
+  factor: { at: number; text: string } | null
   raw: string
 }
 
@@ -58,6 +62,7 @@ export function createDoubleNumberLine(
     highlight: null,
     topIn: true,
     bottomIn: true,
+    factor: null,
     raw: '',
   })
 
@@ -193,7 +198,7 @@ export function createDoubleNumberLine(
             ? label(params)
             : `Double number line: fill in the missing ${String(config.top ?? []).includes('?') ? topLabel : bottomLabel} value`
         }
-        style={{ maxWidth: 560, minWidth: 300, flex: '1 1 300px', margin: '0 auto' }}
+        style={{ position: 'relative', maxWidth: 560, minWidth: 300, flex: '1 1 300px', margin: '0 auto' }}
       >
         <Line
           y={0}
@@ -217,6 +222,27 @@ export function createDoubleNumberLine(
           input={!lesson}
           disabled={disabled}
         />
+        {lesson && state.factor !== null && state.topIn && state.bottomIn && (
+          <span
+            data-factor
+            style={{
+              position: 'absolute',
+              left: `${(tickX(state.factor.at, top.length) / 560) * 100}%`,
+              top: '50%',
+              transform: 'translate(-50%, -50%)',
+              font: "700 13px 'Nunito Sans', sans-serif",
+              color: '#8a4d1d',
+              background: '#f7e6d4',
+              border: '1.5px solid #d8b48c',
+              borderRadius: 9,
+              padding: '1px 8px',
+              whiteSpace: 'nowrap',
+              animation: 'cairn-rise 0.35s ease both',
+            }}
+          >
+            {state.factor.text}
+          </span>
+        )}
       </div>
     )
   }
@@ -236,6 +262,13 @@ export function createDoubleNumberLine(
       if (patch.highlight !== undefined) next.highlight = patch.highlight ?? null
       if (patch.topIn !== undefined) next.topIn = patch.topIn === true
       if (patch.bottomIn !== undefined) next.bottomIn = patch.bottomIn === true
+      if (patch.factor !== undefined) {
+        const f = patch.factor as { at?: unknown; text?: unknown } | null
+        next.factor =
+          f !== null && typeof f.at === 'number' && typeof f.text === 'string'
+            ? { at: f.at, text: f.text }
+            : null
+      }
       store.setState(next)
     },
     a11y: { role: 'img', label },

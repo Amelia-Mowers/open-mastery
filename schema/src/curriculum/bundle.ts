@@ -324,8 +324,8 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         'envelope-model': ['envelopesIn', 'countersIn'],
         'double-number-line': ['topIn', 'bottomIn'],
         'ratio-table': ['reveal'],
-        'area-model': ['fillRows', 'products'],
-        'cube-model': ['slices'],
+        'area-model': ['fillRows', 'products', 'heightIn', 'partsIn'],
+        'cube-model': ['slices', 'rowsIn', 'colsIn'],
         'number-line': ['labelled'],
       }
       for (const e of explBySkill.get(s.id) ?? []) {

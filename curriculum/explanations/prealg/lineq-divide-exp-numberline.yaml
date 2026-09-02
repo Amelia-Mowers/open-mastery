@@ -6,8 +6,8 @@ params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a}", "{variable}", " = ", "{b}"], min: "{min(0, b)}", max: "{max(0, b)}", step: "{abs(b/a)}", labelled: [], marker: 0 }, caption: "A bare line, starting at 0. The equation says how the jumps go." }
   - t: 3.5
-    patch: { eqHighlight: ["0", "1"], labelled: ["0"] }
-    caption: "{a}{variable} means {a} equal jumps, each one {variable} long."
+    patch: { eqHighlight: ["0", "1"], labelled: ["0"], jumps: { size: "{b/a}", count: "{a}", shown: 1 } }
+    caption: "{a}{variable} means {a} equal jumps, each one {variable} long — here is the first."
     expect:
       type: pick
       value: ["0", "1"]
@@ -22,8 +22,8 @@ timeline:
       prompt: "Which piece — or pieces — says where the jumps must FINISH?"
       hint: "Whatever is on the far side of the equals sign is the landing place."
   - t: 10.5
-    patch: { eqHighlight: [], arcs: [{ from: 0, to: "{b/a}" }] }
-    caption: "{b} shared into {a} equal jumps. So how long is ONE jump — what is {variable}?"
+    patch: { eqHighlight: [], jumps: { size: "{b/a}", count: "{a}", shown: "all" } }
+    caption: "{b} cut into {a} equal jumps, the whole trip covered. So how long is ONE jump — what is {variable}?"
     expect:
       type: op
       value: "divide {a}"
@@ -38,4 +38,4 @@ timeline:
           says: "Multiplying by {a} makes the trip {a} times longer. To find ONE jump, divide."
   - { t: 14, patch: { marker: "{b/a}", labelled: ["0", "{b/a}", "{b}"], highlight: ["{b/a}"] }, caption: "Each jump is {b} ÷ {a} = {b/a}. {variable} = {b/a}." }
   - { t: 16.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

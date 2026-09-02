@@ -4,16 +4,24 @@ representation: area-model
 widget: area-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}", "({variable} + {b})", " = ", "{a*(ans+b)}"], height: "{a}", parts: ["{variable}", "{b}"], fillRows: "0" }, caption: "{a} copies of ({variable} + {b}) make {a*(ans+b)} in total — a rectangle will show it." }
+  - { t: 0, patch: { equation: ["{a}", "({variable} + {b})", " = ", "{a*(ans+b)}"], height: "{a}", parts: ["{variable}", "{b}"], fillRows: "0", heightIn: false, partsIn: false }, caption: "{a} copies of ({variable} + {b}) make {a*(ans+b)} in total — a rectangle will show it." }
   - t: 4
-    patch: { eqHighlight: ["0"], fillRows: "{a}", highlight: [] }
-    caption: "The {a} out front: {a} rows fill in, each one ({variable} + {b}) wide."
+    patch: { eqHighlight: ["0"], heightIn: true }
+    caption: "The {a} out front: {a} rows, each one ({variable} + {b}) wide."
     expect:
       type: pick
       value: ["0"]
       prompt: "Which piece — or pieces — of the equation sets how TALL the rectangle is?"
       hint: "The number of copies is the number of rows."
   - t: 8.5
+    patch: { eqHighlight: ["1"], partsIn: true }
+    caption: "The width splits into {variable} and {b} — the top edge labels them."
+    expect:
+      type: pick
+      value: ["1"]
+      prompt: "Which piece — or pieces — of the equation make the WIDTH of the rectangle?"
+      hint: "Everything inside the parentheses sits along the top."
+  - t: 13
     patch: { eqHighlight: [], products: ["{a}{variable}", "{a*b}"], highlight: ["2"] }
     caption: "Distributed: {a}{variable} + {a*b} = {a*(ans+b)}."
     expect:
@@ -21,7 +29,7 @@ timeline:
       value: "{a*b}"
       prompt: "The plain-number patch of area — {a} rows of {b}: how much?"
       hint: "{a} × {b}."
-  - t: 13
+  - t: 17.5
     patch: { highlight: ["1"] }
     caption: "{a}{variable} = {a*ans}, shared by {a} rows. So what is {variable}?"
     expect:
@@ -29,6 +37,6 @@ timeline:
       value: "{a*ans}"
       prompt: "{a*b} of the {a*(ans+b)} is spoken for — how much area is left for {a}{variable}?"
       hint: "{a*(ans+b)} − {a*b}."
-  - { t: 17, patch: { highlight: [] }, caption: "{a*ans} split over {a} rows: {variable} = {ans}." }
-  - { t: 20, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+  - { t: 21.5, patch: { highlight: [] }, caption: "{a*ans} split over {a} rows: {variable} = {ans}." }
+  - { t: 24.5, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

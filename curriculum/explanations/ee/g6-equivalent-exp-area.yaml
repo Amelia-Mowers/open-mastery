@@ -4,23 +4,30 @@ representation: area-model
 widget: area-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{m}", "({variable} + {n})"], height: "{m}", parts: ["{variable}", "{n}"], fillRows: "0" }, caption: "{m}({variable} + {n}) is a rectangle waiting to be filled. How tall, how wide?" }
+  - { t: 0, patch: { equation: ["{m}", "({variable} + {n})"], height: "{m}", parts: ["{variable}", "{n}"], fillRows: "0", heightIn: false, partsIn: false }, caption: "{m}({variable} + {n}) is a rectangle waiting to be drawn. How tall, how wide?" }
   - t: 4
-    patch: { eqHighlight: ["0"], fillRows: "{m}" }
-    caption: "The number out front is the HEIGHT — {m} rows fill in."
+    patch: { eqHighlight: ["0"], heightIn: true }
+    caption: "The number out front is the HEIGHT: {m} rows."
     expect:
       type: numeric
       value: "{m}"
       prompt: "{m}({variable} + {n}) — how tall should the rectangle be?"
       hint: "The number of copies is the number of rows."
   - t: 8
-    patch: { eqHighlight: ["1"], highlight: ["1", "2"] }
-    caption: "The width splits into {variable} and {n}. So what does {m}({variable} + {n}) expand to?"
+    patch: { eqHighlight: ["1"], partsIn: true }
+    caption: "The width splits into {variable} and {n}. The corner piece is {m} tall and {n} wide — how much area?"
     expect:
       type: pick
       value: ["1"]
       prompt: "Which piece — or pieces — of the expression make the WIDTH of the rectangle?"
       hint: "Everything inside the parentheses sits along the top."
-  - { t: 12, patch: { eqHighlight: [], products: ["{m}{variable}", "{m*n}"], highlight: [] }, caption: "Two pieces of area: {m}({variable} + {n}) = {m}{variable} + {m*n}." }
+  - t: 12
+    patch: { eqHighlight: [], products: ["{m}{variable}", "{m*n}"], highlight: [] }
+    caption: "{m}({variable} + {n}) = {m}{variable} + {m*n}."
+    expect:
+      type: numeric
+      value: "{m*n}"
+      prompt: "{m} rows of {n} — how much area is the plain-number piece?"
+      hint: "{m} × {n}."
   - { t: 15, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

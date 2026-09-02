@@ -22,7 +22,7 @@ timeline:
       prompt: "Which piece — or pieces — belong on the BOTTOM line?"
       hint: "Right under its partner on the top line."
   - t: 12
-    patch: { eqHighlight: [], highlight: "2" }
+    patch: { eqHighlight: [], highlight: "2", factor: { at: "2", text: "×{m}" } }
     caption: "× {m} stretches BOTH lines together. So what does the stretched pair read — cups and muffins?"
     expect:
       type: numeric
@@ -31,4 +31,4 @@ timeline:
       hint: "{a*m} ÷ {a}."
   - { t: 16, patch: { reveal: ["0", "1", "2"] }, caption: "Slide right ×{m}: {a*m} cups lines up with {b*m} muffins." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

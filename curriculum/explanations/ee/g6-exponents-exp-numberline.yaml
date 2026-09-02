@@ -4,15 +4,23 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{c}²", " = ", "?"], min: 0, max: "{c*c}", step: "{c}", labelled: [] }, caption: "{c}² means two equal factors: {c} × {c} — on this line, {c} jumps of {c}." }
+  - { t: 0, patch: { equation: ["{c}²", " = ", "?"], min: 0, max: "{c*c}", step: "{c}", labelled: [] }, caption: "{c}² means two equal factors: {c} × {c}. Draw it — a start at 0, then equal jumps." }
   - t: 4
     patch: { eqHighlight: ["0"], marker: "{c}", labelled: ["{c}"], highlight: ["{c}"] }
-    caption: "One jump lands on {c}. {c} jumps in all — where do they land? That is {c}²."
+    caption: "One jump of {c}, drawn to {c}. The second factor counts the jumps."
     expect:
       type: numeric
       value: "{c}"
-      prompt: "{c}² — how far does ONE jump go?"
-      hint: "The base is both the jump size and the jump count."
-  - { t: 8, patch: { equation: ["{c}²", " = ", "{c*c}"], eqHighlight: ["2"], arcs: [{ from: 0, to: "{c}", label: "+{c}" }], marker: "{c*c}", labelled: ["{c}", "{c*c}"], highlight: [] }, caption: "{c} jumps of {c} land on {c*c}. {c}² = {c*c}." }
-  - { t: 11, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+      prompt: "{c}² — the first factor: how far does ONE jump go?"
+      hint: "The base {c} is the jump size."
+  - t: 8
+    patch: { eqHighlight: [], arcs: [{ from: 0, to: "{c}", label: "+{c}" }], highlight: [] }
+    caption: "{c} jumps of {c}. Where do they land? That is {c}²."
+    expect:
+      type: numeric
+      value: "{c}"
+      prompt: "The second factor — how many jumps of {c} in all?"
+      hint: "Two equal factors: the base is the size AND the count."
+  - { t: 12, patch: { equation: ["{c}²", " = ", "{c*c}"], eqHighlight: ["2"], marker: "{c*c}", labelled: ["{c}", "{c*c}"] }, caption: "{c} jumps of {c} land on {c*c}. {c}² = {c*c}." }
+  - { t: 15, handoff: { prompt: "Now you try." } }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

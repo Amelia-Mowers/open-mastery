@@ -310,7 +310,13 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
     return {
       element: w.render(setup, 'lesson'),
       apply: (patch) => {
-        const view: { reveal?: number[] | null; highlight?: number | null; topIn?: boolean; bottomIn?: boolean } = {}
+        const view: {
+          reveal?: number[] | null
+          highlight?: number | null
+          topIn?: boolean
+          bottomIn?: boolean
+          factor?: { at: number; text: string } | null
+        } = {}
         if ('reveal' in patch) {
           const raw = patch['reveal']
           view.reveal = Array.isArray(raw)
@@ -319,6 +325,14 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
         }
         if ('highlight' in patch)
           view.highlight = patch['highlight'] === null ? null : evalNumber(patch['highlight'], params)
+        if ('factor' in patch) {
+          const raw = patch['factor'] as { at?: unknown; text?: unknown } | null
+          const at = raw === null ? null : evalNumber(raw.at, params)
+          view.factor =
+            raw !== null && at !== null && raw.text !== undefined
+              ? { at, text: renderText(String(raw.text), params) }
+              : null
+        }
         if ('topIn' in patch) view.topIn = patch['topIn'] === true
         if ('bottomIn' in patch) view.bottomIn = patch['bottomIn'] === true
         w.applyPatch(view as Record<string, unknown>)
@@ -385,7 +399,15 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
     return {
       element: w.render(setup, 'lesson'),
       apply: (patch) => {
-        const view: { products?: string[]; highlight?: number[]; fillRows?: number | null } = {}
+        const view: {
+          products?: string[]
+          highlight?: number[]
+          fillRows?: number | null
+          heightIn?: boolean
+          partsIn?: boolean
+        } = {}
+        if ('heightIn' in patch) view.heightIn = patch['heightIn'] === true
+        if ('partsIn' in patch) view.partsIn = patch['partsIn'] === true
         if ('fillRows' in patch)
           view.fillRows = patch['fillRows'] === null ? null : evalNumber(patch['fillRows'], params)
         if ('products' in patch && Array.isArray(patch['products']))

@@ -5,7 +5,13 @@ widget: ratio-table
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{a} lb", " → ", "${b}", ", so {c} lb", " → ?"], cols: ["pounds", "dollars"], rows: [["{a}", "{b}"], ["1", "{b/a}"], ["{c}", "{c*b/a}"]], reveal: "0" }, caption: "One known pair unlocks every other row." }
-  - { t: 4, patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }, caption: "The row we know: {a} pounds cost ${b}. To price ONE pound — what move shares out the ${b}?" }
+  - t: 4
+    patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }
+    caption: "The row we know: {a} pounds cost ${b}. To price ONE pound — what move shares out the ${b}?"
+    expect:
+      type: pick
+      value: ["0", "2"]
+      prompt: "Which piece — or pieces — make the pair we KNOW: the pounds with their price?"
   - t: 8
     patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "÷{a}" } }
     caption: "÷{a} steps down to the ONE-pound row. So what does ONE pound cost?"
@@ -46,4 +52,4 @@ timeline:
       value: "{c*b/a}"
       prompt: "{c} pounds at ${b/a} each — what do they cost?"
   - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
