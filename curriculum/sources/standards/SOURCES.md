@@ -55,6 +55,24 @@ Every skill carries `standards: [<CCSS ids>]`. Prereq edges default to
 the Coherence Map's arrows at standard granularity, refined within a
 standard by our own decomposition.
 
+## Local backups (2026-09-02) — the sources are cached, the facts committed
+
+The OpenStax relicense taught us not to trust reference sources to stay
+put, so both standards-layer references now have local snapshots:
+
+- **`fetch.sh`** downloads the Coherence Map's complete dataset
+  (`data.js` — every CCSS-M standard plus the prereq/related graph) and
+  Kessel's 2023 compiled Progressions PDF into **`cache/`
+  (gitignored)**. Neither carries a redistribution license (no CC notice
+  on achievethecore.org; the map encodes SAP's editorial judgment), so
+  like the OpenStax corpus they are FETCHED, never committed to this
+  public repo. First snapshot taken 2026-09-02.
+- **`coherence-edges.json` (committed)** is the extract we actually
+  derive from: the bare edge list as CCSS code pairs (757 prereq, 283
+  related, 480 standard codes) — uncopyrightable facts, no SAP prose.
+  `extract-coherence-edges.py` regenerates it from the cache; re-run
+  after a re-fetch and diff to see whether SAP's graph changed.
+
 ## Where IM/OpenStax still fit
 
 They remain REFERENCE implementations: consult them to see which
