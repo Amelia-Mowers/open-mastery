@@ -5,13 +5,23 @@ representation: ratio-table
 params: { u: 2, d: 1, a1: 4, a2: 7 }
 generator: { u: { int: [2, 6] }, d: { int: [1, 4] }, a1: { int: [3, 9] }, a2: { int: [3, 9], distinct: a1 } }
 widget:
-  type: choice
+  type: compare-input
   config:
-    stem: "Which is the better buy?"
+    stem: "Pack A: {a1} pencils for ${u*a1}. Pack B: {a2} pencils for ${(u+d)*a2}. Find each pack's price per pencil, then pick the better buy."
+    aLabel: "Pack A — dollars per pencil"
+    bLabel: "Pack B — dollars per pencil"
+    pickLabel: "The better buy"
     options:
-      - { key: a, label: "Pack A: {a1} pencils for ${u*a1}" }
-      - { key: b, label: "Pack B: {a2} pencils for ${(u+d)*a2}" }
-answer: { type: choice, value: a }
+      - { key: a, label: "Pack A" }
+      - { key: b, label: "Pack B" }
+answer: { type: ordered, value: ["{u}", "{u+d}", "a"] }
+misconceptions:
+  - id: swapped-the-packs
+    when: "{u+d}, {u}, b"
+    says: "Those are each other's prices — ${u*a1} ÷ {a1} = ${u} belongs to Pack A. Recheck which total goes with which pack."
+  - id: answered-the-total
+    when: "{u*a1}, {(u+d)*a2}, a"
+    says: "Those are whole-PACK prices. Price per pencil means splitting each pack's cost across its own pencils."
 hints:
   - "Find the price of ONE pencil in each pack."
   - "Pack A: ${u*a1} ÷ {a1} = ${u} each. Pack B: ${(u+d)*a2} ÷ {a2} = ${u+d} each."

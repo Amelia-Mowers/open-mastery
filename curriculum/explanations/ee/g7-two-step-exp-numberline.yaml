@@ -53,4 +53,4 @@ timeline:
           says: "Multiplying by {a} makes the trip {a} times longer. To find ONE jump, divide."
   - { t: 20, patch: { marker: "{ans}", labelled: ["0", "{ans}", "{a*ans}"], highlight: ["{ans}"] }, caption: "Each jump is {a*ans} ÷ {a} = {ans}. {variable} = {ans}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }
