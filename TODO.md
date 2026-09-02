@@ -49,6 +49,21 @@ Not K–12 — the middle-school band plus the parent's view:
       (content-addressed .ogg), worker/model machinery deleted, coverage
       is a loud CI gate (voice:check in demo-pages.yml). Curriculum copy
       changes now require render + upload before the deploy passes.
+- [ ] External eval 2026-09-02 (headless play-through) — remaining items
+      needing MIA'S CALL or larger work: (1) first practice serve = the
+      lesson's numbers and the skip-ahead box awards full credit for
+      repeating the heard answer (eval votes: no full credit on that
+      first isomorph); (2) mastery in 3 problems / stone in 5 — BKT knob,
+      conscious choice before pilot data; (4) one wrong final answer
+      locks the item (TODO's retry-same-instance-stepwise is the real
+      fix; interim: one retry?); (5) lesson t0 captions reused verbatim
+      in practice mode ("Watch the equation build it" over a static bar)
+      — mode-neutral rewording touches VETTED files; (6b) demo banner
+      says "runs entirely in your browser" while voice streams from HF —
+      banner copy call; landing page: motion/screenshot above the fold,
+      demo-labelling behind the name screen, guide view seeded by
+      default on Pages. FIXED same day: uncaught voice-fetch rejections,
+      stepwise lead now inert after the verdict, phone header wrap.
 - [ ] Voice display/speech escape (designed 2026-09-02, build when first
       needed): `[[shown|spoken]]` in captions/prompts — display side in
       the caption renderer, spoken side inside mathToSpeech (shared with

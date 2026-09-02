@@ -68,6 +68,7 @@ export function StepwisePlayer({
   onStep,
   stepDelayMs = STEP_DELAY_MS,
   autostart = true,
+  inert = false,
 }: {
   explanation: Explanation
   params: Params
@@ -93,6 +94,9 @@ export function StepwisePlayer({
   /** false = wait for a start click before stepping OR speaking (zoo
    * cards, where several mounted players must not all run at once) */
   autostart?: boolean
+  /** the item below is ANSWERED — freeze the lead so a dead gate does
+   * not sit there looking workable (reported by an external eval) */
+  inert?: boolean
 }) {
   const steps = useMemo(
     () => explanation.timeline.filter((st) => st.patch !== undefined || st.caption !== undefined),
@@ -191,7 +195,7 @@ export function StepwisePlayer({
     heldForVoice.current = false
   }, [applied])
   useEffect(() => {
-    if (!started) return
+    if (!started || inert) return
     if (pending === null) {
       if (!endNotified.current) {
         endNotified.current = true
@@ -214,7 +218,7 @@ export function StepwisePlayer({
     )
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [applied, waitingOn === null, narrating, started])
+  }, [applied, waitingOn === null, narrating, started, inert])
 
   // scrub view: a fresh widget replayed to the reviewed step (the live
   // widget keeps its state untouched underneath)
@@ -366,7 +370,15 @@ export function StepwisePlayer({
           : 'Your move — write the next step.'
 
   return (
-    <div className="stepwise" data-testid="stepwise">
+    <div
+      className="stepwise"
+      data-testid="stepwise"
+      // the item below is answered: the lead freezes — unfocusable,
+      // unclickable, visibly resting — instead of a dead gate that still
+      // looks workable
+      inert={inert || undefined}
+      style={inert ? { opacity: 0.65, transition: 'opacity 0.3s ease' } : undefined}
+    >
       {view.equation && (
         <div className="lesson-equation" aria-label={`Equation ${view.equation.join('')}`}>
           {view.equation.map((seg, i) => (
@@ -401,7 +413,7 @@ export function StepwisePlayer({
       >
         {view.caption}
       </p>
-      <SpeakLine caption={view.caption} prompt={waitingOn !== null ? gatePrompt(waitingOn) : ''} live={started} />
+      <SpeakLine caption={view.caption} prompt={waitingOn !== null ? gatePrompt(waitingOn) : ''} live={started && !inert} />
       <VoiceGenSpinner />
       {!started && (
         <div className="answer-row" style={{ justifyContent: 'center' }}>

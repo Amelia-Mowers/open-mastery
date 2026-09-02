@@ -394,6 +394,7 @@ export function ItemCard({
             key={`lead-${action.instance.paramHash}`}
             explanation={fadedLead.explanation}
             params={fadedLead.params}
+            inert={outcome !== null}
             onReachedEnd={() => setLeadDone(true)}
             onStep={(move) =>
               onStepAttempt?.({

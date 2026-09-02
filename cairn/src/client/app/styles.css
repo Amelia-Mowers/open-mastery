@@ -11,6 +11,17 @@ body {
   display: flex; align-items: center; gap: 10px;
   padding: 12px 0; margin-bottom: 18px;
   border-bottom: 1px solid #e6ddd0;
+  flex-wrap: wrap; row-gap: 4px;
+}
+/* phones: the nav buttons shrink and truncate INSIDE the row instead of
+   stacking three-deep or clipping off the right edge */
+@media (max-width: 480px) {
+  .topbar { gap: 6px; }
+  .topbar .btn.btn-quiet {
+    padding: 4px 7px; font-size: 12.5px;
+    max-width: 34vw; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .brand { font-size: 18px; }
 }
 .cairn-mark { display: inline-flex; flex-direction: column; align-items: center; gap: 2px; }
 .cairn-mark i { display: block; border-radius: 2px; height: 5px; }

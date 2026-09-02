@@ -416,6 +416,10 @@ class SpeechService {
         }
       }
       const fetches = snippets.map((s) => this.fetchUtterance(s))
+      // the loop below awaits these IN ORDER — a sibling that rejects
+      // before its turn (offline, blocked host) must not surface as an
+      // uncaught page error; the awaited one still throws into the catch
+      for (const f of fetches) f.catch(() => {})
       let nextStart = 0
       let remaining = snippets.length
       for (const fetchJob of fetches) {
