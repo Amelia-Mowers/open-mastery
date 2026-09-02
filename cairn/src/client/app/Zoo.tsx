@@ -44,6 +44,7 @@ function DemoCard({ demo }: { demo: ZooDemo }) {
         params={demo.params}
         kind="walkthrough"
         embedded
+        autoplay={false}
         onDone={() => setReplay((r) => r + 1)}
       />
     </section>
@@ -114,7 +115,7 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
           </div>
           {stepwise ? (
             <>
-              <StepwisePlayer key={replay} explanation={truncated} params={fadedParams} />
+              <StepwisePlayer key={replay} explanation={truncated} params={fadedParams} autostart={false} />
               {/* the answer box a real practice serve puts below the lead —
                   without it the preview stops at the handoff and the whole
                   point (does the lesson set up the answer?) is untestable */}
@@ -128,6 +129,7 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
               kind="walkthrough"
               embedded
               tail="none"
+              autoplay={false}
               onDone={() => setReplay((r) => r + 1)}
             />
           )}
@@ -290,18 +292,11 @@ export function Zoo({ api }: { api: CairnApi }) {
   })()
   const [demos, setDemos] = useState<ZooDemo[] | null>(null)
   const [index, setIndex] = useState<Record<string, Array<{ id: string; skillName: string; vetted: boolean }>>>({})
-  // voice scoping: the FULL grid mounts dozens of autoplaying players
-  // that would all speak over each other — suspend narration for the
-  // grid; the single-explanation view (?exp=) narrates its one player,
-  // which is the timeline-vetting flow
+  // zoo players start on CLICK (autoplay/autostart false below), so only
+  // the card the reviewer starts ever speaks — narration is then normal
   useEffect(() => {
-    if (only) {
-      speech.warm()
-      return
-    }
-    speech.setSuspended(true)
-    return () => speech.setSuspended(false)
-  }, [only])
+    speech.warm()
+  }, [])
   useEffect(() => {
     if (only) {
       void api.demoFor(only).then((d) =>
@@ -339,7 +334,8 @@ export function Zoo({ api }: { api: CairnApi }) {
         <h1 className="dash-h">Widget zoo</h1>
         <p className="muted">
           One canonical demo per widget, single-sourced from the curriculum (fallbacks only for
-          widgets no explanation uses yet), plus every answer input. Demos autoplay; the end button
+          widgets no explanation uses yet), plus every answer input. Demos start on click (so only
+          the one you start narrates); the end button
           replays. Reach this page with <code>?view=zoo</code>.
         </p>
       </section>

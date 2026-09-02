@@ -10,10 +10,12 @@
  *
  * THE VOICE IS ALWAYS ON. Narration always plays and always paces the
  * lesson clock; MUTE just silences it (gain 0) — so muting and unmuting
- * never restarts a line and never changes the lesson's rhythm. The only
- * true off-switches are the VITEST guard and setSuspended() (the zoo's
- * full grid — dozens of autoplaying players), where nothing fetches,
- * speaks, or paces.
+ * never restarts a line and never changes the lesson's rhythm. The
+ * player transport drives it: pause() suspends the audio clock (resume
+ * continues mid-word), and progress() reports the current line's played
+ * fraction so the step timeline can track the audio. The only true
+ * off-switch is the VITEST guard (players themselves gate speaking on
+ * having been started — the zoo's cards start on click).
  *
  * Coverage is a build-time guarantee (scripts/check-voice-coverage.ts):
  * a snippet missing from the corpus fails the build. If one is somehow
@@ -113,7 +115,7 @@ class SpeechService {
     volume: storedVolume(),
   }
   private listeners = new Set<() => void>()
-  /** hard off for tests and the zoo: nothing fetches, speaks, or paces */
+  /** hard off for tests: nothing fetches, speaks, or paces */
   private active = typeof process === 'undefined' || process.env?.['VITEST'] === undefined
   private ctx: AudioContext | null = null
   private gain: GainNode | null = null
@@ -139,16 +141,6 @@ class SpeechService {
   private set(patch: Partial<SpeechState>): void {
     this.state = { ...this.state, ...patch }
     for (const fn of this.listeners) fn()
-  }
-
-  /** The full zoo grid mounts dozens of autoplaying players that would
-   * all speak at once — while suspended, nothing fetches, speaks, or
-   * paces. Scoped and reversible (the single-explanation zoo view and
-   * the student app both narrate). */
-  private suspended = false
-  setSuspended(on: boolean): void {
-    this.suspended = on
-    if (on) this.stop()
   }
 
   private gestureClaimed = false
@@ -207,6 +199,32 @@ class SpeechService {
     }
   }
 
+  /** deliberate transport pause (play/pause button) — distinct from a
+   * context the browser never let start */
+  private pausedByUser = false
+  /** current line's span on the audio clock, for progress() */
+  private lineStartAt = 0
+  private lineEndAt = 0
+
+  /** Pause narration mid-word: suspending the AudioContext freezes the
+   * audio clock, so resume() continues exactly where it stopped. */
+  pause(): void {
+    this.pausedByUser = true
+    if (this.ctx && this.ctx.state === 'running') void this.ctx.suspend()
+  }
+
+  resume(): void {
+    this.pausedByUser = false
+    if (this.ctx && this.ctx.state === 'suspended') void this.ctx.resume()
+  }
+
+  /** Played fraction (0..1) of the line currently on the audio clock, or
+   * null when nothing is scheduled — the step timeline tracks this. */
+  progress(): number | null {
+    if (!this.ctx || this.lineEndAt <= this.lineStartAt) return null
+    return Math.max(0, Math.min(1, (this.ctx.currentTime - this.lineStartAt) / (this.lineEndAt - this.lineStartAt)))
+  }
+
   private async fetchUtterance(snippet: string): Promise<AudioBuffer> {
     const cached = this.cache.get(snippet)
     if (cached) return cached
@@ -246,7 +264,7 @@ class SpeechService {
    * with the same list repeatedly. Best-effort: the live speak() path
    * surfaces any real error. */
   pregenerate(texts: string[]): void {
-    if (!this.active || this.suspended) return
+    if (!this.active) return
     for (const t of texts) {
       const snippet = mathToSpeech(t)
       if (snippet === '') continue
@@ -283,12 +301,12 @@ class SpeechService {
   /** Has this line's narration played to the end? Players hold a lesson
    * stage open until its line has been HEARD (muted playback still
    * counts — the rhythm never depends on the volume). Inactive and
-   * suspended voices count as finished, and a line whose fetch FAILED is
+   * voices count as finished, and a line whose fetch FAILED is
    * marked finished individually — one bad snippet must not silence the
    * pacing of every later line (it used to: the error state latched and
    * finished() said yes forever, so autoplay clipped every narration). */
   finished(parts: string[]): boolean {
-    if (!this.active || this.suspended) return true
+    if (!this.active) return true
     const key = this.keyOf(parts)
     return key === '' || this.doneKey === key
   }
@@ -297,13 +315,18 @@ class SpeechService {
    * cancelling whatever is mid-air. Each snippet is one corpus file;
    * they fetch in parallel and schedule gaplessly on the audio clock. */
   async speak(parts: string[]): Promise<void> {
-    if (!this.active || this.suspended) return
+    if (!this.active) return
     const snippets = parts.map((p) => mathToSpeech(p)).filter((s) => s !== '')
     const key = snippets.join('\n')
     const myTurn = ++this.turn
     this.doneKey = null
     this.stopSources()
+    this.lineStartAt = 0
+    this.lineEndAt = 0
     if (snippets.length === 0) return
+    // a new line means the user (or the clock they started) wants sound —
+    // a lingering transport pause must not swallow it
+    if (this.pausedByUser) this.resume()
     this.set({ speaking: true, generating: !this.cache.has(snippets[0]!) })
     try {
       const ctx = this.ensureCtx()
@@ -343,6 +366,8 @@ class SpeechService {
         const at = Math.max(ctx.currentTime, nextStart)
         src.start(at)
         nextStart = at + buf.duration
+        if (this.lineEndAt <= this.lineStartAt) this.lineStartAt = at
+        this.lineEndAt = nextStart
         this.sources.push(src)
       }
     } catch (e) {
@@ -362,6 +387,8 @@ class SpeechService {
   stop(): void {
     this.turn++
     this.stopSources()
+    this.lineStartAt = 0
+    this.lineEndAt = 0
     if (this.state.speaking || this.state.generating) this.set({ speaking: false, generating: false })
   }
 

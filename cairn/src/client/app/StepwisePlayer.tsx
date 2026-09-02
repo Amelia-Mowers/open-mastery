@@ -67,6 +67,7 @@ export function StepwisePlayer({
   onEngaged,
   onStep,
   stepDelayMs = STEP_DELAY_MS,
+  autostart = true,
 }: {
   explanation: Explanation
   params: Params
@@ -89,6 +90,9 @@ export function StepwisePlayer({
     latencyMs: number
   }) => void
   stepDelayMs?: number
+  /** false = wait for a start click before stepping OR speaking (zoo
+   * cards, where several mounted players must not all run at once) */
+  autostart?: boolean
 }) {
   const steps = useMemo(
     () => explanation.timeline.filter((st) => st.patch !== undefined || st.caption !== undefined),
@@ -121,6 +125,8 @@ export function StepwisePlayer({
   })
   /** reviewing an earlier step (index into steps), or null = live frontier */
   const [scrub, setScrub] = useState<number | null>(null)
+  /** started: steps advance and lines speak (autostart, or the start click) */
+  const [started, setStarted] = useState(autostart)
   const tallies = useRef<StepwiseResult>({ misses: 0, reveals: 0 })
   /** when the current gate opened, for per-move latency */
   const gateShownAt = useRef(performance.now())
@@ -185,6 +191,7 @@ export function StepwisePlayer({
     heldForVoice.current = false
   }, [applied])
   useEffect(() => {
+    if (!started) return
     if (pending === null) {
       if (!endNotified.current) {
         endNotified.current = true
@@ -207,7 +214,7 @@ export function StepwisePlayer({
     )
     return () => clearTimeout(timer)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [applied, waitingOn === null, narrating])
+  }, [applied, waitingOn === null, narrating, started])
 
   // scrub view: a fresh widget replayed to the reviewed step (the live
   // widget keeps its state untouched underneath)
@@ -391,8 +398,15 @@ export function StepwisePlayer({
       >
         {view.caption}
       </p>
-      <SpeakLine caption={view.caption} prompt={waitingOn !== null ? gatePrompt(waitingOn) : ''} />
+      <SpeakLine caption={view.caption} prompt={waitingOn !== null ? gatePrompt(waitingOn) : ''} live={started} />
       <VoiceGenSpinner />
+      {!started && (
+        <div className="answer-row" style={{ justifyContent: 'center' }}>
+          <button className="btn btn-primary" onClick={() => setStarted(true)}>
+            ▶ Play this walk-through
+          </button>
+        </div>
+      )}
       <SmoothHeight>
       {/* scrub through what has played so far; the frontier stays put */}
       <div className="stepwise-track-row">
@@ -592,10 +606,11 @@ export function StepwisePlayer({
  * opening under an already-read caption speaks just the question; a gate
  * closing speaks nothing (the line lost its question — let the tail play
  * out instead of re-reading and having the next step clip it). */
-function SpeakLine({ caption, prompt }: { caption: string; prompt: string }) {
+function SpeakLine({ caption, prompt, live }: { caption: string; prompt: string; live: boolean }) {
   const prevCaption = useRef<string | null>(null)
   const prevPrompt = useRef('')
   useEffect(() => {
+    if (!live) return // refs untouched: the start click speaks the current line
     const captionChanged = prevCaption.current !== caption
     const promptChanged = prevPrompt.current !== prompt
     prevCaption.current = caption
@@ -604,7 +619,7 @@ function SpeakLine({ caption, prompt }: { caption: string; prompt: string }) {
     if (captionChanged && caption.trim() !== '') parts.push(caption)
     if (prompt.trim() !== '' && (promptChanged || captionChanged)) parts.push(prompt)
     if (parts.length > 0) void speech.speak(parts) // speak() cancels whatever is mid-air
-  }, [caption, prompt])
+  }, [caption, prompt, live])
   useEffect(() => () => speech.stop(), [])
   return null
 }

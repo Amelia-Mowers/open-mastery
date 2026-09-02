@@ -60,6 +60,9 @@ export interface LessonPlayerProps {
   /** false when a walkthrough fell back to the family's example numbers —
    * the kicker must not claim "same numbers" */
   sameNumbers?: boolean
+  /** false = wait for a play click before running OR speaking (the zoo's
+   * cards, where many mounted players must not all start at once) */
+  autoplay?: boolean
 }
 
 const TICK_MS = 100
@@ -460,6 +463,7 @@ export function LessonPlayer({
   onAnotherWay,
   onCancel,
   tail = 'handoff',
+  autoplay = true,
 }: LessonPlayerProps) {
   const steps = explanation.timeline
   const handoffStep = steps.find((s) => s.handoff)
@@ -483,7 +487,9 @@ export function LessonPlayer({
 
   const [preamble, setPreamble] = useState(intro !== undefined)
   const [time, setTime] = useState(0)
-  const [playing, setPlaying] = useState(intro === undefined)
+  const [playing, setPlaying] = useState(autoplay && intro === undefined)
+  /** narration follows the transport: silent until played (or scrubbed) */
+  const [voiceLive, setVoiceLive] = useState(autoplay)
   const [speedIdx, setSpeedIdx] = useState(0)
   /** the handoff row stays once the end has been reached, even when scrubbing back */
   const [reachedEnd, setReachedEnd] = useState(false)
@@ -592,6 +598,10 @@ export function LessonPlayer({
 
   const seek = (target: number) => {
     setPlaying(false)
+    // scrubbing narrates the step you land on (the click is a gesture —
+    // clear any transport pause so the line is heard)
+    setVoiceLive(true)
+    speech.resume()
     let targetIdx = -1
     for (let i = 0; i < steps.length; i++) if (steps[i]!.t <= target + 1e-9) targetIdx = i
     if (targetIdx < appliedRef.current) {
@@ -600,16 +610,25 @@ export function LessonPlayer({
     setTime(target)
   }
 
-  /** fill fraction of content segment i at the current time */
+  /** fill fraction of content segment i — the clock's position, except
+   * that the CURRENT segment tracks the narration while its line is
+   * still being read: the bar completes when the slower of the two
+   * (authored gap, audio) does, which is exactly when the step advances */
+  const currentSegIdx = contentSteps.reduce((acc, s, i) => (s.t <= time + 1e-9 ? i : acc), 0)
   const fillOf = (i: number): number => {
     const start = contentSteps[i]!.t
     const end = i + 1 < contentSteps.length ? contentSteps[i + 1]!.t : handoffT
-    if (end <= start) return time >= start - 1e-9 ? 1 : 0
-    if (time <= start) return 0
-    if (time >= end) return 1
-    return (time - start) / (end - start)
+    let clockFill: number
+    if (end <= start) clockFill = time >= start - 1e-9 ? 1 : 0
+    else if (time <= start) clockFill = 0
+    else if (time >= end) clockFill = 1
+    else clockFill = (time - start) / (end - start)
+    if (i === currentSegIdx && voiceLive && caption !== '' && !speech.finished([caption])) {
+      const audioFill = speech.progress() ?? 0
+      return Math.min(clockFill, audioFill)
+    }
+    return clockFill
   }
-  const currentSegIdx = contentSteps.reduce((acc, s, i) => (s.t <= time + 1e-9 ? i : acc), 0)
 
   if (preamble && intro) {
     return (
@@ -674,15 +693,24 @@ export function LessonPlayer({
       >
         {caption}
       </p>
-      <SpeakCaption text={caption} />
+      <SpeakCaption text={caption} live={voiceLive} />
       <VoiceGenSpinner />
       <div className="lesson-controls">
         <button
           className="btn btn-round"
           aria-label={playing ? 'Pause' : 'Play'}
           onClick={() => {
-            if (!playing && time >= handoffT) seek(0)
-            setPlaying((p) => !p)
+            if (playing) {
+              // pause the narration WITH the lesson — resume picks the
+              // audio up mid-word on the frozen audio clock
+              speech.pause()
+              setPlaying(false)
+              return
+            }
+            if (time >= handoffT) seek(0)
+            speech.resume()
+            setVoiceLive(true)
+            setPlaying(true)
           }}
         >
           {playing ? '❚❚' : '▶'}
@@ -735,11 +763,13 @@ export function LessonPlayer({
 
 
 /** Voice: read each caption as it lands. Narration always runs (mute
- * only zeroes the gain), so this never re-fires on mute changes. */
-function SpeakCaption({ text }: { text: string }) {
+ * only zeroes the gain), so this never re-fires on mute changes — but it
+ * follows the transport: silent until the player has been started or
+ * scrubbed (`live`), so a mounted-but-unstarted player says nothing. */
+function SpeakCaption({ text, live }: { text: string; live: boolean }) {
   useEffect(() => {
-    if (text !== '') void speech.speak([text])
-  }, [text])
+    if (live && text !== '') void speech.speak([text])
+  }, [text, live])
   useEffect(() => () => speech.stop(), [])
   return null
 }
