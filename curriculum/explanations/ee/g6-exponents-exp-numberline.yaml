@@ -4,9 +4,9 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{c}²", " = ", "?"], min: 0, max: "{c*c}", step: "{c}", labelled: [] }, caption: "{c}² means two equal factors: {c} × {c}. Draw it — a start at 0, then equal jumps." }
+  - { t: 0, patch: { equation: ["{c}²", " = ", "?"], min: 0, max: "{c*c}", step: "{c}", labelled: [] }, caption: "{c}² means two equal factors: {c} × {c}. Draw it — equal jumps from 0." }
   - t: 4
-    patch: { eqHighlight: ["0"], marker: "{c}", labelled: ["{c}"], highlight: ["{c}"] }
+    patch: { eqHighlight: ["0"], jumps: { size: "{c}", count: "{c}", shown: 1, label: "+{c}" }, labelled: ["{c}"] }
     caption: "One jump of {c}, drawn to {c}. The second factor counts the jumps."
     expect:
       type: numeric
@@ -14,8 +14,8 @@ timeline:
       prompt: "{c}² — the first factor: how far does ONE jump go?"
       hint: "The base {c} is the jump size."
   - t: 8
-    patch: { eqHighlight: [], arcs: [{ from: 0, to: "{c}", label: "+{c}" }], highlight: [] }
-    caption: "{c} jumps of {c}. Where do they land? That is {c}²."
+    patch: { eqHighlight: [], jumps: { size: "{c}", count: "{c}", label: "+{c}" } }
+    caption: "{c} jumps of {c}. Where does the last one land? That is {c}²."
     expect:
       type: numeric
       value: "{c}"

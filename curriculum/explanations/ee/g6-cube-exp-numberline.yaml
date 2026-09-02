@@ -4,31 +4,40 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{n}³", " = ", "?"], min: 0, max: "{n*n}", step: "{n}", labelled: [] }, caption: "{n}³ means three equal factors: {n} × {n} × {n}. Walk the first two — jumps of {n}." }
+  - { t: 0, patch: { equation: ["{n}³", " = ", "?"], min: 0, max: "{n*n}", step: "{n}", labelled: [] }, caption: "{n}³ means three equal factors: {n} × {n} × {n}. Walk the first two — equal jumps from 0." }
   - t: 4
     patch: { eqHighlight: ["0"], jumps: { size: "{n}", count: "{n}", shown: 1, label: "+{n}" }, labelled: ["{n}"] }
-    caption: "Jumps of {n} — the first factor is the jump size."
+    caption: "One jump of {n}, drawn to {n}. The second factor counts the jumps."
     expect:
       type: numeric
       value: "{n}"
-      prompt: "{n}³ — the second factor counts the jumps of {n}. How many?"
-      hint: "Three equal factors — the first is the size, the second is the count."
+      prompt: "{n}³ — the first factor: how far does ONE jump go?"
+      hint: "The base {n} is the jump size."
   - t: 8
-    patch: { jumps: { size: "{n}", count: "{n}", label: "+{n}" }, marker: "{n*n}", labelled: ["{n}", "{n*n}"] }
-    caption: "{n} jumps of {n} land on {n} × {n} = {n*n}. Two factors spent — ONE still waiting."
+    patch: { jumps: { size: "{n}", count: "{n}", label: "+{n}" } }
+    caption: "{n} jumps of {n}. Where does the last one land?"
+    expect:
+      type: numeric
+      value: "{n}"
+      prompt: "The second factor — how many jumps of {n} in all?"
+      hint: "Three equal factors — the first is the size, the second the count."
+  - t: 12
+    patch: { eqHighlight: [], marker: "{n*n}", labelled: ["{n}", "{n*n}"] }
+    caption: "{n} jumps of {n} land on {n*n} — two factors spent, ONE still waiting."
     expect:
       type: numeric
       value: "{n*n}"
       prompt: "{n} jumps of {n} — where does the last one land?"
       hint: "Count up by {n}s, {n} times."
-  - t: 12
-    patch: { axis: { min: 0, max: "{n*n*n}", step: "{n*n}" }, jumps: { size: "{n*n}", count: "{n}", shown: 1, label: "+{n*n}" }, marker: null, labelled: ["{n*n}"] }
-    caption: "Zoom OUT — that whole walk to {n*n} is just the FIRST jump now. The LAST factor takes {n} of these. So what does {n}³ equal?"
+  - { t: 16, patch: { axis: { min: 0, max: "{n*n*n}", step: "{n*n}" }, jumps: { size: "{n*n}", count: "{n}", shown: 1, label: "+{n*n}" }, marker: null, labelled: ["{n*n}"] }, caption: "Zoom OUT — that whole walk to {n*n} is just the FIRST jump now." }
+  - t: 20
+    patch: { jumps: { size: "{n*n}", count: "{n}", label: "+{n*n}" } }
+    caption: "{n} big jumps of {n*n}. So what does {n}³ equal?"
     expect:
       type: numeric
       value: "{n}"
       prompt: "{n}³ — two factors made the big jump of {n*n}. How many big jumps does the LAST factor take?"
       hint: "Three factors: {n} × {n} × {n}. Two are spent inside each big jump — the one left counts them."
-  - { t: 16, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], jumps: { size: "{n*n}", count: "{n}", label: "+{n*n}" }, marker: "{n*n*n}", labelled: ["{n*n}", "{n*n*n}"] }, caption: "{n} jumps of {n*n} land on {n*n*n}. {n}³ = {n*n*n}." }
-  - { t: 19, handoff: { prompt: "Now you try." } }
+  - { t: 24, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], marker: "{n*n*n}", labelled: ["{n*n}", "{n*n*n}"] }, caption: "{n} jumps of {n*n} land on {n*n*n}. {n}³ = {n*n*n}." }
+  - { t: 27, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

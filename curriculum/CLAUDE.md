@@ -629,6 +629,26 @@ annotate it, it is not a decomposition. Two corollaries:
   lesson for the standard — the full G6–8 page cache is local at
   `sources/illustrative-mathematics/cache/` (g#-u#-l#.html); cite it.
 
+## The jump-walk standard timeline (2026-09-02, Mia's template)
+
+Every number-line walk lesson is a VARIANT of one gate sequence — do not
+re-derive the shape per skill:
+
+1. **What is the starting point** — OMITTED when the walk starts at 0
+   implicitly. Confirm: marker + label at the start.
+2. **What is the step amount** — confirm draws the FIRST arc and labels
+   the first landing on the line.
+3. **How many steps** — confirm draws ALL the jumps, with NO new line
+   labels (intermediate landings stay unlabeled).
+4. **What is the total** — the final step labels the total (usually the
+   plain dropped resolution; the box collects it).
+
+Cube appends: total-of-phase-1 as a gate, then ZOOM OUT (`axis` patch)
+and repeat steps 3–4 at the big scale. Timelines whose SKILL is the
+move (divide/multiply/reciprocal) substitute the op gate for step 3 —
+the jumps still draw as that confirm. Arc labels ("+{c}") are the step
+size and always allowed; "no line labels" means TICK values.
+
 ## Decomposition steps pair the symbol with its region
 
 Lessons open on the raw symbolic equation (`equation` segments) and
