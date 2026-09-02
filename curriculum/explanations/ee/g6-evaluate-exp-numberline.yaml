@@ -7,27 +7,27 @@ timeline:
   - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}", " → ", "?"], min: "{b}", max: "{a*c+b}", step: "{c}", labelled: [] }, caption: "{a}{variable} + {b} when {variable} = {c}: a place to stand, then equal jumps." }
   - t: 4
     patch: { eqHighlight: ["1"], marker: "{b}", labelled: ["{b}"] }
-    caption: "The + {b} is where we stand before any jumps. {a}{variable} adds the jumps."
+    caption: "The + {b} is where we stand before any jumps."
     expect:
       type: pick
       value: ["1"]
       prompt: "Which piece — or pieces — of the expression says where to START?"
       hint: "One part is added on no matter what {variable} is. That is the start."
   - t: 8
-    patch: { eqHighlight: ["2"], jumps: { size: "{c}", count: "{a}", shown: 1, from: "{b}", label: "+{c}" }, labelled: ["{b}", "{b+c}"] }
-    caption: "Each jump is {c} — the first one lands on {b+c}. {a}{variable} means {a} of them."
+    patch: { eqHighlight: ["0"], jumps: { size: "{c}", count: "{a}", shown: 1, from: "{b}", label: "+{c}" }, labelled: ["{b}", "{b+c}"] }
+    caption: "One jump of {c}, drawn to {b+c}."
     expect:
       type: numeric
-      value: "{c}"
-      prompt: "{variable} = {c} — how far does each jump go?"
-      hint: "The value given for {variable} is the size of a single jump."
+      value: "{b+c}"
+      prompt: "One jump of {c} from {b} — where does it land?"
+      hint: "{b} plus one jump of {c}."
   - t: 12
-    patch: { eqHighlight: ["0"], jumps: { size: "{c}", count: "{a}", from: "{b}", label: "+{c}" } }
-    caption: "{a} jumps of {c} from {b}. Where does the last one land? That is the value. So what is {a}{variable} + {b}?"
+    patch: { jumps: { size: "{c}", count: "{a}", from: "{b}", label: "+{c}" } }
+    caption: "All the jumps drawn, end to end. So what is {a}{variable} + {b}?"
     expect:
       type: numeric
       value: "{a}"
-      prompt: "{a}{variable} — how many jumps of {c} in all?"
+      prompt: "How many jumps of {c} in all?"
       hint: "The number in front of {variable} counts the jumps."
   - { t: 16, patch: { equation: ["{a}{variable}", " + {b}", ",  {variable} = {c}", " → ", "{a*c+b}"], eqHighlight: ["4"], marker: "{a*c+b}", labelled: ["{b}", "{b+c}", "{a*c+b}"] }, caption: "{a} jumps of {c} from {b} reach {a*c+b}. {a}·{c} + {b} = {a*c+b}." }
   - { t: 19, handoff: { prompt: "Now you try." } }

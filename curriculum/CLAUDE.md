@@ -666,6 +666,17 @@ move (divide/multiply/reciprocal) substitute the op gate for step 3 —
 the jumps still draw as that confirm. Arc labels ("+{c}") are the step
 size and always allowed; "no line labels" means TICK values.
 
+**A GIVEN is never gated.** A template slot whose value is stated
+verbatim in the problem (evaluate's "x = 4" IS the step amount) is
+carried by a plain step, not a gate — "x = 4 — how far does each jump
+go?" prints its own answer (Mia, live). Gate the nearest thing that
+must be WORKED OUT instead (the first landing, {b}+{c}). Notation-
+DECODE gates (the exponent's implied count, the coefficient as jump
+count) stay legitimate — but the notation lives on the highlighted
+banner; the prompt must not restate it next to the question ("3x — how
+many jumps?" leaks; "How many jumps of {c} in all?" with 3x highlighted
+asks).
+
 ## Decomposition steps pair the symbol with its region
 
 Lessons open on the raw symbolic equation (`equation` segments) and
