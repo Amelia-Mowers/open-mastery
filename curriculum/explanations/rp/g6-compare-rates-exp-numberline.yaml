@@ -56,4 +56,4 @@ timeline:
   - { t: 28, patch: { eqHighlight: ["4"], axis: { min: 0, max: "{u+d}", step: "{gcd(u, d)}" }, jumps: [{ size: "{u}", count: 1, label: "${u}" }, { size: "{u+d}", count: 1, label: "${u+d}", color: "#3f6a4d", below: true }], labelled: [] }, caption: "Keep just the FIRST piece of each and zoom IN — ONE pencil against ONE pencil. So which pack is the better buy?" }
   - { t: 32, patch: { labelled: ["{u}", "{u+d}"] }, caption: "ONE Pack-A pencil: ${u}. ONE Pack-B pencil: ${u+d}. The shorter piece costs less — A is the better buy." }
   - { t: 35, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }
