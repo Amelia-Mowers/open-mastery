@@ -15,7 +15,7 @@ timeline:
       hint: "The base {c} is the side length."
   - t: 8
     patch: { colsIn: true }
-    caption: "{c} columns — the second factor. A {c} × {c} square of {c*c} little squares. So what is {c}²?"
+    caption: "{c} columns — the second factor. A {c} × {c} square. So what is {c}²?"
     expect:
       type: numeric
       value: "{c}"

@@ -623,13 +623,16 @@ export function LessonPlayer({
         const next = t + (TICK_MS / 1000) * speed
         if (caption !== '' && !speech.finished([caption])) {
           const boundary = nextCaptionT(t)
-          // clamp WELL below nextCaptionT's epsilon: a clamp at exactly
-          // boundary − ε made the held step stop counting as "next" on
-          // the following tick, so every hold lasted one tick and the
-          // clock sailed through mid-narration
-          if (next >= boundary) return Math.min(next, boundary - 0.01)
+          // the hold must engage at EXACTLY the threshold where the
+          // render counts the boundary step as reached (t <= time + 1e-9
+          // in stepIdx). A strict `next >= boundary` missed by one ulp —
+          // 11.9 + 0.1 = 11.999999999999998 — so the caption flipped
+          // while the hold thought the boundary was still ahead, and the
+          // narration was cut. Clamp WELL below the scan epsilon so the
+          // held step keeps counting as "next".
+          if (next >= boundary - 1e-9) return Math.min(next, boundary - 0.01)
         }
-        if (next >= handoffT) {
+        if (next >= handoffT - 1e-9) {
           setPlaying(false)
           return handoffT
         }

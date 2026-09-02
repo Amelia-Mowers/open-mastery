@@ -39,4 +39,4 @@ timeline:
       hint: "The three factors are {n} × {n} × {n}. The face spent two — the factor left over counts the stack."
   - { t: 20, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], count: "{n*n*n}" }, caption: "{n*n} small squares in each face, {n} faces deep: {n*n} × {n} = {n*n*n}. {n}³ = {n*n*n}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }
