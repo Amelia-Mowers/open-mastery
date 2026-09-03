@@ -27,7 +27,7 @@ function since(t: number): string {
   return `${Math.round(h / 24)}d ago`
 }
 
-export function Guide({ api }: { api: CairnApi }) {
+export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boolean }) {
   const [view, setView] = useState<GuideView | null>(null)
   const [openStudent, setOpenStudent] = useState<string | null>(null)
   const [seeding, setSeeding] = useState(false)
@@ -37,11 +37,13 @@ export function Guide({ api }: { api: CairnApi }) {
   }, [api])
   useEffect(refresh, [refresh])
 
-  // demo-link convenience: ?seed=1 populates an empty class automatically
+  // ?seed=1 populates an empty class; on the PAGES DEMO the guide view
+  // seeds by default — a parent evaluating the product should see the
+  // parent portal populated, not an empty state (external eval)
   useEffect(() => {
-    let seed = false
+    let seed = autoSeed
     try {
-      seed = new URLSearchParams(window.location.search).get('seed') === '1'
+      seed = seed || new URLSearchParams(window.location.search).get('seed') === '1'
     } catch {
       /* no window */
     }
@@ -49,7 +51,7 @@ export function Guide({ api }: { api: CairnApi }) {
     void api.guide().then((v) => {
       if (v.students.length === 0) void api.seedClass().then(refresh)
     })
-  }, [api, refresh])
+  }, [api, refresh, autoSeed])
 
   if (view === null) return <p className="muted loading">Loading…</p>
 

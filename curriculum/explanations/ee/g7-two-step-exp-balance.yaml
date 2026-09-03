@@ -4,7 +4,7 @@ representation: balance-scale
 widget: balance-scale
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], left: "{a}{variable} + {b}", right: "{a*ans+b}", leftIn: false, rightIn: false }, caption: "TWO operations hide {variable}: a multiply and an add. Watch." }
+  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " = ", "{a*ans+b}"], left: "{a}{variable} + {b}", right: "{a*ans+b}", leftIn: false, rightIn: false }, caption: "TWO operations hide {variable}: a multiply and an add." }
   - t: 4
     patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }
     caption: "{a}{variable} + {b} sits on the left pan."

@@ -181,6 +181,11 @@ export type NextAction =
       /** the ladder found a representation this skill has not taught yet.
        * OFFERED on the card, never played over the student's problem. */
       altOffer?: { explanationId: string; representation: string }
+      /** this instance is the LESSON'S OWN problem, served right after the
+       * student watched its answer worked out — evidence is discounted
+       * (hintLevel floor 1) and the client must not celebrate "all on
+       * your own" (Mia, from the 2026-09-02 external eval) */
+      lessonEcho?: boolean
       checkAvailable?: boolean
       checkIndex?: number
     }
@@ -420,8 +425,9 @@ export function nextAction(
     (!inRun ||
       lastRep === null ||
       (ctx.cur.items.get(promised.itemId)?.representation ?? null) === lastRep)
+  const servedPromised = promisedMatches && promised !== null
   const inst =
-    (promisedMatches ? promised : null) ??
+    (servedPromised ? promised : null) ??
     (matching.length > 0
       ? instantiateFor(matching, student, session, pol, skillId, wantFresh, ctx.bkt)
       : null) ??
@@ -457,7 +463,12 @@ export function nextAction(
   }
   // the client plays the skill's explanation up to just before the
   // resolution with THIS instance's numbers, and the student finishes it
-  return serveWorkItem('practice', skillId, inst, student, session, ctx)
+  const served = serveWorkItem('practice', skillId, inst, student, session, ctx)
+  // the promised instance IS the lesson's problem — its answer was just
+  // shown; mark the serve so credit is withheld
+  if (servedPromised && inst === promised && served.kind === 'serve_item')
+    served.lessonEcho = true
+  return served
 }
 
 function serveWorkItem(
@@ -656,7 +667,10 @@ export function recordAttempt(
   // choose-the-next-line boards …) carry a guessing floor far above the
   // per-skill G — like rubric grading, a correct one updates p at the
   // hint-level-1 discount (G_eff ≈ 0.6). Choice answers are never checks (§5).
-  const discounted = isRubric || item.answer.type === 'choice'
+  // a lesson-echo serve repeats the problem whose answer the lesson just
+  // spoke — a correct here is real engagement but not independent
+  // evidence, so it updates at the same discount
+  const discounted = isRubric || item.answer.type === 'choice' || action.lessonEcho === true
   const hintLevel = discounted ? Math.max(1, submission.hintLevel) : submission.hintLevel
   const assisted = hintLevel > 0 || student.assisted.has(instanceKey(action.instance.itemId, action.instance.paramHash))
 

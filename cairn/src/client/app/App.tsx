@@ -10,6 +10,7 @@ import { Zoo } from './Zoo'
 import { Guide } from './Guide'
 import { SmoothHeight } from './SmoothHeight'
 import { ContentErrorBoundary } from './ContentErrorBoundary'
+import { createBalanceScale } from '../viz/balance-scale'
 import type { Params } from './render'
 
 /** an alternative explanation chained from the current lesson */
@@ -74,9 +75,11 @@ function AppInner({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppP
    * or the link on the join card) */
   const [guideMode, setGuideMode] = useState(urlParam('view') === 'guide')
   const zooMode = urlParam('view') === 'zoo'
+  // honest about the one external fetch: pre-rendered voice audio streams
+  // from a public corpus; the ENGINE and all answers/progress stay local
   const banner = demoBanner === true && (
     <p className="muted demo-banner">
-      Demo — runs entirely in your browser. Progress stays on this device.
+      Demo — the engine runs in your browser; answers and progress never leave this device.
     </p>
   )
   if (guideMode)
@@ -86,6 +89,7 @@ function AppInner({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppP
         <GuidePage
           api={apiFactory ? apiFactory(apiBase, 'guide-viewer') : new SiteApi(apiBase, 'guide-viewer')}
           onBack={() => setGuideMode(false)}
+          autoSeed={demoBanner === true}
         />
       </>
     )
@@ -127,7 +131,6 @@ function AppInner({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppP
   if (student === '')
     return (
       <>
-        {banner}
         <JoinCard
           onJoin={(id) => setPendingStudent(id)}
           onGuide={() => setGuideMode(true)}
@@ -151,7 +154,7 @@ function AppInner({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppP
   )
 }
 
-function GuidePage({ api, onBack }: { api: CairnApi; onBack: () => void }) {
+function GuidePage({ api, onBack, autoSeed }: { api: CairnApi; onBack: () => void; autoSeed?: boolean }) {
   return (
     <main className="shell">
       <header className="topbar">
@@ -165,8 +168,35 @@ function GuidePage({ api, onBack }: { api: CairnApi; onBack: () => void }) {
           Student view
         </button>
       </header>
-      <Guide api={api} />
+      <Guide api={api} autoSeed={autoSeed === true} />
     </main>
+  )
+}
+
+/** A silent three-beat loop of the balance scale solving x + 8 = 21 —
+ * the widgets are the whole sell, and a visitor should see one moving
+ * before they type a name (external eval: nothing above the fold moved). */
+function LandingLoop() {
+  const widget = useMemo(() => createBalanceScale(), [])
+  useEffect(() => {
+    const steps: Array<Record<string, unknown>> = [
+      { left: 'x + 8', right: '21', leftIn: true, rightIn: true, op: null },
+      { op: { op: 'subtract', by: '8' } },
+      { left: 'x', right: '13', op: null },
+    ]
+    let i = 0
+    widget.applyPatch(steps[0]!)
+    const id = setInterval(() => {
+      i = (i + 1) % (steps.length + 1) // extra beat holds the resolution
+      if (i < steps.length) widget.applyPatch(steps[i]!)
+      else widget.applyPatch(steps[0]!) // loop back to the problem
+    }, 1900)
+    return () => clearInterval(id)
+  }, [widget])
+  return (
+    <div className="landing-loop" aria-hidden>
+      {widget.render({ left: 'x + 8', right: '21' }, 'lesson')}
+    </div>
   )
 }
 
@@ -174,6 +204,7 @@ function AboutPanel() {
   return (
     <section className="card about">
       <h1>Cairn</h1>
+      <LandingLoop />
       <p>
         An open-source, self-hostable <b>mastery-learning engine</b> for school math —{' '}
         <b>grades 6–7 today, 3–12 in progress</b>. Every skill is
@@ -184,8 +215,8 @@ function AboutPanel() {
         review.
       </p>
       <p className="muted">
-        This demo runs entirely in your browser — the full engine, event log and all, with no
-        server. Type a name below to try it as a student.{' '}
+        The engine runs entirely in your browser — event log and all, no server; answers and
+        progress never leave this device. Type a name below to try it as a student.{' '}
         <a href="https://github.com/Amelia-Mowers/open-mastery" target="_blank" rel="noreferrer">
           Source on GitHub
         </a>
@@ -831,6 +862,7 @@ function Session({
           if (out.checkUnlocked === true && !checkDismissed.has(forSkillId)) setUnlockOffer(forSkillId)
           return out
         }}
+        onRetry={() => api.retry()}
         onContinue={(focus) => {
           if (focus !== undefined) {
             focusSkill.current = focus

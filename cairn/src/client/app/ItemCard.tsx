@@ -23,6 +23,9 @@ export interface ItemCardProps {
   /** mastery estimate (0..1) for this item's skill, before the attempt */
   mastery: number
   onSubmit: (raw: string, hintLevel: number, latencyMs: number) => Promise<AttemptOutcome>
+  /** one retry of a missed practice item — same instance, second attempt
+   * is honest evidence (interim until the ladder retries stepwise) */
+  onRetry?: () => Promise<void>
   /** continue; focus 'skill-id' keeps practicing that skill, null moves on */
   onContinue: (focus?: string | null) => void
   onStartCheck: (skillId: string) => void
@@ -79,6 +82,7 @@ export function ItemCard({
   pointsBefore,
   mastery,
   onSubmit,
+  onRetry,
   onContinue,
   onStartCheck,
   fetchExplanation,
@@ -96,6 +100,13 @@ export function ItemCard({
   const [revealedHints, setRevealedHints] = useState(0)
   const hintOffered = !isCheck && (action.offeredHintLevel ?? 0) > 0
   const [outcome, setOutcome] = useState<AttemptOutcome | null>(null)
+  /** the one interim retry has been spent on this instance */
+  const [retriedOnce, setRetriedOnce] = useState(false)
+  /** the open stepwise gate's hint — the Hint button serves THIS step's
+   * help while a gate is open (S-06: problem-ladder hints answered the
+   * wrong step) */
+  const [gateHint, setGateHint] = useState<string | null>(null)
+  const [shownGateHint, setShownGateHint] = useState<string | null>(null)
   const [busy, setBusy] = useState(false)
   /** the walk-through playing inside this card */
   const [inline, setInline] = useState<InlinePlay | null>(null)
@@ -212,6 +223,10 @@ export function ItemCard({
     el?.focus()
   }, [action.instance.paramHash, guideReady])
 
+  useEffect(() => {
+    setRetriedOnce(false)
+  }, [action.instance.paramHash])
+
   const submit = async () => {
     if (busy || outcome) return
     const extracted = widget.extract() as { raw?: string; value?: number | null } | null
@@ -321,12 +336,16 @@ export function ItemCard({
   const feedbackText = !outcome
     ? ''
     : outcome.correct
-      ? watchedFull || gateHelped || revealedHints > 0
-        ? // help was taken: warm, never a scolding, and never a reminder
-          // that this one "counted less"
-          'You got it — nice work.'
-        : // unaided: THIS is what earns the extra recognition
-          'Correct — all on your own!'
+      ? action.kind === 'serve_item' && action.lessonEcho === true
+        ? // the lesson just worked THIS problem — a correct is following
+          // along, not independent evidence; celebrate that honestly
+          'Correct — just like the lesson showed. The next one is all yours.'
+        : watchedFull || gateHelped || revealedHints > 0
+          ? // help was taken: warm, never a scolding, and never a reminder
+            // that this one "counted less"
+            'You got it — nice work.'
+          : // unaided: THIS is what earns the extra recognition
+            'Correct — all on your own!'
       : // a named misconception speaks for itself — the generic line would
         // only bury it
         outcome.verdict.verdict === 'incorrect' && outcome.verdict.reason
@@ -395,6 +414,10 @@ export function ItemCard({
             explanation={fadedLead.explanation}
             params={fadedLead.params}
             inert={outcome !== null}
+            onActiveGate={(h) => {
+              setGateHint(h)
+              setShownGateHint(null)
+            }}
             onReachedEnd={() => setLeadDone(true)}
             onStep={(move) =>
               onStepAttempt?.({
@@ -479,7 +502,8 @@ export function ItemCard({
             <button type="submit" className="btn btn-primary" disabled={busy || outcome !== null}>
               Check answer
             </button>
-            {maxHints > revealedHints && outcome === null && (
+            {(gateHint !== null ? shownGateHint === null : maxHints > revealedHints) &&
+              outcome === null && (
               <button
                 type="button"
                 // the ladder OFFERED help — point at the button, don't
@@ -487,7 +511,9 @@ export function ItemCard({
                 className={hintOffered && revealedHints === 0 ? 'btn pulse' : 'btn'}
                 onClick={() => {
                   setAskedForHelp(true)
-                  setRevealedHints((h) => h + 1)
+                  // a gate is open: serve ITS hint, not the problem ladder's
+                  if (gateHint !== null) setShownGateHint(gateHint)
+                  else setRevealedHints((h) => h + 1)
                 }}
               >
                 Hint
@@ -507,6 +533,11 @@ export function ItemCard({
           — working the steps, asking to see it done — that we want them
           taking. Credit still reflects the help (assistLevel); the
           RECOGNITION goes to unaided work instead, below. */}
+      {!inline && shownGateHint !== null && (
+        <p className="hint" data-testid="gate-hint">
+          {shownGateHint}
+        </p>
+      )}
       {!inline && item.hints.slice(0, revealedHints).map((h, i) => (
         <p key={i} className="hint" data-testid={`hint-${i + 1}`}>
           {renderText(h, params)}
@@ -574,6 +605,20 @@ export function ItemCard({
                 onClick={() => void openWalkthrough([])}
               >
                 Show me how
+              </button>
+            )}
+            {!outcome.correct && !isCheck && action.itemKind === 'practice' && !retriedOnce && onRetry && (
+              <button
+                className="btn"
+                onClick={() => {
+                  void (async () => {
+                    await onRetry()
+                    setRetriedOnce(true)
+                    setOutcome(null)
+                  })()
+                }}
+              >
+                Try again
               </button>
             )}
             <button

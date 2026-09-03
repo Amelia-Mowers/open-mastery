@@ -47,6 +47,10 @@ interface StudentSlot {
   session: SessionState
   /** last action served to this student; attempts must resolve against it */
   pending: NextAction | null
+  /** the last attempt's correctness + whether this instance already got
+   * its one retry (interim until the ladder retries stepwise) */
+  lastCorrect?: boolean
+  retried?: boolean
   /** the serve the student JUST answered. `pending` is cleared when the
    * answer is graded, which left "Show me how" with no instance to render
    * — so after a wrong answer it either 409'd or fell back to the family's
@@ -453,6 +457,7 @@ export class SiteCore {
       focusSkill ? { focusSkill, ...(forceFocus ? { forceFocus: true } : {}) } : {},
     )
     st.pending = action
+    st.retried = false
     // a new serve retires the previous problem — the walkthrough fallback
     // must never answer with the numbers of a problem already left behind
     st.answered = null
@@ -499,6 +504,23 @@ export class SiteCore {
     return ok({ action, points })
   }
 
+  /** ONE retry of the practice item just missed — the same instance goes
+   * back to pending (a second attempt event is honest evidence; checks
+   * and reviews stay single-shot). Interim UX until the corrective
+   * ladder retries the same instance stepwise. */
+  retry(studentId: string): SiteResult {
+    const st = this.slot(studentId)
+    if (st.pending !== null) return err(409, 'an item is already pending')
+    const a = st.answered
+    if (a?.kind !== 'serve_item' || a.itemKind !== 'practice') return err(409, 'nothing to retry')
+    if (st.lastCorrect !== false) return err(409, 'last attempt was not a miss')
+    if (st.retried === true) return err(409, 'this instance already had its retry')
+    st.retried = true
+    st.pending = a
+    st.answered = null
+    return ok({ ok: true })
+  }
+
   attempt(studentId: string, body: { raw?: string; hintLevel?: number; latencyMs?: number }): SiteResult {
     const st = this.slot(studentId)
     const pending = st.pending
@@ -510,6 +532,7 @@ export class SiteCore {
     })
     st.answered = pending
     st.pending = null
+    st.lastCorrect = result.correct
     return ok({
       verdict: result.verdict,
       correct: result.correct,

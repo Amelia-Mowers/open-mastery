@@ -117,7 +117,37 @@ export function Dashboard({
       const top = yOffset
       yOffset += height + gapBetween
       const maxRow = Math.max(...layers.map((l) => l.length), 1)
-      return { ids, top, height, maxRow }
+      // name the cluster from its dominant CCSS domain (S-05: the
+      // ratio/proportion cluster was an unlabeled island)
+      const DOMAIN_NAMES: Record<string, string> = {
+        RP: 'Ratios & proportions',
+        EE: 'Expressions & equations',
+        NS: 'The number system',
+        G: 'Geometry',
+        SP: 'Statistics & probability',
+        F: 'Functions',
+        NF: 'Fractions',
+        NBT: 'Base-ten numbers',
+        OA: 'Operations & algebraic thinking',
+        MD: 'Measurement & data',
+      }
+      const tally = new Map<string, number>()
+      const grades: number[] = []
+      for (const id of ids)
+        for (const code of skillById.get(id)?.standards ?? []) {
+          const m = code.match(/CONTENT\.(\d+|HS)\.([A-Z]+)/)
+          if (!m) continue
+          tally.set(m[2]!, (tally.get(m[2]!) ?? 0) + 1)
+          if (m[1] !== 'HS') grades.push(Number(m[1]))
+        }
+      const domain = [...tally.entries()].sort((a, b) => b[1] - a[1])[0]?.[0]
+      const gLo = grades.length ? Math.min(...grades) : null
+      const gHi = grades.length ? Math.max(...grades) : null
+      const label =
+        domain !== undefined
+          ? `${DOMAIN_NAMES[domain] ?? domain}${gLo !== null ? ` · grade${gLo === gHi ? ` ${gLo}` : `s ${gLo}–${gHi}`}` : ''}`
+          : ''
+      return { ids, top, height, maxRow, label }
     })
     return { blocks, pos, height: Math.max(0, yOffset - gapBetween) + 12, skillById }
   }, [bundle])
@@ -250,6 +280,19 @@ export function Dashboard({
               })
             })}
           </svg>
+          {/* each unrelated path is NAMED — the cluster label anchors what
+              the island of stones is about */}
+          {layout.blocks.map((b) =>
+            b.label !== '' ? (
+              <div
+                key={`lbl-${b.top}`}
+                className="cluster-label"
+                style={{ position: 'absolute', left: 0, right: 0, top: b.top - 10, textAlign: 'center' }}
+              >
+                {b.label}
+              </div>
+            ) : null,
+          )}
           {/* dividers between unrelated paths */}
           {layout.blocks.slice(1).map((b) => (
             <div

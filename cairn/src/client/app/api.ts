@@ -176,6 +176,8 @@ export interface StateView {
 export interface CairnApi {
   next(focusSkill?: string): Promise<ServerNext>
   attempt(raw: string, hintLevel: number, latencyMs: number): Promise<AttemptOutcome>
+  /** one retry of the practice item just missed (same instance) */
+  retry(): Promise<void>
   explanationViewed(): Promise<void>
   /** one MOVE inside a stepwise problem (which step, what they did) */
   stepAttempt(move: StepAttemptBody): Promise<void>
@@ -253,6 +255,10 @@ export class SiteApi implements CairnApi {
 
   attempt(raw: string, hintLevel: number, latencyMs: number): Promise<AttemptOutcome> {
     return this.post('/api/attempt', { raw, hintLevel, latencyMs })
+  }
+
+  async retry(): Promise<void> {
+    await this.post('/api/retry', {})
   }
 
   async explanationViewed(): Promise<void> {

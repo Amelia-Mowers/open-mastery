@@ -69,6 +69,7 @@ export function StepwisePlayer({
   stepDelayMs = STEP_DELAY_MS,
   autostart = true,
   inert = false,
+  onActiveGate,
 }: {
   explanation: Explanation
   params: Params
@@ -97,6 +98,10 @@ export function StepwisePlayer({
   /** the item below is ANSWERED — freeze the lead so a dead gate does
    * not sit there looking workable (reported by an external eval) */
   inert?: boolean
+  /** the active gate changed: its rendered hint (null = no gate open, or
+   * the gate has no hint). Lets the item card's Hint button serve THIS
+   * step's hint instead of the problem ladder (S-06). */
+  onActiveGate?: (hint: string | null) => void
 }) {
   const steps = useMemo(
     () => explanation.timeline.filter((st) => st.patch !== undefined || st.caption !== undefined),
@@ -171,6 +176,9 @@ export function StepwisePlayer({
       // clock would just measure how long the lead took to play
       gateShownAt.current = performance.now()
     }
+    onActiveGate?.(
+      waitingOn !== null && waitingOn.hint !== undefined ? renderText(waitingOn.hint, params) : null,
+    )
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [waitingOn !== null ? applied : -1])
 

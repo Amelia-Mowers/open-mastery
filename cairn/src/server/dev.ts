@@ -114,6 +114,8 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       return send(res, core.next(studentId, url.searchParams.get('skill'), url.searchParams.get('force') === '1'))
     if (req.method === 'POST' && url.pathname === '/api/attempt')
       return send(res, core.attempt(studentId, (await readBody(req)) as Record<string, never>))
+    if (req.method === 'POST' && url.pathname === '/api/retry')
+      return send(res, core.retry(studentId))
     if (req.method === 'POST' && url.pathname === '/api/explanation-viewed')
       return send(res, core.explanationViewed(studentId))
     if (req.method === 'POST' && url.pathname === '/api/step-attempt')

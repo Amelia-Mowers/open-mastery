@@ -680,3 +680,11 @@ body {
   animation: cairn-spin 0.8s linear infinite;
 }
 @keyframes cairn-spin { to { transform: rotate(360deg); } }
+
+.cluster-label {
+  font: 700 11.5px 'Nunito Sans', sans-serif;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: #8a7a65;
+}
+
+.landing-loop { margin: 6px auto 14px; max-width: 420px; pointer-events: none; }

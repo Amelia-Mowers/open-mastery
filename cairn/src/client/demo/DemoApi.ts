@@ -134,6 +134,11 @@ export class DemoApi implements CairnApi {
     return Promise.resolve(this.unwrap(this.core.next(this.studentId, focusSkill ?? null, true)))
   }
 
+  retry(): Promise<void> {
+    this.unwrap(this.core.retry(this.studentId))
+    return Promise.resolve()
+  }
+
   attempt(raw: string, hintLevel: number, latencyMs: number): Promise<AttemptOutcome> {
     return Promise.resolve(this.unwrap(this.core.attempt(this.studentId, { raw, hintLevel, latencyMs })))
   }
