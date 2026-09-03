@@ -10,7 +10,7 @@ import { Zoo } from './Zoo'
 import { Guide } from './Guide'
 import { SmoothHeight } from './SmoothHeight'
 import { ContentErrorBoundary } from './ContentErrorBoundary'
-import { createBalanceScale } from '../viz/balance-scale'
+import { createTapeDiagram } from '../viz/tape-diagram'
 import type { Params } from './render'
 
 /** an alternative explanation chained from the current lesson */
@@ -173,29 +173,33 @@ function GuidePage({ api, onBack, autoSeed }: { api: CairnApi; onBack: () => voi
   )
 }
 
-/** A silent three-beat loop of the balance scale solving x + 8 = 21 —
- * the widgets are the whole sell, and a visitor should see one moving
- * before they type a name (external eval: nothing above the fold moved). */
+/** A silent loop of the tape diagram solving x + 8 = 21, beat for beat
+ * the vetted add-solve lesson: empty bar → x arrives → 8 joins → the 21
+ * brace lands → the 8 section comes off with the "21 − 8" chip. The
+ * widgets are the whole sell, and a visitor should see one moving before
+ * they type a name (external eval: nothing above the fold moved). */
 function LandingLoop() {
-  const widget = useMemo(() => createBalanceScale(), [])
+  const widget = useMemo(() => createTapeDiagram(), [])
   useEffect(() => {
-    const steps: Array<Record<string, unknown>> = [
-      { left: 'x + 8', right: '21', leftIn: true, rightIn: true, op: null },
-      { op: { op: 'subtract', by: '8' } },
-      { left: 'x', right: '13', op: null },
+    const beats: Array<Record<string, unknown>> = [
+      { cellsIn: 0, totalIn: false, removed: [], totalOp: null, highlight: [] },
+      { cellsIn: 1, highlight: [1] },
+      { cellsIn: 2, highlight: [2] },
+      { totalIn: true, highlight: [] },
+      { removed: [2], totalOp: { op: 'subtract', by: '8' }, highlight: [1] },
     ]
     let i = 0
-    widget.applyPatch(steps[0]!)
+    widget.applyPatch(beats[0]!)
     const id = setInterval(() => {
-      i = (i + 1) % (steps.length + 1) // extra beat holds the resolution
-      if (i < steps.length) widget.applyPatch(steps[i]!)
-      else widget.applyPatch(steps[0]!) // loop back to the problem
-    }, 1900)
+      i = (i + 1) % (beats.length + 1) // extra beat holds the resolution
+      widget.applyPatch(beats[Math.min(i, beats.length - 1)]!)
+      if (i === beats.length) i = -1 // next tick restarts the build
+    }, 1700)
     return () => clearInterval(id)
   }, [widget])
   return (
     <div className="landing-loop" aria-hidden>
-      {widget.render({ left: 'x + 8', right: '21' }, 'lesson')}
+      {widget.render({ parts: 2, partLabel: '', total: '21', cells: ['x', '8'] }, 'lesson')}
     </div>
   )
 }
