@@ -687,4 +687,10 @@ body {
   color: #8a7a65;
 }
 
-.landing-loop { margin: 6px auto 14px; max-width: 420px; pointer-events: none; }
+/* FIXED height: the brace, total and op chip come and go — the prose
+   below must never shift (external eval follow-up) */
+.landing-loop {
+  margin: 6px auto 14px; max-width: 420px; pointer-events: none;
+  height: 196px; overflow: hidden;
+}
+.landing-eq { font-size: 24px; margin-bottom: 2px; }

@@ -4,7 +4,7 @@
  *  - problem mode: FILL A PART — one cell is an inline input and the other
  *    equal parts mirror it live (fill: 'part'), or the total under the brace
  *    is the input while the parts are known (fill: 'total'). */
-import { useSyncExternalStore } from 'react'
+import { useEffect, useRef, useState, useSyncExternalStore } from 'react'
 import type { CSSProperties } from 'react'
 import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
@@ -88,16 +88,36 @@ export function createTapeDiagram(
 ): WidgetInstance<TapeDiagramParams, TapeDiagramAnswer, TapeDiagramView> {
   const store = new WidgetStore<TapeState>({ partLabel: null, total: null, highlight: [], raw: '', totalIn: true, cellsIn: null, removed: [], totalOp: null })
 
+  /** ADAPTIVE brace: the curls and centre tick are fixed-size in real
+   * pixels (measured, ArcHop-style) and only the straight arms stretch —
+   * a scaled viewBox squashed the whole shape at narrow widths. */
   function Brace() {
+    const ref = useRef<HTMLDivElement>(null)
+    const [w, setW] = useState(0)
+    useEffect(() => {
+      const el = ref.current
+      if (!el) return
+      setW(el.clientWidth)
+      if (typeof ResizeObserver === 'undefined') return
+      const ro = new ResizeObserver(() => setW(el.clientWidth))
+      ro.observe(el)
+      return () => ro.disconnect()
+    }, [])
+    const W = w > 24 ? w : 320
+    const mid = W / 2
+    const curl = Math.min(18, mid - 10)
+    const d =
+      `M 3 2 Q 3 12 ${3 + curl} 12 ` +
+      `L ${mid - 10} 12 Q ${mid} 12 ${mid} 16 Q ${mid} 12 ${mid + 10} 12 ` +
+      `L ${W - 3 - curl} 12 Q ${W - 3} 12 ${W - 3} 2`
     return (
-      <div aria-hidden style={{ padding: '0 2px' }}>
-        <svg viewBox="0 0 560 16" style={{ width: '100%', height: 16, display: 'block' }}>
-          <path
-            d="M4 2 Q4 12 24 12 L268 12 Q280 12 280 16 Q280 12 292 12 L536 12 Q556 12 556 2"
-            fill="none"
-            stroke="#8b8070"
-            strokeWidth="2.5"
-          />
+      <div ref={ref} aria-hidden style={{ padding: '0 2px' }}>
+        <svg
+          viewBox={`0 0 ${W} 16`}
+          preserveAspectRatio="none"
+          style={{ width: '100%', height: 16, display: 'block' }}
+        >
+          <path d={d} fill="none" stroke="#8b8070" strokeWidth="2.5" />
         </svg>
       </div>
     )

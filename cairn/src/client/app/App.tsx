@@ -178,27 +178,45 @@ function GuidePage({ api, onBack, autoSeed }: { api: CairnApi; onBack: () => voi
  * brace lands → the 8 section comes off with the "21 − 8" chip. The
  * widgets are the whole sell, and a visitor should see one moving before
  * they type a name (external eval: nothing above the fold moved). */
+const LANDING_BEATS: Array<Record<string, unknown>> = [
+  { cellsIn: 0, totalIn: false, removed: [], totalOp: null, highlight: [] },
+  { cellsIn: 1, highlight: [1] },
+  { cellsIn: 2, highlight: [2] },
+  { totalIn: true, highlight: [] },
+  { removed: [2], totalOp: { op: 'subtract', by: '8' }, highlight: [1] },
+]
+const LANDING_SEGS = ['x', ' + 8', ' = ', '21']
+/** which equation piece lights up as its region lands (the decomposition
+ * pairing the lessons themselves use) */
+const LANDING_HL: ReadonlyArray<ReadonlyArray<number>> = [[], [0], [1], [3], []]
+
 function LandingLoop() {
   const widget = useMemo(() => createTapeDiagram(), [])
+  const [beat, setBeat] = useState(0)
   useEffect(() => {
-    const beats: Array<Record<string, unknown>> = [
-      { cellsIn: 0, totalIn: false, removed: [], totalOp: null, highlight: [] },
-      { cellsIn: 1, highlight: [1] },
-      { cellsIn: 2, highlight: [2] },
-      { totalIn: true, highlight: [] },
-      { removed: [2], totalOp: { op: 'subtract', by: '8' }, highlight: [1] },
-    ]
+    widget.applyPatch(LANDING_BEATS[0]!)
     let i = 0
-    widget.applyPatch(beats[0]!)
     const id = setInterval(() => {
-      i = (i + 1) % (beats.length + 1) // extra beat holds the resolution
-      widget.applyPatch(beats[Math.min(i, beats.length - 1)]!)
-      if (i === beats.length) i = -1 // next tick restarts the build
+      i = i + 1
+      if (i > LANDING_BEATS.length) i = 0 // hold beat, then restart the build
+      const b = Math.min(i, LANDING_BEATS.length - 1)
+      widget.applyPatch(LANDING_BEATS[b]!)
+      setBeat(b)
     }, 1700)
     return () => clearInterval(id)
   }, [widget])
   return (
     <div className="landing-loop" aria-hidden>
+      <div className="lesson-equation landing-eq">
+        {LANDING_SEGS.map((seg, i) => (
+          <span
+            key={`${i}-${LANDING_HL[beat]!.includes(i)}`}
+            className={LANDING_HL[beat]!.includes(i) ? 'eq-seg eq-hl' : 'eq-seg'}
+          >
+            {seg}
+          </span>
+        ))}
+      </div>
       {widget.render({ parts: 2, partLabel: '', total: '21', cells: ['x', '8'] }, 'lesson')}
     </div>
   )
