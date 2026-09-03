@@ -578,8 +578,15 @@ body {
   text-align: center; font: 600 30px 'Lora', Georgia, serif; color: #2e2822;
   margin: 2px 0 8px; letter-spacing: 0.01em;
 }
-.eq-seg { transition: color 0.3s ease; border-radius: 8px; padding: 1px 3px; }
-.eq-hl { color: #b05f28; background: #f7e6d4; animation: cairn-bump 0.5s ease; display: inline-block; }
+/* every segment carries the SAME box (display, padding, preserved
+   spaces) in both states — highlighting only recolors, so the banner
+   never shifts as pieces light up */
+.eq-seg {
+  display: inline-block; white-space: pre;
+  transition: color 0.3s ease, background 0.3s ease;
+  border-radius: 8px; padding: 1px 3px; background: transparent;
+}
+.eq-hl { color: #b05f28; background: #f7e6d4; animation: cairn-bump 0.5s ease; }
 
 .demo-banner { text-align: center; margin: 8px auto 0; max-width: 760px; padding: 6px 20px; }
 
@@ -687,10 +694,7 @@ body {
   color: #8a7a65;
 }
 
-/* FIXED height: the brace, total and op chip come and go — the prose
-   below must never shift (external eval follow-up) */
-.landing-loop {
-  margin: 6px auto 14px; max-width: 420px; pointer-events: none;
-  height: 196px; overflow: hidden;
-}
-.landing-eq { font-size: 24px; margin-bottom: 2px; }
+/* the widget itself holds its height now (total row is opacity-staged,
+   never unmounted) — no clip box needed */
+.landing-loop { margin: 6px auto 14px; max-width: 420px; pointer-events: none; }
+.landing-eq { font-size: 24px; margin-bottom: 12px; }

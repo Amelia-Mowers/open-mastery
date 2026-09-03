@@ -91,6 +91,9 @@ export function createTapeDiagram(
   /** ADAPTIVE brace: the curls and centre tick are fixed-size in real
    * pixels (measured, ArcHop-style) and only the straight arms stretch —
    * a scaled viewBox squashed the whole shape at narrow widths. */
+  const opGlyph = (op: string): string =>
+    op === 'subtract' ? '−' : op === 'add' ? '+' : op === 'multiply' ? '×' : '÷'
+
   function Brace() {
     const ref = useRef<HTMLDivElement>(null)
     const [w, setW] = useState(0)
@@ -281,22 +284,45 @@ export function createTapeDiagram(
           })}
         </div>
         <Brace />
+        {/* the total line is INVISIBLE, never absent: opacity-staged so the
+            brace zone holds its height before the total is explained (the
+            same rule the empty cell labels follow). The op chip renders a
+            hidden MIRROR on the far side so the total never recenters when
+            the chip pops in. */}
         <div
           data-total
           style={{
-            textAlign: 'center',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            gap: 10,
             font: "700 20px 'Lora', Georgia, serif",
             color: '#5c5245',
             marginTop: 2,
             transition: 'color 0.3s ease',
           }}
         >
-          {state.totalIn ? total : ''}
+          {state.totalIn && state.totalOp && (
+            <span
+              aria-hidden
+              style={{
+                visibility: 'hidden',
+                font: "700 16px 'Lora', Georgia, serif",
+                border: '1.5px solid transparent',
+                padding: '2px 12px',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {opGlyph(state.totalOp.op)} {state.totalOp.by}
+            </span>
+          )}
+          <span style={{ opacity: state.totalIn ? 1 : 0, transition: 'opacity 0.35s ease' }}>
+            {total || '\u00A0'}
+          </span>
           {state.totalIn && state.totalOp && (
             <span
               data-total-op
               style={{
-                marginLeft: 10,
                 font: "700 16px 'Lora', Georgia, serif",
                 color: '#b05f28',
                 background: '#f7e6d4',
@@ -307,14 +333,7 @@ export function createTapeDiagram(
                 animation: 'cairn-pop 0.3s ease',
               }}
             >
-              {state.totalOp.op === 'subtract'
-                ? '−'
-                : state.totalOp.op === 'add'
-                  ? '+'
-                  : state.totalOp.op === 'multiply'
-                    ? '×'
-                    : '÷'}{' '}
-              {state.totalOp.by}
+              {opGlyph(state.totalOp.op)} {state.totalOp.by}
             </span>
           )}
         </div>

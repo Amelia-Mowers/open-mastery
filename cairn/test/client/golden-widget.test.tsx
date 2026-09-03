@@ -118,13 +118,17 @@ describe('staged decomposition entrances (§3)', () => {
     expect(container.querySelector('[data-weight]')).not.toBeNull()
   })
 
-  it('tape-diagram: the brace total arrives via totalIn', () => {
+  it('tape-diagram: the brace total arrives via totalIn — INVISIBLE, never absent', () => {
     const w = createTapeDiagram()
     const { container } = render(<>{w.render({ parts: 4, partLabel: '?', total: '28' }, 'lesson')}</>)
     act(() => w.applyPatch({ totalIn: false }))
-    expect(container.querySelector('[data-total]')!.textContent).toBe('')
+    // the text is PRESENT (the row holds its height) but opacity-hidden
+    const span = () => container.querySelector('[data-total] span') as HTMLElement
+    expect(span().textContent).toBe('28')
+    expect(span().style.opacity).toBe('0')
     act(() => w.applyPatch({ totalIn: true }))
-    expect(container.querySelector('[data-total]')!.textContent).toBe('28')
+    expect(span().textContent).toBe('28')
+    expect(span().style.opacity).toBe('1')
   })
 })
 
