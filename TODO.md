@@ -96,6 +96,19 @@ Not K–12 — the middle-school band plus the parent's view:
       area-model drops `height` patches — both authored as if they
       worked). Fail loudly per the house rule: throw or validator-warn
       ([unknown_patch_key]) on a patch key the widget does not apply.
+- [ ] worked-equation highlight vocabulary (2026-09-09 widget review):
+      the board has no way to light the piece a caption names ("The
+      small 2 is a COUNT" — nothing marks the 2). Add a per-line
+      highlight patch key (span or token index) mirroring eqHighlight,
+      then retrofit the exp-worked captions that point at pieces.
+- [ ] worked-equation first line shrinks/re-wraps when later lines land
+      (2026-09-09 review, §5 stable footprint): reserve the final layout
+      from frame one — fixed font scale per board, not per line count.
+- [ ] renderText negative numbers print ASCII "-" (mixes with authored
+      "−" on the same board, 2026-09-09 review). Emit the true minus in
+      DISPLAY text only — spoken text is enumerated from the same
+      builders, so route the substitution through a display-only step or
+      the corpus hash churns.
 - [ ] Per-problem difficulty analytics (enabled by discrete pools):
       (itemId, paramHash) now has repeated observations — aggregate
       per-instance correct rates in the guide view; later IRT-style

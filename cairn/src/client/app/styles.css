@@ -593,9 +593,22 @@ body {
 .eq-seg {
   display: inline-block; white-space: pre;
   transition: color 0.3s ease, background 0.3s ease;
-  border-radius: 8px; padding: 1px 3px; background: transparent;
+  border-radius: 8px; padding: 1px 3px; margin: 0 -3px; background: transparent;
 }
 .eq-hl { color: #b05f28; background: #f7e6d4; animation: cairn-bump 0.5s ease; }
+
+/* narration hold inside the stepwise gate box: three soft pulsing dots */
+.stepwise-listening { display: flex; gap: 7px; margin: 0; }
+.stepwise-listening span {
+  width: 7px; height: 7px; border-radius: 50%; background: #d8cbb8;
+  animation: cairn-listen 1.4s ease-in-out infinite;
+}
+.stepwise-listening span:nth-child(2) { animation-delay: 0.22s; }
+.stepwise-listening span:nth-child(3) { animation-delay: 0.44s; }
+@keyframes cairn-listen { 0%, 100% { opacity: 0.35; } 50% { opacity: 1; } }
+
+/* the misconception id on a zoo verdict is reviewer metadata, not copy */
+.zoo-diag-tag { margin-left: 8px; opacity: 0.7; }
 
 .demo-banner { text-align: center; margin: 8px auto 0; max-width: 760px; padding: 6px 20px; }
 

@@ -2,7 +2,7 @@ id: g6.ee.exponents
 name: Evaluate whole-number exponents
 short: "Powers: a number times itself"
 preamble:
-  plain: "When you see 5 with a little 2, that is 5 squared: 5 × 5. The little number tells you how many times to use the 5 — and a square picture makes it easy to see."
+  plain: "Sometimes a number is multiplied by itself, and we write that with a small raised number. That little number is a count — it tells you how many times the big number gets used as a factor."
   vocab:
     - { term: exponent, meaning: "The small raised number that tells you how many times to use the base as a factor." }
 standards: [CCSS.MATH.CONTENT.6.EE.A.1]

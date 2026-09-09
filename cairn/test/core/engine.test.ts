@@ -9,7 +9,10 @@ import {
   recordLlmHelp,
   startCheck,
 } from '../../src/core/engine'
-import { makeCtx, bktFor, SKILL_A, SKILL_B } from './fixtures'
+import { fixtureBundle, makeCtx, makeStamper, bktFor, SKILL_A, SKILL_B } from './fixtures'
+import { buildIndex } from '../../src/core/curriculum'
+import { policyV1 } from '../../src/core/policy/v1'
+import type { EngineCtx } from '../../src/core/engine'
 import {
   alwaysCorrect,
   alwaysWrong,
@@ -169,6 +172,27 @@ describe('synthetic students (§10): the fast executable spec', () => {
     if (c.kind !== 'serve_item') throw new Error('expected check serve')
     expect(c.itemKind).toBe('check')
     expect(instanceKey(c.instance.itemId, c.instance.paramHash)).not.toBe(key)
+  })
+
+  it('a move-entry item (answer type op) is never scaffolded — the lead would perform the answer', () => {
+    // the scaffolded lead replays the lesson's full solve above the box;
+    // when the item's answer IS the first move ("subtract 5"), that both
+    // gives the answer away and closes on a prompt grading a different
+    // question — so op-answer items always serve raw
+    const bundle = fixtureBundle()
+    for (const item of bundle.items)
+      if (item.skills.includes(SKILL_A))
+        (item as { answer: unknown }).answer = { type: 'op', value: 'divide {a}' }
+    const { stamp, clock } = makeStamper()
+    const ctx: EngineCtx = { cur: buildIndex(bundle), bkt: bktFor(), policy: policyV1, stamp, now: () => clock.t }
+    const student = initialStudentState()
+    const session = freshSession()
+    runLoop(student, session, ctx, alwaysCorrect, 20, (s) => s.skills[SKILL_A]?.phase === 'practice')
+    const serve = nextAction(student, session, ctx)
+    if (serve.kind !== 'serve_item') throw new Error('expected serve')
+    // the estimate is inside the scaffold band — only the answer type opts out
+    expect(student.skills[SKILL_A]!.p).toBeLessThan(0.85)
+    expect(serve.scaffolded).toBe(false)
   })
 
   it('scaffolding fades with mastery: early practice keeps the representation, later practice and checks are raw', () => {

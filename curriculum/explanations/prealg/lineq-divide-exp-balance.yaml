@@ -10,7 +10,7 @@ timeline:
   - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "The left pan holds {variable} multiplied by {a} — {a} unknowns weighing as one." }
   - t: 15.5
     patch: { op: divide, by: "{a}", highlight: null }
-    caption: "Divide BOTH pans by {a}: each side gets {a} times lighter together, so the balance keeps. So what is {variable}?"
+    caption: "Divide BOTH pans by {a}: both sides shrink the same way, so the scale stays level. So what is {variable}?"
     expect:
       type: op
       value: "divide {a}"

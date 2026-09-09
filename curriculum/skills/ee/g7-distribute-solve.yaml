@@ -2,7 +2,7 @@ id: g7.ee.distribute-solve
 name: Solve equations like p(x + q) = r
 short: "Find x when it is inside parentheses"
 preamble:
-  plain: "In p(x + q) = r, the x is tucked inside parentheses. There are two ways in: divide both sides by p first, or open the parentheses with the distributive property. Both find the same x."
+  plain: "Sometimes the letter is tucked inside parentheses, and everything in there is multiplied by the number out front. We deal with that outside number first — and then it is an equation we already know how to solve."
   vocab:
     - { term: expand, meaning: "Rewrite p(x + q) as px + pq using the distributive property." }
 standards: [CCSS.MATH.CONTENT.7.EE.B.4.A]

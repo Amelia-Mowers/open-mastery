@@ -2,7 +2,7 @@ id: g6.ee.write-expression
 name: Write an expression from words
 short: "Turn words into math"
 preamble:
-  plain: "\"5 more than 3 times a number\" becomes 3n + 5. Once it is written in symbols, the same expression works for every number at once."
+  plain: "Words can describe a calculation before we know the number in it. We let a letter stand for that number and write the calculation in symbols — and then it works for every number at once."
   vocab:
     - { term: expression, meaning: "Numbers, letters, and operations — a phrase in math symbols, with no equals sign." }
 standards: [CCSS.MATH.CONTENT.6.EE.A.2.A]

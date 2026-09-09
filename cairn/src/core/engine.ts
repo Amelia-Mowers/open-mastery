@@ -506,7 +506,13 @@ function serveWorkItem(
     // the problem while the estimate is low and fades as it climbs. The
     // first problem after a lesson is simply the low-estimate end of it.
     // Reviews are always raw (retrieval of the mastered, unscaffolded form).
-    scaffolded: itemKind === 'practice' && p < ctx.policy.scaffolding.fadeAtP,
+    // A move-entry item ("what's the FIRST move?") is never scaffolded:
+    // the lead solves the whole problem, which both performs the answer
+    // and leaves a closing prompt that grades against a different one.
+    scaffolded:
+      itemKind === 'practice' &&
+      ctx.cur.items.get(instance.itemId)!.answer.type !== 'op' &&
+      p < ctx.policy.scaffolding.fadeAtP,
   }
   const offered = session.pendingHint[skillId]
   if (offered !== undefined) action.offeredHintLevel = offered

@@ -39,6 +39,18 @@ const VOICE_TAIL_MS = 450
 export const hasExpects = (timeline: ReadonlyArray<TimelineStep>): boolean =>
   timeline.some((st) => st.expect !== undefined)
 
+/** a numeric gate's count may arrive with the problem's variable attached
+ * ("3 copies of 2x — how many xs?" → "6x"): strip THAT trailing letter,
+ * nothing else, and only when a number remains */
+function stripGateVariable(raw: string, params: Params): string {
+  const v = params['variable']
+  if (typeof v !== 'string' || v === '') return raw
+  const t = raw.trim()
+  if (!t.toLowerCase().endsWith(v.toLowerCase())) return raw
+  const rest = t.slice(0, t.length - v.length).trim()
+  return rest === '' ? raw : rest
+}
+
 /** sticky caption + equation banner state after steps[0..upto) */
 function stickyState(steps: TimelineStep[], upto: number, params: Params) {
   let caption = ''
@@ -303,7 +315,10 @@ export function StepwisePlayer({
               ...(waitingOn.form ? { form: waitingOn.form } : {}),
             } as AnswerSpec,
             params as never,
-            raw,
+            // "how many xs?" answered "6x" is the count with its unit —
+            // a numeric gate takes the value with or without the
+            // problem's own variable ("6x" for 6; never other letters)
+            waitingOn.type === 'numeric' ? stripGateVariable(raw, params) : raw,
           ).verdict === 'correct'
     if (correct) {
       onStep?.({
@@ -327,7 +342,11 @@ export function StepwisePlayer({
     // into {x, 21} — one mistake charged as two misses
     if (waitingOn.type === 'pick') setPicked(new Set())
     // the same diagnosis standard as final answers, applied to this move
-    const named = diagnose(waitingOn.misconceptions, params as never, raw)
+    const named = diagnose(
+      waitingOn.misconceptions,
+      params as never,
+      waitingOn.type === 'numeric' ? stripGateVariable(raw, params) : raw,
+    )
     onStep?.({
       stepIndex: applied,
       expectType: waitingOn.type,
@@ -471,9 +490,15 @@ export function StepwisePlayer({
                 justifyContent: 'center',
               }}
             >
-              {feedback !== null && (
+              {feedback !== null ? (
                 <p className="stepwise-feedback" data-testid="stepwise-feedback">
                   {feedback}
+                </p>
+              ) : (
+                // the box holds its place while the caption narrates; a
+                // fully blank dashed frame for seconds reads as broken
+                <p className="stepwise-listening" aria-hidden>
+                  <span /><span /><span />
                 </p>
               )}
             </div>
@@ -570,7 +595,9 @@ export function StepwisePlayer({
                 key={`typed-${nudge.seq}`}
                 className={nudge.parts.includes('by') ? 'answer-input sw-nudge' : 'answer-input'}
                 aria-label="Your next step"
-                inputMode="decimal"
+                // an expr gate asks for a LINE (operators and all); only a
+                // numeric gate gets the phone's number pad
+                inputMode={waitingOn.type === 'numeric' ? 'decimal' : 'text'}
                 value={typed}
                 autoFocus
                 onChange={(e) => setTyped(e.target.value)}

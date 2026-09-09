@@ -2,7 +2,7 @@ id: g6.ee.equivalent
 name: Make equivalent expressions with the distributive property
 short: "Multiply out the parentheses"
 preamble:
-  plain: "3(x + 2) and 3x + 6 look different, but they are the same for every x you try. The distributive property lets us open the parentheses — and an area picture shows why it works."
+  plain: "Two expressions can look different and still be worth the same for every number you try. The distributive property lets us open the parentheses — multiply each piece inside by the number in front, and the value never changes."
   vocab:
     - { term: distributive property, meaning: "a(b + c) equals ab + ac: multiply each part inside the parentheses." }
     - { term: equivalent expressions, meaning: "Expressions that give the same value for every number you put in." }

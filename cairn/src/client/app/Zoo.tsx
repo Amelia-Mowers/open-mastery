@@ -611,7 +611,7 @@ function ZooAnswerRow({
       return null
     }
   })
-  const [verdict, setVerdict] = useState<null | { ok: boolean; says: string }>(null)
+  const [verdict, setVerdict] = useState<null | { ok: boolean; says: string; tag?: string }>(null)
   if (!widget) return null
   const check = (): void => {
     const got = widget.extract() as {
@@ -650,8 +650,11 @@ function ZooAnswerRow({
     setVerdict({
       ok: false,
       says: named
-        ? `"${raw}" — ${named.says}  [${named.id}]`
+        ? `"${raw}" — ${named.says}`
         : `"${raw}" — ${v.verdict === 'incorrect' && v.reason ? v.reason : 'not accepted'}`,
+      // the misconception id is REVIEWER metadata (students never see it —
+      // engine and StepwisePlayer send says alone); a chip keeps that clear
+      ...(named ? { tag: named.id } : {}),
     })
   }
   return (
@@ -660,15 +663,22 @@ function ZooAnswerRow({
         <span className="mono-chip">{style.type}</span>
         <span className="muted">{style.note}</span>
       </div>
-      <div className="answer-row">
+      <form
+        className="answer-row"
+        onSubmit={(e) => {
+          e.preventDefault()
+          check()
+        }}
+      >
         {widget.render({} as never, 'problem')}
-        <button className="btn btn-primary" onClick={check}>
+        <button type="submit" className="btn btn-primary">
           Check answer
         </button>
-      </div>
+      </form>
       {verdict && (
         <p className={verdict.ok ? 'zoo-verdict ok' : 'zoo-verdict bad'} role="status">
           {verdict.says}
+          {verdict.tag && <span className="mono-chip zoo-diag-tag">{verdict.tag}</span>}
         </p>
       )}
     </div>
