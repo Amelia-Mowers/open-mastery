@@ -765,15 +765,28 @@ export function LessonPlayer({
             {headlineBeat.kind === 'skill' ? 'NEW SKILL' : 'A WORD TO KNOW'}
           </span>
           <h2 className="lesson-intro-headline">{headlineBeat.headline}</h2>
-          {headlineBeat.kind === 'skill' && equation && (
-            <div className="lesson-equation lesson-intro-problem" aria-label={`Sample problem ${equation.join('')}`}>
-              {equation.map((seg, i) => (
-                <span key={i} className="eq-seg">
-                  {seg}
-                </span>
-              ))}
-            </div>
-          )}
+          {headlineBeat.kind === 'skill' &&
+            (() => {
+              // banner timelines show their segments; the whiteboard
+              // family falls back to the board's opening line — every
+              // skill beat carries an example
+              const sample = equation?.join('') ?? problemLine(timeline, params)
+              if (sample === null) return null
+              return (
+                <div className="lesson-intro-problem" aria-label={`Example problem ${sample}`}>
+                  <span className="intro-example-label" aria-hidden>
+                    example
+                  </span>
+                  <div className="lesson-equation">
+                    {(equation ?? [sample]).map((seg, i) => (
+                      <span key={i} className="eq-seg">
+                        {seg}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )
+            })()}
         </div>
       )}
       <div className="lesson-stage" key={epoch} hidden={headlineBeat !== null}>

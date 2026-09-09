@@ -81,6 +81,12 @@ export function problemLine(
     const eq = st.patch?.['equation']
     if (Array.isArray(eq)) return eq.map((seg) => renderText(String(seg), params)).join('')
   }
+  // the whiteboard family has no equation banner — its problem is the
+  // board's own opening line (`start`, else the first written `line`)
+  for (const st of timeline) {
+    const start = st.patch?.['start'] ?? st.patch?.['line']
+    if (typeof start === 'string') return renderText(start, params)
+  }
   return null
 }
 
