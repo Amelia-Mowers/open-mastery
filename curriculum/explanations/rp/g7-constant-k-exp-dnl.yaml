@@ -5,9 +5,9 @@ widget: double-number-line
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["y", " = k · ", "x", ",  k = ?"], topLabel: "x", bottomLabel: "y", top: ["0", "1", "{a}", "{c}"], bottom: ["0", "{k}", "{a*k}", "{c*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "A proportional pair of lines: x rides the top line, y sits below — and k is hiding at x = 1." }
-  - { t: 4, patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "2", "3"] }, caption: "The x line carries {a} and {c}.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — belong on the TOP line?" } }
-  - { t: 8, patch: { eqHighlight: ["0"], bottomIn: true }, caption: "Each y sits below its x: {a*k} under {a}, {c*k} under {c}.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — belong on the BOTTOM line?" } }
-  - { t: 12, patch: { eqHighlight: ["1"], highlight: "1" }, caption: "Every pair divides to the SAME number, and it sits over x = 1. So what is k?", expect: { type: op, value: "divide {a}", prompt: "{a*k} is the y that {a} xs make. What do you do to {a*k} to leave what ONE x makes?", hint: "k is y ÷ x — divide the y by its own x." } }
+  - { t: 4, patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "2", "3"] }, caption: "{a} and {c} are amounts of x — inputs, so they ride the top line.", expect: { type: pick, value: ["2"], prompt: "The top line will carry the inputs. Which piece — or pieces — of y = k · x is the input?", hint: "y is made FROM x." } }
+  - { t: 8, patch: { eqHighlight: ["0"], bottomIn: true }, caption: "Each y sits below the x that made it — {a*k} under {a}, {c*k} under {c}: one pair, one column.", expect: { type: pick, value: ["0"], prompt: "x has its line. Which piece — or pieces — of y = k · x still needs one?", hint: "The outputs go below." } }
+  - { t: 12, patch: { eqHighlight: ["1"], highlight: "1" }, caption: "Every pair divides to the SAME number, and it sits over x = 1. So what is k?", expect: { type: op, value: "divide {a}", prompt: "{a*k} is the y that {a} xs make. What do you do to {a*k} to leave what ONE x makes?", hint: "k is y ÷ x — divide the y by its own x.", misconceptions: [{ id: multiplied-instead-of-divided, when: "multiply {a}", says: "× {a} stretches the line further — {a*k} is already {a} steps of k. To land on what ONE x makes, undo the × {a}: divide." }] } }
   - { t: 16, patch: { reveal: ["0", "1", "2", "3"] }, caption: "Read x = 1: y = {k}. THAT is the constant of proportionality." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

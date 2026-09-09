@@ -4,7 +4,7 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}{variable} + {b}", " at ", "{variable} = {c}", " → ", "?"], cols: ["{variable}", "{a}{variable} + {b}"], rows: [["1", "{a+b}"], ["2", "{2*a+b}"], ["{c}", "{a*c+b}"]], reveal: "0" }, caption: "An expression is a machine: feed it a number, get a number." }
+  - { t: 0, patch: { equation: ["{a}{variable} + {b}", " at ", "{variable} = {c}", " → ", "?"], cols: ["{variable}", "{a}{variable} + {b}"], rows: [["1", "{a+b}"], ["2", "{2*a+b}"], ["{c}", "{a*c+b}"]], reveal: "0" }, caption: "Each row feeds {a}{variable} + {b} one number and records what comes out." }
   - t: 4.5
     patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }
     caption: "Feed it 1: {a}·1 + {b} = {a+b}."
@@ -19,8 +19,8 @@ timeline:
     expect:
       type: numeric
       value: "{2*a+b}"
-      prompt: "Feed it 2 — what comes out this time?"
+      prompt: "Feed it 2 — what number comes out?"
       hint: "{a}·2, then + {b}."
   - { t: 13.5, patch: { equation: ["{a}{variable} + {b}", " at ", "{variable} = {c}", " → ", "{a*c+b}"], eqHighlight: ["4"], reveal: "3", highlight: "3" }, caption: "Feed it {c}: {a}·{c} + {b} = {a*c+b}." }
   - { t: 16.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

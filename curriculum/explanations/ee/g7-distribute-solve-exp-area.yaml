@@ -15,7 +15,7 @@ timeline:
       hint: "The number of copies is the number of rows."
   - t: 8.5
     patch: { eqHighlight: ["1"], partsIn: true }
-    caption: "The width splits into {variable} and {b} — the top edge labels them."
+    caption: "Inside the parentheses, {variable} and {b} are ADDED — so side by side they make the width."
     expect:
       type: pick
       value: ["1"]
@@ -23,7 +23,7 @@ timeline:
       hint: "Everything inside the parentheses sits along the top."
   - t: 13
     patch: { eqHighlight: [], products: ["{a}{variable}", "{a*b}"], highlight: ["2"] }
-    caption: "Distributed: {a}{variable} + {a*b} = {a*(ans+b)}."
+    caption: "Each width piece earns its own area: {a}{variable} + {a*b} = {a*(ans+b)} — that is distributing."
     expect:
       type: numeric
       value: "{a*b}"
@@ -39,4 +39,4 @@ timeline:
       hint: "{a*(ans+b)} − {a*b}."
   - { t: 21.5, patch: { highlight: [] }, caption: "{a*ans} split over {a} rows: {variable} = {ans}." }
   - { t: 24.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

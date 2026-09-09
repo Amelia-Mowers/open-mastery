@@ -12,7 +12,7 @@ timeline:
       type: pick
       value: ["0", "2"]
       prompt: "Which piece — or pieces — make the KNOWN row: a percent and its amount?"
-  - { t: 8.5, patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "×{n}" } }, caption: "×{n} climbs from 1/{n} to the whole. So what is the WHOLE?", expect: { type: numeric, value: "{n}", prompt: "1/{n} of the number, times what, gives the whole?", hint: "All {n} parts." } }
+  - { t: 8.5, patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "×{n}" } }, caption: "×{n} climbs from 1/{n} to the whole. So what is the WHOLE?", expect: { type: numeric, value: "{n}", prompt: "From {k} up to the whole — times what?", hint: "All {n} parts." } }
   - { t: 13, patch: { reveal: "2", highlight: "2" }, caption: "At 100%: {n} × {k} = {n*k}. The number is {n*k}." }
   - { t: 16, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

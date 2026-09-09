@@ -4,14 +4,14 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["y", " = ", "{k}", "x", ",  y = ? when x = {c}"], cols: ["x", "y"], rows: [["1", "{k}"], ["{a}", "{a*k}"], ["{c}", "{c*k}"]], reveal: "0" }, caption: "The rule y = {k}x — and the question: y when x = {c}. Start where x is simplest: x = 1." }
+  - { t: 0, patch: { equation: ["y", " = ", "{k}", "x", ",  y = ? when x = {c}"], cols: ["x", "y"], rows: [["1", "{k}"], ["{a}", "{a*k}"], ["{c}", "{c*k}"]], reveal: "0" }, caption: "The rule y = {k}x, the question: y when x = {c}. The simplest row comes first — x = 1." }
   - t: 4
     patch: { eqHighlight: ["2"], reveal: "1", highlight: "1" }
-    caption: "x = 1 gives y = {k} — that is k itself."
+    caption: "x = 1 gives y = {k} × 1 = {k} — the rule's own number, out in the open."
     expect:
       type: numeric
       value: "{k}"
-      prompt: "y = {k}x — when x is 1, what is y?"
+      prompt: "When x is 1, what does the rule make y?"
       hint: "{k} × 1."
   - t: 8
     patch: { reveal: "2", highlight: "2", factor: { from: "1", to: "2", text: "×{a}" } }
@@ -19,8 +19,8 @@ timeline:
     expect:
       type: numeric
       value: "{a*k}"
-      prompt: "y is {k} × x. For x = {a}, what is y?"
+      prompt: "For x = {a}, what is y?"
       hint: "{k} × {a}."
   - { t: 12, patch: { eqHighlight: [], reveal: "3", highlight: "3", factor: { from: "1", to: "3", text: "×{c}" } }, caption: "x = {c}: y = {k} × {c} = {c*k}. Every row obeys y = {k}x." }
   - { t: 15, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

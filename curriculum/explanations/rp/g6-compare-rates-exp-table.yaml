@@ -29,7 +29,7 @@ timeline:
     expect:
       type: pick
       value: ["0"]
-      prompt: "${u} a pencil against ${u+d} a pencil — which pack is the better buy?"
+      prompt: "One pencil against one pencil — which pack costs less?"
       hint: "Fewer dollars for the same ONE pencil."
   - { t: 23.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

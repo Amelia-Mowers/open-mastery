@@ -4,10 +4,10 @@ representation: double-number-line
 widget: double-number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["y", " = ", "{k}", "x", ",  y = ? when x = {c}"], topLabel: "x", bottomLabel: "y", top: ["0", "1", "{a}", "{c}"], bottom: ["0", "{k}", "{a*k}", "{k*c}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "One rule, y = {k}x, stretches the WHOLE line." }
+  - { t: 0, patch: { equation: ["y", " = ", "{k}", "x", ",  y = ? when x = {c}"], topLabel: "x", bottomLabel: "y", top: ["0", "1", "{a}", "{c}"], bottom: ["0", "{k}", "{a*k}", "{k*c}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "y = {k}x on two lines: every x on top, its y — {k} times as much — below." }
   - t: 4
     patch: { eqHighlight: ["2"], topIn: true, bottomIn: true, reveal: ["0", "1"] }
-    caption: "At x = 1, y = {k} — the rule is y = {k}x."
+    caption: "At x = 1, y is {k}: one x makes {k}, and every other x scales up from there."
     expect:
       type: pick
       value: ["2"]
@@ -15,7 +15,7 @@ timeline:
       hint: "The number x is multiplied by."
   - t: 8
     patch: { eqHighlight: [], reveal: ["0", "1", "2"], highlight: "2" }
-    caption: "So the question the lines ask is: the rule multiplies every x by {k} — what does x = {c} give?"
+    caption: "Every x is multiplied by the same {k} — so the rule already knows x = {c}. What does it give?"
     expect:
       type: numeric
       value: "{a*k}"
@@ -23,4 +23,4 @@ timeline:
       hint: "{k} for every one x, and there are {a} of them."
   - { t: 12, patch: { reveal: ["0", "1", "2", "3"], highlight: "3" }, caption: "x = {c}: y = {k}·{c} = {k*c}. The rule answers every x." }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

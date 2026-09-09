@@ -4,10 +4,10 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["A: {a1} pencils, ", "${u*a1}", "  vs  B: {a2} pencils, ", "${(u+d)*a2}", " — better buy?"], min: 0, max: "{max(u*a1, (u+d)*a2)}", step: "{max(u*a1, (u+d)*a2)}", labelled: [] }, caption: "Two offers on one line — A above, B below. Whole prices first." }
+  - { t: 0, patch: { equation: ["A: {a1} pencils, ", "${u*a1}", "  vs  B: {a2} pencils, ", "${(u+d)*a2}", " — better buy?"], min: 0, max: "{max(u*a1, (u+d)*a2)}", step: "{max(u*a1, (u+d)*a2)}", labelled: [] }, caption: "Two offers share one line — A above, B below, each price drawn as a length." }
   - t: 4
     patch: { eqHighlight: ["1"], jumps: { size: "{u*a1}", count: 1, label: "A: ${u*a1}" } }
-    caption: "Offer A, whole: one span of ${u*a1}, above the line."
+    caption: "A's whole price drawn as length: a span of ${u*a1} above the line."
     expect:
       type: pick
       value: ["1"]
@@ -15,7 +15,7 @@ timeline:
       hint: "Everything A costs, before any sharing."
   - t: 8
     patch: { eqHighlight: ["3"], jumps: [{ size: "{u*a1}", count: 1, label: "A: ${u*a1}" }, { size: "{(u+d)*a2}", count: 1, label: "B: ${(u+d)*a2}", color: "#3f6a4d", below: true }] }
-    caption: "Offer B, whole: one span of ${(u+d)*a2}, below the line."
+    caption: "B's whole price below: ${(u+d)*a2} — but whole prices can't settle it while the packs hold different counts."
     expect:
       type: pick
       value: ["3"]
@@ -56,4 +56,4 @@ timeline:
   - { t: 28, patch: { eqHighlight: ["4"], axis: { min: 0, max: "{u+d}", step: "{gcd(u, d)}" }, jumps: [{ size: "{u}", count: 1, label: "${u}" }, { size: "{u+d}", count: 1, label: "${u+d}", color: "#3f6a4d", below: true }], labelled: [] }, caption: "Keep just the FIRST piece of each and zoom IN — ONE pencil against ONE pencil. So which pack is the better buy?" }
   - { t: 32, patch: { labelled: ["{u}", "{u+d}"] }, caption: "ONE Pack-A pencil: ${u}. ONE Pack-B pencil: ${u+d}. The shorter piece costs less — A is the better buy." }
   - { t: 35, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

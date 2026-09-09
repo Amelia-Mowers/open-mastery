@@ -4,8 +4,8 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a} pounds → ${b}", line: "{c} pounds → $?" }, caption: "Two steps: down to one pound, then up to {c}." }
-  - { t: 4, patch: { line: "1 pound → ${b} ÷ {a} = ${b/a}", note: "unit rate" }, caption: "Step 1: one pound costs ${b/a}. So what does {c} pounds cost?", expect: { type: numeric, value: "{b/a}", prompt: "${b} shared over {a} pounds — what does ONE pound cost?" } }
-  - { t: 8.5, patch: { line: "{c} pounds → {c} × {b/a} = ${c*b/a}", note: "scale up" }, caption: "Step 2: {c} pounds costs ${c*b/a}.", expect: { type: numeric, value: "{c*b/a}", prompt: "So what does {c} pounds cost?" } }
+  - { t: 0, patch: { start: "{a} pounds → ${b}", line: "{c} pounds → $?" }, caption: "{a} pounds cost ${b} — and {c} pounds is the question." }
+  - { t: 4, patch: { line: "1 pound → ${b} ÷ {a} = ${b/a}", note: "unit rate" }, caption: "One pound costs ${b/a} — an equal share of the ${b}. So what do {c} pounds cost?", expect: { type: numeric, value: "{b/a}", prompt: "What does ONE pound cost?", hint: "${b} shared across {a} pounds." } }
+  - { t: 8.5, patch: { line: "{c} pounds → {c} × {b/a} = ${c*b/a}", note: "scale up" }, caption: "{c} pounds cost ${c*b/a} — {c} shares of the one-pound price.", expect: { type: numeric, value: "{c*b/a}", prompt: "At ${b/a} a pound, what do {c} pounds come to?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

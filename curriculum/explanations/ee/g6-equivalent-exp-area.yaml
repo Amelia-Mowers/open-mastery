@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["{m}", "({variable} + {n})"], height: "{m}", parts: ["{variable}", "{n}"], fillRows: "0", heightIn: false, partsIn: false }, caption: "{m}({variable} + {n}) is a rectangle waiting to be drawn." }
   - t: 4
     patch: { eqHighlight: ["0"], heightIn: true }
-    caption: "The number out front is the HEIGHT: {m} rows."
+    caption: "{m} copies of the width, stacked — the number out front is the HEIGHT: {m} rows."
     expect:
       type: numeric
       value: "{m}"
@@ -23,11 +23,11 @@ timeline:
       hint: "Everything inside the parentheses sits along the top."
   - t: 12
     patch: { eqHighlight: [], products: ["{m}{variable}", "{m*n}"], highlight: [] }
-    caption: "{m}({variable} + {n}) = {m}{variable} + {m*n}."
+    caption: "Two pieces of area make the whole: {m}({variable} + {n}) = {m}{variable} + {m*n}."
     expect:
       type: numeric
       value: "{m*n}"
       prompt: "{m} rows of {n} — how much area is the plain-number piece?"
       hint: "{m} × {n}."
   - { t: 15, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

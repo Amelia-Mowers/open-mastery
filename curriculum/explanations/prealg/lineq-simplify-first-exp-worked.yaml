@@ -5,8 +5,8 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "{c1}{variable} + {c2}{variable} - {c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}" }, caption: "Messy — tidy each side first." }
-  - { t: 4, patch: { line: "{c1+c2-c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}", note: "combine the {variable}s" }, caption: "{c1} + {c2} − {c3} makes {c1+c2-c3}{variable}. Now the right side — what do the numbers come to?", expect: { type: numeric, value: "{c1+c2-c3}", prompt: "{c1} + {c2} − {c3} of the {variable}s — how many {variable}s is that in all?", hint: "{c1} + {c2} − {c3}." } }
+  - { t: 4, patch: { line: "{c1+c2-c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}", note: "combine the {variable}s" }, caption: "{c1} + {c2} − {c3} = {c1+c2-c3}: three {variable}-terms collapse into ONE. The plain numbers are next.", expect: { type: numeric, value: "{c1+c2-c3}", prompt: "{c1} + {c2} − {c3} of the {variable}s — how many {variable}s is that in all?", hint: "{c1} + {c2} − {c3}." } }
   - { t: 9, patch: { line: "{c1+c2-c3}{variable} = {(c1+c2-c3)*ans}", note: "combine the numbers" }, caption: "Tidy: {c1+c2-c3}{variable} = {(c1+c2-c3)*ans} — a one-step equation. So what is {variable}?", expect: { type: numeric, value: "{(c1+c2-c3)*ans}", prompt: "{d1} + {(c1+c2-c3)*ans - d1} — what does the right side come to?", hint: "Add them — mind the sign." } }
-  - { t: 13, patch: { line: "{variable} = {ans}", note: "the same move on both sides" }, caption: "{variable} = {ans}.", expect: { type: expr, value: "{variable} = {ans}", prompt: "What is {variable}?" } }
+  - { t: 13, patch: { line: "{variable} = {ans}", note: "the same move on both sides" }, caption: "Both sides ÷ {c1+c2-c3}: {variable} = {ans}.", expect: { type: expr, value: "{variable} = {ans}", prompt: "What is the last line of the working?" } }
   - { t: 15.5, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

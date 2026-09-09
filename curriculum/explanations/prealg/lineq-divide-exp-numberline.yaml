@@ -38,4 +38,4 @@ timeline:
           says: "Multiplying by {a} makes the trip {a} times longer. To find ONE jump, divide."
   - { t: 14, patch: { marker: "{b/a}", labelled: ["0", "{b/a}", "{b}"], highlight: ["{b/a}"] }, caption: "Each jump is {b} ÷ {a} = {b/a}. {variable} = {b/a}." }
   - { t: 16.5, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

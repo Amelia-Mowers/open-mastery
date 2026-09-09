@@ -22,7 +22,7 @@ timeline:
       hint: "100 ÷ {100/n}."
   - t: 12
     patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "÷{n}" } }
-    caption: "÷{n} lands on the benchmark part. So what is {100/n}% of {n*w}?"
+    caption: "÷{n} shares the whole into {n} equal parts — the benchmark row holds ONE of them. So what is {100/n}% of {n*w}?"
     expect:
       type: op
       value: "divide {n}"
@@ -34,4 +34,4 @@ timeline:
           says: "×{n} builds {n} wholes — {100/n}% is one PART of the whole: divide."
   - { t: 16, patch: { reveal: "2", highlight: "2" }, caption: "{100/n}% of {n*w} = {w}." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

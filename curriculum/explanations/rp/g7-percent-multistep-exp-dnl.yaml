@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["${n*p}", " at ", "{100/n}% off", ",  you pay $?"], topLabel: "percent", bottomLabel: "dollars", top: ["0%", "{100/n}%", "{100 - 100/n}%", "100%"], bottom: ["0", "{p}", "{n*p - p}", "{n*p}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "A {100/n}%-off deal: the percents on one line, the dollars below." }
   - t: 4.5
     patch: { eqHighlight: ["0"], topIn: true, bottomIn: true, reveal: ["0", "3"] }
-    caption: "100% is the full price: ${n*p}."
+    caption: "Every dollar amount lives at some percent — and the FULL price, ${n*p}, is what 100% means."
     expect:
       type: pick
       value: ["0"]
@@ -23,4 +23,4 @@ timeline:
       hint: "{100/n}% is 1/{n} of the price — {n*p} ÷ {n}."
   - { t: 13.5, patch: { eqHighlight: [], highlight: "2", reveal: ["0", "1", "2", "3"] }, caption: "What you PAY is the rest: {100 - 100/n}% of the price — ${n*p - p}." }
   - { t: 17, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

@@ -4,7 +4,7 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}" }, caption: "TWO things are done to {variable} here: multiplied by {a}, then {b} added. Which one do you undo first?" }
+  - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}" }, caption: "TWO things are done to {variable}: multiplied by {a}, then {b} added — and the order they come off matters." }
   - t: 4
     patch: { line: "{a}{variable} + {b} − {b} = {a*ans+b} − {b}", note: "the same move on both sides" }
     caption: "The add came LAST, so it comes off FIRST — undo in reverse order."
@@ -28,4 +28,4 @@ timeline:
       hint: "{variable} is multiplied by {a}. Dividing both sides by {a} undoes that."
   - { t: 15, patch: { line: "{variable} = {ans}", note: "the {a}s cancel" }, caption: "{variable} = {ans}." }
   - { t: 17.5, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

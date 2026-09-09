@@ -4,9 +4,9 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a}{variable} + {b},   {variable} = {c}" }, caption: "An expression plus a value for its letter. Put {c} in place of {variable} — what does the line read?" }
-  - { t: 4, patch: { line: "= {a} · {c} + {b}", note: "substitute {variable} = {c}" }, caption: "{variable} is {c} everywhere it appears. Multiplication comes first: what is {a} · {c}?", expect: { type: expr, value: "{a} * {c} + {b}", prompt: "With {c} in place of {variable}, what does the line read?", hint: "Every {variable} becomes {c}: {a} · {c} + {b}." } }
+  - { t: 0, patch: { start: "{a}{variable} + {b},   {variable} = {c}" }, caption: "An expression plus a value for its letter. Substituting means {c} takes {variable}'s place — everywhere it appears." }
+  - { t: 4, patch: { line: "= {a} · {c} + {b}", note: "substitute {variable} = {c}" }, caption: "{c} stands in for {variable}, and the order of operations still rules the line: multiply before add.", expect: { type: expr, value: "{a} * {c} + {b}", prompt: "With {c} in place of {variable}, what does the line read?", hint: "Every {variable} becomes {c}: {a} · {c} + {b}." } }
   - { t: 8.5, patch: { line: "= {a*c} + {b}", note: "multiply first" }, caption: "{a} · {c} is {a*c}. One step left: add the {b}. So what is the expression worth?", expect: { type: numeric, value: "{a*c}", prompt: "Multiplication first — what is {a} · {c}?", hint: "{a} groups of {c}." } }
   - { t: 12, patch: { line: "= {a*c+b}", note: "then add" }, caption: "{variable} = {c} makes {a}{variable} + {b} worth {a*c+b}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-30 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

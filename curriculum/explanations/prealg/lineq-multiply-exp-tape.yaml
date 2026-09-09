@@ -11,7 +11,7 @@ timeline:
     expect:
       type: numeric
       value: "{a}"
-      prompt: "{variable}/{a} — how many equal parts does {variable} split into?"
+      prompt: "How many equal parts does {variable} split into?"
       hint: "The number under {variable} counts the parts."
   - t: 8
     patch: { eqHighlight: ["3"], partLabel: "{b}", highlight: ["1"] }
@@ -35,7 +35,7 @@ timeline:
     expect:
       type: op
       value: "multiply {a}"
-      prompt: "ONE part is {b}, and {variable} is ALL {a} of them. What move rebuilds {variable}?"
+      prompt: "To build the whole {variable} from ONE part, what do you do to {b}?"
       hint: "{a} parts, each worth {b}."
       misconceptions:
         - id: divided-instead-of-multiplied
@@ -43,4 +43,4 @@ timeline:
           says: "{variable} is already cut into {a} parts — dividing again makes them smaller. To rebuild the whole, multiply."
   - { t: 20, patch: { total: "{a*b}", highlight: [] }, caption: "{b} × {a} = {a*b}. The whole bar — {variable} — is {a*b}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

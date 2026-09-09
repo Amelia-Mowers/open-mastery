@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["{a} cups", " : ", "{b} muffins", "  →  ? : ?"], topLabel: "cups", bottomLabel: "muffins", top: ["0", "{a}", "{a*m}"], bottom: ["0", "{b}", "{b*m}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Cups will ride the TOP line, muffins the BOTTOM — one above the other, so a pair reads at a glance." }
   - t: 4
     patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }
-    caption: "{a} cups sits on the top line."
+    caption: "{a} cups lands on the TOP line — the flour side of every pair this line will hold."
     expect:
       type: pick
       value: ["0"]
@@ -31,4 +31,4 @@ timeline:
       hint: "{a*m} ÷ {a}."
   - { t: 16, patch: { reveal: ["0", "1", "2"] }, caption: "Slide right ×{m}: {a*m} cups lines up with {b*m} muffins." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

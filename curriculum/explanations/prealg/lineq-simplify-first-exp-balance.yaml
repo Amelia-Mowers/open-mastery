@@ -5,21 +5,22 @@ widget: balance-scale
 params_from: item
 timeline:
   - { t: 0, patch: { equation: ["{c1}{variable}", " + {c2}{variable}", " − {c3}{variable}", " = ", "{d1}", " + {(c1+c2-c3)*ans - d1}"], left: "{c1+c2-c3}{variable}", right: "{(c1+c2-c3)*ans}", leftIn: false, rightIn: false }, caption: "Both sides need simplifying before we can solve." }
-  - { t: 4, patch: { eqHighlight: ["0", "1", "2"], highlight: left }, caption: "All three {variable}-terms belong together on the left pan.", expect: { type: pick, value: ["0", "1", "2"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
-  - { t: 9, patch: { leftIn: true }, caption: "{c1} + {c2} − {c3} = {c1+c2-c3}: the left side collapses to {c1+c2-c3}{variable}.", expect: { type: numeric, value: "{c1+c2-c3}", prompt: "Combine the {variable}-terms: {c1} + {c2} − {c3} makes how many {variable}?" } }
-  - { t: 14, patch: { eqHighlight: ["4", "5"], highlight: right }, caption: "The plain numbers belong together on the right pan.", expect: { type: pick, value: ["4", "5"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
-  - { t: 19, patch: { rightIn: true }, caption: "{d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans} lands on the right pan.", expect: { type: numeric, value: "{(c1+c2-c3)*ans}", prompt: "Combine the numbers: {d1} + {(c1+c2-c3)*ans - d1} makes what?" } }
-  - { t: 24, patch: { eqHighlight: [], highlight: null }, caption: "Now it is a one-step equation." }
+  - { t: 4, patch: { eqHighlight: ["0", "1", "2"], highlight: left }, caption: "All three are {variable}-terms — the same letter part — so they combine on the left pan.", expect: { type: pick, value: ["0", "1", "2"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
+  - { t: 9, patch: { leftIn: true }, caption: "{c1} + {c2} − {c3} = {c1+c2-c3}: three like terms weigh in as one lump, {c1+c2-c3}{variable}.", expect: { type: numeric, value: "{c1+c2-c3}", prompt: "Combine the {variable}-terms — how many {variable}s in all?", hint: "{c1} + {c2} − {c3}." } }
+  - { t: 14, patch: { eqHighlight: ["4", "5"], highlight: right }, caption: "The plain numbers are like terms too — they combine on the right pan.", expect: { type: pick, value: ["4", "5"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
+  - { t: 19, patch: { rightIn: true }, caption: "{d1} + {(c1+c2-c3)*ans - d1} = {(c1+c2-c3)*ans}: one plain number on the right pan.", expect: { type: numeric, value: "{(c1+c2-c3)*ans}", prompt: "Combine the plain numbers — what do they come to?", hint: "{d1} + {(c1+c2-c3)*ans - d1}." } }
+  - { t: 24, patch: { eqHighlight: [], highlight: null }, caption: "Both sides tidy: {c1+c2-c3}{variable} = {(c1+c2-c3)*ans} — a one-step equation." }
   - t: 28
     patch: { op: divide, by: "{c1+c2-c3}" }
-    caption: "Divide both pans by {c1+c2-c3}. So what is {variable}?"
+    caption: "Divide BOTH pans by {c1+c2-c3}: lighter together, still balanced. So what is {variable}?"
     expect:
       type: op
       value: "divide {c1+c2-c3}"
+      prompt: "What do you do to BOTH pans to leave a single {variable}?"
       misconceptions:
         - id: divided-by-one-coefficient
           when: "divide {c1}"
           says: "Divide by the COMBINED coefficient — {c1} + {c2} − {c3} = {c1+c2-c3}, not by {c1} alone."
-  - { t: 31, patch: { left: "{variable}", right: "{ans}", op: null }, caption: "{variable} = {ans}." }
+  - { t: 31, patch: { left: "{variable}", right: "{ans}", op: null }, caption: "One {variable} alone balances {ans}: {variable} = {ans}." }
   - { t: 33, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-08-29 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

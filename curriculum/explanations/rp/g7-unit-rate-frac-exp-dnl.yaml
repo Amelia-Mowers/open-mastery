@@ -4,10 +4,10 @@ representation: double-number-line
 widget: double-number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{p}/{q} mi", " in ", "1/{r} hr", "  →  ? mi in 1 hr"], topLabel: "miles", bottomLabel: "hours", top: ["0", "{p}/{q}", "{p*r/q}"], bottom: ["0", "1/{r}", "1"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "A fraction of a mile in a fraction of an hour — ONE whole hour is the target." }
+  - { t: 0, patch: { equation: ["{p}/{q} mi", " in ", "1/{r} hr", "  →  ? mi in 1 hr"], topLabel: "miles", bottomLabel: "hours", top: ["0", "{p}/{q}", "{p*r/q}"], bottom: ["0", "1/{r}", "1"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Top line for miles, bottom line for hours — and the WHOLE hour sits at the far end." }
   - t: 4
     patch: { eqHighlight: ["0"], topIn: true, reveal: ["0", "1"] }
-    caption: "Miles on top: {p}/{q}."
+    caption: "{p}/{q} is distance — miles, so it rides the top line."
     expect:
       type: pick
       value: ["0"]
@@ -27,8 +27,8 @@ timeline:
     expect:
       type: numeric
       value: "{r}"
-      prompt: "1/{r} of an hour — how many of those slices make the WHOLE hour?"
+      prompt: "How many of those slices fill the WHOLE hour?"
       hint: "The hour line runs 0, 1/{r}, … up to 1."
   - { t: 16, patch: { reveal: ["0", "1", "2"], eqHighlight: ["3"] }, caption: "{p}/{q} × {r} = {p*r/q}: {p*r/q} miles per hour." }
   - { t: 19.5, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

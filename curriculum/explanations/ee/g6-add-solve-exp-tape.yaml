@@ -15,7 +15,7 @@ timeline:
       hint: "The bar is {variable} and {p} laid end to end. Which one is the unknown part?"
   - t: 8
     patch: { eqHighlight: ["1"], cellsIn: 2, highlight: ["2"] }
-    caption: "{p} joins it — the two pieces sit end to end."
+    caption: "The + {p} means {p} sits alongside {variable} — added together, they make the whole bar."
     expect:
       type: pick
       value: ["1"]
@@ -50,4 +50,4 @@ timeline:
       prompt: "Look at the bar: {p+d} across, and {p} of it is the second piece. How long is the first piece?"
       hint: "Cover the {p} section. What is left of the {p+d}?"
   - { t: 24, handoff: { prompt: "Now you try." } }
-review: { status: vetted, by: "@Amelia-Mowers", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["y", " ÷ ", "x", " = same?"], topLabel: "x", bottomLabel: "y", top: ["0", "{a}", "{c}", "{e}"], bottom: ["0", "{a*k}", "{c*k}", "{e*k}"], topIn: false, bottomIn: false, reveal: ["0"] }, caption: "Proportional means the two lines stretch by ONE factor." }
   - t: 4
     patch: { eqHighlight: ["2"], topIn: true, reveal: ["0", "1", "2", "3"] }
-    caption: "The x line: {a}, {c}, {e}."
+    caption: "{a}, {c}, {e} are the inputs — the x line carries them."
     expect:
       type: pick
       value: ["2"]
@@ -27,8 +27,8 @@ timeline:
     expect:
       type: numeric
       value: "{k}"
-      prompt: "{a*k} ÷ {a} — what quotient?"
-      hint: "y ÷ x."
+      prompt: "The first pair — what is its y divided by its x?"
+      hint: "{a*k} ÷ {a}."
   - { t: 16, patch: { eqHighlight: ["3"], highlight: "3" }, caption: "Check the rest: {c*k} ÷ {c} = {k} and {e*k} ÷ {e} = {k} — the same everywhere → proportional." }
   - { t: 19, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

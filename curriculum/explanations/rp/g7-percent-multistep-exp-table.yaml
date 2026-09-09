@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["${n*p}", " at ", "{100/n}% off", ",  you pay $?"], cols: ["percent", "dollars"], rows: [["100%", "{n*p}"], ["{100/n}%", "{p}"], ["{100 - 100/n}%", "{n*p - p}"]], reveal: "0" }, caption: "Price, discount, and what you pay — three rows of one table." }
   - t: 4
     patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }
-    caption: "The table starts at 100%: the full ${n*p}."
+    caption: "The 100% row is the whole ${n*p} — every other row is a fraction of it."
     expect:
       type: pick
       value: ["0"]
@@ -23,4 +23,4 @@ timeline:
       hint: "{100/n}% is 1/{n} of the price — {n*p} ÷ {n}."
   - { t: 13, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "You pay the rest: {100 - 100/n}% of the price — ${n*p - p}." }
   - { t: 16, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

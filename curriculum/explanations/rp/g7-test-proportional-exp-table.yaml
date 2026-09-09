@@ -11,9 +11,9 @@ timeline:
     expect:
       type: numeric
       value: "{k}"
-      prompt: "Row 1: {a*k} ÷ {a} — what quotient?"
-      hint: "y ÷ x."
+      prompt: "Row 1 first — what is its y divided by its x?"
+      hint: "{a*k} ÷ {a}."
   - { t: 8, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "Row three: {e} and {e*k}. {e*k} ÷ {e} — does it match, and is the table proportional?" }
   - { t: 12, patch: { eqHighlight: ["3"], highlight: null }, caption: "{e*k} ÷ {e} = {k}. Same in EVERY row → proportional, with k = {k}." }
   - { t: 15, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

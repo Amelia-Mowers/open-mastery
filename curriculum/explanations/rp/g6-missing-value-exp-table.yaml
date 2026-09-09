@@ -14,7 +14,7 @@ timeline:
       prompt: "Which piece — or pieces — make the pair we KNOW: the pounds with their price?"
   - t: 8
     patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "÷{a}" } }
-    caption: "÷{a} steps down to the ONE-pound row."
+    caption: "÷{a} shares the ${b} into {a} equal pounds — that is what the ONE-pound row holds."
     expect:
       type: op
       value: "divide {a}"
@@ -26,7 +26,7 @@ timeline:
           says: "Multiplying by {a} prices {a} pounds of {a} pounds — ONE pound is a SHARE of the ${b}: divide."
   - t: 12
     patch: { reveal: "2", highlight: "2" }
-    caption: "ONE pound costs ${b/a} — the {c}-pound row is within reach."
+    caption: "ONE pound costs ${b/a} — and every other amount is some number of these ${b/a} shares."
     expect:
       type: numeric
       value: "{b/a}"
@@ -52,4 +52,4 @@ timeline:
       value: "{c*b/a}"
       prompt: "{c} pounds at ${b/a} each — what do they cost?"
   - { t: 23, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

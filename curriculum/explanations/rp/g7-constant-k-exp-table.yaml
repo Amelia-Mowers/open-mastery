@@ -4,7 +4,7 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["y", " = k · ", "x", ",  k = ?"], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["1", "{k}"]], reveal: "1", highlight: "1" }, caption: "y = k · x: ONE number k turns every x into its y. The pair we know: x = {a}, y = {a*k}." }
+  - { t: 0, patch: { equation: ["y", " = k · ", "x", ",  k = ?"], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["1", "{k}"]], reveal: "1", highlight: "1" }, caption: "One pair of the table is given: x = {a} beside y = {a*k} — and k · {a} is what made that {a*k}." }
   - t: 4
     patch: { eqHighlight: ["3"], factor: { from: "1", to: "2", text: "÷{a}" }, highlight: null }
     caption: "÷ {a} shrinks the pair to x = 1: {a} ÷ {a} = 1, and {a*k} ÷ {a} = k. So what is k?"
@@ -19,4 +19,4 @@ timeline:
           says: "× {a} is the move k already made — it built {a*k} FROM k. To get k back, undo it: divide."
   - { t: 8, patch: { reveal: "2", highlight: "2", eqHighlight: [] }, caption: "k = {k} — the y when x is 1. y = {k}x fits every pair." }
   - { t: 11, handoff: { prompt: "Now you try." } }
-review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }
