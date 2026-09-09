@@ -1,7 +1,8 @@
 id: prealg.lineq.divide
 name: Solve ax = b using the Division Property of Equality
+short: "Find x when it was multiplied"
 preamble:
-  plain: "A number times x gives you a total. You'll learn to find x by undoing the multiplication — dividing both sides by the same number."
+  plain: "A number times x makes a total. x is still in there — divide BOTH sides by that number, and it stands alone."
   vocab:
     - { term: equation, meaning: "a math sentence saying two things are equal" }
     - { term: Division Property of Equality, meaning: "divide both sides of an equation by the same number and it stays true" }

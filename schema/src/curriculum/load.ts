@@ -8,12 +8,13 @@ import { parse as parseYaml } from 'yaml'
 import { skillSchema } from './skill.ts'
 import { itemSchema } from './item.ts'
 import { explanationSchema } from './explanation.ts'
+import { representationSchema } from './representation.ts'
 import type { Bundle } from './bundle.ts'
 import { normalizeLoadedDoc } from './normalize.ts'
 
 export interface LoadError {
   file: string
-  kind: 'skill' | 'item' | 'explanation' | null
+  kind: 'skill' | 'item' | 'explanation' | 'representation' | null
   message: string
 }
 
@@ -34,16 +35,20 @@ function walk(dir: string): string[] {
 }
 
 /** Records are classified by shape, not by directory, so repo layout stays a
- * convention: timeline → explanation, widget+answer → item, instruction → skill. */
-export function classify(rec: Record<string, unknown>): 'skill' | 'item' | 'explanation' | null {
+ * convention: timeline → explanation, widget+answer → item, instruction → skill,
+ * intro (and nothing else structural) → representation. */
+export function classify(
+  rec: Record<string, unknown>,
+): 'skill' | 'item' | 'explanation' | 'representation' | null {
   if ('timeline' in rec) return 'explanation'
   if ('widget' in rec && 'answer' in rec) return 'item'
   if ('instruction' in rec) return 'skill'
+  if ('intro' in rec) return 'representation'
   return null
 }
 
 export function loadBundleDir(dir: string): LoadedBundle {
-  const bundle: Bundle = { skills: [], items: [], explanations: [] }
+  const bundle: Bundle = { skills: [], items: [], explanations: [], representations: [] }
   const errors: LoadError[] = []
 
   for (const file of walk(dir)) {
@@ -67,7 +72,14 @@ export function loadBundleDir(dir: string): LoadedBundle {
       })
       continue
     }
-    const schema = kind === 'skill' ? skillSchema : kind === 'item' ? itemSchema : explanationSchema
+    const schema =
+      kind === 'skill'
+        ? skillSchema
+        : kind === 'item'
+          ? itemSchema
+          : kind === 'representation'
+            ? representationSchema
+            : explanationSchema
     const r = schema.safeParse(doc)
     if (!r.success) {
       for (const iss of r.error.issues)
@@ -76,6 +88,7 @@ export function loadBundleDir(dir: string): LoadedBundle {
     }
     if (kind === 'skill') bundle.skills.push(r.data as never)
     else if (kind === 'item') bundle.items.push(r.data as never)
+    else if (kind === 'representation') bundle.representations!.push(r.data as never)
     else bundle.explanations.push(r.data as never)
   }
   return { bundle, errors }

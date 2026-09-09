@@ -1,5 +1,6 @@
 id: g6.rp.missing-value
 name: Solve a ratio problem — find the missing value
+short: "Find the missing number in a ratio"
 preamble:
   plain: "3 pounds cost $12 — so what do 7 pounds cost? Step down to ONE pound first, then multiply up. Two small steps solve any problem like this."
   vocab:

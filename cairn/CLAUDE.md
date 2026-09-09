@@ -60,6 +60,25 @@
   practice" bug), and a lesson served to teach an unseen representation
   reserves the item that triggered it (`session.promised`) so the very
   next serve for that skill is the problem the lesson was about.
+- **INTRO BEATS, not an intro card (2026-09-09).** The old preamble was a
+  silent text card in front of the lesson — the only unnarrated screen
+  in the app, and the easiest to click past. It is gone. The player now
+  plays the intro AS BEATS over the stage at negative times, through the
+  same transport and narration: the skill's plain sentence (headline =
+  skill name, kicker NEW SKILL), one beat per vocabulary term (headline
+  = the term, caption "term — meaning."), then the REPRESENTATION's own
+  introduction ("This is a tape diagram…", from
+  `../curriculum/representations/<rep>.yaml`) with the widget revealed
+  in its opening state. The server always sends the beats
+  (`preamble`, `repIntro`) and flags which are DUE (`introDue`): skill
+  beats on a skill's first lesson, the rep beat the first time this
+  student meets that picture in ANY skill (`explain` reports
+  `repIntroDue` for the "another way" chain). Beats that are not due
+  are skipped — but stay on the step track as short pips, so scrubbing
+  back reaches them. Practice leads (StepwisePlayer) and walkthroughs
+  carry no beats. Caption strings are built ONLY in
+  `src/client/app/intro.ts`, which the voice enumerator shares — adding
+  or changing a preamble/rep intro means render + upload the corpus.
 - **A representation is never met cold.** Items declare
   `representation`; the engine serves that representation's LESSON before
   the first item framed in it (engine.ts, `itemRep` check), and the

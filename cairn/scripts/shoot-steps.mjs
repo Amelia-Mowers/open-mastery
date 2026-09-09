@@ -48,10 +48,11 @@ import { createLessonWidget } from '../../src/client/app/LessonPlayer'
 import { renderTemplate } from '@openmastery/schema'
 const root = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'curriculum')
 it('steps', () => {
-  const b = { skills: [], items: [], explanations: [] }
-  for (const d of ['skills', 'items', 'explanations']) {
+  const b = { skills: [], items: [], explanations: [], representations: [] }
+  for (const d of ['skills', 'items', 'explanations', 'representations']) {
     const r = loadBundleDir(join(root, d))
     b.skills.push(...r.bundle.skills); b.items.push(...r.bundle.items); b.explanations.push(...r.bundle.explanations)
+    b.representations.push(...(r.bundle.representations ?? []))
   }
   const cur = buildIndex(b)
   const e = cur.explanations.get(${JSON.stringify(id)})

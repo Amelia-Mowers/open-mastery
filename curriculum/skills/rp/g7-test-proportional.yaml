@@ -1,5 +1,6 @@
 id: g7.rp.test-proportional
 name: Decide whether a table shows a proportional relationship
+short: "Is this table proportional?"
 preamble:
   plain: "Not every table of numbers is proportional. The test: divide y by x in EVERY row. Same answer every time means proportional — one different row breaks it."
   vocab:

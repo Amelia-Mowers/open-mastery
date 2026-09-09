@@ -1,7 +1,8 @@
 id: prealg.lineq.multiply
 name: Solve x/a = b using the Multiplication Property of Equality
+short: "Find x when it was divided"
 preamble:
-  plain: "When x has been divided by a number, you'll undo it by multiplying both sides by that same number."
+  plain: "x divided by a number makes the total. Multiply BOTH sides by that same number — and x stands alone."
   vocab:
     - { term: Multiplication Property of Equality, meaning: "multiply both sides of an equation by the same number and it stays true" }
 standards: [CCSS.MATH.CONTENT.6.EE.B.7]

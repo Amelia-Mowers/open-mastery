@@ -1,7 +1,8 @@
 id: g6.ee.sub-solve
 name: Solve x − p = q using the Addition Property of Equality
+short: "Find x when something was taken away"
 preamble:
-  plain: "A number minus something leaves a remainder. You'll learn to find the number by undoing the subtraction — ADDING the same amount to both sides."
+  plain: "A number minus something leaves what is left. The number is still in there — ADD the same amount to both sides, and it stands alone."
   vocab:
     - { term: Addition Property of Equality, meaning: "add the same number to both sides of an equation and it stays true" }
 # 6.EE.B.7 enumerates x + p = q; this is its inverse-form twin, taught alongside

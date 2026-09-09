@@ -1,7 +1,8 @@
 id: prealg.lineq.negate
 name: Solve -x = b, the opposite of x
+short: "Find x from its opposite"
 preamble:
-  plain: "-x doesn't mean x is negative — it means the OPPOSITE of x. If the opposite of x is 2, then x is the opposite of 2. One flip and you're done."
+  plain: "-x means the OPPOSITE of x. If the opposite of x is 2, then x is the opposite of 2 — one flip and it is solved."
   vocab:
     - { term: opposite, meaning: "the same number on the other side of zero: the opposite of 2 is -2" }
 prereqs: [prealg.lineq.multiply]

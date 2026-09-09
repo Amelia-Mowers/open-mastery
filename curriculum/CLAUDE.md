@@ -719,6 +719,38 @@ finishes it in the ordinary answer input. Authoring rule this relies on:
 **an explanation's final content step must BE the resolution** (the reveal
 / "x = …" step), so truncating one step leaves a complete setup.
 
+## Intro beats: the skill preamble and the representation intro
+
+A skill's `preamble` (`plain` + `vocab`) and a representation's `intro`
+(`representations/<rep>.yaml`: `id`, `name`, `intro`) are NARRATED and
+staged — the player plays them as beats before the lesson's first frame
+(skill beats on the skill's first lesson, the rep beat the first time a
+student meets that picture anywhere; skipped afterwards, reachable by
+scrubbing back). Author them under the caption rules above:
+
+- **No meta-commentary.** "You'll learn to…" describes the lesson, not
+  the mathematics. Say what the thing IS and what the move does.
+- **Lead affirmatively** (below): "5² means 5 used as a factor twice",
+  never "5² isn't 5 × 2".
+- **One or two short declaratives**, an em-dash pivot, at most ONE
+  stressed word. The headline on screen is the skill name (or the term),
+  so the plain line need not repeat it.
+- **`short` is the child-facing skill name** ("Find x when something was
+  added") and headlines the skill beat; `name` stays the formal,
+  standards-derived title (map, guide view, milestones). Every skill has
+  one. Phrase it as what the student DOES, in their words, under ~6
+  words — a question is fine ("Which is the better deal?").
+- **A vocab entry reads aloud as "term — meaning."** — write the meaning
+  as a clause that survives being spoken after the term.
+- **A rep intro names the picture and the ONE property the lessons
+  lean on** ("both pans hold the same amount — do the same thing to
+  BOTH and it stays level"). It plays over the widget's opening state,
+  so it may point at what is on screen.
+- Every representation an explanation names must have a record:
+  `[rep_intro_missing]` warns otherwise.
+- Any change here is voice-corpus copy: render + upload before deploy
+  (`cairn/scripts/check-voice-coverage.ts` lists what is missing).
+
 ## Lead with what it IS
 
 Opening captions teach the concept AFFIRMATIVELY ("6² means a square:

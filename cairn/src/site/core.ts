@@ -483,18 +483,24 @@ export class SiteCore {
     if (action.kind === 'lesson' || action.kind === 'alt_explanation') {
       const params = practiceItems(action.skillId, this.cur)[0]?.params ?? {}
       const skill = this.cur.skills.get(action.skillId)
+      const explanation = this.cur.explanations.get(action.explanationId)
       return ok({
         action,
         ...(milestone ? { milestone } : {}),
-        explanation: this.cur.explanations.get(action.explanationId),
+        explanation,
         params,
         skillName: skill?.name ?? action.skillId,
-        // the preamble introduces a SKILL, so it rides only the first lesson
-        // of that skill — later representation lessons are mid-skill teaching
-        preamble:
-          (st.student.representationsViewed[action.skillId] ?? []).length === 0
-            ? skill?.preamble
-            : undefined,
+        skillShort: skill?.short,
+        // the intro beats ALWAYS ride along (they stay on the step track,
+        // reachable by scrubbing back); introDue says which ones PLAY —
+        // the skill beats on a skill's first lesson only, the rep beat
+        // the first time this student meets the representation anywhere
+        preamble: skill?.preamble,
+        repIntro: explanation ? this.repIntro(explanation) : undefined,
+        introDue: {
+          skill: (st.student.representationsViewed[action.skillId] ?? []).length === 0,
+          rep: explanation ? !this.repSeen(st.student, explanation.representation) : false,
+        },
         totalReps: new Set(
           (this.cur.explanationsBySkill.get(action.skillId) ?? []).map((e) => e.representation),
         ).size,
@@ -677,6 +683,20 @@ export class SiteCore {
     })
   }
 
+  /** the representation's intro record, as the player's beat spec */
+  private repIntro(e: Explanation): { name: string; intro: string } | undefined {
+    const r = this.cur.representations.get(e.representation)
+    return r ? { name: r.name, intro: r.intro } : undefined
+  }
+
+  /** has this student completed ANY lesson drawn in this representation? */
+  private repSeen(
+    student: { representationsViewed: Record<string, string[]> },
+    rep: string,
+  ): boolean {
+    return Object.values(student.representationsViewed).some((list) => list.includes(rep))
+  }
+
   explain(
     studentId: string,
     q: {
@@ -736,7 +756,12 @@ export class SiteCore {
       // really renders with the pending instance's params
       sameNumbers: chosen !== null && instanceParams !== null && chosen.params === instanceParams,
       skillName: skill.name,
+      skillShort: skill.short,
       totalReps: new Set(all.map((e) => e.representation)).size,
+      // a chained "another way" can be the first time the student meets
+      // the representation — its intro beat plays there too
+      repIntro: chosen ? this.repIntro(chosen.e) : undefined,
+      repIntroDue: chosen ? !this.repSeen(st.student, chosen.e.representation) : false,
     })
   }
 

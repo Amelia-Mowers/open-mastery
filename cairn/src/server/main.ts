@@ -21,8 +21,8 @@ const curriculumRoot = resolve(argOf('curriculum', join(import.meta.dirname, '..
 const port = Number(argOf('port', '4777'))
 const staticDir = resolve(argOf('static', join(import.meta.dirname, '..', '..', 'dist')))
 
-const bundle: Bundle = { skills: [], items: [], explanations: [] }
-for (const d of ['skills', 'items', 'explanations']) {
+const bundle: Bundle = { skills: [], items: [], explanations: [], representations: [] }
+for (const d of ['skills', 'items', 'explanations', 'representations']) {
   const dir = join(curriculumRoot, d)
   if (!existsSync(dir)) {
     console.error(`curriculum directory not found: ${dir}`)
@@ -34,6 +34,7 @@ for (const d of ['skills', 'items', 'explanations']) {
   bundle.skills.push(...part.skills)
   bundle.items.push(...part.items)
   bundle.explanations.push(...part.explanations)
+  bundle.representations!.push(...(part.representations ?? []))
 }
 const issues = validateBundle(bundle, { profile: 'authoring' }).filter((i) => i.severity === 'error')
 for (const i of issues) console.error(`✖ ${i.where}: [${i.code}] ${i.message}`)

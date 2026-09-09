@@ -32,7 +32,20 @@ const outDir = join(here, '..', 'voice-corpus')
 mkdirSync(outDir, { recursive: true })
 
 const all = corpusSentences()
-const missing = all.filter((s) => !existsSync(join(outDir, fileOf(s))))
+// A machine without the local render (a fresh checkout) would otherwise
+// re-synthesize the whole corpus: with REMOTE=1, whatever the published
+// manifest already names counts as present, so only the delta renders
+// — and the upload script pushes exactly that delta.
+const remote = new Set<string>()
+if (process.env.REMOTE === '1') {
+  const url = 'https://huggingface.co/datasets/AmeliaMowers/cairn-voice/resolve/main/manifest.json'
+  const res = await fetch(url)
+  if (!res.ok) throw new Error(`could not fetch the published manifest: ${res.status}`)
+  for (const [s, f] of Object.entries((await res.json()) as Record<string, string>))
+    if (f === fileOf(s)) remote.add(s)
+  console.log(`published corpus: ${remote.size} sentences`)
+}
+const missing = all.filter((s) => !remote.has(s) && !existsSync(join(outDir, fileOf(s))))
 console.log(`corpus: ${all.length} unique sentences, ${missing.length} to synthesize`)
 
 // the manifest is the coverage record even before synthesis finishes
@@ -49,12 +62,14 @@ const device = process.env.VOICE_DEVICE ?? 'cpu'
 if (device !== 'cpu' && device !== 'cuda')
   throw new Error(`VOICE_DEVICE must be cpu or cuda, got: ${device}`)
 
+// VOICE_DTYPE overrides the default (fp32 on cuda, q8 on cpu): a small
+// delta rendered on a CPU should still be fp32, so it matches the
+// published corpus's voice instead of sounding like a different reader
+const dtype = (process.env.VOICE_DTYPE ?? (device === 'cuda' ? 'fp32' : 'q8')) as 'fp32' | 'q8'
+if (dtype !== 'fp32' && dtype !== 'q8') throw new Error(`VOICE_DTYPE must be fp32 or q8, got: ${dtype}`)
 const { KokoroTTS } = await import('kokoro-js')
-const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', {
-  dtype: device === 'cuda' ? 'fp32' : 'q8',
-  device,
-})
-console.log(`synthesizing on ${device} (${device === 'cuda' ? 'fp32' : 'q8'})`)
+const tts = await KokoroTTS.from_pretrained('onnx-community/Kokoro-82M-v1.0-ONNX', { dtype, device })
+console.log(`synthesizing on ${device} (${dtype})`)
 
 function wavBytes(audio: Float32Array, rate: number): Buffer {
   const pcm = Buffer.alloc(audio.length * 2)

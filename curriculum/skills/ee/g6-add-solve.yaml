@@ -1,7 +1,8 @@
 id: g6.ee.add-solve
 name: Solve x + p = q using the Subtraction Property of Equality
+short: "Find x when something was added"
 preamble:
-  plain: "A number plus something gives a total. You'll learn to find the number by undoing the addition — subtracting the same amount from both sides."
+  plain: "A number plus something makes a total. The number is still in there — take the same amount off BOTH sides, and it stands alone."
   vocab:
     - { term: Subtraction Property of Equality, meaning: "subtract the same number from both sides of an equation and it stays true" }
 standards: [CCSS.MATH.CONTENT.6.EE.B.7]

@@ -1,5 +1,6 @@
 id: g7.rp.percent-multistep
 name: Solve percent problems with a change — discounts and tax
+short: "Discounts and tax"
 preamble:
   plain: "A $160 game at 25% off is a TWO-step problem: find the discount, then take it off the price. Tax works the same way, but you add instead."
   vocab:

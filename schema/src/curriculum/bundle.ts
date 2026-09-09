@@ -1,6 +1,7 @@
 import type { Skill } from './skill.ts'
 import type { Item } from './item.ts'
 import type { Explanation } from './explanation.ts'
+import type { Representation } from './representation.ts'
 import { parseTemplate, templateIdentifiers, renderTemplate } from '../expr/render.ts'
 import { parseExpr, parseExprLoose } from '../expr/parse.ts'
 import type { Expr } from '../expr/ast.ts'
@@ -14,6 +15,8 @@ export interface Bundle {
   skills: Skill[]
   items: Item[]
   explanations: Explanation[]
+  /** representation intros (optional: older bundles and test fixtures omit it) */
+  representations?: Representation[]
 }
 
 export interface Issue {
@@ -89,6 +92,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     ...bundle.skills.map((s) => [s.id, 'skill'] as [string, string]),
     ...bundle.items.map((i) => [i.id, 'item'] as [string, string]),
     ...bundle.explanations.map((e) => [e.id, 'explanation'] as [string, string]),
+    ...(bundle.representations ?? []).map((r) => [r.id, 'representation'] as [string, string]),
   ]
   for (const [id, kind] of all) {
     const prev = seen.get(id)
@@ -99,6 +103,21 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
   const skillById = new Map(bundle.skills.map((s) => [s.id, s]))
   const itemById = new Map(bundle.items.map((i) => [i.id, i]))
   const explById = new Map(bundle.explanations.map((e) => [e.id, e]))
+  // ---- every representation a lesson draws in has an intro record ----
+  // (a representation met cold is the bug the intro beat exists to fix;
+  // a bundle with no records at all is an older shape or a fixture and
+  // is left alone)
+  if (bundle.representations !== undefined && bundle.representations.length > 0) {
+    const repById = new Set(bundle.representations.map((r) => r.id))
+    for (const rep of new Set(bundle.explanations.map((e) => e.representation)))
+      if (!repById.has(rep))
+        push(
+          'warning',
+          'rep_intro_missing',
+          rep,
+          `no representations/ record introduces '${rep}' — its first lesson meets the picture cold`,
+        )
+  }
 
   // ---- reference resolution ----
   for (const s of bundle.skills) {

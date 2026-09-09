@@ -1,7 +1,8 @@
 id: g6.ee.write-expression-sub
 name: Write a subtraction expression from words
+short: "Turn \"less than\" words into math"
 preamble:
-  plain: "\"7 less than 4 times a number\" becomes 4n − 7 — NOT 7 − 4n. You'll learn that \"less than\" starts from the other phrase and takes away, so the order flips."
+  plain: "\"7 less than 4 times a number\" is 4n − 7. \"Less than\" starts from the other phrase and takes away — so the order flips, and 4n comes first."
   vocab:
     - { term: less than, meaning: "\"p less than E\" means E − p — start from E and take p away" }
 standards: [CCSS.MATH.CONTENT.6.EE.A.2.A]

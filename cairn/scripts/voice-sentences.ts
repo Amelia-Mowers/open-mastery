@@ -16,6 +16,7 @@ import { practiceItems, poolSeeds } from '../src/core/select.ts'
 import { feedableParams } from '../src/site/core.ts'
 import { renderText } from '../src/client/app/render.ts'
 import { mathToSpeech } from '../src/client/tts/speech.ts'
+import { introSentences } from '../src/client/app/intro.ts'
 
 /** sentence → corpus filename (content-addressed; the client derives the
  * same name with crypto.subtle in src/client/tts/speech.ts) */
@@ -46,17 +47,32 @@ function poolInstances(item: {
 export function corpusSentences(): string[] {
   const here = dirname(fileURLToPath(import.meta.url))
   const root = join(here, '..', '..', 'curriculum')
-  const bundle = { skills: [] as unknown[], items: [] as unknown[], explanations: [] as unknown[] }
-  for (const d of ['skills', 'items', 'explanations'] as const) {
+  const bundle = {
+    skills: [] as unknown[],
+    items: [] as unknown[],
+    explanations: [] as unknown[],
+    representations: [] as unknown[],
+  }
+  for (const d of ['skills', 'items', 'explanations', 'representations'] as const) {
     const r = loadBundleDir(join(root, d))
     bundle.skills.push(...r.bundle.skills)
     bundle.items.push(...r.bundle.items)
     bundle.explanations.push(...r.bundle.explanations)
+    bundle.representations.push(...(r.bundle.representations ?? []))
   }
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const cur = buildIndex(bundle as any)
 
   const sentences = new Set<string>()
+  const add = (t: string) => {
+    const snippet = mathToSpeech(t)
+    if (snippet !== '') sentences.add(snippet)
+  }
+  // the intro beats: a skill's preamble line + one per vocabulary term,
+  // and each representation's introduction — built by the SAME code the
+  // player narrates from (src/client/app/intro.ts)
+  for (const s of cur.skills.values()) for (const t of introSentences(s)) add(t)
+  for (const r of cur.representations.values()) add(r.intro)
   for (const e of cur.explanations.values()) {
     const feeders = practiceItems(e.skill, cur).filter(
       (it) => feedableParams(e, [it.params]) !== null,

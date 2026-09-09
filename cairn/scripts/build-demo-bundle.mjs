@@ -7,8 +7,8 @@ import { loadBundleDir } from '@openmastery/schema/load'
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)))
 const curriculum = join(root, '..', 'curriculum')
-const bundle = { skills: [], items: [], explanations: [] }
-for (const d of ['skills', 'items', 'explanations']) {
+const bundle = { skills: [], items: [], explanations: [], representations: [] }
+for (const d of ['skills', 'items', 'explanations', 'representations']) {
   const r = loadBundleDir(join(curriculum, d))
   if (r.errors.length > 0) {
     console.error(r.errors)
@@ -17,6 +17,7 @@ for (const d of ['skills', 'items', 'explanations']) {
   bundle.skills.push(...r.bundle.skills)
   bundle.items.push(...r.bundle.items)
   bundle.explanations.push(...r.bundle.explanations)
+  bundle.representations.push(...(r.bundle.representations ?? []))
 }
 const out = join(root, 'src', 'client', 'demo', 'bundle.json')
 mkdirSync(dirname(out), { recursive: true })

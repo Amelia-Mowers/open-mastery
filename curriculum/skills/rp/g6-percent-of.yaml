@@ -1,5 +1,6 @@
 id: g6.rp.percent-of
 name: Find a percent of a quantity
+short: "Find a percent of a number"
 preamble:
   plain: "Percent means out of every 100. Finding 35% of 60 is a ratio problem: 100% is the whole thing, and you're finding the part that lines up with 35."
   vocab:

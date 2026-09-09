@@ -1,5 +1,6 @@
 id: g7.rp.unit-rate-frac
 name: Find unit rates from fractions (like 1/2 mile in 1/4 hour)
+short: "Speed from a fraction of an hour"
 preamble:
   plain: "Half a mile in a quarter hour — how fast is that per HOUR? Same idea as before: stretch the fraction of an hour up to a whole one, and stretch the distance with it."
   vocab:

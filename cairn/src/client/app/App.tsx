@@ -21,6 +21,10 @@ interface OverlayExplanation {
   /** representations seen in this chain — the loop cycles through them */
   seenReps: string[]
   totalReps: number
+  skillName: string
+  /** the representation's intro beat, and whether it plays (first meeting) */
+  repIntro?: { name: string; intro: string } | undefined
+  repIntroDue: boolean
 }
 
 export interface AppProps {
@@ -558,7 +562,8 @@ function Session({
   const [points, setPoints] = useState<number | null>(null)
   /** skill the student explicitly chose to keep working (soft-park opt-in) */
   const focusSkill = useRef<string | null>(null)
-  /** the map popup already showed this skill's preamble — don't repeat it */
+  /** the map popup already showed this skill's preamble — its skill beats
+   * stay on the track but don't play */
   const skipIntroFor = useRef<string | null>(null)
   /** display mirror of focusSkill (the header chip) */
   const [focusedOn, setFocusedOn] = useState(false)
@@ -690,6 +695,9 @@ function Session({
         skillId,
         seenReps: [...seenReps, r.explanation.representation],
         totalReps: r.totalReps,
+        skillName: r.skillShort ?? r.skillName,
+        repIntro: r.repIntro,
+        repIntroDue: r.repIntroDue === true,
       })
     },
     [api],
@@ -733,6 +741,12 @@ function Session({
         explanation={overlay.explanation}
         params={overlay.params}
         kind="alt_explanation"
+        intro={{
+          skillName: overlay.skillName,
+          rep: overlay.repIntro,
+          playSkill: false,
+          playRep: overlay.repIntroDue && urlParam('autostart') !== '1',
+        }}
         onDone={() => {
           void closeOverlay()
         }}
@@ -796,21 +810,22 @@ function Session({
   } else if (next.action.kind === 'lesson' || next.action.kind === 'alt_explanation') {
     const { skillId } = next.action
     const rep = next.explanation!.representation
-    // the preamble belongs to the NEW-SKILL entry only, never to alternative
-    // explanations or chained representations
+    // the skill beats belong to the NEW-SKILL entry only, never to
+    // alternative explanations; the rep beat plays wherever the
+    // representation is first met. Every beat stays on the step track
+    // regardless, so a student can scrub back to it.
     const introSkipped = skipIntroFor.current === skillId
     if (introSkipped) skipIntroFor.current = null
-    // no preamble payload ⇒ not the skill's first lesson ⇒ no intro card
-    const intro =
-      next.action.kind === 'lesson' &&
-      next.preamble !== undefined &&
-      urlParam('autostart') !== '1' &&
-      !introSkipped
-        ? {
-            title: next.skillName ?? skillId,
-            ...(next.preamble ? { plain: next.preamble.plain, vocab: next.preamble.vocab } : {}),
-          }
-        : undefined
+    const autostart = urlParam('autostart') === '1'
+    const intro = {
+      skillName: next.skillShort ?? next.skillName ?? skillId,
+      plain: next.preamble?.plain,
+      vocab: next.preamble?.vocab,
+      rep: next.repIntro,
+      playSkill:
+        next.action.kind === 'lesson' && next.introDue?.skill === true && !autostart && !introSkipped,
+      playRep: next.introDue?.rep === true && !autostart,
+    }
     body = (
       <LessonPlayer
         key={next.action.explanationId}

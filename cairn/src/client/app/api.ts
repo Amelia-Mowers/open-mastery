@@ -13,10 +13,18 @@ export interface ServerNext {
   explanation?: Explanation
   /** params the explanation timeline should render with (params_from: item) */
   params?: Record<string, number | string>
-  /** what the lesson teaches (the skill name), for the preamble */
+  /** what the lesson teaches (the skill name), for the intro beats */
   skillName?: string
-  /** plain-language framing + vocab for the preamble */
+  /** child-facing short name — the intro beat's headline when present */
+  skillShort?: string
+  /** plain-language framing + vocab — the skill's intro beats */
   preamble?: { plain: string; vocab: Array<{ term: string; meaning: string }> }
+  /** the representation's one-sentence introduction — its intro beat */
+  repIntro?: { name: string; intro: string }
+  /** which intro beats PLAY on this serve (all stay reachable on the
+   * step track): the skill's on its first lesson, the representation's
+   * the first time this student meets it anywhere */
+  introDue?: { skill: boolean; rep: boolean }
   /** distinct representations available for this skill */
   totalReps?: number
   /** current mastery estimate for the served item's skill (0..1) */
@@ -30,7 +38,11 @@ export interface ExplainResult {
   /** the walkthrough renders with the pending problem's own numbers */
   sameNumbers?: boolean
   skillName: string
+  skillShort?: string
   totalReps: number
+  repIntro?: { name: string; intro: string }
+  /** the student has never completed a lesson in this representation */
+  repIntroDue?: boolean
 }
 
 export interface AttemptOutcome {

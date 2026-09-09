@@ -28,9 +28,7 @@ describe('demo backend: after a wrong answer', () => {
         for (let i = 0; i < 40; i++) {
           if (screen.queryByTestId('stem') && screen.queryByRole('button', { name: 'Check answer' }))
             return
-          const handoff =
-            screen.queryByRole('button', { name: 'Now you try.' }) ??
-            screen.queryByRole('button', { name: 'Start the lesson' })
+          const handoff = screen.queryByRole('button', { name: 'Now you try.' })
           const segs = screen.queryAllByRole('button', { name: /Go to step/ })
           const cont = screen.queryByRole('button', { name: 'Continue' })
           if (handoff) await user.click(handoff)
@@ -75,9 +73,7 @@ describe('the walk-through owns the screen while it plays', () => {
         for (let i = 0; i < 40; i++) {
           if (screen.queryByTestId('stem') && screen.queryByRole('button', { name: 'Check answer' }))
             return
-          const handoff =
-            screen.queryByRole('button', { name: 'Now you try.' }) ??
-            screen.queryByRole('button', { name: 'Start the lesson' })
+          const handoff = screen.queryByRole('button', { name: 'Now you try.' })
           const segs = screen.queryAllByRole('button', { name: /Go to step/ })
           const cont = screen.queryByRole('button', { name: 'Continue' })
           if (handoff) await user.click(handoff)
@@ -133,9 +129,7 @@ describe('watching the walk-through does not dump hints', () => {
         for (let i = 0; i < 40; i++) {
           if (screen.queryByTestId('stem') && screen.queryByRole('button', { name: 'Check answer' }))
             return
-          const handoff =
-            screen.queryByRole('button', { name: 'Now you try.' }) ??
-            screen.queryByRole('button', { name: 'Start the lesson' })
+          const handoff = screen.queryByRole('button', { name: 'Now you try.' })
           const segs = screen.queryAllByRole('button', { name: /Go to step/ })
           const cont = screen.queryByRole('button', { name: 'Continue' })
           if (handoff) await user.click(handoff)

@@ -1,7 +1,8 @@
 id: prealg.lineq.simplify-first
 name: Simplify each side, then solve the equation
+short: "Tidy up each side, then solve"
 preamble:
-  plain: "Some equations look messy, but each side can be tidied up first. You'll combine matching pieces until it becomes a one-step problem you already know."
+  plain: "Some equations look messy, but each side can be tidied first. Combine the matching pieces — and a one-step problem is left."
   vocab:
     - { term: like terms, meaning: "pieces with the same letter part, like 8x and 9x — they can be added together" }
     - { term: simplify, meaning: "rewrite something in a shorter, tidier way without changing its value" }

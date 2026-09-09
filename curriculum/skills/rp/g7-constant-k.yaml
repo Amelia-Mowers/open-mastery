@@ -1,5 +1,6 @@
 id: g7.rp.constant-k
 name: Find the constant of proportionality
+short: "Find the number that links x and y"
 preamble:
   plain: "In a proportional table, y divided by x gives the SAME number in every row. That number is k — it's the unit rate wearing its grown-up name."
   vocab:

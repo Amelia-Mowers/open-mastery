@@ -22,6 +22,10 @@ export const skillSchema = z
   .object({
     id: skillIdSchema,
     name: z.string().min(1),
+    /** child-facing short name — what the lesson's intro beat calls the
+     * skill ("Find x when something was added"); `name` stays the formal
+     * standards-derived title used on the map and in the guide view */
+    short: z.string().min(1).optional(),
     preamble: preambleSchema.optional(),
     prereqs: z.array(skillIdSchema).default([]),
     standards: z.array(z.string()).default([]),

@@ -62,6 +62,17 @@ Not K–12 — the middle-school band plus the parent's view:
       stepwise lead inert after verdict, phone header wrap. Still open
       elsewhere in this file: ladder-retry-stepwise, scaffold_step
       events, chunk-size for Pi/Android.
+- [ ] Storyboard view for review: every step of a timeline as one row
+      (widget state, caption, gate prompt, hint, misconception line,
+      invariant warnings) — shoot-steps.mjs already drives the widget
+      this way; make it a `?view=zoo&exp=<id>&steps=1` route. Doubles as a
+      student recap after the handoff once vetted.
+- [ ] `[vocab_unused]` invariant: a preamble term that no caption of the
+      skill's primary lesson ever says is defined, not taught (measured
+      2026-09-09: the four Properties of Equality, distributive property
+      and inverse appear in 0 captions). Pair with a caption pass that
+      names the term at the confirm step; pick IM's glossary over
+      OpenStax's where they differ.
 - [ ] Voice display/speech escape (designed 2026-09-02, build when first
       needed): `[[shown|spoken]]` in captions/prompts — display side in
       the caption renderer, spoken side inside mathToSpeech (shared with

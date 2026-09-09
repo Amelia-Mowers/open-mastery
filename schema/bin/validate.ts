@@ -23,13 +23,14 @@ if (dirs.length === 0) {
   process.exit(2)
 }
 
-const bundle: Bundle = { skills: [], items: [], explanations: [] }
+const bundle: Bundle = { skills: [], items: [], explanations: [], representations: [] }
 const errors: LoadError[] = []
 for (const dir of dirs) {
   const r = loadBundleDir(dir)
   bundle.skills.push(...r.bundle.skills)
   bundle.items.push(...r.bundle.items)
   bundle.explanations.push(...r.bundle.explanations)
+  bundle.representations!.push(...(r.bundle.representations ?? []))
   errors.push(...r.errors.map((e) => ({ ...e, file: `${dir}/${e.file}` })))
 }
 for (const e of errors) console.error(`✖ ${e.file}${e.kind ? ` [${e.kind}]` : ''} ${e.message}`)

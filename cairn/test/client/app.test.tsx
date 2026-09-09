@@ -47,8 +47,6 @@ function findActionable(): Actionable {
   if (check) return { kind: 'start-check', el: check }
   const handoff = screen.queryByRole('button', { name: 'Now you try.' })
   if (handoff) return { kind: 'handoff', el: handoff }
-  const startLesson = screen.queryByRole('button', { name: 'Start the lesson' })
-  if (startLesson) return { kind: 'handoff', el: startLesson }
   const submit = screen.queryByRole('button', { name: 'Check answer' })
   if (submit && screen.queryByTestId('stem')) return { kind: 'item' }
   const segs = screen.queryAllByRole('button', { name: /Go to step/ })

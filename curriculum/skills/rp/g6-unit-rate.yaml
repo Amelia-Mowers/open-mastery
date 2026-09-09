@@ -1,5 +1,6 @@
 id: g6.rp.unit-rate
 name: Find the unit rate — how much for exactly one
+short: "How much for exactly one?"
 preamble:
   plain: "If 4 pounds cost $28, what does ONE pound cost? Sharing the total equally gives the unit rate — the price of one, the speed for one hour, the amount for one person."
   vocab:

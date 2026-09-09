@@ -1,7 +1,8 @@
 id: g6.ee.evaluate
 name: Evaluate an expression at a value
+short: "Plug a number into an expression"
 preamble:
-  plain: "An expression like 3x + 5 is a machine: feed it a number for x and it gives a number back. You'll learn to substitute and compute."
+  plain: "An expression like 3x + 5 is a machine: feed it a number for x, and it gives a number back. Substitute, then compute."
   vocab:
     - { term: substitute, meaning: "replace the variable with a number" }
     - { term: variable, meaning: "a letter standing in for a number" }

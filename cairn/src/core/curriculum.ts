@@ -1,11 +1,13 @@
 /** Read-side index over a curriculum bundle, shared by fold-adjacent code,
  * the selector, and the corrective policy. */
-import type { Bundle, Skill, Item, Explanation } from '@openmastery/schema'
+import type { Bundle, Skill, Item, Explanation, Representation } from '@openmastery/schema'
 
 export interface CurriculumIndex {
   skills: Map<string, Skill>
   items: Map<string, Item>
   explanations: Map<string, Explanation>
+  /** representation intros, by the id explanations name in `representation` */
+  representations: Map<string, Representation>
   itemsBySkill: Map<string, Item[]>
   explanationsBySkill: Map<string, Explanation[]>
   /** stable skill order as authored (used for deterministic tie-breaks) */
@@ -16,6 +18,7 @@ export function buildIndex(bundle: Bundle): CurriculumIndex {
   const skills = new Map(bundle.skills.map((s) => [s.id, s]))
   const items = new Map(bundle.items.map((i) => [i.id, i]))
   const explanations = new Map(bundle.explanations.map((e) => [e.id, e]))
+  const representations = new Map((bundle.representations ?? []).map((r) => [r.id, r]))
   const itemsBySkill = new Map<string, Item[]>()
   for (const it of bundle.items)
     for (const sk of it.skills) {
@@ -50,6 +53,7 @@ export function buildIndex(bundle: Bundle): CurriculumIndex {
     skills,
     items,
     explanations,
+    representations,
     itemsBySkill,
     explanationsBySkill,
     skillOrder: bundle.skills.map((s) => s.id),

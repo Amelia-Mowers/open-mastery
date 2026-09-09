@@ -1,10 +1,11 @@
-/** The explanation player (§6, build step 4+): preamble, scrub via step
+/** The explanation player (§6, build step 4+): intro beats, scrub via step
  * segments, speed control, pause, backward-seek replay, patch-driven widgets
  * (balance, number-line, envelopes), handoff and the another-way chain. */
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import { fireEvent, render, screen, cleanup } from '@testing-library/react'
 import { explanationSchema } from '@openmastery/schema'
 import { LessonPlayer } from '../../src/client/app/LessonPlayer'
+import { vocabCaption } from '../../src/client/app/intro'
 
 afterEach(cleanup)
 
@@ -108,26 +109,103 @@ describe('explanation player', () => {
     expect(speed).toHaveTextContent('2×')
   })
 
-  it('shows a preamble naming what you are learning before play begins', () => {
+  const INTRO = {
+    skillName: 'Solve ax = b',
+    plain: 'Undo multiplication by dividing both sides.',
+    vocab: [{ term: 'equation', meaning: 'a math sentence saying two things are equal' }],
+    rep: { name: 'balance scale', intro: 'This is a balance scale.' },
+  }
+  const widgetStage = (c: HTMLElement) => c.querySelector('.lesson-stage:not(.lesson-stage-intro)')!
+
+  it('plays the intro beats over the stage before the first frame: skill, vocabulary, then the picture', () => {
+    const { container } = render(
+      <LessonPlayer
+        explanation={balanceExp}
+        params={P}
+        kind="lesson"
+        intro={{ ...INTRO, playSkill: true, playRep: true }}
+        onDone={() => {}}
+      />,
+    )
+    // the skill beat: headline where the widget will be, the plain line
+    // as the (narrated) caption, the board already set above
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('NEW SKILL')
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('Solve ax = b')
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Undo multiplication by dividing both sides.')
+    expect(widgetStage(container)).toHaveAttribute('hidden')
+    // the whole track is there: three intro pips + the four lesson steps
+    expect(screen.getAllByRole('button', { name: /Go to intro/ })).toHaveLength(3)
+    expect(screen.getAllByRole('button', { name: /Go to step/ })).toHaveLength(4)
+
+    fireEvent.click(screen.getByRole('button', { name: 'Go to intro 2 of 3' }))
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('A WORD TO KNOW')
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('equation')
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent(
+      'equation — a math sentence saying two things are equal.',
+    )
+
+    // the rep beat reveals the widget in its opening state
+    fireEvent.click(screen.getByRole('button', { name: 'Go to intro 3 of 3' }))
+    expect(screen.queryByTestId('lesson-intro')).toBeNull()
+    expect(widgetStage(container)).not.toHaveAttribute('hidden')
+    expect(container.querySelector('[data-pan="left"]')).toHaveTextContent('4x')
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('This is a balance scale.')
+
+    goToStep(1, 4)
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
+  })
+
+  it('beats that are not due stay on the track, skipped: the lesson starts at its first frame', () => {
+    const { container } = render(
+      <LessonPlayer
+        explanation={balanceExp}
+        params={P}
+        kind="lesson"
+        intro={{ ...INTRO, playSkill: false, playRep: false }}
+        onDone={() => {}}
+      />,
+    )
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
+    expect(screen.queryByTestId('lesson-intro')).toBeNull()
+    expect(widgetStage(container)).not.toHaveAttribute('hidden')
+    // scrubbing back reaches them
+    expect(screen.getAllByRole('button', { name: /Go to intro/ })).toHaveLength(3)
+    fireEvent.click(screen.getByRole('button', { name: 'Go to intro 1 of 3' }))
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Undo multiplication by dividing both sides.')
+    expect(widgetStage(container)).toHaveAttribute('hidden')
+  })
+
+  it('only the DUE beats play when some are: a known picture is not re-introduced on a new skill', () => {
     render(
       <LessonPlayer
         explanation={balanceExp}
         params={P}
         kind="lesson"
-        intro={{
-          title: 'Solve ax = b using the Division Property of Equality',
-          plain: 'Undo multiplication by dividing both sides.',
-          vocab: [{ term: 'equation', meaning: 'a math sentence saying two things are equal' }],
-        }}
+        intro={{ ...INTRO, playSkill: true, playRep: false }}
         onDone={() => {}}
       />,
     )
-    expect(screen.getByText(/what you're learning/i)).toBeInTheDocument()
-    expect(screen.getByText('Solve ax = b using the Division Property of Equality')).toBeInTheDocument()
-    // timeline not visible yet
-    expect(screen.queryByRole('button', { name: /Go to step/ })).toBeNull()
-    fireEvent.click(screen.getByRole('button', { name: 'Start the lesson' }))
-    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
+    expect(screen.getAllByRole('button', { name: /Go to intro/ })).toHaveLength(2)
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Undo multiplication by dividing both sides.')
+    cleanup()
+    render(
+      <LessonPlayer
+        explanation={balanceExp}
+        params={P}
+        kind="alt_explanation"
+        intro={{ skillName: 'Solve ax = b', rep: INTRO.rep, playSkill: false, playRep: true }}
+        onDone={() => {}}
+      />,
+    )
+    expect(screen.getAllByRole('button', { name: /Go to intro/ })).toHaveLength(1)
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('This is a balance scale.')
+  })
+
+  it('a vocabulary beat reads "term — meaning." with the meaning closed as a sentence', () => {
+    expect(vocabCaption({ term: 'cube', meaning: 'three equal factors' })).toBe('cube — three equal factors.')
+    expect(vocabCaption({ term: 'ratio', meaning: 'a pair that goes together!' })).toBe(
+      'ratio — a pair that goes together!',
+    )
   })
 
   it('offers "another way" at the handoff when a handler is provided', () => {

@@ -1,5 +1,8 @@
-/** The explanation player (§6, build step 4): an intro naming what you're
- * learning (new-skill entry only), timed autoplay over the §4.3 timeline,
+/** The explanation player (§6, build step 4): narrated intro beats over
+ * the stage (the skill's plain framing + vocabulary on its first lesson,
+ * the representation's introduction the first time it is met — both stay
+ * on the step track afterwards, skipped unless scrubbed back to), timed
+ * autoplay over the §4.3 timeline,
  * play/pause, speed control, a segmented step timeline (each rectangle fills
  * through its step; click to jump), backward-seek replay onto a fresh widget,
  * interaction mid-timeline, and handoff into faded/practice — with an
@@ -30,19 +33,17 @@ import {
   renderText,
   type Params,
 } from './render'
+import { introBeats, INTRO_BEAT_SECONDS, type IntroBeat, type IntroSpec } from './intro'
 
-export interface LessonIntro {
-  title: string
-  /** plain-words version of what you're learning */
-  plain?: string
-  vocab?: Array<{ term: string; meaning: string }>
-}
+export type LessonIntro = IntroSpec
+
+type Step = Explanation['timeline'][number]
 
 export interface LessonPlayerProps {
   explanation: Explanation
   params: Params
   kind: 'lesson' | 'alt_explanation' | 'walkthrough'
-  /** shown once, before play begins — new-skill entry only */
+  /** intro beats played before the first frame (see ./intro.ts) */
   intro?: LessonIntro
   /** render without the outer card (playing inside an item card) */
   embedded?: boolean
@@ -489,29 +490,54 @@ export function LessonPlayer({
   tail = 'handoff',
   autoplay = true,
 }: LessonPlayerProps) {
-  const steps = explanation.timeline
+  // INTRO BEATS ride in front of the timeline at negative times, over the
+  // same stage and transport. Which beats are on the track: the ones that
+  // are DUE (skill beats on a skill's first lesson, the rep beat the first
+  // time the representation is met); when none is due, all of them — so
+  // scrubbing back still reaches them — and the clock simply starts at 0.
+  const introKey = JSON.stringify(intro ?? null)
+  const beats: IntroBeat[] = useMemo(() => {
+    if (!intro) return []
+    const all = introBeats(intro)
+    if (!intro.playSkill && !intro.playRep) return all
+    return all.filter((b) => (b.kind === 'rep' ? intro.playRep : intro.playSkill))
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [introKey])
+  const timeline = explanation.timeline
+  const introSteps: Step[] = useMemo(
+    () =>
+      beats.map((b, i) => ({
+        t: -(beats.length - i) * INTRO_BEAT_SECONDS,
+        caption: b.caption,
+        // the first beat carries the opening frame's patch, so the board
+        // (equation banner, empty widget) is set from the very first beat
+        ...(i === 0 && timeline[0]?.patch !== undefined ? { patch: timeline[0].patch } : {}),
+      })),
+    [beats, timeline],
+  )
+  const steps: Step[] = useMemo(() => [...introSteps, ...timeline], [introSteps, timeline])
+  const startT = beats.length > 0 && (intro?.playSkill || intro?.playRep) ? introSteps[0]!.t : 0
   const handoffStep = steps.find((s) => s.handoff)
   const handoffT = handoffStep?.t ?? steps[steps.length - 1]!.t
   // segments cover the content steps; a trailing handoff-only step is the
   // resting point, not a segment of its own
-  const contentSteps = steps.filter((s) => s.patch !== undefined || s.caption !== undefined)
+  const contentSteps = timeline.filter((s) => s.patch !== undefined || s.caption !== undefined)
   // optimistic voice: prefetch this lesson's captions ahead of playback.
   // Keyed on a STRING — the params object is a fresh identity every
   // render, and depending on it refired this on each frame
   const paramsKey = JSON.stringify(params)
   useEffect(() => {
     speech.pregenerate(
-      contentSteps
+      steps
         .map((s) => (s.caption !== undefined ? renderText(s.caption, params) : ''))
         .filter((t) => t !== ''),
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [explanation.id, paramsKey])
+  }, [explanation.id, paramsKey, introKey])
   const lastContentT = contentSteps[contentSteps.length - 1]?.t ?? 0
 
-  const [preamble, setPreamble] = useState(intro !== undefined)
-  const [time, setTime] = useState(0)
-  const [playing, setPlaying] = useState(autoplay && intro === undefined)
+  const [time, setTime] = useState(startT)
+  const [playing, setPlaying] = useState(autoplay)
   /** narration follows the transport: silent until played (or scrubbed) */
   const [voiceLive, setVoiceLive] = useState(autoplay)
   /** bumped by section clicks so the landed step's line restarts from its
@@ -568,10 +594,10 @@ export function LessonPlayer({
   useEffect(() => {
     if (firstExplanation.current === explanation.id) return
     firstExplanation.current = explanation.id
-    setTime(0)
+    setTime(startT)
     setReachedEnd(false)
-    setPlaying(true) // chained representations play right away — no preamble
-    setPreamble(false)
+    setPlaying(true) // chained representations play right away
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [explanation.id])
 
   // apply newly-reached patches (forward only; backward is handled by epoch)
@@ -616,7 +642,7 @@ export function LessonPlayer({
     return Infinity
   }
   useEffect(() => {
-    if (!playing || preamble) return
+    if (!playing) return
     const speed = SPEEDS[speedIdx]!
     const id = setInterval(() => {
       setTime((t) => {
@@ -644,7 +670,7 @@ export function LessonPlayer({
     }, TICK_MS)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, preamble, speedIdx, handoffT, caption])
+  }, [playing, speedIdx, handoffT, caption])
 
   /** jump to a step and PLAY from its beginning — clock and narration
    * restart together, and the play button reflects it */
@@ -665,55 +691,41 @@ export function LessonPlayer({
    * that the CURRENT segment tracks the narration while its line is
    * still being read: the bar completes when the slower of the two
    * (authored gap, audio) does, which is exactly when the step advances */
-  const currentSegIdx = contentSteps.reduce((acc, s, i) => (s.t <= time + 1e-9 ? i : acc), 0)
-  const fillOf = (i: number): number => {
-    const start = contentSteps[i]!.t
-    const end = i + 1 < contentSteps.length ? contentSteps[i + 1]!.t : handoffT
+  const inIntro = time < -1e-9
+  const currentSegIdx = inIntro
+    ? -1
+    : contentSteps.reduce((acc, s, i) => (s.t <= time + 1e-9 ? i : acc), 0)
+  const currentIntroIdx = inIntro
+    ? introSteps.reduce((acc, s, i) => (s.t <= time + 1e-9 ? i : acc), 0)
+    : -1
+  /** the beat on screen, if the clock is inside the intro */
+  const introBeat: IntroBeat | null = inIntro ? (beats[currentIntroIdx] ?? null) : null
+  /** fill of a segment [start, end) — clock position, but the CURRENT one
+   * tracks the narration while its line is still being read */
+  const fillBetween = (start: number, end: number, isCurrent: boolean): number => {
     let clockFill: number
     if (end <= start) clockFill = time >= start - 1e-9 ? 1 : 0
     else if (time <= start) clockFill = 0
     else if (time >= end) clockFill = 1
     else clockFill = (time - start) / (end - start)
-    if (i === currentSegIdx && voiceLive && caption !== '' && !speech.finished([caption])) {
+    if (isCurrent && voiceLive && caption !== '' && !speech.finished([caption])) {
       const audioFill = speech.progress() ?? 0
       return Math.min(clockFill, audioFill)
     }
     return clockFill
   }
-
-  if (preamble && intro) {
-    return (
-      <section className="card unlock" aria-label="What you're learning">
-        <div className="card-kicker">
-          <span className="kicker">NEW SKILL</span>
-        </div>
-        <p className="muted preamble-lead">Here's what you're learning:</p>
-        <h1 className="preamble-title">{intro.title}</h1>
-        {intro.plain && <p className="preamble-plain">{intro.plain}</p>}
-        {intro.vocab && intro.vocab.length > 0 && (
-          <dl className="preamble-vocab">
-            {intro.vocab.map((v) => (
-              <div key={v.term} className="vocab-row">
-                <dt>{v.term}</dt>
-                <dd>{v.meaning}</dd>
-              </div>
-            ))}
-          </dl>
-        )}
-        <div className="answer-row" style={{ justifyContent: 'center' }}>
-          <button
-            className="btn btn-primary"
-            onClick={() => {
-              setPreamble(false)
-              setPlaying(true)
-            }}
-          >
-            Start the lesson
-          </button>
-        </div>
-      </section>
-    )
+  const fillOfIntro = (i: number): number =>
+    fillBetween(introSteps[i]!.t, introSteps[i + 1]?.t ?? 0, i === currentIntroIdx)
+  const fillOf = (i: number): number => {
+    const start = contentSteps[i]!.t
+    const end = i + 1 < contentSteps.length ? contentSteps[i + 1]!.t : handoffT
+    return fillBetween(start, end, i === currentSegIdx)
   }
+
+  // a skill or vocabulary beat shows its headline where the widget will
+  // be; the widget stays mounted (patches keep landing on it) and is
+  // revealed at the rep beat / first frame
+  const headlineBeat = introBeat !== null && introBeat.kind !== 'rep' ? introBeat : null
 
   const body = (
     <>
@@ -734,7 +746,15 @@ export function LessonPlayer({
           ))}
         </div>
       )}
-      <div className="lesson-stage" key={epoch}>
+      {headlineBeat && (
+        <div className="lesson-stage lesson-stage-intro" data-testid="lesson-intro" key={`intro-${headlineBeat.kind}-${headlineBeat.headline}`}>
+          <span className={headlineBeat.kind === 'skill' ? 'kicker' : 'kicker kicker-alt'}>
+            {headlineBeat.kind === 'skill' ? 'NEW SKILL' : 'A WORD TO KNOW'}
+          </span>
+          <h2 className="lesson-intro-headline">{headlineBeat.headline}</h2>
+        </div>
+      )}
+      <div className="lesson-stage" key={epoch} hidden={headlineBeat !== null}>
         {widget ? widget.element : null}
       </div>
       <p
@@ -770,6 +790,18 @@ export function LessonPlayer({
           {playing || audioActive ? '❚❚' : '▶'}
         </button>
         <div className="step-track" role="group" aria-label="Lesson timeline">
+          {introSteps.map((s, i) => (
+            <button
+              key={`intro-${i}`}
+              type="button"
+              className="step-seg step-seg-intro"
+              aria-label={`Go to intro ${i + 1} of ${introSteps.length}`}
+              aria-current={i === currentIntroIdx ? 'step' : undefined}
+              onClick={() => seek(s.t)}
+            >
+              <span className="step-fill" style={{ width: `${fillOfIntro(i) * 100}%` }} />
+            </button>
+          ))}
           {contentSteps.map((s, i) => (
             <button
               key={i}
