@@ -699,3 +699,14 @@ body {
    never unmounted) — no clip box needed */
 .landing-loop { margin: 6px auto 14px; max-width: 420px; pointer-events: none; }
 .landing-eq { font-size: 24px; margin-bottom: 12px; }
+
+.zoo-id { display: inline-flex; align-items: center; gap: 6px; }
+.zoo-copy {
+  border: none; background: transparent; cursor: pointer; padding: 0 2px;
+  font-size: 13px; color: #8a5320; line-height: 1;
+}
+.zoo-copy:hover { color: #b05f28; }
+
+.zoo-debug-link { margin: 14px 0 0; font-size: 11.5px; text-align: right; }
+.zoo-debug-link a { color: #b8ab97; text-decoration: none; font-family: ui-monospace, Menlo, monospace; }
+.zoo-debug-link a:hover { color: #8a5320; }

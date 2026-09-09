@@ -13,6 +13,47 @@ import type { CairnApi } from './api'
 import { evalNumber, renderText, type Params } from './render'
 import { diagnose, gradeAnswer } from '../../core/graders'
 
+/** the next draft timeline in the review queue — relative to `after`
+ * when given (wrapping), else the first draft overall */
+function nextUnverified(
+  index: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>>,
+  after?: string,
+): { id: string } | null {
+  const all = Object.values(index).flat()
+  if (all.length === 0) return null
+  const at = after !== undefined ? all.findIndex((e) => e.id === after) : -1
+  for (let k = 1; k <= all.length; k++) {
+    const cand = all[(at + k) % all.length]
+    if (cand !== undefined && !cand.vetted && cand.id !== after) return cand
+  }
+  return null
+}
+
+/** the timeline id with one-click copy — it is what a reviewer pastes
+ * into shoot-steps, greps in the curriculum, or quotes in a review */
+function IdChip({ id }: { id: string }) {
+  const [copied, setCopied] = useState(false)
+  return (
+    <span className="mono-chip zoo-id">
+      {id}
+      <button
+        type="button"
+        className="zoo-copy"
+        title="Copy timeline id"
+        aria-label={`Copy ${id}`}
+        onClick={() => {
+          void navigator.clipboard?.writeText(id).then(() => {
+            setCopied(true)
+            setTimeout(() => setCopied(false), 1200)
+          })
+        }}
+      >
+        {copied ? '✓' : '⧉'}
+      </button>
+    </span>
+  )
+}
+
 function roleBadge(widget: string): string {
   const r = WIDGET_ROLES[widget as WidgetType]
   if (!r) return ''
@@ -42,6 +83,7 @@ function DemoCard({
         <span className={kicker || demo.title.includes(' ') ? 'kicker' : 'kicker kicker-id'}>{title}</span>
         {chips && (
           <>
+            {kicker && <IdChip id={demo.explanation.id} />}
             <span className="mono-chip">{roleBadge(demo.widget)}</span>
             <span className="mono-chip">{JSON.stringify(demo.params)}</span>
             <span
@@ -330,6 +372,9 @@ export function Zoo({ api }: { api: CairnApi }) {
   }, [])
   useEffect(() => {
     if (only) {
+      // the index still matters here: the per-widget timeline links and
+      // the "Next unverified" jump at the bottom both read it
+      void api.demos().then(({ index: byWidget }) => setIndex(byWidget ?? {}))
       void api.demoFor(only).then((d) =>
         setDemos([
           {
@@ -363,7 +408,18 @@ export function Zoo({ api }: { api: CairnApi }) {
   return (
     <div>
       <section className="card">
-        <h1 className="dash-h">Widget zoo</h1>
+        <div className="card-kicker" style={{ marginBottom: 0 }}>
+          <h1 className="dash-h" style={{ margin: 0 }}>Widget zoo</h1>
+          <span className="spacer" />
+          {(() => {
+            const next = nextUnverified(index, only ?? undefined)
+            return next ? (
+              <a className="btn" href={`?view=zoo&exp=${encodeURIComponent(next.id)}`}>
+                Next unverified →
+              </a>
+            ) : null
+          })()}
+        </div>
         <p className="muted">
           {only ? (
             <>
@@ -425,10 +481,40 @@ export function Zoo({ api }: { api: CairnApi }) {
           </div>
         ))
       )}
+      {only && demos !== null && demos[0] !== undefined && (
+        <ZooFooter id={demos[0].explanation.id} index={index} />
+      )}
       {!only && INPUT_SAMPLES.map((c) => (
         <InputCard key={c.title} title={c.title} type={c.type} config={c.config} />
       ))}
     </div>
+  )
+}
+
+/** end-of-page bearings: the id again (long pages scroll the header away)
+ * and the review queue's next stop */
+function ZooFooter({
+  id,
+  index,
+}: {
+  id: string
+  index: Record<string, Array<{ id: string; skillName: string; vetted: boolean }>>
+}) {
+  const next = nextUnverified(index, id)
+  return (
+    <section className="card zoo-card">
+      <div className="card-kicker">
+        <IdChip id={id} />
+        <span className="spacer" />
+        {next ? (
+          <a className="btn" href={`?view=zoo&exp=${encodeURIComponent(next.id)}`}>
+            Next unverified →
+          </a>
+        ) : (
+          <span className="muted">every timeline is vetted ✓</span>
+        )}
+      </div>
+    </section>
   )
 }
 

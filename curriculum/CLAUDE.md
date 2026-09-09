@@ -650,6 +650,25 @@ annotate it, it is not a decomposition. Two corollaries:
   lesson for the standard — the full G6–8 page cache is local at
   `sources/illustrative-mathematics/cache/` (g#-u#-l#.html); cite it.
 
+## Captions are SELF-CONTAINED and they TEACH (2026-09-09)
+
+Two faults found in the same review, now rules:
+
+1. **A caption never references another lesson.** "This time we know the
+   part", "like before", "the same move as the balance" — lesson order
+   is NOT guaranteed (representations rotate per student), so a caption
+   that leans on a sibling reads as a non sequitur to the student who
+   met this picture first. Every timeline is a complete lesson on its
+   own. (Extends the "never write captions as dialogue with a previous
+   version" rule to ALL cross-lesson reference.)
+2. **A caption TEACHES; it never merely narrates the screen.** "8 joins
+   it" describes what the student just watched — the caption's job is
+   the WHY: what the move means mathematically and why it works ("the
+   + 8 means 8 sits alongside x — together they make the whole"). Rule 0
+   applied to caption copy: after a confirm, the student should have
+   LEARNED something they could say, not just seen something happen.
+   Summarize-not-ask (below) governs the SHAPE; this governs the content.
+
 ## Captions SUMMARIZE; prompts ASK (2026-09-02, supersedes "caption poses")
 
 A caption explains the step that just confirmed. The gate prompt below

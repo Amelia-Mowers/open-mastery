@@ -442,6 +442,9 @@ function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; on
             </button>
           </p>
         )}
+        <p className="zoo-debug-link">
+          <a href="?view=zoo">debug: widget zoo</a>
+        </p>
       </section>
     </main>
   )
