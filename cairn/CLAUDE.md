@@ -64,12 +64,21 @@
   silent text card in front of the lesson — the only unnarrated screen
   in the app, and the easiest to click past. It is gone. The player now
   plays the intro AS BEATS over the stage at negative times, through the
-  same transport and narration: the skill's plain sentence (headline =
-  skill name, kicker NEW SKILL), one beat per vocabulary term (headline
-  = the term, caption "term — meaning."), then the REPRESENTATION's own
-  introduction ("This is a tape diagram…", from
+  same transport and narration: the skill beat (headline = the
+  child-facing `short` name, kicker NEW SKILL, the lesson's sample
+  problem under the headline, the preamble's plain explanation as the
+  line), one beat per vocabulary term (headline = the
+  term, its meaning as the line), the PROBLEM bridge ("Here's how it
+  works on a problem like x + 8 = 21." — the first moment the equation
+  banner is on screen; skill and vocab beats hide it), then the
+  REPRESENTATION's own introduction ("This is a tape diagram…", from
   `../curriculum/representations/<rep>.yaml`) with the widget revealed
-  in its opening state. The server always sends the beats
+  in its opening state. Skill and vocab beats HOLD for a manual Continue
+  (the clock parks at their end); the problem and rep beats run on the
+  clock. The voice SAYS the headline ("New skill: …", "A word to know:
+  …") while the caption box shows only the line — `IntroBeat.speak` vs
+  `.caption`, and the enumerator walks `speak` plus the per-instance
+  problem line. The server always sends the beats
   (`preamble`, `repIntro`) and flags which are DUE (`introDue`): skill
   beats on a skill's first lesson, the rep beat the first time this
   student meets that picture in ANY skill (`explain` reports

@@ -2,10 +2,10 @@ id: g7.rp.constant-k
 name: Find the constant of proportionality
 short: "Find the number that links x and y"
 preamble:
-  plain: "In a proportional table, y divided by x gives the SAME number in every row. That number is k — it's the unit rate wearing its grown-up name."
+  plain: "In a proportional table, y divided by x gives the same number in every row. That number is called k — it is the unit rate with its grown-up name."
   vocab:
-    - { term: proportional, meaning: "two quantities where one is always the same multiple of the other" }
-    - { term: constant of proportionality, meaning: "the number k that every x is multiplied by to get y" }
+    - { term: proportional, meaning: "Two quantities where one is always the same multiple of the other." }
+    - { term: constant of proportionality, meaning: "The number k that every x is multiplied by to get y." }
 standards: [CCSS.MATH.CONTENT.7.RP.A.2.B]
 source: { book: ccss-rp-progression, section: "7.RP.A.2b" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

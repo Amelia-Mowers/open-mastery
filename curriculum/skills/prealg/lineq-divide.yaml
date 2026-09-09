@@ -2,10 +2,10 @@ id: prealg.lineq.divide
 name: Solve ax = b using the Division Property of Equality
 short: "Find x when it was multiplied"
 preamble:
-  plain: "A number times x makes a total. x is still in there — divide BOTH sides by that number, and it stands alone."
+  plain: "Here the hidden number was multiplied, and we only see the result. To find it, we divide both sides by that same number — and x is left on its own."
   vocab:
-    - { term: equation, meaning: "a math sentence saying two things are equal" }
-    - { term: Division Property of Equality, meaning: "divide both sides of an equation by the same number and it stays true" }
+    - { term: equation, meaning: "A math sentence saying two things are equal." }
+    - { term: Division Property of Equality, meaning: "If you divide both sides of an equation by the same number, it stays true." }
 standards: [CCSS.MATH.CONTENT.6.EE.B.7]
 source: { book: openstax-prealgebra-2e, section: "8.2" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

@@ -2,9 +2,9 @@ id: g6.ee.cube
 name: Evaluate cubes
 short: "Cubes: a number times itself three times"
 preamble:
-  plain: "4³ means 4 used as a factor three times: 4 × 4 × 4. That is a square of 4 — taken 4 times over."
+  plain: "When you see 4 with a little 3, that is 4 cubed: 4 × 4 × 4. Start with a square of 4, then stack it 4 layers high — and you have a cube."
   vocab:
-    - { term: cube, meaning: "a number raised to the third power — three equal factors" }
+    - { term: cube, meaning: "A number raised to the third power — the number used three times as a factor." }
 standards: [CCSS.MATH.CONTENT.6.EE.A.1]
 source: { book: ccss-ee-progression, section: "6.EE.A.1" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

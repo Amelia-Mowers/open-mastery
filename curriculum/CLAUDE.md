@@ -728,8 +728,23 @@ staged — the player plays them as beats before the lesson's first frame
 student meets that picture anywhere; skipped afterwards, reachable by
 scrubbing back). Author them under the caption rules above:
 
-- **No meta-commentary.** "You'll learn to…" describes the lesson, not
-  the mathematics. Say what the thing IS and what the move does.
+- **A FORWARD explanation in a friendly voice, not a summary note.** The
+  student has never met the idea; the preamble is where someone explains
+  it to them. Write it the way you would say it across a table — "we"
+  and "you", a concrete situation first, then what we do about it:
+  "Sometimes a number is hiding in an equation. It had something added
+  to it, and all we can see is the total. To find it, we take that same
+  amount away from both sides." Clipped fragments ("A number plus
+  something makes a total.") read as revision notes, and the voice
+  reads them that way too (Mia, 2026-09-09).
+- **No meta-commentary about the LESSON.** "You'll learn to…" describes
+  the lesson, not the mathematics. Say what the thing IS and what we do.
+- **The voice says the title.** A skill beat is spoken as "New skill:
+  <short>. <plain>" and a vocab beat as "A word to know: <term>.
+  <meaning>" — the box shows just the line. So a `meaning` is a full
+  sentence that stands on its own after the term is named ("If you
+  subtract the same number from both sides of an equation, it stays
+  true."), not a dictionary fragment.
 - **Lead affirmatively** (below): "5² means 5 used as a factor twice",
   never "5² isn't 5 × 2".
 - **One or two short declaratives**, an em-dash pivot, at most ONE
@@ -740,8 +755,6 @@ scrubbing back). Author them under the caption rules above:
   standards-derived title (map, guide view, milestones). Every skill has
   one. Phrase it as what the student DOES, in their words, under ~6
   words — a question is fine ("Which is the better deal?").
-- **A vocab entry reads aloud as "term — meaning."** — write the meaning
-  as a clause that survives being spoken after the term.
 - **A rep intro names the picture and the ONE property the lessons
   lean on** ("both pans hold the same amount — do the same thing to
   BOTH and it stays level"). It plays over the widget's opening state,

@@ -2,9 +2,9 @@ id: g6.ee.add-solve
 name: Solve x + p = q using the Subtraction Property of Equality
 short: "Find x when something was added"
 preamble:
-  plain: "A number plus something makes a total. The number is still in there — take the same amount off BOTH sides, and it stands alone."
+  plain: "Sometimes a number is hiding in an equation. It had something added to it, and all we can see is the total. To find it, we take that same amount away from both sides — and the number is left on its own."
   vocab:
-    - { term: Subtraction Property of Equality, meaning: "subtract the same number from both sides of an equation and it stays true" }
+    - { term: Subtraction Property of Equality, meaning: "If you subtract the same number from both sides of an equation, it stays true." }
 standards: [CCSS.MATH.CONTENT.6.EE.B.7]
 source: { book: ccss-ee-progression, section: "6.EE.B.7" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

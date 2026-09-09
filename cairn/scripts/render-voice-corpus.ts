@@ -26,6 +26,7 @@ import { mkdirSync, writeFileSync, existsSync, unlinkSync } from 'node:fs'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import { corpusSentences, fileOf } from './voice-sentences.ts'
+import { listFiles } from '@huggingface/hub'
 
 const here = dirname(fileURLToPath(import.meta.url))
 const outDir = join(here, '..', 'voice-corpus')
@@ -43,7 +44,13 @@ if (process.env.REMOTE === '1') {
   if (!res.ok) throw new Error(`could not fetch the published manifest: ${res.status}`)
   for (const [s, f] of Object.entries((await res.json()) as Record<string, string>))
     if (f === fileOf(s)) remote.add(s)
-  console.log(`published corpus: ${remote.size} sentences`)
+  // a partial render pushed with MANIFEST=0 has files the manifest does
+  // not name yet — the repo listing is the truth of what exists
+  const files = new Set<string>()
+  for await (const f of listFiles({ repo: { type: 'dataset', name: 'AmeliaMowers/cairn-voice' } }))
+    files.add(f.path)
+  for (const s of all) if (files.has(fileOf(s))) remote.add(s)
+  console.log(`published corpus: ${remote.size} sentences (${files.size} files)`)
 }
 const missing = all.filter((s) => !remote.has(s) && !existsSync(join(outDir, fileOf(s))))
 console.log(`corpus: ${all.length} unique sentences, ${missing.length} to synthesize`)

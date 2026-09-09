@@ -33,11 +33,13 @@ import {
   renderText,
   type Params,
 } from './render'
-import { introBeats, INTRO_BEAT_SECONDS, type IntroBeat, type IntroSpec } from './intro'
+import { introBeats, problemLine, INTRO_BEAT_SECONDS, type IntroBeat, type IntroSpec } from './intro'
 
 export type LessonIntro = IntroSpec
 
-type Step = Explanation['timeline'][number]
+/** a timeline step, plus what an intro beat adds: a spoken line that
+ * differs from the shown one, and a hold for a manual Continue */
+type Step = Explanation['timeline'][number] & { speak?: string; manual?: boolean }
 
 export interface LessonPlayerProps {
   explanation: Explanation
@@ -496,19 +498,24 @@ export function LessonPlayer({
   // time the representation is met); when none is due, all of them — so
   // scrubbing back still reaches them — and the clock simply starts at 0.
   const introKey = JSON.stringify(intro ?? null)
+  const timeline = explanation.timeline
+  // Keyed on a STRING — the params object is a fresh identity every
+  // render, and depending on it refired effects on each frame
+  const paramsKey = JSON.stringify(params)
   const beats: IntroBeat[] = useMemo(() => {
     if (!intro) return []
-    const all = introBeats(intro)
+    const all = introBeats({ ...intro, problem: problemLine(timeline, params) ?? undefined })
     if (!intro.playSkill && !intro.playRep) return all
     return all.filter((b) => (b.kind === 'rep' ? intro.playRep : intro.playSkill))
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [introKey])
-  const timeline = explanation.timeline
+  }, [introKey, explanation.id, paramsKey])
   const introSteps: Step[] = useMemo(
     () =>
       beats.map((b, i) => ({
         t: -(beats.length - i) * INTRO_BEAT_SECONDS,
         caption: b.caption,
+        speak: b.speak,
+        manual: b.manual,
         // the first beat carries the opening frame's patch, so the board
         // (equation banner, empty widget) is set from the very first beat
         ...(i === 0 && timeline[0]?.patch !== undefined ? { patch: timeline[0].patch } : {}),
@@ -522,14 +529,11 @@ export function LessonPlayer({
   // segments cover the content steps; a trailing handoff-only step is the
   // resting point, not a segment of its own
   const contentSteps = timeline.filter((s) => s.patch !== undefined || s.caption !== undefined)
-  // optimistic voice: prefetch this lesson's captions ahead of playback.
-  // Keyed on a STRING — the params object is a fresh identity every
-  // render, and depending on it refired this on each frame
-  const paramsKey = JSON.stringify(params)
+  // optimistic voice: prefetch this lesson's lines ahead of playback
   useEffect(() => {
     speech.pregenerate(
       steps
-        .map((s) => (s.caption !== undefined ? renderText(s.caption, params) : ''))
+        .map((s) => s.speak ?? (s.caption !== undefined ? renderText(s.caption, params) : ''))
         .filter((t) => t !== ''),
     )
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -611,13 +615,19 @@ export function LessonPlayer({
   }, [stepIdx, widget, steps])
 
   // the caption sticks: latest step at/before now that HAS one; the symbolic
-  // equation banner and its highlighted spans stick the same way
+  // equation banner and its highlighted spans stick the same way. `spoken`
+  // is the narrated line — the caption itself, except for intro beats,
+  // which say their headline too
   let caption = ''
+  let spoken = ''
   let equation: string[] | null = null
   let eqHighlight: number[] = []
   for (let i = 0; i <= stepIdx; i++) {
     const st = steps[i]!
-    if (st.caption !== undefined) caption = renderText(st.caption, params)
+    if (st.caption !== undefined) {
+      caption = renderText(st.caption, params)
+      spoken = st.speak ?? caption
+    }
     const patch = st.patch
     if (patch) {
       if (Array.isArray(patch['equation']))
@@ -628,7 +638,9 @@ export function LessonPlayer({
           .filter((v) => Number.isInteger(v))
     }
   }
-  captionRef.current = caption
+  captionRef.current = spoken
+  /** a skill/vocab beat: the clock parks at its end until Continue */
+  const manualHold = stepIdx >= 0 && steps[stepIdx]!.manual === true
 
   // autoplay: advance until the handoff time, then rest there.
   // With the voice on, the clock HOLDS at the next caption boundary until
@@ -647,7 +659,7 @@ export function LessonPlayer({
     const id = setInterval(() => {
       setTime((t) => {
         const next = t + (TICK_MS / 1000) * speed
-        if (caption !== '' && !speech.finished([caption])) {
+        if (manualHold || (spoken !== '' && !speech.finished([spoken]))) {
           const boundary = nextCaptionT(t)
           // the hold must engage at EXACTLY the threshold where the
           // render counts the boundary step as reached (t <= time + 1e-9
@@ -670,7 +682,7 @@ export function LessonPlayer({
     }, TICK_MS)
     return () => clearInterval(id)
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [playing, speedIdx, handoffT, caption])
+  }, [playing, speedIdx, handoffT, spoken, manualHold])
 
   /** jump to a step and PLAY from its beginning — clock and narration
    * restart together, and the play button reflects it */
@@ -708,7 +720,7 @@ export function LessonPlayer({
     else if (time <= start) clockFill = 0
     else if (time >= end) clockFill = 1
     else clockFill = (time - start) / (end - start)
-    if (isCurrent && voiceLive && caption !== '' && !speech.finished([caption])) {
+    if (isCurrent && voiceLive && spoken !== '' && !speech.finished([spoken])) {
       const audioFill = speech.progress() ?? 0
       return Math.min(clockFill, audioFill)
     }
@@ -725,7 +737,8 @@ export function LessonPlayer({
   // a skill or vocabulary beat shows its headline where the widget will
   // be; the widget stays mounted (patches keep landing on it) and is
   // revealed at the rep beat / first frame
-  const headlineBeat = introBeat !== null && introBeat.kind !== 'rep' ? introBeat : null
+  const headlineBeat =
+    introBeat !== null && (introBeat.kind === 'skill' || introBeat.kind === 'vocab') ? introBeat : null
 
   const body = (
     <>
@@ -737,7 +750,7 @@ export function LessonPlayer({
           </button>
         )}
       </div>
-      {equation && (
+      {equation && !headlineBeat && (
         <div className="lesson-equation" data-testid="lesson-equation" aria-label={`Equation ${equation.join('')}`}>
           {equation.map((seg, i) => (
             <span key={`${i}-${eqHighlight.includes(i)}`} className={eqHighlight.includes(i) ? 'eq-seg eq-hl' : 'eq-seg'}>
@@ -752,6 +765,15 @@ export function LessonPlayer({
             {headlineBeat.kind === 'skill' ? 'NEW SKILL' : 'A WORD TO KNOW'}
           </span>
           <h2 className="lesson-intro-headline">{headlineBeat.headline}</h2>
+          {headlineBeat.kind === 'skill' && equation && (
+            <div className="lesson-equation lesson-intro-problem" aria-label={`Sample problem ${equation.join('')}`}>
+              {equation.map((seg, i) => (
+                <span key={i} className="eq-seg">
+                  {seg}
+                </span>
+              ))}
+            </div>
+          )}
         </div>
       )}
       <div className="lesson-stage" key={epoch} hidden={headlineBeat !== null}>
@@ -764,7 +786,14 @@ export function LessonPlayer({
       >
         {caption}
       </p>
-      <SpeakCaption text={caption} live={voiceLive} cue={speakCue} />
+      <SpeakCaption text={spoken} live={voiceLive} cue={speakCue} />
+      {manualHold && stepIdx + 1 < steps.length && (
+        <div className="answer-row intro-continue-row">
+          <button className="btn btn-primary" onClick={() => seek(steps[stepIdx + 1]!.t)}>
+            Continue
+          </button>
+        </div>
+      )}
       <VoiceGenSpinner />
       <div className="lesson-controls">
         <button

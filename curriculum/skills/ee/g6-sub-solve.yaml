@@ -2,9 +2,9 @@ id: g6.ee.sub-solve
 name: Solve x − p = q using the Addition Property of Equality
 short: "Find x when something was taken away"
 preamble:
-  plain: "A number minus something leaves what is left. The number is still in there — ADD the same amount to both sides, and it stands alone."
+  plain: "This time the hidden number had something taken away, and we only see what was left. To find it, we add that same amount back to both sides — and the number stands on its own."
   vocab:
-    - { term: Addition Property of Equality, meaning: "add the same number to both sides of an equation and it stays true" }
+    - { term: Addition Property of Equality, meaning: "If you add the same number to both sides of an equation, it stays true." }
 # 6.EE.B.7 enumerates x + p = q; this is its inverse-form twin, taught alongside
 standards: [CCSS.MATH.CONTENT.6.EE.B.7]
 source: { book: ccss-ee-progression, section: "6.EE.B.7" }

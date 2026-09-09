@@ -2,9 +2,9 @@ id: g7.ee.combine
 name: Combine like terms to simplify an expression
 short: "Gather the matching terms"
 preamble:
-  plain: "5x + 3 − 2x + 4 carries the same letter twice. Gather the x-terms, gather the plain numbers — and the expression shrinks to one short line."
+  plain: "5x + 3 − 2x + 4 has the letter x twice. We gather the x-terms together, gather the plain numbers together — and the expression becomes one short line."
   vocab:
-    - { term: like terms, meaning: "terms with the same letter part — they can be added together" }
+    - { term: like terms, meaning: "Terms with the same letter part — they can be added together." }
 standards: [CCSS.MATH.CONTENT.7.EE.A.1]
 source: { book: ccss-ee-progression, section: "7.EE.A.1" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

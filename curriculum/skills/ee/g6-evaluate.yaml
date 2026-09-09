@@ -2,10 +2,10 @@ id: g6.ee.evaluate
 name: Evaluate an expression at a value
 short: "Plug a number into an expression"
 preamble:
-  plain: "An expression like 3x + 5 is a machine: feed it a number for x, and it gives a number back. Substitute, then compute."
+  plain: "An expression like 3x + 5 is a little machine. Feed it a number for x, and it gives a number back. We put the number in x's place, then work it out."
   vocab:
-    - { term: substitute, meaning: "replace the variable with a number" }
-    - { term: variable, meaning: "a letter standing in for a number" }
+    - { term: substitute, meaning: "Put a number in the variable's place." }
+    - { term: variable, meaning: "A letter that stands in for a number." }
 standards: [CCSS.MATH.CONTENT.6.EE.A.2.C]
 source: { book: ccss-ee-progression, section: "6.EE.A.2c" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

@@ -16,7 +16,7 @@ import { practiceItems, poolSeeds } from '../src/core/select.ts'
 import { feedableParams } from '../src/site/core.ts'
 import { renderText } from '../src/client/app/render.ts'
 import { mathToSpeech } from '../src/client/tts/speech.ts'
-import { introSentences } from '../src/client/app/intro.ts'
+import { introSentences, problemLine, problemSpeak } from '../src/client/app/intro.ts'
 
 /** sentence → corpus filename (content-addressed; the client derives the
  * same name with crypto.subtle in src/client/tts/speech.ts) */
@@ -79,6 +79,9 @@ export function corpusSentences(): string[] {
     )
     for (const item of feeders) {
       for (const params of poolInstances(item)) {
+        // the intro's problem beat names this instance's opening equation
+        const problem = problemLine(e.timeline, params)
+        if (problem !== null) add(problemSpeak(problem))
         for (const st of e.timeline) {
           const texts: string[] = []
           if (st.caption !== undefined) texts.push(renderText(st.caption, params))

@@ -69,6 +69,13 @@ for (let i = 0; i < todo.length; i += BATCH) {
   })
   console.log(`uploaded ${Math.min(i + BATCH, todo.length)}/${todo.length}`)
 }
+// MANIFEST=0 pushes the .ogg files only — a PARTIAL render handed off
+// mid-way (the manifest names every sentence, so publishing it early
+// would make the coverage check pass against audio that isn't there)
+if (process.env.MANIFEST === '0') {
+  console.log('manifest NOT uploaded (MANIFEST=0) — finish the render, then upload again')
+  process.exit(0)
+}
 await uploadFiles({
   repo,
   accessToken: token,

@@ -2,10 +2,10 @@ id: prealg.lineq.reciprocal
 name: Solve (p/q)x = b by multiplying by the reciprocal
 short: "Find x when a fraction multiplies it"
 preamble:
-  plain: "A fraction times x does two jobs at once — a multiply and a divide. Undo them one at a time first; then one move does both: the reciprocal."
+  plain: "When a fraction multiplies x, it does two jobs at once: a multiply and a divide. We can undo them one at a time — or with one move, using the reciprocal."
   vocab:
-    - { term: reciprocal, meaning: "a fraction flipped upside down: the reciprocal of 2/3 is 3/2" }
-    - { term: coefficient, meaning: "the number multiplying x" }
+    - { term: reciprocal, meaning: "A fraction flipped upside down: the reciprocal of 2/3 is 3/2." }
+    - { term: coefficient, meaning: "The number multiplying x." }
 prereqs: [prealg.lineq.multiply, prealg.lineq.divide]
 standards: [CCSS.MATH.CONTENT.6.EE.B.7]  # px = q with NONNEGATIVE rationals — fraction coefficients included
 source: { book: openstax-prealgebra-2e, section: "8.2" }

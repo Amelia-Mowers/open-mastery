@@ -5,7 +5,7 @@ import { describe, it, expect, vi, afterEach } from 'vitest'
 import { fireEvent, render, screen, cleanup } from '@testing-library/react'
 import { explanationSchema } from '@openmastery/schema'
 import { LessonPlayer } from '../../src/client/app/LessonPlayer'
-import { vocabCaption } from '../../src/client/app/intro'
+import { introBeats, skillSpeak, vocabSpeak } from '../../src/client/app/intro'
 
 afterEach(cleanup)
 
@@ -133,19 +133,25 @@ describe('explanation player', () => {
     expect(screen.getByTestId('lesson-intro')).toHaveTextContent('Solve ax = b')
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Undo multiplication by dividing both sides.')
     expect(widgetStage(container)).toHaveAttribute('hidden')
+    // a skill beat waits for the student — no clock, a Continue
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument()
     // the whole track is there: three intro pips + the four lesson steps
     expect(screen.getAllByRole('button', { name: /Go to intro/ })).toHaveLength(3)
     expect(screen.getAllByRole('button', { name: /Go to step/ })).toHaveLength(4)
 
-    fireEvent.click(screen.getByRole('button', { name: 'Go to intro 2 of 3' }))
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(screen.getByTestId('lesson-intro')).toHaveTextContent('A WORD TO KNOW')
     expect(screen.getByTestId('lesson-intro')).toHaveTextContent('equation')
+    // the box shows the meaning; the headline is on screen (and spoken)
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent(
-      'equation — a math sentence saying two things are equal.',
+      'a math sentence saying two things are equal.',
     )
+    expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument()
 
-    // the rep beat reveals the widget in its opening state
-    fireEvent.click(screen.getByRole('button', { name: 'Go to intro 3 of 3' }))
+    // the rep beat reveals the widget in its opening state, and runs on
+    // the clock like any caption
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
+    expect(screen.queryByRole('button', { name: 'Continue' })).toBeNull()
     expect(screen.queryByTestId('lesson-intro')).toBeNull()
     expect(widgetStage(container)).not.toHaveAttribute('hidden')
     expect(container.querySelector('[data-pan="left"]')).toHaveTextContent('4x')
@@ -201,11 +207,28 @@ describe('explanation player', () => {
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('This is a balance scale.')
   })
 
-  it('a vocabulary beat reads "term — meaning." with the meaning closed as a sentence', () => {
-    expect(vocabCaption({ term: 'cube', meaning: 'three equal factors' })).toBe('cube — three equal factors.')
-    expect(vocabCaption({ term: 'ratio', meaning: 'a pair that goes together!' })).toBe(
-      'ratio — a pair that goes together!',
+  it('intro beats SPEAK their headline, show only the line, and bridge into the problem', () => {
+    expect(skillSpeak('Find x', 'A number is hiding')).toBe('New skill: Find x. A number is hiding.')
+    expect(vocabSpeak({ term: 'cube', meaning: 'three equal factors!' })).toBe(
+      'A word to know: cube. three equal factors!',
     )
+    const beats = introBeats({
+      skillName: 'Find x',
+      plain: 'A number is hiding.',
+      vocab: [{ term: 'cube', meaning: 'three equal factors' }],
+      problem: 'x + 8 = 21',
+      rep: { name: 'tape', intro: 'This is a tape diagram.' },
+      playSkill: true,
+      playRep: true,
+    })
+    expect(beats.map((b) => b.kind)).toEqual(['skill', 'vocab', 'problem', 'rep'])
+    expect(beats.map((b) => b.manual)).toEqual([true, true, false, false])
+    expect(beats[1]!.caption).toBe('three equal factors.')
+    expect(beats[2]!.speak).toBe("Here's how it works on a problem like x + 8 = 21.")
+    // no skill intro ⇒ no problem bridge either (it is the skill's, not the rep's)
+    expect(
+      introBeats({ skillName: 'Find x', problem: 'x + 8 = 21', rep: { name: 'tape', intro: 'Tape.' }, playSkill: false, playRep: true }).map((b) => b.kind),
+    ).toEqual(['rep'])
   })
 
   it('offers "another way" at the handoff when a handler is provided', () => {

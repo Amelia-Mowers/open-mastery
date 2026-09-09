@@ -236,6 +236,9 @@ body {
   min-height: 265px; display: flex; align-items: center; justify-content: center;
 }
 .lesson-stage[hidden] { display: none; }
+.intro-continue-row { justify-content: center; margin-top: 14px; }
+/* the skill beat shows the lesson's sample problem under its headline */
+.lesson-intro-problem { margin: 6px 0 0; color: #7a6f61; }
 .lesson-stage > * { width: 100%; }
 .lesson-caption-under { min-height: 64px; display: flex; align-items: center; justify-content: center; }
 .embedded-player {

@@ -2,10 +2,10 @@ id: prealg.lineq.simplify-first
 name: Simplify each side, then solve the equation
 short: "Tidy up each side, then solve"
 preamble:
-  plain: "Some equations look messy, but each side can be tidied first. Combine the matching pieces — and a one-step problem is left."
+  plain: "Some equations look messy, but each side can be tidied up first. Once we combine the matching pieces, a one-step problem is all that is left."
   vocab:
-    - { term: like terms, meaning: "pieces with the same letter part, like 8x and 9x — they can be added together" }
-    - { term: simplify, meaning: "rewrite something in a shorter, tidier way without changing its value" }
+    - { term: like terms, meaning: "Pieces with the same letter part, like 8x and 9x — they can be added together." }
+    - { term: simplify, meaning: "Rewrite something in a shorter, tidier way without changing its value." }
 prereqs: [prealg.lineq.divide]
 standards: [CCSS.MATH.CONTENT.7.EE.B.4.A, CCSS.MATH.CONTENT.6.EE.A.3]  # solve after combining like terms (equivalent expressions)
 source: { book: openstax-prealgebra-2e, section: "8.2" }

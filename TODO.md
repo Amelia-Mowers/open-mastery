@@ -62,6 +62,16 @@ Not K–12 — the middle-school band plus the parent's view:
       stepwise lead inert after verdict, phone header wrap. Still open
       elsewhere in this file: ladder-retry-stepwise, scaffold_step
       events, chunk-size for Pi/Android.
+- [ ] VOICE CORPUS: FINISH THE RENDER (handed off 2026-09-09). The intro
+      rework (spoken headlines, friendlier preambles, the per-instance
+      "Here's how it works on a problem like …" bridge) owes ~800
+      sentences; ~620 are rendered and pushed as files only
+      (MANIFEST=0). On the desktop: `REMOTE=1 node
+      --experimental-transform-types scripts/render-voice-corpus.ts`
+      (REMOTE now also counts files already in the repo, so only the
+      remainder renders; use render-voice-corpus-gpu.sh for cuda), then
+      `node scripts/upload-voice-corpus.mjs` WITH the manifest, then
+      `npm run voice:check`. Until then the Pages deploy fails on coverage.
 - [ ] Storyboard view for review: every step of a timeline as one row
       (widget state, caption, gate prompt, hint, misconception line,
       invariant warnings) — shoot-steps.mjs already drives the widget
