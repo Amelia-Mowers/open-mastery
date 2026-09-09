@@ -5,7 +5,7 @@
  * Each demo autoplays; the handoff button replays it. */
 import { useEffect, useState } from 'react'
 import { speech } from '../tts/speech'
-import { LessonPlayer } from './LessonPlayer'
+import { LessonPlayer, type LessonIntro } from './LessonPlayer'
 import { StepwisePlayer, hasExpects } from './StepwisePlayer'
 import { createWidget, WIDGET_ROLES, type WidgetType } from '../widgets/registry'
 import { FALLBACK_DEMOS, type ZooDemo } from './zoo-demos'
@@ -21,28 +21,44 @@ function roleBadge(widget: string): string {
   return r.input ? 'roles: lesson · input' : 'roles: lesson'
 }
 
-function DemoCard({ demo }: { demo: ZooDemo }) {
+function DemoCard({
+  demo,
+  kicker,
+  intro,
+  chips = true,
+}: {
+  demo: ZooDemo
+  /** section title override (the experience page names its stages) */
+  kicker?: string
+  /** play the first-lesson intro beats before the timeline */
+  intro?: LessonIntro
+  chips?: boolean
+}) {
   const [replay, setReplay] = useState(0)
+  const title = kicker ?? (demo.title.includes(' ') ? demo.title.toUpperCase() : demo.title)
   return (
     <section className="card zoo-card">
       <div className="card-kicker">
-        <span className={demo.title.includes(' ') ? 'kicker' : 'kicker kicker-id'}>
-          {demo.title.includes(' ') ? demo.title.toUpperCase() : demo.title}
-        </span>
-        <span className="mono-chip">{roleBadge(demo.widget)}</span>
-        <span className="mono-chip">{JSON.stringify(demo.params)}</span>
-        <span
-          className={`mono-chip ${demo.explanation.review.status === 'vetted' ? 'vet-ok' : 'vet-draft'}`}
-          title={demo.explanation.review.status === 'vetted' ? 'human-vetted' : 'draft — not yet human-reviewed'}
-        >
-          {demo.explanation.review.status === 'vetted' ? '✓ vetted' : '◌ draft'}
-        </span>
+        <span className={kicker || demo.title.includes(' ') ? 'kicker' : 'kicker kicker-id'}>{title}</span>
+        {chips && (
+          <>
+            <span className="mono-chip">{roleBadge(demo.widget)}</span>
+            <span className="mono-chip">{JSON.stringify(demo.params)}</span>
+            <span
+              className={`mono-chip ${demo.explanation.review.status === 'vetted' ? 'vet-ok' : 'vet-draft'}`}
+              title={demo.explanation.review.status === 'vetted' ? 'human-vetted' : 'draft — not yet human-reviewed'}
+            >
+              {demo.explanation.review.status === 'vetted' ? '✓ vetted' : '◌ draft'}
+            </span>
+          </>
+        )}
       </div>
       <LessonPlayer
         key={replay}
         explanation={demo.explanation}
         params={demo.params}
         kind="walkthrough"
+        {...(intro ? { intro } : {})}
         embedded
         autoplay={false}
         onDone={() => setReplay((r) => r + 1)}
@@ -109,7 +125,9 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
         <section className="card zoo-card">
           <div className="card-kicker">
             <span className="kicker">
-              {stepwise ? 'STEPWISE — WORK IT MOVE BY MOVE' : 'FINISH THIS ONE — FADED PHASE'}
+              {stepwise
+                ? '3 · SCAFFOLDED PRACTICE — WORK THE LEAD, THEN ANSWER'
+                : '3 · SCAFFOLDED PRACTICE — FINISH THIS ONE (FADED LEAD)'}
             </span>
             <span className="mono-chip">{JSON.stringify(fadedParams)}</span>
           </div>
@@ -142,25 +160,38 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
       {item && inputWidget && (
       <section className="card zoo-card">
         <div className="card-kicker">
-          <span className="kicker">PRACTICE PROBLEM — {item.widget.type.toUpperCase()}</span>
+          <span className="kicker">4 · RAW PRACTICE — THE SCAFFOLD HAS FADED</span>
           <span className="mono-chip">{item.id}</span>
         </div>
         {typeof item.widget.config?.['stem'] === 'string' && (
           <h2 className="stem">{renderText(item.widget.config['stem'] as string, item.params as Params)}</h2>
         )}
-        <div className="answer-row">
-          {inputWidget.render({} as never, 'problem')}
-          <button className="btn" onClick={() => setExtracted(JSON.stringify(inputWidget.extract()))}>
-            Extract
-          </button>
-        </div>
+        {item.answer ? (
+          <ZooAnswerRow
+            style={{
+              type: item.widget.type as WidgetType,
+              config: { ...evalConfig(item.widget.config ?? {}, item.params as Params), seed: 'zoo' },
+              note: 'what practice serves once the mastery estimate clears fadeAtP — no lead, no lesson above',
+            }}
+            answer={item.answer as unknown as Parameters<typeof gradeAnswer>[0]}
+            misconceptions={item.misconceptions}
+            params={item.params as Params}
+          />
+        ) : (
+          <div className="answer-row">
+            {inputWidget.render({} as never, 'problem')}
+            <button className="btn" onClick={() => setExtracted(JSON.stringify(inputWidget.extract()))}>
+              Extract
+            </button>
+          </div>
+        )}
         {extracted && <p className="mono-chip zoo-extract">{extracted}</p>}
       </section>
       )}
       {demo.checkItem && (
         <section className="card zoo-card">
           <div className="card-kicker">
-            <span className="kicker">MASTERY CHECK EXAMPLE — HARDEST, RAW, NO HINTS</span>
+            <span className="kicker">5 · MASTERY CHECK — HARDEST, RAW, NO HINTS</span>
             <span className="mono-chip">{demo.checkItem.id}</span>
           </div>
           {typeof demo.checkItem.widget.config?.['stem'] === 'string' && (
@@ -308,6 +339,7 @@ export function Zoo({ api }: { api: CairnApi }) {
             explanation: d.explanation,
             item: d.item ?? null,
             checkItem: d.checkItem ?? null,
+            ...(d.intro ? { intro: d.intro } : {}),
           },
         ]),
       )
@@ -333,10 +365,21 @@ export function Zoo({ api }: { api: CairnApi }) {
       <section className="card">
         <h1 className="dash-h">Widget zoo</h1>
         <p className="muted">
-          One canonical demo per widget, single-sourced from the curriculum (fallbacks only for
-          widgets no explanation uses yet), plus every answer input. Demos start on click (so only
-          the one you start narrates); the end button
-          replays. Reach this page with <code>?view=zoo</code>.
+          {only ? (
+            <>
+              The full student experience of ONE timeline, in serve order: the first lesson (with
+              its narrated intro beats), a later lesson, the scaffolded practice lead with its
+              answer box, raw practice once the scaffold fades, and the mastery check. Demos start
+              on click; grading here is local so a reviewer can play each stage end to end.
+            </>
+          ) : (
+            <>
+              One canonical demo per widget, single-sourced from the curriculum (fallbacks only for
+              widgets no explanation uses yet), plus every answer input. Demos start on click (so
+              only the one you start narrates). Click a timeline id under any demo to open its full
+              experience page.
+            </>
+          )}
         </p>
       </section>
       {demos === null ? (
@@ -344,7 +387,20 @@ export function Zoo({ api }: { api: CairnApi }) {
       ) : (
         demos.map((d) => (
           <div key={d.explanation.id}>
-            <DemoCard demo={d} />
+            {only ? (
+              <>
+                <DemoCard
+                  demo={d}
+                  kicker="1 · FIRST LESSON — INTRO BEATS, AS A NEW STUDENT MEETS IT"
+                  {...(d.intro
+                    ? { intro: { ...d.intro, playSkill: true, playRep: true } }
+                    : {})}
+                />
+                <DemoCard demo={d} kicker="2 · A LATER LESSON — INTROS ALREADY SEEN" chips={false} />
+              </>
+            ) : (
+              <DemoCard demo={d} />
+            )}
             {only && <TrinityCards demo={d} />}
             {(index[d.widget] ?? []).length > 0 && (
               <p className="muted zoo-index">

@@ -46,23 +46,24 @@ describe('widget zoo', () => {
     expect(screen.getAllByRole('slider').length).toBeGreaterThanOrEqual(2)
   })
 
-  it('single-timeline view shows the trinity: lesson, faded phase, answer input', async () => {
+  it('single-timeline view shows the experience: first lesson, later lesson, scaffolded, raw, check', async () => {
     window.history.pushState({}, '', '?view=zoo&exp=alg1.linear.solve-one-step.exp-balance')
     try {
       const { container } = render(<Zoo api={new SiteApi(base, 'zoo-single')} />)
-      // lesson demo + faded lead both play (two timelines on the page)
+      // first lesson (intro beats), later lesson, and the faded lead all
+      // carry a timeline track (three players on the page)
       await waitFor(() => {
-        expect(screen.getAllByRole('group', { name: 'Lesson timeline' })).toHaveLength(2)
+        expect(screen.getAllByRole('group', { name: 'Lesson timeline' })).toHaveLength(3)
       })
-      // faded card: truncated lead (resolution dropped — only the first
-      // caption survives) plus the item's answer space in faded mode
-      expect(screen.getByText(/FINISH THIS ONE — FADED PHASE/)).toBeInTheDocument()
-      expect(screen.getByText(/PRACTICE PROBLEM — EQUATION-INPUT/)).toBeInTheDocument()
-      // the input card is a real practice problem: the item's stem shows —
-      // and the MASTERY CHECK EXAMPLE card repeats it when the same item
-      // is also the check's hardest pick (this fixture's only item)
+      expect(screen.getByText(/1 · FIRST LESSON/)).toBeInTheDocument()
+      expect(screen.getByText(/2 · A LATER LESSON/)).toBeInTheDocument()
+      expect(screen.getByText(/3 · SCAFFOLDED PRACTICE/)).toBeInTheDocument()
+      expect(screen.getByText(/4 · RAW PRACTICE/)).toBeInTheDocument()
+      expect(screen.getByText(/5 · MASTERY CHECK/)).toBeInTheDocument()
+      // the raw card is a real practice problem: the item's stem shows —
+      // and the mastery card repeats it when the same item is also the
+      // check's hardest pick (this fixture's only item)
       expect(screen.getAllByText(/Solve: 7x = 21\./).length).toBeGreaterThanOrEqual(1)
-      expect(screen.getByText(/MASTERY CHECK EXAMPLE/)).toBeInTheDocument()
       // the rep-matched item is equation-input: its faded + problem
       // renders are textboxes, and no answer key ships in the payload
       expect(screen.getAllByRole('textbox').length).toBeGreaterThanOrEqual(2)

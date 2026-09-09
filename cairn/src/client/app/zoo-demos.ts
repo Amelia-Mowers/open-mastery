@@ -11,6 +11,14 @@ export interface ZooDemo {
   widget: string
   params: Params
   explanation: Explanation
+  /** first-lesson intro beats (skill/vocab/problem/rep) for the
+   * single-timeline experience page */
+  intro?: {
+    skillName: string
+    plain?: string
+    vocab?: Array<{ term: string; meaning: string }>
+    rep?: { name: string; intro: string }
+  }
   /** single-timeline view: representation-matched item */
   item?: {
     id: string

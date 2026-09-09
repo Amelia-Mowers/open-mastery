@@ -444,7 +444,23 @@ export class SiteCore {
           difficulty: cb.difficulty,
         }
       : null
-    return ok({ widget: e.widget, skillName: skill?.name ?? e.skill, params, explanation: e, item, checkItem })
+    return ok({
+      widget: e.widget,
+      skillName: skill?.name ?? e.skill,
+      params,
+      explanation: e,
+      item,
+      checkItem,
+      // the FULL first-lesson experience: the intro beats a brand-new
+      // student gets (skill + vocab + problem + rep), so the zoo can show
+      // the lesson exactly as first introduced
+      intro: {
+        skillName: skill?.short ?? skill?.name ?? e.skill,
+        plain: skill?.preamble?.plain,
+        vocab: skill?.preamble?.vocab,
+        rep: this.repIntro(e),
+      },
+    })
   }
 
   next(studentId: string, focusSkill?: string | null, forceFocus = false): SiteResult {

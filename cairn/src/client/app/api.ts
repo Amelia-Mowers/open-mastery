@@ -81,6 +81,14 @@ export interface ZooDemoView {
   skillName: string
   params: Record<string, number | string>
   explanation: Explanation
+  /** the first-lesson intro beats (skill/vocab/problem/rep), so the zoo
+   * shows the lesson exactly as a new student first meets it */
+  intro?: {
+    skillName: string
+    plain?: string
+    vocab?: Array<{ term: string; meaning: string }>
+    rep?: { name: string; intro: string }
+  }
   /** single-timeline view: a representation-matched item's answer widget
    * (key stripped) for the faded + input cards */
   item?: {
