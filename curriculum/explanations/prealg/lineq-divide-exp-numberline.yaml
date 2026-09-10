@@ -15,7 +15,7 @@ timeline:
       hint: "The number written in front of {variable} counts them."
   - t: 7
     patch: { eqHighlight: ["3"], marker: "{b}", labelled: ["0", "{b}"], jumps: { size: "{b/a}", count: "{a}", shown: "all" } }
-    caption: "= {b}: the jumps finish exactly on {b} — {a} of them covering the whole trip."
+    caption: "The jumps finish exactly on {b} — {a} of them covering the whole trip."
     expect:
       type: pick
       value: ["3"]

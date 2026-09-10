@@ -29,6 +29,7 @@ import {
   adaptBalancePatch,
   adaptNumberLinePatch,
   evalNumber,
+  glueMath,
   numberLineSetup,
   renderText,
   type Params,
@@ -840,7 +841,7 @@ export function LessonPlayer({
         className={widget ? 'lesson-caption lesson-caption-under' : 'lesson-caption'}
         data-testid="lesson-caption"
       >
-        {caption}
+        {glueMath(caption)}
       </p>
       <SpeakCaption text={spoken} live={voiceLive} cue={speakCue} />
       {manualHold && stepIdx + 1 < steps.length && (

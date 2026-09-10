@@ -1,7 +1,7 @@
 id: g6.ee.equivalent.001
 skills: [g6.ee.equivalent]
 difficulty: 1
-representation: ratio-table
+representation: input-output-table
 params: { m: 3, n: 2, variable: x }
 generator: { m: { int: [2, 9] }, n: { int: [1, 9] } }
 widget: { type: term-input, config: { variable: "{variable}", stem: "Expand: {m}({variable} + {n})." } }

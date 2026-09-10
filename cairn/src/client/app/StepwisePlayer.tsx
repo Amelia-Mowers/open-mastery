@@ -18,7 +18,7 @@ import { VoiceControl, VoiceGenSpinner } from '../tts/VoiceToggle'
 import type { Explanation, TimelineStep, StepExpect } from '@openmastery/schema'
 import { diagnose, gradeAnswer, type AnswerSpec } from '../../core/graders'
 import { createLessonWidget } from './LessonPlayer'
-import { renderText, type Params } from './render'
+import { glueMath, renderText, type Params } from './render'
 import { OpEntry, type OpMove } from '../widgets/op-entry'
 import { SmoothHeight } from './SmoothHeight'
 
@@ -449,7 +449,7 @@ export function StepwisePlayer({
         className={shownWidget ? 'lesson-caption lesson-caption-under' : 'lesson-caption'}
         data-testid="stepwise-caption"
       >
-        {view.caption}
+        {glueMath(view.caption)}
       </p>
       <SpeakLine caption={view.caption} prompt={waitingOn !== null ? gatePrompt(waitingOn) : ''} live={started && !inert} />
       <VoiceGenSpinner />
@@ -515,7 +515,7 @@ export function StepwisePlayer({
             </div>
           ) : (
           <div className="stepwise-gate-content" key={`gate-${applied}`} ref={gateRef}>
-          <p className="stepwise-prompt">{gatePrompt(waitingOn)}</p>
+          <p className="stepwise-prompt">{glueMath(gatePrompt(waitingOn))}</p>
           {waitingOn.type === 'pick' ? (
             <form
               onSubmit={(e) => {

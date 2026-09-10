@@ -269,6 +269,9 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
             // `labelled` (and the marker) say what has been established.
             const shows = (v: number): boolean =>
               state.labelled === null ||
+              // zero anchors the scale and is never an answer to protect —
+              // a line with no named tick reads as unscaled (batch-5 review)
+              v === 0 ||
               state.labelled.includes(v) ||
               state.marker === v ||
               state.value === v

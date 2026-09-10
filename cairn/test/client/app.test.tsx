@@ -23,7 +23,8 @@ afterAll(async () => {
 })
 
 /** answers for the fixture stems */
-function answerFor(stem: string): string {
+function answerFor(stemIn: string): string {
+  const stem = stemIn.replace(/\u00A0/g, ' ') // display gluing uses NBSP
   let m = /What is (-?\d+) ÷ (-?\d+)\?/.exec(stem)
   if (m) return String(Number(m[1]) / Number(m[2]))
   m = /(?:Solve|Finish solving): (-?\d+)[a-z] = (-?\d+)\./.exec(stem)

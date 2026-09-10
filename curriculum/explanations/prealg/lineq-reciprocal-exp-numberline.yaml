@@ -4,9 +4,9 @@ representation: number-line
 widget: number-line
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{p}/{q}", "{variable}", " = ", "{b}"], min: 0, max: "{max(b, q*b/p)}", step: "{b/p}", labelled: [] }, caption: "{p}/{q} of {variable} — {p} of its {q} equal parts. The line lays the parts out." }
+  - { t: 0, patch: { equation: ["{p}/{q} {variable}", " = ", "{b}"], min: 0, max: "{max(b, q*b/p)}", step: "{b/p}", labelled: [] }, caption: "{p}/{q} of {variable} — {p} of its {q} equal parts. The line lays the parts out." }
   - t: 3.5
-    patch: { eqHighlight: ["0", "1"], marker: "{b}", highlight: ["{b}"], labelled: ["0", "{b}"] }
+    patch: { eqHighlight: ["0"], marker: "{b}", highlight: ["{b}"], labelled: ["0", "{b}"] }
     caption: "{p}/{q} of {variable} is {b} — that is {p} of {variable}'s {q} equal parts."
     expect:
       type: numeric

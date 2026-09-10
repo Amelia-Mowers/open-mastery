@@ -1,6 +1,6 @@
 id: g7.ee.combine.exp-table
 skill: g7.ee.combine
-representation: ratio-table
+representation: input-output-table
 widget: ratio-table
 params_from: item
 timeline:

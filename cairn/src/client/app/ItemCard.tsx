@@ -10,7 +10,7 @@ import { createEnvelopeModel } from '../viz/envelope-model'
 import { StepwisePlayer, hasExpects } from './StepwisePlayer'
 import { SmoothHeight } from './SmoothHeight'
 import { LessonPlayer } from './LessonPlayer'
-import { evalNumber, renderText, type Params } from './render'
+import { evalNumber, glueMath, renderText, type Params } from './render'
 import type { AttemptOutcome, ClientItem, ExplainResult } from './api'
 
 type ServeAction = Extract<NextAction, { kind: 'serve_item' }>
@@ -399,7 +399,7 @@ export function ItemCard({
       </div>
       {stem && (
         <h2 className="stem" data-testid="stem">
-          {stem}
+          {glueMath(stem)}
         </h2>
       )}
       {/* the lead region keeps a stable footprint from FIRST PAINT — nothing

@@ -4,7 +4,7 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a} pounds", " → ", "${b}", ",  1 pound → $?"], parts: "{a}", partLabel: "", total: "${b}", totalIn: false, removed: "others" }, caption: "The cost will cut into equal pieces — one per pound." }
+  - { t: 0, patch: { equation: ["{a} pounds", " → ", "${b}", ",  1 pound → $?"], parts: "{a}", partLabel: "", total: "${b}", totalIn: false, removed: "others" }, caption: "The cost will be cut into equal pieces — one per pound." }
   - t: 4
     patch: { removed: [], eqHighlight: ["0"] }
     caption: "{a} pounds — {a} equal pieces, one pound each."

@@ -1,25 +1,25 @@
 id: g6.ee.write-expression.exp-table
 skill: g6.ee.write-expression
-representation: ratio-table
+representation: input-output-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{p} more than ", "{a} × {variable}", " → ", "?"], cols: ["{variable}", "?"], rows: [["2", "{2*a+p}"], ["5", "{5*a+p}"]], reveal: "0" }, caption: "'{p} more than {a} times a number' works on ANY number. Feed it 2 first." }
+  - { t: 0, patch: { equation: ["{p} more than ", "{a} × {variable}", " → ", "?"], cols: ["{variable}", "what comes out"], rows: [["{p+1}", "{(p+1)*a+p}"], ["{p+3}", "{(p+3)*a+p}"]], reveal: "0" }, caption: "'{p} more than {a} times a number' works on ANY number. Feed it {p+1} first." }
   - t: 4.5
     patch: { eqHighlight: ["1"], reveal: "1", highlight: "1" }
-    caption: "{a}·2 + {p} = {2*a+p}. Now feed it 5."
+    caption: "{a}·{p+1} + {p} = {(p+1)*a+p}. Now feed it {p+3}."
     expect:
       type: numeric
-      value: "{2*a+p}"
-      prompt: "Feed it 2: {a} × 2, then {p} more — what comes out?"
+      value: "{(p+1)*a+p}"
+      prompt: "Feed it {p+1}: {a} × {p+1}, then {p} more — what comes out?"
       hint: "Multiply first, then add the {p}."
   - t: 9
     patch: { eqHighlight: ["0"], reveal: "2", highlight: "2" }
-    caption: "{a}·5 + {p} = {5*a+p}. The same moves every time — times {a}, then + {p}. What expression says that for EVERY {variable}?"
+    caption: "{a}·{p+3} + {p} = {(p+3)*a+p}. The same moves every time — times {a}, then + {p}. What expression says that for EVERY {variable}?"
     expect:
       type: numeric
-      value: "{5*a+p}"
-      prompt: "Feed it 5: {a} × 5, then {p} more — what comes out?"
+      value: "{(p+3)*a+p}"
+      prompt: "Feed it {p+3}: {a} × {p+3}, then {p} more — what comes out?"
       hint: "Same moves, new number."
   - { t: 13, patch: { equation: ["{p} more than ", "{a} × {variable}", " → ", "{a}{variable} + {p}"], eqHighlight: ["3"] }, caption: "Times {a}, then {p} more: {a}{variable} + {p}." }
   - { t: 16, handoff: { prompt: "Now you try." } }

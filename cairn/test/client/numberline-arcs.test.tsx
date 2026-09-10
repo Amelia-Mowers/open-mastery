@@ -15,15 +15,16 @@ describe('number line: jumps are shown, answers are not', () => {
     const labels = () =>
       [...container.querySelectorAll('[data-tick]')].map((el) => el.textContent)
 
-    // before anything: every tick is bare — 20 (the answer) is NOT on screen
+    // before anything: only 0 shows (it anchors the scale and is never
+    // the protected answer) — 20 (the answer) is NOT on screen
     w.applyPatch({ labelled: [] })
     rerender(view())
-    expect(labels().every((t) => t === '')).toBe(true)
+    expect(labels().filter((t) => t !== '')).toEqual(['0'])
 
     // the start is named
     w.applyPatch({ labelled: [8], marker: 8 })
     rerender(view())
-    expect(labels().filter((t) => t !== '')).toEqual(['8'])
+    expect(labels().filter((t) => t !== '')).toEqual(['0', '8'])
 
     // a jump: an arc from 8 to 12 carrying its size, and 12 now shows
     w.applyPatch({ arcs: [{ from: 8, to: 12, label: '+4' }], marker: 12, labelled: [8, 12] })
@@ -42,7 +43,7 @@ describe('number line: jumps are shown, answers are not', () => {
     // the label rides ABOVE the curve, and a head marks the landing
     expect(arc.querySelector('[data-arc-label]')?.textContent).toBe('+4')
     expect(arc.querySelector('[data-arc-head]')).toBeTruthy()
-    expect(labels().filter((t) => t !== '').sort()).toEqual(['12', '8'])
+    expect(labels().filter((t) => t !== '').sort()).toEqual(['0', '12', '8'])
     // and the endpoint 20 is still hidden
     expect(labels()).not.toContain('20')
   })

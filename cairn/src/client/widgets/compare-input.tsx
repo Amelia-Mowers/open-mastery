@@ -125,11 +125,11 @@ export const createCompareInput: WidgetFactory<
         {fields.map((f, i) => (
           <Field key={i} slot={i} text={f.label} disabled={disabled} />
         ))}
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
           <span style={{ minWidth: 180, fontFamily: "'Lora', serif", color: '#2e2822' }}>
             {config.pickLabel ?? 'Which one?'}
           </span>
-          <span role="group" aria-label={config.pickLabel ?? 'Which one?'} style={{ display: 'flex', gap: 6 }}>
+          <span role="group" aria-label={config.pickLabel ?? 'Which one?'} style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
             {options.map((op) => (
               <button
                 key={op.key}

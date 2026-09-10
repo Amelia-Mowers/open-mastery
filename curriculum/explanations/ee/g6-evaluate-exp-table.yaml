@@ -1,6 +1,6 @@
 id: g6.ee.evaluate.exp-table
 skill: g6.ee.evaluate
-representation: ratio-table
+representation: input-output-table
 widget: ratio-table
 params_from: item
 timeline:

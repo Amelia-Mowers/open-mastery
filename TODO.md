@@ -119,6 +119,26 @@ Not K–12 — the middle-school band plus the parent's view:
       during the narration hold (2026-09-10 review, simplify-first
       balance; not reproducible on reload). If seen again: trace which
       click path fires while waitingOn is null and guard it.
+- [ ] Input–output tables should DERIVE, not verify (batch-5 review;
+      needs Mia's ruling per IM-FIRST): equivalent/combine exp-table
+      verify the rewritten expression against rows it never shows —
+      a two-column expression table (original | rewritten) would make
+      "matches for every x" visible, and combine's table never pairs
+      the like terms. Rep record split (input-output-table) is done;
+      the derive redesign is not.
+- [ ] Widget gaps from batch 5: cube/exponents banner can't light base
+      vs exponent separately ("4³" is one segment); 15² draws 15
+      overlapping side labels; multiply-nl step 1 shows an empty line
+      under a caption about parts; reciprocal-nl never draws the {p}
+      parts the division rests on; evaluate-table can't highlight the
+      substituted cell alone.
+- [ ] Item-pool depth: several skills still serve the same item as raw
+      practice AND mastery check (cube/evaluate/exponents .003,
+      unit-rate, reciprocal, divide/multiply tape items) — one
+      check-eligible item per skill. Authoring slab.
+- [ ] Grading consistency: some expr items lack form: evaluated (28/4
+      accepted for x = 7); sign-dropped wrong answers (x=−6 for
+      4(x+3)=−36, 3x − 6) have no hooks.
 - [ ] Per-problem difficulty analytics (enabled by discrete pools):
       (itemId, paramHash) now has repeated observations — aggregate
       per-instance correct rates in the guide view; later IRT-style

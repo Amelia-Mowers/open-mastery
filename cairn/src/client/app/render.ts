@@ -35,6 +35,14 @@ export function renderText(template: string, params: Params): string {
   return r.value.replace(/(^|[\s(=·×÷+,])-(?=[\dA-Za-z])/g, '$1−')
 }
 
+/** DISPLAY-ONLY: glue the spaces inside math runs so a caption never
+ * line-breaks mid-expression on a narrow screen ("3(x +\n2) = 3x + 6").
+ * Never feed the result to speech or graders — the NBSPs would change
+ * corpus keys and confuse parsers. */
+export function glueMath(s: string): string {
+  return s.replace(/([\d)\]a-zA-Z²³?%$]) ([+−=×÷<>]) (?=[\d($a-zA-Z?])/g, '$1\u00A0$2\u00A0')
+}
+
 /** Evaluate a templated patch value ("{b/a}", 7, "3") to a finite number, or
  * null when it doesn't evaluate — the player falls back gracefully. */
 export function evalNumber(v: unknown, params: Params): number | null {
