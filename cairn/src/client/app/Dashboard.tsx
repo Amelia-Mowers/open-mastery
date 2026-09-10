@@ -220,9 +220,9 @@ export function Dashboard({
             className="card skill-peek"
             role="dialog"
             aria-modal="true"
-            aria-label={`About ${pickedSkill.name}`}
+            aria-label={`About ${pickedSkill.short}`}
           >
-            <h2 className="dash-h">{pickedSkill.name}</h2>
+            <h2 className="dash-h">{pickedSkill.short}</h2>
             {pickedSkill.preamble && <p className="peek-plain">{pickedSkill.preamble.plain}</p>}
             {pickedSkill.preamble?.vocab.map((v) => (
               <p key={v.term} className="peek-vocab">
@@ -355,7 +355,7 @@ export function Dashboard({
                     animationDelay: `${idx * 0.06}s`,
                   }}
                 >
-                  <div className="skill-node-name">{s.name}</div>
+                  <div className="skill-node-name">{s.short}</div>
                   <div className="skill-node-phase">{style.label}</div>
                   <div className="node-bar" aria-hidden>
                     <span

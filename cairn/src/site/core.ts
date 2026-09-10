@@ -11,7 +11,7 @@
  * ships to the browser. Demo builds only; real deployments keep this class
  * server-side.
  */
-import { parseTemplate, templateIdentifiers, type Bundle, type Explanation } from '@openmastery/schema'
+import { parseTemplate, renderTemplate, templateIdentifiers, type Bundle, type Env, type Explanation } from '@openmastery/schema'
 import { DAY_MS } from '../core/fsrs.ts'
 import { nextCheckBaseItem } from '../core/select.ts'
 import {
@@ -258,6 +258,22 @@ export class SiteCore {
     return SiteCore.MILESTONE_RANKS.find((r) => pct >= r.min) ?? SiteCore.MILESTONE_RANKS[3]!
   }
 
+  /** The child-facing name for surfaces with no serve in hand (map,
+   * milestones, review toasts): the skill's `short`, rendered with its
+   * first practice item's authored params — shorts may template
+   * {variable}, and the canonical instance is the deterministic choice.
+   * Falls back to the formal name only when no short exists. */
+  private shortName(skillId: string): string {
+    const skill = this.cur.skills.get(skillId)
+    if (!skill) return skillId
+    const short = skill.short
+    if (short === undefined) return skill.name
+    const params = practiceItems(skillId, this.cur)[0]?.params ?? {}
+    const r = renderTemplate(short, params as Env)
+    if (!r.ok) throw new Error(`skill ${skillId} short "${short}" does not render with its first item's params`)
+    return r.value
+  }
+
   /** A held review is its own accomplishment: the student proved a memory
    * survived a gap, and the gap to the NEXT one just grew. FSRS already
    * knows both numbers — say them, so spaced repetition reads as strength
@@ -271,7 +287,7 @@ export class SiteCore {
     if (!sk?.fsrs) return null
     const days = Math.max(1, Math.round((sk.fsrs.due - this.now()) / DAY_MS))
     return {
-      skillName: this.cur.skills.get(skillId)?.name ?? skillId,
+      skillName: this.shortName(skillId),
       days,
       kept: sk.reviewsHeld ?? 1,
     }
@@ -308,7 +324,7 @@ export class SiteCore {
       blurb: rank.blurb,
       pct,
       skillId: leaving,
-      skillName: this.cur.skills.get(leaving)?.name ?? leaving,
+      skillName: this.shortName(leaving),
     }
   }
 
@@ -328,6 +344,9 @@ export class SiteCore {
       skills: this.bundle.skills.map((s) => ({
         id: s.id,
         name: s.name,
+        // the child-facing display name, canonical-instance rendered —
+        // the map shows this; the formal name stays as hover detail
+        short: this.shortName(s.id),
         prereqs: s.prereqs,
         standards: s.standards,
         preamble: s.preamble,

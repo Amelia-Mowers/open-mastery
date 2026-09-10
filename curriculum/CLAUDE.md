@@ -770,10 +770,13 @@ scrubbing back). Author them under the caption rules above:
   stressed word. The headline on screen is the skill name (or the term),
   so the plain line need not repeat it.
 - **`short` is the child-facing skill name** ("Find {variable} when
-  something was added") and headlines the skill beat; `name` stays the
-  formal, standards-derived title (map, guide view, milestones). Every
-  skill has one. Phrase it as what the student DOES, in their words,
-  under ~6 words — a question is fine ("Which is the better deal?").
+  something was added") and headlines the skill beat; it is ALSO what
+  every student-facing surface shows (map nodes, milestones, review
+  toasts — rendered with the skill's canonical first-item params).
+  `name` stays the formal, standards-derived title: the guide view, and
+  hover detail on the map. Every skill has one. Phrase it as what the
+  student DOES, in their words, under ~6 words — a question is fine
+  ("Which is the better deal?").
   It may template `{variable}` — the beat renders it with the served
   instance's own letter, and the corpus enumerator speaks every
   variant.

@@ -179,6 +179,9 @@ export interface BundleView {
   skills: Array<{
     id: string
     name: string
+    /** child-facing display name (the skill's `short`, canonical-instance
+     * rendered); the formal `name` stays as hover detail */
+    short: string
     prereqs: string[]
     standards: string[]
     preamble?: { plain: string; vocab: Array<{ term: string; meaning: string }> }
