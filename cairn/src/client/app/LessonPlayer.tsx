@@ -461,16 +461,23 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
     return {
       element: w.render({ start }, 'lesson'),
       apply: (patch) => {
-        if (!('line' in patch)) return
-        // an array of lines is one emphasis group (a multi-line opening) —
-        // String() would comma-join it into a single mangled line
-        const lv = patch['line']
-        const view: { line?: string | string[]; note?: string } = {
-          line: Array.isArray(lv)
+        const view: { line?: string | string[]; note?: string; mark?: string | string[] | null } = {}
+        if ('line' in patch && patch['line'] != null) {
+          // an array of lines is one emphasis group (a multi-line opening) —
+          // String() would comma-join it into a single mangled line
+          const lv = patch['line']
+          view.line = Array.isArray(lv)
             ? lv.map((t) => renderText(String(t), params))
-            : renderText(String(lv), params),
+            : renderText(String(lv), params)
+          if ('note' in patch && patch['note'] != null)
+            view.note = renderText(String(patch['note']), params)
         }
-        if ('note' in patch && patch['note'] != null) view.note = renderText(String(patch['note']), params)
+        if ('mark' in patch) {
+          const mv = patch['mark']
+          view.mark =
+            mv == null ? null : Array.isArray(mv) ? mv.map((m) => renderText(String(m), params)) : renderText(String(mv), params)
+        }
+        if (view.line === undefined && view.mark === undefined) return
         w.applyPatch(view)
       },
     }

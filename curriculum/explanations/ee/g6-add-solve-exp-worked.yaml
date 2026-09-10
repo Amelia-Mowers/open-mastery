@@ -4,8 +4,8 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{variable} + {p} = {p+d}" }, caption: "On the board: {variable} with {p} added to it. The + {p} is all that stands between {variable} and its value." }
-  - { t: 4, patch: { line: "{variable} + {p} − {p} = {p+d} − {p}", note: "the same move on both sides" }, caption: "− {p} on both sides — that is what undoes the + {p}. The {p}s cancel: what is {variable}?", expect: { type: op, value: "subtract {p}", prompt: "What do you do to BOTH sides to peel the {p} off {variable}?", hint: "{p} is ADDED to {variable}. The opposite of adding {p} is subtracting {p} — and it goes on both sides.", misconceptions: [ { id: added-instead-of-subtracted, when: "add {p}", says: "Adding {p} puts MORE on the left. The {p} is already there — take it away from both sides." } ] } }
-  - { t: 8.5, patch: { line: "{variable} = {d}", note: "{p} − {p} = 0" }, caption: "{variable} = {d}.", expect: { type: expr, value: "{variable} = {d}", prompt: "The {p}s cancel — simplify. What is {variable}?" } }
+  - { t: 0, patch: { start: "{variable} + {p} = {p+d}", mark: "+ {p}" }, caption: "On the board: {variable} with {p} added to it. The + {p} is all that stands between {variable} and its value." }
+  - { t: 4, patch: { line: "{variable} + {p} − {p} = {p+d} − {p}", note: "the same move on both sides", mark: "− {p}" }, caption: "− {p} on both sides — that is what undoes the + {p}. The {p}s cancel: what is {variable}?", expect: { type: op, value: "subtract {p}", prompt: "What do you do to BOTH sides to peel the {p} off {variable}?", hint: "{p} is ADDED to {variable}. The opposite of adding {p} is subtracting {p} — and it goes on both sides.", misconceptions: [ { id: added-instead-of-subtracted, when: "add {p}", says: "Adding {p} puts MORE on the left. The {p} is already there — take it away from both sides." } ] } }
+  - { t: 8.5, patch: { line: "{variable} = {d}", note: "{p} − {p} = 0", mark: null }, caption: "{variable} = {d}.", expect: { type: expr, value: "{variable} = {d}", prompt: "The {p}s cancel — simplify. What is {variable}?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

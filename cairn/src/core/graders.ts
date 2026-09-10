@@ -182,12 +182,25 @@ function gradeOp(spec: AnswerSpec, params: Env, raw: string): Verdict {
   const student = splitMove(raw)
   if (!student) return incorrect('empty')
   if (!OP_WORDS.has(student[0])) return incorrect('unknown operation')
-  if (student[0] !== key[0]) return incorrect()
   const expected = evalClosed(key[1])
   if (!expected) throw new AnswerKeyError('answer key operand does not evaluate')
   const got = evalClosed(student[1])
   if (!got) return incorrect('operand is not a number')
-  return ratEq(got, expected) ? correct : incorrect()
+  if (student[0] === key[0]) return ratEq(got, expected) ? correct : incorrect()
+  // the inverse phrasing of the same move is the same mathematics:
+  // multiplying by k IS dividing by 1/k, adding k IS subtracting −k —
+  // a gate keyed "multiply 3/2" must accept "divide 2/3"
+  const pair = (a: string, b: string): boolean =>
+    (key[0] === a && student[0] === b) || (key[0] === b && student[0] === a)
+  if (pair('multiply', 'divide') && expected.n !== 0n) {
+    const recip = rat(expected.d, expected.n)
+    if (recip !== null && ratEq(got, recip)) return correct
+  }
+  if (pair('add', 'subtract')) {
+    const neg = rat(-expected.n, expected.d)
+    if (neg !== null && ratEq(got, neg)) return correct
+  }
+  return incorrect()
 }
 
 const asOne = (raw: string | string[]): string => (Array.isArray(raw) ? raw.join(',') : raw)

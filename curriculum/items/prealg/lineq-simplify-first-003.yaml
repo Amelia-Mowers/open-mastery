@@ -1,0 +1,32 @@
+id: prealg.lineq.simplify-first.003
+skills: [prealg.lineq.simplify-first]
+difficulty: 3
+# disjoint identifiers (k*, e1): a FOUR-term left side is a different
+# form than the three-term family the explanations teach, so this item
+# must never feed their timelines (identifier-discipline rule)
+params: { k1: 15, k2: 11, k3: 4, k4: 6, e1: 7, ans: 3, variable: m }
+generator:
+  k1: { int: [12, 19] }
+  k2: { int: [8, 15] }
+  k3: { int: [2, 7] }
+  k4: { int: [2, 6] }
+  e1: { int: [2, 9] }
+  ans: { int: [2, 6] }
+widget:
+  type: equation-input
+  config:
+    stem: "Solve: {k1}{variable} − {k3}{variable} + {k2}{variable} − {k4}{variable} = {e1} + {(k1+k2-k3-k4)*ans - e1}."
+answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, form: evaluated, integer: true }
+misconceptions:
+  - id: dropped-a-like-term
+    when: "{((k1+k2-k3-k4)*ans)/(k1+k2-k3)}"
+    says: "That misses the −{k4}{variable} — ALL four are {variable}-terms. {k1} − {k3} + {k2} − {k4} = {k1+k2-k3-k4}."
+  - id: added-the-variable-terms
+    when: "{((k1+k2-k3-k4)*ans)/(k1+k2+k3+k4)}"
+    says: "The −{k3}{variable} and −{k4}{variable} are taken away, so the {variable}-terms give {k1+k2-k3-k4}, not {k1+k2+k3+k4}."
+hints:
+  - "Four {variable}-terms — gather them all: {k1} − {k3} + {k2} − {k4}."
+  - "{k1+k2-k3-k4}{variable} = {(k1+k2-k3-k4)*ans}, then divide."
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+verify: "{k1*answer - k3*answer + k2*answer - k4*answer == e1 + ((k1+k2-k3-k4)*ans - e1)}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-10 }

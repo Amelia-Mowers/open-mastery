@@ -2,7 +2,7 @@ id: prealg.lineq.divide
 name: Solve ax = b using the Division Property of Equality
 short: "Find {variable} when it was multiplied"
 preamble:
-  plain: "Here the hidden number was multiplied, and we only see the result. To find it, we divide both sides by that same number — and x is left on its own."
+  plain: "Here the hidden number was multiplied, and we only see the result. To find it, we divide both sides by that same number — and the hidden number is left on its own."
   vocab:
     - { term: equation, meaning: "A math sentence saying two things are equal." }
     - { term: Division Property of Equality, meaning: "If you divide both sides of an equation by the same number, it stays true." }

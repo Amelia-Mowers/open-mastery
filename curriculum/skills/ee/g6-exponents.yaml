@@ -4,7 +4,7 @@ short: "Powers: a number times itself"
 preamble:
   plain: "Sometimes a number is multiplied by itself, and we write that with a small raised number. That little number is a count — it tells you how many times the big number gets used as a factor."
   vocab:
-    - { term: exponent, meaning: "The small raised number that tells you how many times to use the base as a factor." }
+    - { term: exponent, meaning: "The small raised number that counts how many times the big number is used as a factor." }
 standards: [CCSS.MATH.CONTENT.6.EE.A.1]
 source: { book: ccss-ee-progression, section: "6.EE.A.1" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

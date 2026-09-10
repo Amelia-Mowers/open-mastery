@@ -13,6 +13,9 @@ misconceptions:
   - id: used-p-as-the-coefficient
     when: "{p}{variable} + {a}"
     says: "{a} is what the number is multiplied BY; {p} is what gets added on. They are swapped here."
+  - id: added-then-attached-the-letter
+    when: "{a+p}{variable}"
+    says: "{a+p}{variable} adds the {a} and the {p} first — but only the {a} multiplies the number. The {p} stands apart: {a}{variable} + {p}."
 hints:
   - "{a} times the number is {a}{variable}."
   - "The sum adds the {p} on after: {a}{variable} + {p}."

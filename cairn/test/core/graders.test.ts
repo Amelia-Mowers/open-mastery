@@ -98,6 +98,21 @@ describe('set / ordered / choice graders', () => {
     expect(v(div, 'divide 7')).toBe('correct')
     expect(v(div, 'divide 14/2')).toBe('correct')
   })
+  it('op accepts the inverse phrasing of the same move', () => {
+    // multiply by k IS divide by 1/k — a gate keyed "multiply 3/2" must
+    // accept "divide 2/3" (its own hint says dividing first works)
+    const recip: AnswerSpec = { type: 'op', value: 'multiply 3/2' } as AnswerSpec
+    expect(v(recip, 'divide 2/3')).toBe('correct')
+    expect(v(recip, 'divide 3/2')).toBe('incorrect')
+    expect(v(recip, 'multiply 2/3')).toBe('incorrect')
+    const div: AnswerSpec = { type: 'op', value: 'divide {a}' } as AnswerSpec
+    expect(v(div, 'multiply 1/7')).toBe('correct')
+    expect(v(div, 'multiply 7')).toBe('incorrect')
+    // add k IS subtract −k
+    const sub: AnswerSpec = { type: 'op', value: 'subtract {b}' } as AnswerSpec
+    expect(v(sub, 'add -21')).toBe('correct')
+    expect(v(sub, 'add 21')).toBe('incorrect')
+  })
 })
 
 describe('form guards (echo-proofing symbolic equivalence)', () => {

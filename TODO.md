@@ -115,6 +115,10 @@ Not K–12 — the middle-school band plus the parent's view:
       curriculum/CLAUDE.md says to PREFER `isomorphs:` when difficulty
       matters — following the doc silently exempts an item from checks.
       Either make curated pools check-eligible or fix the doc.
+- [ ] Stepwise lead reported blank once after clicking equation chips
+      during the narration hold (2026-09-10 review, simplify-first
+      balance; not reproducible on reload). If seen again: trace which
+      click path fires while waitingOn is null and guard it.
 - [ ] Per-problem difficulty analytics (enabled by discrete pools):
       (itemId, paramHash) now has repeated observations — aggregate
       per-instance correct rates in the guide view; later IRT-style

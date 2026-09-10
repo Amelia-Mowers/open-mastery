@@ -23,16 +23,48 @@ export interface WorkedEquationView {
   line?: string | string[]
   /** operation annotation for that line, e.g. "multiply both sides by -1" */
   note?: string
+  /** light these substrings wherever they appear on the board — the
+   * piece the caption is naming ("− 34", "³", a variable). Recolor
+   * only, so the board never shifts; null/[] clears. */
+  mark?: string | string[] | null
 }
 
-type WorkedState = { lines: Array<{ text: string; note?: string }>; next: string }
+type WorkedState = { lines: Array<{ text: string; note?: string }>; next: string; marks: string[] }
+
+/** split a line around every occurrence of every mark, longest-first so
+ * "− 34" wins over "3" */
+function markedSpans(text: string, marks: string[]): Array<{ t: string; hit: boolean }> {
+  const ms = [...marks].filter((m) => m !== '').sort((a, b) => b.length - a.length)
+  if (ms.length === 0) return [{ t: text, hit: false }]
+  const out: Array<{ t: string; hit: boolean }> = []
+  let rest = text
+  while (rest !== '') {
+    let at = -1
+    let hit = ''
+    for (const m of ms) {
+      const i = rest.indexOf(m)
+      if (i !== -1 && (at === -1 || i < at)) {
+        at = i
+        hit = m
+      }
+    }
+    if (at === -1) {
+      out.push({ t: rest, hit: false })
+      break
+    }
+    if (at > 0) out.push({ t: rest.slice(0, at), hit: false })
+    out.push({ t: hit, hit: true })
+    rest = rest.slice(at + hit.length)
+  }
+  return out
+}
 
 const label = (p: WorkedEquationParams): string => `Worked solution starting from ${p.start}`
 
 export function createWorkedEquation(
   config: WorkedEquationConfig = {},
 ): WidgetInstance<WorkedEquationParams, { raw: string } | null, WorkedEquationView> {
-  const store = new WidgetStore<WorkedState>({ lines: [], next: '' })
+  const store = new WidgetStore<WorkedState>({ lines: [], next: '', marks: [] })
 
   function View({ params, mode }: { params: WorkedEquationParams; mode: WidgetMode }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
@@ -89,7 +121,19 @@ export function createWorkedEquation(
                   transition: 'color 0.3s ease, font-size 0.3s ease',
                 }}
               >
-                {l.text}
+                {markedSpans(l.text, state.marks).map((seg, j) =>
+                  seg.hit ? (
+                    <span
+                      key={j}
+                      data-marked
+                      style={{ color: '#b05f28', background: '#f7e6d4', borderRadius: 6 }}
+                    >
+                      {seg.t}
+                    </span>
+                  ) : (
+                    <span key={j}>{seg.t}</span>
+                  ),
+                )}
               </div>
             </div>
           )
@@ -156,6 +200,10 @@ export function createWorkedEquation(
             : { text: String(t) },
         )
         store.setState({ lines: [...store.getState().lines, ...entries] })
+      }
+      if (patch.mark !== undefined) {
+        const mv = patch.mark
+        store.setState({ marks: mv == null ? [] : Array.isArray(mv) ? mv.map(String) : [String(mv)] })
       }
     },
     a11y: { role: 'img', label },

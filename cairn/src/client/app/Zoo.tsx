@@ -161,9 +161,26 @@ function TrinityCards({ demo }: { demo: ZooDemo }) {
     </section>
   ) : null
   if (noItem && !stepwise) return debtNote
+  // mirror the engine: a move-entry item (answer type op) is NEVER
+  // scaffolded — the lead would solve the problem, performing the very
+  // move the box grades. Show why the stage is absent instead of a trap.
+  const moveEntry = item?.answer?.type === 'op'
   return (
     <>
-      {truncated && (stepwise || !noItem) && (
+      {truncated && moveEntry && (
+        <section className="card zoo-card">
+          <div className="card-kicker">
+            <span className="kicker">3 · SCAFFOLDED PRACTICE — NEVER SERVED FOR THIS ITEM</span>
+            <span className="mono-chip">{item.id}</span>
+          </div>
+          <p className="zoo-note">
+            This item asks for the FIRST MOVE, so the engine always serves it raw: a lead
+            would play the whole solve and perform the answer (engine.ts, op answers are
+            never scaffolded).
+          </p>
+        </section>
+      )}
+      {truncated && !moveEntry && (stepwise || !noItem) && (
         <section className="card zoo-card">
           <div className="card-kicker">
             <span className="kicker">

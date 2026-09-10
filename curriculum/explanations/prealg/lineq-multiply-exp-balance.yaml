@@ -4,9 +4,9 @@ representation: balance-scale
 widget: balance-scale
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", "/{a}", " = ", "{b}"], left: "{variable}/{a}", right: "{b}", leftIn: false, rightIn: false }, caption: "Two sides claimed equal — the scale weighs {variable}/{a} against {b}." }
-  - { t: 4, patch: { eqHighlight: ["0", "1"], leftIn: true, highlight: left }, caption: "{variable}/{a} — just one of {variable}'s {a} equal parts — sits on the left pan.", expect: { type: pick, value: ["0", "1"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
-  - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "= {b} says both sides weigh the SAME — {b} on the right pan, and the scale balances.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
+  - { t: 0, patch: { equation: ["{variable}/{a}", " = ", "{b}"], left: "{variable}/{a}", right: "{b}", leftIn: false, rightIn: false }, caption: "Two sides claimed equal — the scale weighs {variable}/{a} against {b}." }
+  - { t: 4, patch: { eqHighlight: ["0"], leftIn: true, highlight: left }, caption: "{variable}/{a} — just one of {variable}'s {a} equal parts — sits on the left pan.", expect: { type: pick, value: ["0"], prompt: "Which piece — or pieces — of the equation go on the LEFT pan?" } }
+  - { t: 8, patch: { eqHighlight: ["2"], rightIn: true, highlight: right }, caption: "= {b} says both sides weigh the SAME — {b} on the right pan, and the scale balances.", expect: { type: pick, value: ["2"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: left }, caption: "The pan holds {variable} divided by {a} — only one {a}th of the unknown is weighing in." }
   - t: 15.5
     patch: { op: multiply, by: "{a}", highlight: null }

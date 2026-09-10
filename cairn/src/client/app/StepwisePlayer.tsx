@@ -379,7 +379,9 @@ export function StepwisePlayer({
     const hint =
       waitingOn.hint !== undefined
         ? renderText(waitingOn.hint, params)
-        : 'Look at the equation and try again.'
+        : // neutral: not every gate sits under an equation (word-phrase
+          // boards, tables, tape diagrams)
+          'Take another look and try again.'
     setFeedback(
       tries === 0
         ? `${missLead} ${hint}`

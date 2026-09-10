@@ -13,6 +13,9 @@ misconceptions:
   - id: subtracted-the-numbers-wrong
     when: "{a-c}{variable} - {b-d}"
     says: "Both numbers are being subtracted, so together they take away {b} + {d} = {b+d}."
+  - id: flipped-the-constant-sign
+    when: "{a-c}{variable} + {b+d}"
+    says: "Both plain numbers are SUBTRACTED, so together they make −{b+d} — the minus stays with them: {a-c}{variable} − {b+d}."
 hints:
   - "Gather the {variable}-terms; the numbers are BOTH subtracted."
   - "{a}{variable} − {c}{variable} = {a-c}{variable}, and −{b} − {d} = −{b+d}."

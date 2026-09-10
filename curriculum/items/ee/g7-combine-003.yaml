@@ -13,6 +13,9 @@ misconceptions:
   - id: combined-unlike-terms
     when: "{a-c+b+d}"
     says: "{variable}-terms and plain numbers can't merge — {variable} is an unknown amount. Combine each kind separately."
+  - id: swept-the-numbers-into-the-letter
+    when: "{a-c+b+d}{variable}"
+    says: "The plain numbers {b} and {d} have no {variable} on them — they combine on their own, apart from the letter: {a-c}{variable} + {b+d}."
 hints:
   - "Gather the {variable}-terms and the plain numbers separately."
   - "{a}{variable} − {c}{variable} = {a-c}{variable}, and {b} + {d} = {b+d}."

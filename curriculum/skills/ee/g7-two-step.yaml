@@ -2,7 +2,7 @@ id: g7.ee.two-step
 name: Solve two-step equations px + q = r
 short: "Two moves to find {variable}"
 preamble:
-  plain: "Here x is hiding behind two operations: a multiply and an add. We peel them off in reverse — undo the add first, then the multiply — and the equation stays true the whole way."
+  plain: "Here the hidden number is behind two operations: a multiply and an add. We peel them off in reverse — undo the add first, then the multiply — and the equation stays true the whole way."
   vocab:
     - { term: two-step equation, meaning: "An equation that needs two undo moves — the letter was multiplied by something, and then something more was added." }
 standards: [CCSS.MATH.CONTENT.7.EE.B.4.A]
