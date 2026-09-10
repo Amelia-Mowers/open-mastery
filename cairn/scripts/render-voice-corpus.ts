@@ -47,7 +47,7 @@ if (process.env.REMOTE === '1') {
   // a partial render pushed with MANIFEST=0 has files the manifest does
   // not name yet — the repo listing is the truth of what exists
   const files = new Set<string>()
-  for await (const f of listFiles({ repo: { type: 'dataset', name: 'AmeliaMowers/cairn-voice' } }))
+  for await (const f of listFiles({ repo: { type: 'dataset', name: 'AmeliaMowers/cairn-voice' }, recursive: true }))
     files.add(f.path)
   for (const s of all) if (files.has(fileOf(s))) remote.add(s)
   console.log(`published corpus: ${remote.size} sentences (${files.size} files)`)

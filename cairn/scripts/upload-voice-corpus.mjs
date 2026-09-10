@@ -42,7 +42,8 @@ try {
 // .ogg files the local corpus no longer contains (a re-enumeration —
 // e.g. sentence-level → snippet-level — orphans every old name).
 const have = new Set()
-for await (const f of listFiles({ repo, accessToken: token })) have.add(f.path)
+// recursive: the corpus is sharded into 2-hex-prefix directories
+for await (const f of listFiles({ repo, accessToken: token, recursive: true })) have.add(f.path)
 
 // recursive: the corpus is sharded into 2-hex-prefix directories
 const local = readdirSync(dir, { recursive: true })
