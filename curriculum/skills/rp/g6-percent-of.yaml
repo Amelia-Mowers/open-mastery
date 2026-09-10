@@ -2,7 +2,7 @@ id: g6.rp.percent-of
 name: Find a percent of a quantity
 short: "Find a percent of a number"
 preamble:
-  plain: "Percent means out of every 100. To find 35% of 60, we treat 60 as the whole 100% — and find the part that lines up with 35."
+  plain: "Percent means out of every 100. A friendly percent is really a fraction — 25% is a quarter, 50% is a half — so to find that percent of a number, we take that fraction of it."
   vocab:
     - { term: percent, meaning: "Out of every 100 — 35% means 35 out of every 100." }
 standards: [CCSS.MATH.CONTENT.6.RP.A.3.C]

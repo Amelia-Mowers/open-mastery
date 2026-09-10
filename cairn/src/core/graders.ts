@@ -231,13 +231,20 @@ function gradeNumeric(spec: AnswerSpec, params: Env, raw: string): Verdict {
   if (!expected) throw new AnswerKeyError('answer key does not evaluate')
   let s = raw.trim().toLowerCase()
   if (s === '') return incorrect('empty')
+  // a student who writes the unit is being MORE careful, not less:
+  // "$28", "28%", "4 mph", "7 per pound" all state the number plainly
+  s = s.replace(/^\$\s*/, '').replace(/\s*%$/, '')
   if (spec.units) {
     const unit = spec.units.toLowerCase()
     if (s.endsWith(unit)) s = s.slice(0, -unit.length).trim()
     else if (/[a-z]/.test(s)) return incorrect('wrong or unknown units')
     // a bare number is accepted as being in the item's units
   } else if (/[a-z]/.test(s)) {
-    return incorrect('not a number')
+    // a trailing unit PHRASE (whitespace, then words — "mph", "miles per
+    // hour") is fine; letters glued to the number ("3x") are not
+    const m = /^([^a-z]+?)\s+[a-z][a-z\s/.]*$/.exec(s)
+    if (!m) return incorrect('not a number')
+    s = m[1]!.trim()
   }
   const student = evalClosed(s)
   if (!student) return incorrect('not a number')

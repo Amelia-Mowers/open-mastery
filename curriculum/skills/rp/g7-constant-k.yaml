@@ -1,10 +1,10 @@
 id: g7.rp.constant-k
 name: Find the constant of proportionality
-short: "Find the number that links x and y"
+short: "Find k, the constant of proportionality"
 preamble:
-  plain: "In a proportional relationship, y divided by x gives the same number every single time. That number — the unit rate — is called k, the constant of proportionality."
+  plain: "In a proportional relationship, y divided by x gives the same number every single time. That number is called k, the constant of proportionality."
   vocab:
-    - { term: proportional, meaning: "Two quantities where one is always the same multiple of the other." }
+    - { term: proportional, meaning: "y divided by x gives the same number for every pair." }
     - { term: constant of proportionality, meaning: "The number k that every x is multiplied by to get y." }
 standards: [CCSS.MATH.CONTENT.7.RP.A.2.B]
 source: { book: ccss-rp-progression, section: "7.RP.A.2b" }

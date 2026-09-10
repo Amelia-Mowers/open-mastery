@@ -85,6 +85,18 @@ describe('set / ordered / choice graders', () => {
     expect(v(spec, 'b')).toBe('correct')
     expect(v(spec, 'a')).toBe('incorrect')
   })
+  it('numeric accepts the number dressed in its unit', () => {
+    const spec: AnswerSpec = { type: 'numeric', value: '{a}' } as AnswerSpec // 7
+    expect(v(spec, '$7')).toBe('correct')
+    expect(v(spec, '7 mph')).toBe('correct')
+    expect(v(spec, '7 miles per hour')).toBe('correct')
+    expect(v(spec, '7%')).toBe('correct')
+    expect(v(spec, '$7 per pound')).toBe('correct')
+    expect(v(spec, '7x')).toBe('incorrect') // glued letters are not a unit
+    expect(v(spec, 'seven')).toBe('incorrect')
+    expect(v(spec, '$8')).toBe('incorrect')
+  })
+
   it('op grades the move word exactly and the operand numerically', () => {
     const spec: AnswerSpec = { type: 'op', value: 'subtract {b}' } as AnswerSpec
     expect(v(spec, 'subtract 21')).toBe('correct')

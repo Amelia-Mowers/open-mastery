@@ -9,7 +9,7 @@ answer: { type: expr, value: "{variable} = {d}", equivalence: symbolic, form: ev
 misconceptions:
   - id: added-instead-of-subtracted
     when: "{2*p+d}"
-    says: "That's {p+d} PLUS {p}. The {p} is already on the left — to peel it off, take it AWAY from both sides."
+    says: "That's {p+d} PLUS {p}. The {p} is already part of the {p+d} — take it away to leave {variable} on its own."
 hints:
   - "What operation undoes adding {p}?"
   - "Subtract {p} from both sides."

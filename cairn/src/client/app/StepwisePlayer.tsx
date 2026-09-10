@@ -119,6 +119,11 @@ export function StepwisePlayer({
     () => explanation.timeline.filter((st) => st.patch !== undefined || st.caption !== undefined),
     [explanation],
   )
+  // 'both sides' is equation/scale language; a tape, line or table has
+  // no sides, and a gate on ONE quantity can opt out (sides: false) —
+  // the chrome must not contradict the prompt (batch-4 review)
+  const repHasSides =
+    explanation.widget === 'balance-scale' || explanation.widget === 'worked-equation'
 
   // optimistic voice: prefetch every caption and gate question this
   // lead will show, so speech starts WITH each step
@@ -164,6 +169,7 @@ export function StepwisePlayer({
   /** gates still to come (incl. the active one): the panel stays mounted and
    * tweens between its contents instead of closing and reopening */
   const gatesAhead = steps.slice(applied).some((st) => st.expect !== undefined)
+  const gateSides = repHasSides && waitingOn?.sides !== false
 
   const engage = () => {
     if (engagedNotified.current) return
@@ -564,8 +570,9 @@ export function StepwisePlayer({
                 move={move}
                 disabled={false}
                 onChange={setMove}
-                ariaLabel="Operation to apply to both sides"
+                ariaLabel={gateSides ? 'Operation to apply to both sides' : 'Operation to apply'}
                 nudge={nudge}
+                suffix={gateSides ? 'both sides' : ''}
               />
               <div className="answer-row" style={{ justifyContent: 'center' }}>
                 <button

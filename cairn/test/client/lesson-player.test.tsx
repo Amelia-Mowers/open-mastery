@@ -161,6 +161,39 @@ describe('explanation player', () => {
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Both sides are balanced.')
   })
 
+  it('a multi-line opening applies ONCE on a first lesson (the intro carries t0)', () => {
+    // the first intro beat carries timeline[0]'s patch; the content copy
+    // must shed it — appending patches (a worked board's line array)
+    // otherwise apply twice and the opening doubles (batch-4 review)
+    const workedExp = explanationSchema.parse({
+      id: 'alg1.linear.solve-one-step.exp-worked-multiline',
+      skill: 'alg1.linear.solve-one-step',
+      representation: 'worked-equation',
+      widget: 'worked-equation',
+      params_from: 'item',
+      timeline: [
+        { t: 0, patch: { start: '{a}{variable} = {b}', line: ['{a} pounds → ${b}', '1 pound → $?'] }, caption: 'The problem.' },
+        { t: 4, patch: { line: '{variable} = {b/a}' }, caption: 'Solved.' },
+        { t: 6, handoff: { prompt: 'Now you try.' } },
+      ],
+      review: { status: 'vetted' },
+    })
+    const { container } = render(
+      <LessonPlayer
+        explanation={workedExp}
+        params={P}
+        kind="lesson"
+        intro={{ ...INTRO, playSkill: true, playRep: true }}
+        onDone={() => {}}
+      />,
+    )
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // skill → vocab
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // vocab → problem/rep
+    goToStep(1, 2) // land on the opening frame
+    // start line + the two problem lines — each exactly once
+    expect(container.querySelectorAll('[data-line]')).toHaveLength(3)
+  })
+
   it('beats that are not due stay on the track, skipped: the lesson starts at its first frame', () => {
     const { container } = render(
       <LessonPlayer
@@ -229,7 +262,7 @@ describe('explanation player', () => {
     expect(beats[0]!.speak).toBe('New skill: Find y. A number is hiding.')
     expect(beats.map((b) => b.manual)).toEqual([true, true, false, false])
     expect(beats[1]!.caption).toBe('three equal factors.')
-    expect(beats[2]!.speak).toBe("Here's how it works on a problem like x + 8 = 21.")
+    expect(beats[2]!.speak).toBe("Here's how it works with x + 8 = 21.")
     // no skill intro ⇒ no problem bridge either (it is the skill's, not the rep's)
     expect(
       introBeats({ skillName: 'Find x', problem: 'x + 8 = 21', rep: { name: 'tape', intro: 'Tape.' }, playSkill: false, playRep: true }, {}).map((b) => b.kind),

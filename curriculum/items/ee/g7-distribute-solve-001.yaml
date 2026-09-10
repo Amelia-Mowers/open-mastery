@@ -10,6 +10,9 @@ misconceptions:
   - id: forgot-to-distribute
     when: "{a*(ans+b)-b}"
     says: "The {b} is inside the parentheses, so it is multiplied by {a} too. Divide both sides by {a} first, or distribute before subtracting."
+  - id: forgot-the-subtraction
+    when: "{ans+b}"
+    says: "{ans+b} is what {variable} + {b} comes to — the divide by {a} is done, but the {b} is still added on. Subtract {b} from both sides to finish."
 hints:
   - "Divide both sides by {a} first: {variable} + {b} = {ans+b}."
   - "Now subtract {b}: {variable} = {ans}."

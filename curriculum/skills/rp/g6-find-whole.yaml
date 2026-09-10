@@ -2,7 +2,7 @@ id: g6.rp.find-whole
 name: Find the whole when a part and its percent are known
 short: "Find the whole from a percent"
 preamble:
-  plain: "20% of some number is 24 — so what is the number? We work backwards: once we know what a small percent is worth, we can build up to the whole 100%."
+  plain: "20% of some number is 24 — so what is the number? We work backwards: once we know what one part is worth, we can build up to the whole 100%."
   vocab:
     - { term: the whole, meaning: "The full amount — what 100% stands for." }
 standards: [CCSS.MATH.CONTENT.6.RP.A.3.C]

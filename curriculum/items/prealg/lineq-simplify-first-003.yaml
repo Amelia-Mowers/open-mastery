@@ -24,6 +24,9 @@ misconceptions:
   - id: added-the-variable-terms
     when: "{((k1+k2-k3-k4)*ans)/(k1+k2+k3+k4)}"
     says: "The −{k3}{variable} and −{k4}{variable} are taken away, so the {variable}-terms give {k1+k2-k3-k4}, not {k1+k2+k3+k4}."
+  - id: forgot-to-divide
+    when: "{(k1+k2-k3-k4)*ans}"
+    says: "{(k1+k2-k3-k4)*ans} is the tidied right side — but that equals {k1+k2-k3-k4}{variable}, not {variable}. One more step: divide by {k1+k2-k3-k4}."
 hints:
   - "Four {variable}-terms — gather them all: {k1} − {k3} + {k2} − {k4}."
   - "{k1+k2-k3-k4}{variable} = {(k1+k2-k3-k4)*ans}, then divide."

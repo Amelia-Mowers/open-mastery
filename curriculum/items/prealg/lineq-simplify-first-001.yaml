@@ -18,6 +18,9 @@ misconceptions:
   - id: divided-before-combining
     when: "{((c1+c2-c3)*ans)/c1}"
     says: "There are three {variable}-terms — combine them into {c1+c2-c3}{variable} FIRST, then divide by that."
+  - id: forgot-to-divide
+    when: "{(c1+c2-c3)*ans}"
+    says: "{(c1+c2-c3)*ans} is the tidied right side — but that equals {c1+c2-c3}{variable}, not {variable}. One more step: divide by {c1+c2-c3}."
 hints:
   - "Combine the like terms on each side first."
   - "The left side becomes {c1+c2-c3}{variable}."

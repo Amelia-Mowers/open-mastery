@@ -63,19 +63,38 @@ interface StudentSlot {
   milestonesShown?: Set<string>
 }
 
-/** Every identifier an explanation timeline's templates reference. */
+/** Every identifier an explanation timeline's templates reference.
+ * Recurses into arrays and objects: a `line: [...]` array or an
+ * `op: { by: "{a}" }` patch value carries templates too — skipping them
+ * let an item missing those identifiers pass as a feeder and blow up
+ * at render time (test-proportional .003 lacked {e}). */
 function timelineIdentifiers(e: Explanation): Set<string> {
   const out = new Set<string>()
   const collect = (src: unknown): void => {
-    if (typeof src !== 'string' || !src.includes('{')) return
-    const p = parseTemplate(src)
-    if (!p.ok) return
-    for (const id of templateIdentifiers(p.value)) out.add(id)
+    if (typeof src === 'string') {
+      if (!src.includes('{')) return
+      const p = parseTemplate(src)
+      if (!p.ok) return
+      for (const id of templateIdentifiers(p.value)) out.add(id)
+      return
+    }
+    if (Array.isArray(src)) {
+      for (const v of src) collect(v)
+      return
+    }
+    if (src !== null && typeof src === 'object') for (const v of Object.values(src)) collect(v)
   }
   for (const step of e.timeline) {
     collect(step.caption)
     collect(step.handoff?.prompt)
-    for (const v of Object.values(step.patch ?? {})) collect(v)
+    collect(step.patch)
+    collect(step.expect?.prompt)
+    collect(step.expect?.hint)
+    collect(step.expect?.value)
+    for (const m of step.expect?.misconceptions ?? []) {
+      collect(m.when)
+      collect(m.says)
+    }
   }
   return out
 }

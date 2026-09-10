@@ -2,7 +2,7 @@
  * another with accent-colored operation notes between them — the way a
  * teacher writes a solution, and the way OpenStax color-codes its worked
  * steps. Timeline patches append lines: { line, note? }. */
-import { useSyncExternalStore } from 'react'
+import { useEffect, useRef, useSyncExternalStore } from 'react'
 import type { WidgetInstance, WidgetMode } from '../widgets/contract'
 import { WidgetStore } from '../widgets/store'
 
@@ -72,6 +72,14 @@ export function createWorkedEquation(
     const lines: Array<{ text: string; note?: string }> = interactive
       ? (config.lines ?? []).map((text) => ({ text }))
       : [{ text: params.start }, ...state.lines]
+    // a long solve (7–11 lines) must not push the caption below the
+    // fold: the board caps its height and stays pinned to the newest
+    // line — earlier working scrolls up out of the frame
+    const scrollRef = useRef<HTMLDivElement | null>(null)
+    useEffect(() => {
+      const el = scrollRef.current
+      if (el) el.scrollTop = el.scrollHeight
+    }, [lines.length])
     return (
       <div
         role="img"
@@ -86,6 +94,7 @@ export function createWorkedEquation(
           boxShadow: '0 2px 0 rgba(92, 74, 56, 0.08)',
         }}
       >
+        <div ref={scrollRef} style={{ maxHeight: 330, overflowY: 'auto' }}>
         {(() => {
           // emphasis groups are delimited by the operation dividers: the
           // CURRENT group is every line since the last note. A multi-line
@@ -139,6 +148,7 @@ export function createWorkedEquation(
           )
         })
         })()}
+        </div>
         {interactive && (
           <div data-next-line>
             <div

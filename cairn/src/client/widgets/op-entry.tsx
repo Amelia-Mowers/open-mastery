@@ -37,11 +37,15 @@ export function OpEntry({
   onChange,
   ariaLabel,
   nudge,
+  suffix = 'both sides',
 }: {
   move: OpMove
   disabled: boolean
   onChange: (move: OpMove) => void
   ariaLabel: string
+  /** the tag after the amount box: 'both sides' belongs to equations and
+   * scales; a tape or a lone quantity has no sides — pass '' to drop it */
+  suffix?: string
   /** pulse incomplete parts after an attempted submit; seq replays it */
   nudge?: { seq: number; parts: ReadonlyArray<'op' | 'by'> }
 }) {
@@ -133,12 +137,14 @@ export function OpEntry({
           width: 136,
         }}
       />
-      <span
-        aria-hidden
-        style={{ font: "700 13px 'Nunito Sans', sans-serif", color: '#8b8070' }}
-      >
-        both sides
-      </span>
+      {suffix !== '' && (
+        <span
+          aria-hidden
+          style={{ font: "700 13px 'Nunito Sans', sans-serif", color: '#8b8070' }}
+        >
+          {suffix}
+        </span>
+      )}
     </div>
   )
 }

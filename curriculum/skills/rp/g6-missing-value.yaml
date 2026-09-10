@@ -4,7 +4,7 @@ short: "Find the missing number in a ratio"
 preamble:
   plain: "3 pounds cost $12 — so what do 7 pounds cost? First we step down to one pound, then multiply up. Two small steps solve any problem like this."
   vocab:
-    - { term: scale up, meaning: "Multiply both quantities of a ratio by the same number." }
+    - { term: scale up, meaning: "Find what ONE is worth, then multiply up to the amount you need." }
 standards: [CCSS.MATH.CONTENT.6.RP.A.3.B]
 source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

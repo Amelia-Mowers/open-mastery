@@ -4,7 +4,7 @@ short: "Which is the better deal?"
 preamble:
   plain: "Two stores sell pencils in different-sized packs. Which is the better deal? We can't compare the packs directly — but we can compare what one pencil costs."
   vocab:
-    - { term: better buy, meaning: "The choice that costs less for the same one thing." }
+    - { term: better buy, meaning: "The choice that costs less for one of the same thing." }
 standards: [CCSS.MATH.CONTENT.6.RP.A.3.B]
 source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

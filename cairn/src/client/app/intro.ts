@@ -67,8 +67,13 @@ export const skillSpeak = (name: string, plain: string): string =>
   `New skill: ${closed(name)} ${closed(plain)}`
 export const vocabSpeak = (v: { term: string; meaning: string }): string =>
   `A term to know: ${closed(v.term)} ${closed(v.meaning)}`
-export const problemSpeak = (equation: string): string =>
-  `Here's how it works on a problem like ${equation}.`
+/** an equation-shaped problem is read into the line; a sentence-shaped
+ * one ("4 pounds cost $28", "is y proportional to x?") reads terribly
+ * inside a template — the board on screen carries it instead. And it is
+ * never "a problem LIKE x + 8 = 21": it IS the walk-through's problem. */
+const equationish = (p: string): boolean => /=/.test(p) && p.length <= 48 && !/[a-z]{3}/i.test(p.replace(/[a-z]\s*=/gi, ''))
+export const problemSpeak = (problem: string): string =>
+  equationish(problem) ? `Here's how it works with ${problem}.` : "Here's how it works."
 export const problemCaption = problemSpeak
 
 /** the lesson's opening equation as one string, from the first step that
@@ -82,10 +87,17 @@ export function problemLine(
     if (Array.isArray(eq)) return eq.map((seg) => renderText(String(seg), params)).join('')
   }
   // the whiteboard family has no equation banner — its problem is the
-  // board's own opening line (`start`, else the first written `line`)
+  // board's own opening frame: the `start` line plus any lines the same
+  // patch writes (a multi-line opening states given AND question)
   for (const st of timeline) {
-    const start = st.patch?.['start'] ?? st.patch?.['line']
-    if (typeof start === 'string') return renderText(start, params)
+    const p = st.patch
+    if (!p) continue
+    const parts: string[] = []
+    if (typeof p['start'] === 'string') parts.push(p['start'])
+    const line = p['line']
+    if (typeof line === 'string') parts.push(line)
+    else if (Array.isArray(line)) for (const l of line) if (typeof l === 'string') parts.push(l)
+    if (parts.length > 0) return parts.map((t) => renderText(t, params)).join(',  ')
   }
   return null
 }

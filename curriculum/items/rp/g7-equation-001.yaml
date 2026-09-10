@@ -10,6 +10,9 @@ misconceptions:
   - id: added-k-instead-of-multiplying
     when: "{k+c}"
     says: "y = {k}x means {k} TIMES x. At x = {c} that is {k}·{c}, not {k} + {c}."
+  - id: added-instead-of-scaling
+    when: "{a*k + c - a}"
+    says: "That adds the {c-a} that x went up. Proportional pairs SCALE by multiplying, not by adding — every y is {k} times its x, so use y = {k}x at x = {c}."
 hints:
   - "First find k: {a*k} ÷ {a} = {k}. The rule is y = {k}x."
   - "Use the rule at x = {c}: y = {k} × {c} = {k*c}."

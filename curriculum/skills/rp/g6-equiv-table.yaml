@@ -2,9 +2,9 @@ id: g6.rp.equiv-table
 name: Make equivalent ratios by scaling both quantities
 short: "Grow a ratio without changing it"
 preamble:
-  plain: "A recipe uses 2 cups for 12 muffins. If we double both numbers, it still tastes the same. Multiplying both parts of a ratio by the same amount keeps it fair."
+  plain: "A recipe pairs two amounts — so many cups for so many muffins. Multiply BOTH amounts by the same number and it is still the same recipe, just a bigger batch. The two ratios are equivalent."
   vocab:
-    - { term: ratio, meaning: "A pair of numbers that go together, like 2 cups for every 12 muffins." }
+    - { term: ratio, meaning: "A pair of numbers that go together, like 3 cups for every 2 cans." }
     - { term: equivalent ratios, meaning: "Two ratios that describe the same relationship." }
 standards: [CCSS.MATH.CONTENT.6.RP.A.3.A]
 source: { book: ccss-rp-progression, section: "6.RP.A.3a" }

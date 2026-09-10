@@ -4,7 +4,7 @@ short: "Multiply out the parentheses"
 preamble:
   plain: "Two expressions can look different and still be worth the same for every number you try. The distributive property lets us open the parentheses — multiply each piece inside by the number in front, and the value never changes."
   vocab:
-    - { term: distributive property, meaning: "a(b + c) equals ab + ac: multiply each part inside the parentheses." }
+    - { term: distributive property, meaning: "3(x + 2) = 3x + 6: multiply each part inside the parentheses." }
     - { term: equivalent expressions, meaning: "Expressions that give the same value for every number you put in." }
 standards: [CCSS.MATH.CONTENT.6.EE.A.3, CCSS.MATH.CONTENT.6.EE.A.4]
 source: { book: ccss-ee-progression, section: "6.EE.A.3" }

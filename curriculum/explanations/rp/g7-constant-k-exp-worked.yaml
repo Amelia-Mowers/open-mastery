@@ -5,7 +5,7 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "y is proportional to x", line: ["when x = {a}, y = {a*k}", "k multiplies x to give y", "k = ?"] }, caption: "The pair we know: x = {a}, y = {a*k}. Hidden inside it: the k that made {a*k} from {a}." }
-  - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "y ÷ x" }, caption: "Dividing y by its own x undoes the × x — what is left is k alone. So what is k?", expect: { type: op, value: "divide {a}", prompt: "The {a*k} is k times {a}. What do you do to the {a*k} to leave k alone?", hint: "k is y ÷ x.", misconceptions: [{ id: multiplied-instead-of-divided, when: "multiply {a}", says: "× {a} is the move that built {a*k} FROM k. To get k back out, undo it: divide." }] } }
-  - { t: 8.5, patch: { line: "k = {k}", note: "so y = {k}x" }, caption: "k = {k} — every x is multiplied by {k}: y = {k}x." }
+  - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "y ÷ x", mark: "{a*k} ÷ {a}" }, caption: "Dividing y by x undoes the × x — what is left is k alone. So what is k?", expect: { type: op, value: "divide {a}", sides: false, prompt: "The {a*k} is k times {a}. What do you do to the {a*k} to leave k alone?", hint: "k is y ÷ x.", misconceptions: [{ id: multiplied-instead-of-divided, when: "multiply {a}", says: "× {a} is the move that built {a*k} FROM k. To get k back out, undo it: divide." }] } }
+  - { t: 8.5, patch: { line: "k = {k}", note: "so y = {k}x", mark: null }, caption: "k = {k} — every x is multiplied by {k}: y = {k}x." }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

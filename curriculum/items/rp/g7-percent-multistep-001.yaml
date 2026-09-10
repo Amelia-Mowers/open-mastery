@@ -10,6 +10,9 @@ misconceptions:
   - id: answered-the-discount
     when: "{p}"
     says: "${p} is the DISCOUNT — what you save. The question asks what you PAY: {n*p} minus the discount."
+  - id: added-the-discount
+    when: "{n*p + p}"
+    says: "That ADDS the ${p} discount onto the price. A discount is money OFF — take the ${p} away from the ${n*p} tag price."
 hints:
   - "{100/n}% off is 1/{n} off: the discount is {n*p} ÷ {n} = ${p}."
   - "Subtract it: {n*p} − {p} = {n*p - p}."

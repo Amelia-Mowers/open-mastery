@@ -9,7 +9,7 @@ answer: { type: expr, value: "{variable} = {p+d}", equivalence: symbolic, form: 
 misconceptions:
   - id: subtracted-instead-of-added
     when: "{d-p}"
-    says: "That's {d} MINUS {p}. The {p} was already taken away — to get {variable} back whole, add {p} to both sides."
+    says: "That's {d} MINUS {p}. The {p} was already taken away — to get {variable} back whole, put the {p} back on."
   - id: answered-the-remainder
     when: "{d}"
     says: "{d} is what was LEFT after the {p} came off. {variable} is the whole amount before that — put the {p} back: {d} + {p}."

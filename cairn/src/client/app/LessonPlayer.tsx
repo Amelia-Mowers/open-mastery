@@ -529,7 +529,17 @@ export function LessonPlayer({
       })),
     [beats, timeline],
   )
-  const steps: Step[] = useMemo(() => [...introSteps, ...timeline], [introSteps, timeline])
+  const steps: Step[] = useMemo(() => {
+    // the first intro beat CARRIES timeline[0]'s patch (the board is set
+    // from the very first beat) — so the content copy must shed it, or
+    // appending patches (a worked board's line array) apply twice and
+    // every multi-line opening doubles on a first lesson
+    if (introSteps.length > 0 && timeline[0]?.patch !== undefined) {
+      const { patch: _carried, ...first } = timeline[0]
+      return [...introSteps, first as Step, ...timeline.slice(1)]
+    }
+    return [...introSteps, ...timeline]
+  }, [introSteps, timeline])
   const startT = beats.length > 0 && (intro?.playSkill || intro?.playRep) ? introSteps[0]!.t : 0
   const handoffStep = steps.find((s) => s.handoff)
   const handoffT = handoffStep?.t ?? steps[steps.length - 1]!.t

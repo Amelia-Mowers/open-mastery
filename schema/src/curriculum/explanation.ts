@@ -24,6 +24,11 @@ export const stepExpectSchema = z
     /** named wrong MOVES at this gate — the same diagnosis standard the
      * items use, applied to a step instead of a final answer */
     misconceptions: z.array(misconceptionSchema).optional(),
+    /** op gates only: the move widget's tag defaults to 'both sides' on
+     * equation/scale boards. A gate operating on ONE quantity ("what do
+     * you do to the $28?") sets sides: false so the chrome cannot
+     * contradict the prompt. */
+    sides: z.boolean().optional(),
   })
   .strict()
 

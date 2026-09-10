@@ -6,7 +6,10 @@ representation: worked-equation
 # ans is negative here, and a rectangle cannot have a negative side —
 # with p/q these params can never feed the area walkthrough, so a
 # "show me how" on this family falls back to the labeled worked example
-params: { p: 4, q: 3, ans: -2, variable: x }
+# ans moved into the generator's own range (was -2): on ans = -2 the two
+# predictable misses collide — {ans+q} = 1 = {p*(ans+q)-q} — so the same
+# typed value was two different errors and diagnosis was ambiguous
+params: { p: 4, q: 3, ans: -12, variable: x }
 generator: { p: { int: [2, 9] }, q: { int: [1, 9] }, ans: { int: [-19, -11] } }
 widget: { type: equation-input, config: { stem: "Solve: {p}({variable} + {q}) = {p*(ans+q)}." } }
 answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, form: evaluated, integer: true }
@@ -14,6 +17,9 @@ misconceptions:
   - id: forgot-to-distribute
     when: "{p*(ans+q)-q}"
     says: "The {q} is inside the parentheses, so it is multiplied by {p} too. Divide both sides by {p} first, or distribute before subtracting."
+  - id: forgot-the-subtraction
+    when: "{ans+q}"
+    says: "{ans+q} is what {variable} + {q} comes to — the divide by {p} is done, but the {q} is still added on. Subtract {q} from both sides to finish."
 hints:
   - "Divide both sides by {p}: {variable} + {q} = {ans+q}."
   - "Subtract {q} — the answer can be negative: {variable} = {ans}."

@@ -1,10 +1,8 @@
 id: g7.rp.unit-rate-frac
 name: Find unit rates from fractions (like 1/2 mile in 1/4 hour)
-short: "Speed from a fraction of an hour"
+short: "A rate from a fraction of an hour"
 preamble:
-  plain: "Half a mile in a quarter of an hour — how fast is that per hour? We stretch the quarter hour up to a whole hour, and stretch the distance along with it."
-  vocab:
-    - { term: complex fraction, meaning: "A fraction divided by a fraction, like (1/2)/(1/4)." }
+  plain: "Sometimes a rate is given for just a fraction of an hour. To find the rate for a full hour, we stretch the fraction of an hour up to a whole hour — and the amount done stretches with it."
 standards: [CCSS.MATH.CONTENT.7.RP.A.1]
 source: { book: ccss-rp-progression, section: "7.RP.A.1" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

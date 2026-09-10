@@ -4,9 +4,9 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}" }, caption: "TWO things are done to {variable}: multiplied by {a}, then {b} added — and the order they come off matters." }
+  - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}", mark: ["{a}{variable}", "+ {b}"] }, caption: "TWO things are done to {variable}: multiplied by {a}, then {b} added — and the order they come off matters." }
   - t: 4
-    patch: { line: "{a}{variable} + {b} − {b} = {a*ans+b} − {b}", note: "the same move on both sides" }
+    patch: { line: "{a}{variable} + {b} − {b} = {a*ans+b} − {b}", note: "the same move on both sides", mark: "− {b}" }
     caption: "The add came LAST, so it comes off FIRST — undo in reverse order."
     expect:
       type: op
@@ -17,15 +17,15 @@ timeline:
         - id: "divided-before-clearing"
           when: "divide {a}"
           says: "Dividing first splits the {b} too. Take the {b} off both sides FIRST, then divide — undo in reverse order."
-  - { t: 8, patch: { line: "{a}{variable} = {a*ans}", note: "the {b}s cancel" }, caption: "The {b}s cancel on the left. One move left: {variable} is still multiplied by {a}.", expect: { type: numeric, value: "{a*ans}", prompt: "The {b}s cancel on the left. What does the RIGHT side come to?", hint: "{a*ans+b} − {b}." } }
+  - { t: 8, patch: { line: "{a}{variable} = {a*ans}", note: "the {b}s cancel", mark: "{a}{variable}" }, caption: "The {b}s cancel on the left. One move remains: {variable} is still multiplied by {a}.", expect: { type: numeric, value: "{a*ans}", prompt: "The {b}s cancel on the left. What does the RIGHT side come to?", hint: "{a*ans+b} − {b}." } }
   - t: 11
-    patch: { line: "{a}{variable} ÷ {a} = {a*ans} ÷ {a}", note: "the same move on both sides" }
+    patch: { line: "{a}{variable} ÷ {a} = {a*ans} ÷ {a}", note: "the same move on both sides", mark: "÷ {a}" }
     caption: "Now undo the multiply — the same move on both sides. So what is {variable}?"
     expect:
       type: op
       value: "divide {a}"
       prompt: "What do you do to BOTH sides now?"
       hint: "{variable} is multiplied by {a}. Dividing both sides by {a} undoes that."
-  - { t: 15, patch: { line: "{variable} = {ans}", note: "the {a}s cancel" }, caption: "{variable} = {ans}." }
+  - { t: 15, patch: { line: "{variable} = {ans}", note: "the {a}s cancel", mark: null }, caption: "{variable} = {ans}." }
   - { t: 17.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

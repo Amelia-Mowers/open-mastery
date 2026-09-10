@@ -5,10 +5,10 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "y is proportional to x", line: ["when x = {a}, y = {a*k}", "y = ? when x = {c}"] }, caption: "On the board: the pair we know, and the question — y when x = {c}." }
-  - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "constant of proportionality" }, caption: "k comes out of the known pair — the number that multiplies every x.", expect: { type: numeric, value: "{k}", prompt: "One pair is known — what is k, its y divided by its x?", hint: "{a*k} ÷ {a}." } }
-  - { t: 6.5, patch: { line: "k = {k}", note: "the constant" }, caption: "k = {k}." }
-  - { t: 8, patch: { line: "y = {k}x", note: "the rule for EVERY x" }, caption: "With k known, one rule covers every x: multiply it by {k}.", expect: { type: expr, value: "y = {k}x", prompt: "With k known, what is the equation linking y and x?" } }
-  - { t: 12, patch: { line: "x = {c} → y = {k} × {c}", note: "use the rule" }, caption: "x = {c} goes through the rule like any other x. So what does y come out to?" }
-  - { t: 16, patch: { line: "y = {k*c}", note: "multiply" }, caption: "y = {k} × {c} = {k*c} — the rule answers x = {c} like every x." }
+  - { t: 4, patch: { line: "k = {a*k} ÷ {a}", note: "constant of proportionality", mark: "{a*k} ÷ {a}" }, caption: "k comes out of the known pair — the number that multiplies every x.", expect: { type: numeric, value: "{k}", prompt: "One pair is known — what is k, its y divided by its x?", hint: "{a*k} ÷ {a}." } }
+  - { t: 6.5, patch: { line: "k = {k}", note: "the constant", mark: null }, caption: "k = {k}." }
+  - { t: 8, patch: { line: "y = {k}x", note: "the rule for EVERY x", mark: "{k}x" }, caption: "With k known, one rule covers every x: multiply it by {k}.", expect: { type: expr, value: "y = {k}x", prompt: "With k known, what is the equation linking y and x?" } }
+  - { t: 12, patch: { line: "x = {c} → y = {k} × {c}", note: "use the rule", mark: "{k} × {c}" }, caption: "x = {c} uses the same rule. So what does y come out to?" }
+  - { t: 16, patch: { line: "y = {k*c}", note: "multiply", mark: null }, caption: "y = {k} × {c} = {k*c} — the rule answers x = {c} like every x." }
   - { t: 18.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

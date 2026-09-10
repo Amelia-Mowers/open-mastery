@@ -1,11 +1,10 @@
 id: g7.rp.percent-multistep
 name: Solve percent problems with a change — discounts and tax
-short: "Discounts and tax"
+short: "Find the sale price"
 preamble:
-  plain: "A $160 game at 25% off takes two steps: find the discount, then take it off the price. Tax works the same way — except we add it on."
+  plain: "When something is on sale, a percent of the price comes off. We find that discount first, then take it away from the price — two steps to the sale price."
   vocab:
     - { term: discount, meaning: "The amount taken off the price." }
-    - { term: sales tax, meaning: "A percent of the price, added on top." }
 standards: [CCSS.MATH.CONTENT.7.RP.A.3]
 source: { book: ccss-rp-progression, section: "7.RP.A.3" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }
