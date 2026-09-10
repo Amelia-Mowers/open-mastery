@@ -403,10 +403,13 @@ class SpeechService {
     try {
       const ctx = this.ensureCtx()
       if (ctx.state === 'suspended') {
-        // the browser gates audio on a user gesture; give resume a beat,
+        // the browser gates audio on a user gesture; wait for resume,
         // then let the lesson move on unvoiced rather than hang on a
-        // context that cannot start until the next click
-        await Promise.race([ctx.resume(), new Promise((r) => setTimeout(r, 250))])
+        // context that cannot start until the next click. The grace must
+        // cover the SESSION'S FIRST resume — the output device opens
+        // lazily and routinely takes longer than 250ms, and giving up
+        // there dropped the first line ever spoken (the NEW SKILL beat)
+        await Promise.race([ctx.resume(), new Promise((r) => setTimeout(r, 2500))])
         if ((ctx.state as string) !== 'running') {
           if (myTurn === this.turn) {
             this.doneKey = key
