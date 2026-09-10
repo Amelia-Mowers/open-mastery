@@ -29,9 +29,9 @@ export interface IntroSpec {
   /** the skill preamble: plain-words explanation + the vocabulary it uses */
   plain?: string | undefined
   vocab?: ReadonlyArray<{ term: string; meaning: string }> | undefined
-  /** the lesson's opening equation, rendered ("x + 8 = 21") — the
-   * problem beat; absent when the timeline has no equation banner */
-  problem?: string | undefined
+  /** the lesson's opening frame, rendered, one string per line — the
+   * problem beat; absent when the timeline shows none */
+  problem?: ReadonlyArray<string> | undefined
   /** the representation's one-sentence introduction */
   rep?: { name: string; intro: string } | undefined
   /** play the skill beats (skill, vocab, problem) now; false: on the
@@ -72,19 +72,23 @@ export const vocabSpeak = (v: { term: string; meaning: string }): string =>
  * inside a template — the board on screen carries it instead. And it is
  * never "a problem LIKE x + 8 = 21": it IS the walk-through's problem. */
 const equationish = (p: string): boolean => /=/.test(p) && p.length <= 48 && !/[a-z]{3}/i.test(p.replace(/[a-z]\s*=/gi, ''))
-export const problemSpeak = (problem: string): string =>
-  equationish(problem) ? `Here's how it works with ${problem}.` : "Here's how it works."
+export const problemSpeak = (frame: ReadonlyArray<string>): string =>
+  frame.length === 1 && equationish(frame[0]!)
+    ? `Here's how it works with ${frame[0]!}.`
+    : "Here's how it works."
 export const problemCaption = problemSpeak
 
-/** the lesson's opening equation as one string, from the first step that
- * sets the banner — null when the timeline never shows one */
-export function problemLine(
+/** the lesson's opening frame as LINES, from the first step that sets
+ * the banner or writes the board — null when the timeline shows none.
+ * Multi-line frames stay lines: joining them ever again is how the
+ * EXAMPLE once rendered 1100px wide and scrolled the whole page. */
+export function problemFrame(
   timeline: ReadonlyArray<{ patch?: Record<string, unknown> | undefined }>,
   params: Params,
-): string | null {
+): string[] | null {
   for (const st of timeline) {
     const eq = st.patch?.['equation']
-    if (Array.isArray(eq)) return eq.map((seg) => renderText(String(seg), params)).join('')
+    if (Array.isArray(eq)) return [eq.map((seg) => renderText(String(seg), params)).join('')]
   }
   // the whiteboard family has no equation banner — its problem is the
   // board's own opening frame: the `start` line plus any lines the same
@@ -97,7 +101,7 @@ export function problemLine(
     const line = p['line']
     if (typeof line === 'string') parts.push(line)
     else if (Array.isArray(line)) for (const l of line) if (typeof l === 'string') parts.push(l)
-    if (parts.length > 0) return parts.map((t) => renderText(t, params)).join(',  ')
+    if (parts.length > 0) return parts.map((t) => renderText(t, params))
   }
   return null
 }
@@ -119,7 +123,7 @@ export function introBeats(spec: IntroSpec, params: Params): IntroBeat[] {
     beats.push({ kind: 'vocab', headline: v.term, caption: closed(v.meaning), speak: vocabSpeak(v), manual: true })
   // the problem bridge belongs to the skill's intro: it only makes sense
   // after "here's the idea", never on its own before a rep beat
-  if (beats.length > 0 && spec.problem !== undefined && spec.problem !== '')
+  if (beats.length > 0 && spec.problem !== undefined && spec.problem.length > 0)
     beats.push({
       kind: 'problem',
       caption: problemCaption(spec.problem),

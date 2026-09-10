@@ -88,7 +88,7 @@ export function createBalanceScale(
           border: `2.5px solid ${highlighted ? '#b05f28' : '#d8cdbb'}`,
           borderRadius: 10,
           padding: '6px 14px',
-          font: "600 clamp(18px, 4.6vw, 26px) 'Lora', Georgia, serif",
+          font: "600 clamp(13px, 4.6vw, 26px) 'Lora', Georgia, serif",
           whiteSpace: 'nowrap',
           boxShadow: '0 2px 0 rgba(92, 74, 56, 0.12)',
           transition: 'border-color 0.25s, top 0.6s ease',

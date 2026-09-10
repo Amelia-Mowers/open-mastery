@@ -5,9 +5,9 @@ widget: worked-equation
 params_from: item
 timeline:
   - { t: 0, patch: { start: "${n*p} at {100/n}% off", mark: "${n*p}" }, caption: "${n*p} on the tag, {100/n}% off — the discount is a fraction of THIS price." }
-  - { t: 4, patch: { line: "discount = {n*p} ÷ {n}", note: "1/{n} of the price", mark: "{n*p} ÷ {n}" }, caption: "{100/n}% of the price means 1/{n} of it — that fraction is the discount, the part that comes off.", expect: { type: numeric, value: "{p}", prompt: "How many dollars is the {100/n}% discount?", hint: "{100/n}% is 1/{n} of the price — {n*p} ÷ {n}." } }
-  - { t: 6.5, patch: { line: "discount = {p}", note: "what you save" }, caption: "The discount is ${p}." }
-  - { t: 8.5, patch: { line: "sale price = {n*p} − {p}", note: "the discount comes off", mark: "− {p}" }, caption: "The discount comes off the full price. So what do you actually pay?" }
-  - { t: 12, patch: { line: "sale price = {n*p - p}", note: "the rest", mark: null }, caption: "${n*p} minus the ${p} discount leaves ${n*p - p} — the price minus the discount is what you pay." }
+  - { t: 4, patch: { line: "discount = ${n*p} ÷ {n}", note: "1/{n} of the price", mark: "${n*p} ÷ {n}" }, caption: "{100/n}% of the price means 1/{n} of it — that fraction is the discount, the part that comes off.", expect: { type: numeric, value: "{p}", prompt: "How many dollars is the {100/n}% discount?", hint: "{100/n}% is 1/{n} of the price — {n*p} ÷ {n}." } }
+  - { t: 6.5, patch: { line: "discount = ${p}", note: "what you save" }, caption: "The discount is ${p}." }
+  - { t: 8.5, patch: { line: "sale price = ${n*p} − ${p}", note: "the discount comes off", mark: "− ${p}" }, caption: "The discount comes off the full price. So what do you actually pay?" }
+  - { t: 12, patch: { line: "sale price = ${n*p - p}", note: "what you pay", mark: null }, caption: "${n*p} minus the ${p} discount leaves ${n*p - p} — the price minus the discount is what you pay." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

@@ -235,14 +235,23 @@ body {
 .lesson-stage {
   min-height: 265px; display: flex; align-items: center; justify-content: center;
 }
+/* a phone does not owe the stage its desktop reserve */
+@media (max-width: 480px) {
+  .lesson-stage { min-height: 200px; }
+}
 .lesson-stage[hidden] { display: none; }
 .intro-continue-row { justify-content: center; margin-top: 14px; }
 /* the skill beat's example problem: labeled, and given air under the
-   headline so the beat reads as headline → example, not one text blob */
+   headline so the beat reads as headline → example, not one text blob.
+   NOTHING here may widen the page: the frame wraps and caps at 100%. */
 .lesson-intro-problem {
   margin: 16px 0 0; color: #7a6f61;
   display: flex; flex-direction: column; align-items: center; gap: 5px;
+  max-width: 100%;
 }
+.lesson-intro-problem .lesson-equation { max-width: 100%; }
+.lesson-equation.intro-frame { font-size: 21px; line-height: 1.45; }
+.intro-frame-line { white-space: normal; overflow-wrap: break-word; }
 .intro-example-label {
   font: 700 10.5px 'Nunito Sans', sans-serif; letter-spacing: 0.12em;
   text-transform: uppercase; color: #a5947d;

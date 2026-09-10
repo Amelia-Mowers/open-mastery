@@ -27,8 +27,12 @@ export class TemplateRenderError extends Error {
 
 export function renderText(template: string, params: Params): string {
   const r = renderTemplate(template, params as Env)
-  if (r.ok) return r.value
-  throw new TemplateRenderError(template, params)
+  if (!r.ok) throw new TemplateRenderError(template, params)
+  // a negative VALUE renders with an ASCII hyphen, which mixes glyphs
+  // with authored true-minus copy ("−k = -8"). Promote a hyphen that
+  // directly prefixes a digit (start of string, or after a space/opener)
+  // to the true minus. Word-hyphens and spaced binary minus are untouched.
+  return r.value.replace(/(^|[\s(=·×÷+,])-(?=[\dA-Za-z])/g, '$1−')
 }
 
 /** Evaluate a templated patch value ("{b/a}", 7, "3") to a finite number, or

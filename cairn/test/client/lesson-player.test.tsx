@@ -250,7 +250,7 @@ describe('explanation player', () => {
         skillName: 'Find {variable}',
         plain: 'A number is hiding.',
         vocab: [{ term: 'cube', meaning: 'three equal factors' }],
-        problem: 'x + 8 = 21',
+        problem: ['x + 8 = 21'],
         rep: { name: 'tape', intro: 'This is a tape diagram.' },
         playSkill: true,
         playRep: true,
@@ -265,7 +265,7 @@ describe('explanation player', () => {
     expect(beats[2]!.speak).toBe("Here's how it works with x + 8 = 21.")
     // no skill intro ⇒ no problem bridge either (it is the skill's, not the rep's)
     expect(
-      introBeats({ skillName: 'Find x', problem: 'x + 8 = 21', rep: { name: 'tape', intro: 'Tape.' }, playSkill: false, playRep: true }, {}).map((b) => b.kind),
+      introBeats({ skillName: 'Find x', problem: ['x + 8 = 21'], rep: { name: 'tape', intro: 'Tape.' }, playSkill: false, playRep: true }, {}).map((b) => b.kind),
     ).toEqual(['rep'])
   })
 
@@ -421,7 +421,7 @@ describe('explanation player', () => {
     expect(container.querySelector('[data-arc]')).not.toBeNull()
     expect(container.querySelector('[data-point-neg]')).not.toBeNull()
     goToStep(3, 3)
-    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('r = -2.')
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('r = −2.')
   })
 
   it('plays the whiteboard worked-equation: lines append with operation notes', () => {
@@ -443,13 +443,13 @@ describe('explanation player', () => {
       <LessonPlayer explanation={workedExp} params={{ b: 2, variable: 'r' }} kind="lesson" onDone={() => {}} />,
     )
     expect(container.querySelectorAll('[data-line]')).toHaveLength(1)
-    expect(container.querySelectorAll('[data-line]')[0]).toHaveTextContent('-r = 2')
+    expect(container.querySelectorAll('[data-line]')[0]).toHaveTextContent('−r = 2')
     goToStep(3, 3)
     const lines = container.querySelectorAll('[data-line]')
     expect(lines).toHaveLength(3)
-    expect(lines[1]).toHaveTextContent('(-1) · (-r) = (-1) · 2')
-    expect(lines[2]).toHaveTextContent('r = -2')
-    expect(container.querySelectorAll('[data-note]')[0]).toHaveTextContent('multiply both sides by -1')
+    expect(lines[1]).toHaveTextContent('(−1) · (−r) = (−1) · 2')
+    expect(lines[2]).toHaveTextContent('r = −2')
+    expect(container.querySelectorAll('[data-note]')[0]).toHaveTextContent('multiply both sides by −1')
     // backward seek rebuilds and replays the lines
     goToStep(1, 3)
     expect(container.querySelectorAll('[data-line]')).toHaveLength(1)

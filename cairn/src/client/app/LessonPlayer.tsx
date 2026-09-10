@@ -33,7 +33,7 @@ import {
   renderText,
   type Params,
 } from './render'
-import { introBeats, problemLine, INTRO_BEAT_SECONDS, type IntroBeat, type IntroSpec } from './intro'
+import { introBeats, problemFrame, INTRO_BEAT_SECONDS, type IntroBeat, type IntroSpec } from './intro'
 
 export type LessonIntro = IntroSpec
 
@@ -511,7 +511,7 @@ export function LessonPlayer({
   const paramsKey = JSON.stringify(params)
   const beats: IntroBeat[] = useMemo(() => {
     if (!intro) return []
-    const all = introBeats({ ...intro, problem: problemLine(timeline, params) ?? undefined }, params)
+    const all = introBeats({ ...intro, problem: problemFrame(timeline, params) ?? undefined }, params)
     if (!intro.playSkill && !intro.playRep) return all
     return all.filter((b) => (b.kind === 'rep' ? intro.playRep : intro.playSkill))
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -525,7 +525,11 @@ export function LessonPlayer({
         manual: b.manual,
         // the first beat carries the opening frame's patch, so the board
         // (equation banner, empty widget) is set from the very first beat
-        ...(i === 0 && timeline[0]?.patch !== undefined ? { patch: timeline[0].patch } : {}),
+        // — WITHOUT its mark: the highlight belongs with t0's own caption,
+        // not glowing through the whole intro (it bled into the rep beat)
+        ...(i === 0 && timeline[0]?.patch !== undefined
+          ? { patch: Object.fromEntries(Object.entries(timeline[0].patch).filter(([k]) => k !== 'mark')) }
+          : {}),
       })),
     [beats, timeline],
   )
@@ -533,10 +537,16 @@ export function LessonPlayer({
     // the first intro beat CARRIES timeline[0]'s patch (the board is set
     // from the very first beat) — so the content copy must shed it, or
     // appending patches (a worked board's line array) apply twice and
-    // every multi-line opening doubles on a first lesson
+    // every multi-line opening doubles on a first lesson. The MARK stays
+    // behind: it applies here, with t0's caption, after the intro
     if (introSteps.length > 0 && timeline[0]?.patch !== undefined) {
-      const { patch: _carried, ...first } = timeline[0]
-      return [...introSteps, first as Step, ...timeline.slice(1)]
+      const { patch: carried, ...first } = timeline[0]
+      const mark = (carried as Record<string, unknown>)['mark']
+      return [
+        ...introSteps,
+        (mark !== undefined ? { ...first, patch: { mark } } : first) as Step,
+        ...timeline.slice(1),
+      ]
     }
     return [...introSteps, ...timeline]
   }, [introSteps, timeline])
@@ -787,22 +797,36 @@ export function LessonPlayer({
           {headlineBeat.kind === 'skill' &&
             (() => {
               // banner timelines show their segments; the whiteboard
-              // family falls back to the board's opening line — every
-              // skill beat carries an example
-              const sample = equation?.join('') ?? problemLine(timeline, params)
-              if (sample === null) return null
+              // family falls back to the board's opening FRAME — one
+              // stacked line per board line, never joined (a joined
+              // multi-line frame once scrolled the whole page sideways)
+              const frame = equation ? null : problemFrame(timeline, params)
+              if (equation === null && frame === null) return null
               return (
-                <div className="lesson-intro-problem" aria-label={`Example problem ${sample}`}>
+                <div
+                  className="lesson-intro-problem"
+                  aria-label={`Example problem ${(equation ?? frame ?? []).join(' ')}`}
+                >
                   <span className="intro-example-label" aria-hidden>
                     example
                   </span>
-                  <div className="lesson-equation">
-                    {(equation ?? [sample]).map((seg, i) => (
-                      <span key={i} className="eq-seg">
-                        {seg}
-                      </span>
-                    ))}
-                  </div>
+                  {equation ? (
+                    <div className="lesson-equation">
+                      {equation.map((seg, i) => (
+                        <span key={i} className="eq-seg">
+                          {seg}
+                        </span>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className={frame!.length > 1 ? 'lesson-equation intro-frame' : 'lesson-equation'}>
+                      {frame!.map((line, i) => (
+                        <div key={i} className="intro-frame-line">
+                          {line}
+                        </div>
+                      ))}
+                    </div>
+                  )}
                 </div>
               )
             })()}

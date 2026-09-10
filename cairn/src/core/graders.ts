@@ -52,7 +52,7 @@ export function diagnose(
   raw: string,
 ): { id: string; says: string } | null {
   if (!misconceptions || misconceptions.length === 0) return null
-  const student = raw.trim()
+  const student = raw.replace(/\u2212/g, '-').trim()
   if (student === '') return null
   for (const m of misconceptions) {
     const rendered = renderTemplate(m.when, params, { numberStyle: 'fraction' })
@@ -145,7 +145,12 @@ export class AnswerKeyError extends Error {
   }
 }
 
-export function gradeAnswer(spec: AnswerSpec, params: Env, raw: string | string[]): Verdict {
+/** the TRUE minus (U+2212) reads as a minus to a person — display copy
+ * uses it, some keyboards emit it — but the parser knows only '-' */
+const asciiMinus = (x: string): string => x.replace(/\u2212/g, '-')
+
+export function gradeAnswer(spec: AnswerSpec, params: Env, rawInput: string | string[]): Verdict {
+  const raw = Array.isArray(rawInput) ? rawInput.map(asciiMinus) : asciiMinus(rawInput)
   switch (spec.type) {
     case 'numeric':
       return gradeNumeric(spec, params, asOne(raw))
@@ -333,8 +338,24 @@ function splitEquation(s: string): string[] | null {
   return parts.map((p) => p.trim())
 }
 
-function gradeExpr(spec: AnswerSpec, params: Env, raw: string): Verdict {
+/** "$7", "7 mph", "28%", "x = $3" state the value plainly — peel the
+ * dressing off before grading. Letters glued to digits stay ("3x"): a
+ * unit is a SEPARATE trailing word. */
+function stripUnitDressing(s: string): string {
+  let t = s.trim().replace(/^\$\s*/, '').replace(/=\s*\$\s*/, '= ').replace(/\s*%$/, '')
+  // an equation keeps its letters ("3 = x" is a form, not a unit)
+  if (!t.includes('=')) {
+    const m = /^([^a-z]*\d[^a-z]*?)\s+[a-z][a-z\s/.]*$/i.exec(t)
+    if (m) t = m[1]!.trim()
+  }
+  return t
+}
+
+function gradeExpr(spec: AnswerSpec, params: Env, rawIn: string): Verdict {
   if (typeof spec.value !== 'string') throw new AnswerKeyError('answer key is not an expression')
+  // a student who writes the unit is being MORE careful, not less — and
+  // the old path told them to "finish the arithmetic" for typing $7
+  const raw = stripUnitDressing(rawIn)
   // syntactic form guards: symbolic equivalence would accept an echo of the
   // stem ("3(x+2)" ≡ "3x+6"), so expansion/combination items constrain shape
   if (spec.form === 'expanded') {
@@ -428,7 +449,7 @@ function gradeList(spec: AnswerSpec, params: Env, raw: string | string[], ordere
         if (parts[i]!.toLowerCase() !== e.tok) return incorrect()
         continue
       }
-      const r = evalClosed(parts[i]!)
+      const r = evalClosed(stripUnitDressing(parts[i]!))
       if (!r) return incorrect(`'${parts[i]}' is not a number`)
       if (!ratEq(r, e.num)) return incorrect()
     }
@@ -436,7 +457,7 @@ function gradeList(spec: AnswerSpec, params: Env, raw: string | string[], ordere
   }
   const student: Rational[] = []
   for (const p of parts) {
-    const r = evalClosed(p)
+    const r = evalClosed(stripUnitDressing(p))
     if (!r) return incorrect(`'${p}' is not a number`)
     student.push(r)
   }

@@ -94,7 +94,7 @@ export function createWorkedEquation(
           boxShadow: '0 2px 0 rgba(92, 74, 56, 0.08)',
         }}
       >
-        <div ref={scrollRef} style={{ maxHeight: 330, overflowY: 'auto' }}>
+        <div ref={scrollRef} style={{ maxHeight: 336, overflowY: 'auto' }}>
         {(() => {
           // emphasis groups are delimited by the operation dividers: the
           // CURRENT group is every line since the last note. A multi-line

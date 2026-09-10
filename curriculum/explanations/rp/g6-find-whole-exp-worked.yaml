@@ -6,7 +6,7 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{100/n}% of ? = {k}", mark: "= {k}" }, caption: "Only the part shows: {k}. The percent names how big a part of the number it is." }
   - { t: 4, patch: { line: "{100/n}% = 1/{n}", note: "benchmark fraction", mark: "1/{n}" }, caption: "{100/n}% IS 1/{n}: the number is cut into {n} equal parts, and {k} is ONE of them.", expect: { type: numeric, value: "{n}", prompt: "{100/n}% means one part out of how many equal parts?", hint: "100 ÷ {100/n}." } }
-  - { t: 8.5, patch: { line: "? = {k} × {n}", note: "the same part, {n} times", mark: "× {n}" }, caption: "All {n} parts together. So what is the WHOLE?", expect: { type: op, value: "multiply {n}", sides: false, prompt: "{k} is ONE of {n} equal parts. What move rebuilds the whole?" } }
-  - { t: 12, patch: { line: "? = {n*k}", note: "the whole", mark: null }, caption: "One part is {k}; {n} parts make {n*k}." }
+  - { t: 8.5, patch: { line: "the whole = {k} × {n}", note: "the same part, {n} times", mark: "× {n}" }, caption: "All {n} parts together. So what is the WHOLE?", expect: { type: op, value: "multiply {n}", sides: false, prompt: "{k} is ONE of {n} equal parts. What move rebuilds the whole?" } }
+  - { t: 12, patch: { line: "the whole = {n*k}", note: "all {n} parts", mark: null }, caption: "One part is {k}; {n} parts make {n*k}." }
   - { t: 14.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

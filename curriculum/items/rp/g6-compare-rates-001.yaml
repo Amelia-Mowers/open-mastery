@@ -22,6 +22,9 @@ misconceptions:
   - id: answered-the-total
     when: "{u*a1}, {(u+d)*a2}, a"
     says: "Those are whole-PACK prices. Price per pencil means splitting each pack's cost across its own pencils."
+  - id: picked-the-pricier-pack
+    when: "{u}, {u+d}, b"
+    says: "Your unit prices are right — but B costs ${u+d} for one, and A costs ${u}. The BETTER buy is the cheaper one: A."
 hints:
   - "Find the price of ONE pencil in each pack."
   - "Pack A: ${u*a1} ÷ {a1} = ${u} each. Pack B: ${(u+d)*a2} ÷ {a2} = ${u+d} each."

@@ -97,6 +97,19 @@ describe('set / ordered / choice graders', () => {
     expect(v(spec, '$8')).toBe('incorrect')
   })
 
+  it('expr and list answers accept units too', () => {
+    const ev: AnswerSpec = { type: 'expr', value: '{b/a}', equivalence: 'symbolic', form: 'evaluated' } as AnswerSpec
+    expect(v(ev, '$3')).toBe('correct')
+    expect(v(ev, '3 dollars')).toBe('correct')
+    expect(v(ev, '3 pages per minute')).toBe('correct')
+    expect(v(ev, '$4')).toBe('incorrect')
+    const eq: AnswerSpec = { type: 'expr', value: '{variable} = {b/a}', equivalence: 'symbolic', form: 'evaluated' } as AnswerSpec
+    expect(v(eq, 'x = $3')).toBe('correct')
+    const ord: AnswerSpec = { type: 'ordered', value: [1, 2, 'a'] } as AnswerSpec
+    expect(v(ord, '$1, $2, a')).toBe('correct')
+    expect(v(ord, '$1, $3, a')).toBe('incorrect')
+  })
+
   it('op grades the move word exactly and the operand numerically', () => {
     const spec: AnswerSpec = { type: 'op', value: 'subtract {b}' } as AnswerSpec
     expect(v(spec, 'subtract 21')).toBe('correct')
