@@ -774,6 +774,13 @@ scrubbing back). Author them under the caption rules above:
   standards-derived title (map, guide view, milestones). Every skill has
   one. Phrase it as what the student DOES, in their words, under ~6
   words — a question is fine ("Which is the better deal?").
+- **The preamble is REPRESENTATION-AGNOSTIC (Mia, 2026-09-10).** Skill
+  beats play on the skill's FIRST lesson, whichever representation that
+  turns out to be — rotation decides, not instruction[0] — so the plain
+  line and the vocab may lean on no picture and promise none. Picture
+  language belongs to the rep intro alone. Vocabulary belongs to the
+  SKILL: a term the skill's lessons use is right to teach up front even
+  when the first lesson served happens not to use it.
 - **A rep intro names the picture and the ONE property the lessons
   lean on** ("both pans hold the same amount — do the same thing to
   BOTH and it stays level"). It plays over the widget's opening state,
