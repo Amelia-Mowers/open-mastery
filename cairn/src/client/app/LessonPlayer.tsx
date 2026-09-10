@@ -727,7 +727,9 @@ export function LessonPlayer({
     else if (time <= start) clockFill = 0
     else if (time >= end) clockFill = 1
     else clockFill = (time - start) / (end - start)
-    if (isCurrent && voiceLive && spoken !== '' && !speech.finished([spoken])) {
+    // only OUR line may pace the clock: another player's in-flight (or
+    // paused) narration must not cap this one's fill
+    if (isCurrent && voiceLive && spoken !== '' && speech.speaksLine([spoken]) && !speech.finished([spoken])) {
       const audioFill = speech.progress() ?? 0
       return Math.min(clockFill, audioFill)
     }
@@ -769,7 +771,7 @@ export function LessonPlayer({
       {headlineBeat && (
         <div className="lesson-stage lesson-stage-intro" data-testid="lesson-intro" key={`intro-${headlineBeat.kind}-${headlineBeat.headline}`}>
           <span className={headlineBeat.kind === 'skill' ? 'kicker' : 'kicker kicker-alt'}>
-            {headlineBeat.kind === 'skill' ? 'NEW SKILL' : 'A WORD TO KNOW'}
+            {headlineBeat.kind === 'skill' ? 'NEW SKILL' : 'A TERM TO KNOW'}
           </span>
           <h2 className="lesson-intro-headline">{headlineBeat.headline}</h2>
           {headlineBeat.kind === 'skill' &&

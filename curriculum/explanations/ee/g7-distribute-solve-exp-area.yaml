@@ -23,7 +23,7 @@ timeline:
       hint: "Everything inside the parentheses sits along the top."
   - t: 13
     patch: { eqHighlight: [], products: ["{a}{variable}", "{a*b}"], highlight: ["2"] }
-    caption: "Each width piece earns its own area: {a}{variable} + {a*b} = {a*(ans+b)} — that is distributing."
+    caption: "Each width piece earns its own area: {a}{variable} + {a*b} = {a*(ans+b)} — the parentheses EXPANDED, each part getting its {a} copies."
     expect:
       type: numeric
       value: "{a*b}"

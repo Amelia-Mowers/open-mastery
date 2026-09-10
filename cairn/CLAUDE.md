@@ -75,7 +75,7 @@
   `../curriculum/representations/<rep>.yaml`) with the widget revealed
   in its opening state. Skill and vocab beats HOLD for a manual Continue
   (the clock parks at their end); the problem and rep beats run on the
-  clock. The voice SAYS the headline ("New skill: …", "A word to know:
+  clock. The voice SAYS the headline ("New skill: …", "A term to know:
   …") while the caption box shows only the line — `IntroBeat.speak` vs
   `.caption`, and the enumerator walks `speak` plus the per-instance
   problem line. The server always sends the beats

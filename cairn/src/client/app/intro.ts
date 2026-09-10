@@ -66,7 +66,7 @@ const closed = (s: string): string => {
 export const skillSpeak = (name: string, plain: string): string =>
   `New skill: ${closed(name)} ${closed(plain)}`
 export const vocabSpeak = (v: { term: string; meaning: string }): string =>
-  `A word to know: ${closed(v.term)} ${closed(v.meaning)}`
+  `A term to know: ${closed(v.term)} ${closed(v.meaning)}`
 export const problemSpeak = (equation: string): string =>
   `Here's how it works on a problem like ${equation}.`
 export const problemCaption = problemSpeak

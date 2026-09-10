@@ -201,7 +201,10 @@ export function StepwisePlayer({
     speech.subscribe,
     () => {
       const s = speech.getState()
-      return s.model !== 'error' && (s.speaking || s.generating)
+      // a PAUSED line never progresses — it is another (paused) player's
+      // frozen narration, and waiting on it deadlocks this one behind a
+      // line that will never finish (zoo repro, 2026-09-10)
+      return s.model !== 'error' && (s.speaking || s.generating) && !s.paused
     },
     () => false,
   )

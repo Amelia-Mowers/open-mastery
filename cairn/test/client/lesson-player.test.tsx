@@ -140,7 +140,7 @@ describe('explanation player', () => {
     expect(screen.getAllByRole('button', { name: /Go to step/ })).toHaveLength(4)
 
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('A WORD TO KNOW')
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('A TERM TO KNOW')
     expect(screen.getByTestId('lesson-intro')).toHaveTextContent('equation')
     // the box shows the meaning; the headline is on screen (and spoken)
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent(
@@ -210,7 +210,7 @@ describe('explanation player', () => {
   it('intro beats SPEAK their headline, show only the line, and bridge into the problem', () => {
     expect(skillSpeak('Find x', 'A number is hiding')).toBe('New skill: Find x. A number is hiding.')
     expect(vocabSpeak({ term: 'cube', meaning: 'three equal factors!' })).toBe(
-      'A word to know: cube. three equal factors!',
+      'A term to know: cube. three equal factors!',
     )
     const beats = introBeats(
       {

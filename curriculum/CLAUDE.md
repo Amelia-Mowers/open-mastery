@@ -759,7 +759,7 @@ scrubbing back). Author them under the caption rules above:
 - **No meta-commentary about the LESSON.** "You'll learn to…" describes
   the lesson, not the mathematics. Say what the thing IS and what we do.
 - **The voice says the title.** A skill beat is spoken as "New skill:
-  <short>. <plain>" and a vocab beat as "A word to know: <term>.
+  <short>. <plain>" and a vocab beat as "A term to know: <term>.
   <meaning>" — the box shows just the line. So a `meaning` is a full
   sentence that stands on its own after the term is named ("If you
   subtract the same number from both sides of an equation, it stays
