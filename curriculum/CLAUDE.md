@@ -769,11 +769,14 @@ scrubbing back). Author them under the caption rules above:
 - **One or two short declaratives**, an em-dash pivot, at most ONE
   stressed word. The headline on screen is the skill name (or the term),
   so the plain line need not repeat it.
-- **`short` is the child-facing skill name** ("Find x when something was
-  added") and headlines the skill beat; `name` stays the formal,
-  standards-derived title (map, guide view, milestones). Every skill has
-  one. Phrase it as what the student DOES, in their words, under ~6
-  words — a question is fine ("Which is the better deal?").
+- **`short` is the child-facing skill name** ("Find {variable} when
+  something was added") and headlines the skill beat; `name` stays the
+  formal, standards-derived title (map, guide view, milestones). Every
+  skill has one. Phrase it as what the student DOES, in their words,
+  under ~6 words — a question is fine ("Which is the better deal?").
+  It may template `{variable}` — the beat renders it with the served
+  instance's own letter, and the corpus enumerator speaks every
+  variant.
 - **The preamble is REPRESENTATION-AGNOSTIC (Mia, 2026-09-10).** Skill
   beats play on the skill's FIRST lesson, whichever representation that
   turns out to be — rotation decides, not instruction[0] — so the plain
