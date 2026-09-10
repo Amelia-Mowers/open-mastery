@@ -1,0 +1,22 @@
+id: prealg.lineq.multiply.002
+skills: [prealg.lineq.multiply]
+difficulty: 2
+representation: worked-equation
+params: { a: 5, b: -8, variable: k }
+generator: { a: { int: [2, 9] }, b: { int: [-15, -2] } }
+widget: { type: equation-input, config: { stem: "Solve for {variable}: {variable}/{a} = {b}." } }
+answer: { type: expr, value: "{variable} = {a*b}", equivalence: symbolic, form: evaluated, integer: true }
+viz: { template: balance-scale, bind: { left: "{variable}/{a}", right: "{b}" } }
+misconceptions:
+  - id: divided-instead-of-multiplied
+    when: "{b/a}"
+    says: "{variable} was already cut into {a} parts — dividing again makes the pieces smaller still. To rebuild the whole, multiply both sides by {a}."
+  - id: dropped-the-sign
+    when: "{0-a*b}"
+    says: "Each of the {a} parts is {b}, and {b} is negative — so the whole is negative too: {a} × {b} = {a*b}."
+hints:
+  - "{variable} is divided by {a}. What operation undoes division?"
+  - "Multiply both sides by {a} — the sign of {b} comes along."
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+verify: "{answer / a == b}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-10 }

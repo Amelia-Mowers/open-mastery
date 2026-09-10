@@ -4,7 +4,7 @@ representation: cube-model
 widget: cube-model
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{n}³", " = ", "?"], n: "{n}", slices: 1, rowsIn: false, colsIn: false }, caption: "{n}³ means three equal factors: {n} × {n} × {n}. Build it — start with one square face." }
+  - { t: 0, patch: { equation: ["{n}", "³", " = ", "?"], n: "{n}", slices: 1, rowsIn: false, colsIn: false }, caption: "{n}³ means three equal factors: {n} × {n} × {n}. Build it — start with one square face." }
   - t: 4
     patch: { eqHighlight: ["0"], rowsIn: true }
     caption: "{n} rows — the first factor of {n} is the side length."
@@ -30,13 +30,13 @@ timeline:
       prompt: "{n} rows of {n} — how many small squares in the whole face?"
       hint: "Count by rows: {n} rows, {n} in each."
   - t: 16
-    patch: { eqHighlight: [], slices: "{n}" }
+    patch: { eqHighlight: ["1"], slices: "{n}" }
     caption: "{n} faces of {n*n} — all three factors in the picture. So what does {n}³ equal?"
     expect:
       type: numeric
       value: "{n}"
       prompt: "The LAST factor stacks copies of the face — how many faces make the cube?"
       hint: "The three factors are {n} × {n} × {n}. The face spent two — the factor left over counts the stack."
-  - { t: 20, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], count: "{n*n*n}" }, caption: "{n*n} small squares in each face, {n} faces deep: {n*n} × {n} = {n*n*n}. {n}³ = {n*n*n}." }
+  - { t: 20, patch: { equation: ["{n}", "³", " = ", "{n*n*n}"], eqHighlight: ["3"], count: "{n*n*n}" }, caption: "{n*n} small squares in each face, {n} faces deep: {n*n} × {n} = {n*n*n}. {n}³ = {n*n*n}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

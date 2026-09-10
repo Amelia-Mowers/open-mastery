@@ -16,6 +16,9 @@ misconceptions:
   - id: swept-the-numbers-into-the-letter
     when: "{a-c+b+d}{variable}"
     says: "The plain numbers {b} and {d} have no {variable} on them — they combine on their own, apart from the letter: {a-c}{variable} + {b+d}."
+  - id: flipped-the-constant-sign
+    when: "{a-c}{variable} - {b+d}"
+    says: "The minus belongs to {c}{variable} alone, and it is already spent making {a-c}{variable}. The plain numbers {b} and {d} are both ADDED: {a-c}{variable} + {b+d}."
 hints:
   - "Gather the {variable}-terms and the plain numbers separately."
   - "{a}{variable} − {c}{variable} = {a-c}{variable}, and {b} + {d} = {b+d}."

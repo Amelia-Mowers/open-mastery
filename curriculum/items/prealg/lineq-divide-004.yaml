@@ -1,0 +1,22 @@
+id: prealg.lineq.divide.004
+skills: [prealg.lineq.divide]
+difficulty: 2
+representation: worked-equation
+params: { a: 4, b: -36, variable: n }
+generator: { a: { int: [2, 12] }, b: { mult_of: a, range: [-60, -12] } }
+widget: { type: equation-input, config: { stem: "Solve for {variable}: {a}{variable} = {b}." } }
+answer: { type: expr, value: "{variable} = {b/a}", equivalence: symbolic, form: evaluated, integer: true }
+viz: { template: balance-scale, bind: { left: "{a}{variable}", right: "{b}" } }
+misconceptions:
+  - id: subtracted-the-coefficient
+    when: "{b-a}"
+    says: "{a}{variable} means {a} TIMES {variable}, not {a} plus {variable} — so subtracting {a} won't free it. Undo a multiply with a divide."
+  - id: dropped-the-sign
+    when: "{0-b/a}"
+    says: "{b} is negative, and {a} copies of {variable} make it — so each copy is negative too: {b} ÷ {a} = {b/a}."
+hints:
+  - "What operation undoes multiplying by {a}?"
+  - "Divide both sides by {a} — the sign of {b} comes along."
+source: { book: openstax-prealgebra-2e, section: "8.2" }
+verify: "{a * answer == b}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-10 }

@@ -23,6 +23,10 @@ export interface RatioTableConfig {
 }
 
 export interface RatioTableView {
+  /** replace the columns/rows mid-lesson — a comparison column ARRIVING
+   * (original | rewritten) is how a table derives instead of verifies */
+  cols?: string[] | null
+  rows?: string[][] | null
   /** show the first n rows (header always shows) */
   reveal?: number
   /** 1-based row to emphasize, or null */
@@ -42,6 +46,8 @@ type RtState = {
   factor: { from: number; to: number; text: string } | null
   raw: string
   selectedRow: number | null
+  cols: string[] | null
+  rows: string[][] | null
 }
 
 const label = (p: RatioTableParams): string =>
@@ -52,7 +58,7 @@ const ROW_H = 44
 export function createRatioTable(
   config: RatioTableConfig = {},
 ): WidgetInstance<RatioTableParams, RatioTableAnswer, RatioTableView> {
-  const store = new WidgetStore<RtState>({ reveal: null, highlight: null, factor: null, raw: '', selectedRow: null })
+  const store = new WidgetStore<RtState>({ reveal: null, highlight: null, factor: null, raw: '', selectedRow: null , cols: null, rows: null })
 
   function Cell({ v, input, disabled }: { v: string | number; input: boolean; disabled: boolean }) {
     const state = useSyncExternalStore(store.subscribe, store.getState, store.getState)
@@ -94,8 +100,8 @@ export function createRatioTable(
     const lesson = mode === 'lesson'
     const disabled = mode === 'review'
     const selecting = !lesson && config.select === true
-    const cols = lesson ? params.cols : (config.cols ?? [])
-    const rows = lesson ? params.rows : (config.rows ?? [])
+    const cols = lesson ? (state.cols ?? params.cols) : (config.cols ?? [])
+    const rows = lesson ? (state.rows ?? params.rows) : (config.rows ?? [])
     const shown = lesson && state.reveal !== null ? state.reveal : rows.length
     const f = lesson ? state.factor : null
     // keyboard order for row-select: rows top to bottom, then the none-chip
@@ -309,6 +315,8 @@ export function createRatioTable(
       if (patch.reveal !== undefined) next.reveal = patch.reveal ?? null
       if (patch.highlight !== undefined) next.highlight = patch.highlight ?? null
       if (patch.factor !== undefined) next.factor = patch.factor ?? null
+      if (patch.cols !== undefined) next.cols = patch.cols ?? null
+      if (patch.rows !== undefined) next.rows = patch.rows ?? null
       store.setState(next)
     },
     a11y: { role: 'img', label },

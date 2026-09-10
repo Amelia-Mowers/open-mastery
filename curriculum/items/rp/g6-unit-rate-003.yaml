@@ -1,0 +1,25 @@
+id: g6.rp.unit-rate.003
+skills: [g6.rp.unit-rate]
+difficulty: 2
+# shares m (minutes) and p (amount) with unit-rate.002 — same answer
+# formula {p/m}, so the family stays disjoint from the pounds-worded
+# a,b timelines. No timeline speaks this context either, so it declares
+# no representation.
+representation: null
+params: { m: 4, p: 48 }
+generator: { m: { int: [3, 12] }, p: { mult_of: m, range: [36, 144] } }
+widget: { type: numeric-input, config: { stem: "A pump moves {p} liters of water in {m} minutes. How many liters does it move in 1 minute?" } }
+answer: { type: expr, value: "{p/m}", form: evaluated, integer: true }
+misconceptions:
+  - id: answered-the-total
+    when: "{p}"
+    says: "{p} liters is the total for all {m} minutes. A unit rate is what ONE minute moves: {p} split into {m} equal parts."
+  - id: divided-the-wrong-way
+    when: "{m/p}"
+    says: "That divides the {m} minutes by the {p} liters — minutes per liter. The question asks for liters each MINUTE: {p} ÷ {m}."
+hints:
+  - "One minute gets an equal share of the {p} liters."
+  - "{p} ÷ {m} = {p/m} liters each minute."
+source: { book: ccss-rp-progression, section: "6.RP.A.3b" }
+verify: "{answer * m == p}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-10 }

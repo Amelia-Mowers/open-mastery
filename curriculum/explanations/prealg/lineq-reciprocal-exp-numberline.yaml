@@ -14,7 +14,7 @@ timeline:
       prompt: "Where on the line does {p}/{q} of {variable} sit?"
       hint: "The equation names the landing spot."
   - t: 7.5
-    patch: { eqHighlight: [], highlight: ["{b/p}"], marker: "{b/p}", labelled: ["0", "{b/p}", "{b}"], jumps: { size: "{b/p}", count: "{q}", shown: 1 } }
+    patch: { eqHighlight: [], highlight: ["{b/p}"], marker: "{b/p}", labelled: ["0", "{b/p}", "{b}"], jumps: { size: "{b/p}", count: "{p}", shown: "all" } }
     caption: "So ONE part is {b} ÷ {p} = {b/p}. {variable} is {q} of those parts — so what is {variable}?"
     expect:
       type: numeric

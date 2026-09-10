@@ -4,9 +4,9 @@ representation: input-output-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{a}{variable} + {b} − {c}{variable} + {d}", " = ", "?"], cols: ["{variable}", "value"], rows: [["1", "{a-c+b+d}"], ["2", "{2*a-2*c+b+d}"], ["3", "{3*a-3*c+b+d}"]], reveal: "0" }, caption: "{a}{variable} + {b} − {c}{variable} + {d} — four terms, one value for each {variable}." }
+  - { t: 0, patch: { equation: ["{a}{variable}", " + {b}", " − {c}{variable}", " + {d}", " = ", "?"], cols: ["{variable}", "value"], rows: [["1", "{a-c+b+d}"], ["2", "{2*a-2*c+b+d}"], ["3", "{3*a-3*c+b+d}"]], reveal: "0" }, caption: "{a}{variable} + {b} − {c}{variable} + {d} — four terms, one value for each {variable}." }
   - t: 4.5
-    patch: { eqHighlight: ["0"], reveal: "1", highlight: "1" }
+    patch: { reveal: "1", highlight: "1" }
     caption: "{variable} = 1 gives {a} + {b} − {c} + {d} = {a-c+b+d}."
     expect:
       type: numeric
@@ -15,12 +15,28 @@ timeline:
       hint: "Work left to right: add, take away, add."
   - t: 9
     patch: { reveal: "2", highlight: "2" }
-    caption: "{variable} = 2 gives {2*a-2*c+b+d}. What SHORTER expression makes this same table?"
+    caption: "{variable} = 2 gives {2*a-2*c+b+d} — same rule, both rows."
     expect:
       type: numeric
       value: "{2*a-2*c+b+d}"
       prompt: "Feed {variable} = 2 through all four terms — what comes out?"
       hint: "{a}·2 + {b} − {c}·2 + {d}."
-  - { t: 13.5, patch: { equation: ["{a}{variable} + {b} − {c}{variable} + {d}", " = ", "{a-c}{variable} + {b+d}"], eqHighlight: ["2"], reveal: "3", highlight: "3" }, caption: "{a-c}{variable} + {b+d} gives the same value for EVERY {variable} — the four terms combine to two." }
-  - { t: 16.5, handoff: { prompt: "Now you try." } }
+  - t: 13.5
+    patch: { eqHighlight: ["0", "2"], highlight: null }
+    caption: "{a}{variable} and −{c}{variable} have the SAME letter part — they gather together, apart from the plain numbers."
+    expect:
+      type: pick
+      value: ["0", "2"]
+      prompt: "Which pieces of the expression are the {variable}-terms — the ones that gather together?"
+      hint: "Same letter part, wherever they sit in the line."
+  - t: 17.5
+    patch: { cols: ["{variable}", "value", "{a-c}{variable} + {b+d}"], rows: [["1", "{a-c+b+d}", "{a-c+b+d}"], ["2", "{2*a-2*c+b+d}", "{2*a-2*c+b+d}"], ["3", "{3*a-3*c+b+d}", "{3*a-3*c+b+d}"]], reveal: "3", eqHighlight: [] }
+    caption: "{a-c}{variable} + {b+d} gets its own column — the SAME value in every row. So what shorter expression makes this table?"
+    expect:
+      type: numeric
+      value: "{a-c}"
+      prompt: "{a} of the {variable}s minus {c} of them — how many {variable}s in all?"
+      hint: "{a} − {c}."
+  - { t: 21.5, patch: { equation: ["{a}{variable}", " + {b}", " − {c}{variable}", " + {d}", " = ", "{a-c}{variable} + {b+d}"], eqHighlight: ["5"] }, caption: "Four terms combine to two: {a-c}{variable} + {b+d}." }
+  - { t: 24.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

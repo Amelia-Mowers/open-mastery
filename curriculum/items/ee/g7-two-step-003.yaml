@@ -13,6 +13,9 @@ misconceptions:
   - id: forgot-to-divide
     when: "{a*ans}"
     says: "{a*ans} is what's left after clearing the {b} — but that's {a}{variable}, not {variable}. One more step: divide by {a}."
+  - id: dropped-the-sign
+    when: "{0-ans}"
+    says: "That's the opposite of the answer. After subtracting {b}, {a}{variable} = {a*ans} — a negative total, so {variable} is negative too: {a*ans} ÷ {a} = {ans}."
 hints:
   - "Same two moves — subtract {b}, then divide by {a} — even when the numbers go negative."
   - "{a}{variable} = {a*ans}, so {variable} = {ans}."

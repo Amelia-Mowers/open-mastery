@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "−{variable} = {b}", mark: "−{variable}" }, caption: "On the board: −{variable} = {b}. That minus is a factor — −1 times {variable}." }
   - { t: 3.5, patch: { line: "(−1) · (−{variable}) = (−1) · ({b})", note: "the same move on both sides", mark: "(−1)" }, caption: "× (−1) on both sides — that is what undoes the −1. The negatives cancel: what is {variable}?", expect: { type: op, value: "multiply -1", prompt: "What do you do to BOTH sides to turn −{variable} into {variable}?", hint: "Multiplying both sides by −1 turns −{variable} into {variable}." , misconceptions: [ { id: divided-by-the-value, when: "divide {b}", says: "Dividing by {b} does not touch the minus sign. Flipping the sign is a multiply by −1." } ] } }
-  - { t: 8, patch: { line: "{variable} = {-b}", note: "(−1)(−1) = 1, the negatives cancel", mark: null }, caption: "Two negatives cancel: {variable} = {-b}.", expect: { type: expr, value: "{variable} = {-b}", prompt: "Two negatives cancel — simplify. What is {variable}?" } }
+  - { t: 8, patch: { line: "{variable} = {-b}", note: "(−1)(−1) = 1, the negatives cancel", mark: null }, caption: "Two negatives cancel: {variable} = {-b}.", expect: { type: expr, value: "{variable} = {-b}", form: evaluated, prompt: "Two negatives cancel — simplify. What is {variable}?" } }
   - { t: 10.5, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

@@ -1,0 +1,21 @@
+id: g6.ee.evaluate.003
+skills: [g6.ee.evaluate]
+difficulty: 2
+representation: worked-equation
+params: { p: 6, q: 4, r: 5, variable: n }
+generator: { p: { int: [2, 9] }, q: { int: [1, 5] }, r: { int: [3, 9] } }
+widget: { type: numeric-input, config: { stem: "Find the value of {p}{variable} − {q} when {variable} = {r}." } }
+answer: { type: expr, value: "{p*r-q}", form: evaluated, integer: true }
+misconceptions:
+  - id: added-before-multiplying
+    when: "{p*(r-q)}"
+    says: "The multiply comes first: {p}·{r} is {p*r}, and THEN subtract {q}."
+  - id: added-instead-of-subtracted
+    when: "{p*r+q}"
+    says: "That adds {q} instead of taking it away. {p}·{r} = {p*r}, then − {q}."
+hints:
+  - "Substitute: replace {variable} with {r}."
+  - "{p} × {r} − {q} = {p*r} − {q} = {p*r-q}."
+source: { book: ccss-ee-progression, section: "6.EE.A.2c" }
+verify: "{answer + q == p*r}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-10 }

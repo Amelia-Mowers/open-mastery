@@ -29,6 +29,14 @@ timeline:
       value: "{m*(3+n)}"
       prompt: "{variable} = 3: {m}(3 + {n}) — what does it give?"
       hint: "3 + {n}, taken {m} times."
-  - { t: 17, patch: { equation: ["{m}({variable} + {n})", " = ", "{m}{variable} + {m*n}"], eqHighlight: ["2"] }, caption: "{m}{variable} + {m*n} matches for every {variable}: {m}({variable} + {n}) = {m}{variable} + {m*n}." }
-  - { t: 20, handoff: { prompt: "Now you try." } }
+  - t: 17
+    patch: { cols: ["{variable}", "{m}({variable} + {n})", "{m}{variable} + {m*n}"], rows: [["1", "{m*(1+n)}", "{m+m*n}"], ["2", "{m*(2+n)}", "{2*m+m*n}"], ["3", "{m*(3+n)}", "{3*m+m*n}"]], reveal: "3", highlight: null, equation: ["{m}({variable} + {n})", " = ", "{m}{variable} + {m*n}"], eqHighlight: ["2"] }
+    caption: "{m}{variable} + {m*n} gets its own column — the SAME numbers, row for row: {m}({variable} + {n}) = {m}{variable} + {m*n}."
+    expect:
+      type: expr
+      value: "{m}{variable} + {m*n}"
+      form: expanded
+      prompt: "No parentheses — what expression gives every row?"
+      hint: "{m} of the {variable}s, and {m} of the {n}s."
+  - { t: 21, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-02 }

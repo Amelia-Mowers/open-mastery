@@ -356,6 +356,16 @@ export function createLessonWidget(explanation: Explanation, params: Params): Le
           factor?: { from: number; to: number; text: string } | null
         } = {}
         if ('reveal' in patch) view.reveal = evalNumber(patch['reveal'], params)
+        if ('cols' in patch)
+          (view as Record<string, unknown>)['cols'] = Array.isArray(patch['cols'])
+            ? patch['cols'].map((c) => renderText(String(c), params))
+            : null
+        if ('rows' in patch)
+          (view as Record<string, unknown>)['rows'] = Array.isArray(patch['rows'])
+            ? patch['rows'].map((row) =>
+                Array.isArray(row) ? row.map((c) => renderText(String(c), params)) : [],
+              )
+            : null
         if ('highlight' in patch)
           view.highlight = patch['highlight'] === null ? null : evalNumber(patch['highlight'], params)
         if ('factor' in patch) {
