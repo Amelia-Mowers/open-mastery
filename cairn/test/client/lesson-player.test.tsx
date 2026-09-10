@@ -212,22 +212,27 @@ describe('explanation player', () => {
     expect(vocabSpeak({ term: 'cube', meaning: 'three equal factors!' })).toBe(
       'A word to know: cube. three equal factors!',
     )
-    const beats = introBeats({
-      skillName: 'Find x',
-      plain: 'A number is hiding.',
-      vocab: [{ term: 'cube', meaning: 'three equal factors' }],
-      problem: 'x + 8 = 21',
-      rep: { name: 'tape', intro: 'This is a tape diagram.' },
-      playSkill: true,
-      playRep: true,
-    })
+    const beats = introBeats(
+      {
+        skillName: 'Find {variable}',
+        plain: 'A number is hiding.',
+        vocab: [{ term: 'cube', meaning: 'three equal factors' }],
+        problem: 'x + 8 = 21',
+        rep: { name: 'tape', intro: 'This is a tape diagram.' },
+        playSkill: true,
+        playRep: true,
+      },
+      { variable: 'y' },
+    )
     expect(beats.map((b) => b.kind)).toEqual(['skill', 'vocab', 'problem', 'rep'])
+    expect(beats[0]!.headline).toBe('Find y')
+    expect(beats[0]!.speak).toBe('New skill: Find y. A number is hiding.')
     expect(beats.map((b) => b.manual)).toEqual([true, true, false, false])
     expect(beats[1]!.caption).toBe('three equal factors.')
     expect(beats[2]!.speak).toBe("Here's how it works on a problem like x + 8 = 21.")
     // no skill intro ⇒ no problem bridge either (it is the skill's, not the rep's)
     expect(
-      introBeats({ skillName: 'Find x', problem: 'x + 8 = 21', rep: { name: 'tape', intro: 'Tape.' }, playSkill: false, playRep: true }).map((b) => b.kind),
+      introBeats({ skillName: 'Find x', problem: 'x + 8 = 21', rep: { name: 'tape', intro: 'Tape.' }, playSkill: false, playRep: true }, {}).map((b) => b.kind),
     ).toEqual(['rep'])
   })
 

@@ -20,8 +20,11 @@ import { introSentences, problemLine, problemSpeak } from '../src/client/app/int
 
 /** sentence → corpus filename (content-addressed; the client derives the
  * same name with crypto.subtle in src/client/tts/speech.ts) */
-export const fileOf = (s: string): string =>
-  createHash('sha256').update(s).digest('hex').slice(0, 20) + '.ogg'
+export const fileOf = (s: string): string => {
+  const h = createHash('sha256').update(s).digest('hex').slice(0, 20)
+  // sharded by the first two hex chars: HF caps a directory at 10k files
+  return `${h.slice(0, 2)}/${h}.ogg`
+}
 
 /** every pool instance of an item: authored params + isomorphs or seeds */
 function poolInstances(item: {
@@ -71,7 +74,12 @@ export function corpusSentences(): string[] {
   // the intro beats: a skill's preamble line + one per vocabulary term,
   // and each representation's introduction — built by the SAME code the
   // player narrates from (src/client/app/intro.ts)
-  for (const s of cur.skills.values()) for (const t of introSentences(s)) add(t)
+  for (const s of cur.skills.values()) {
+    // every pool instance's params — the skill beat's short name may
+    // template the problem's letter, so each variant must be spoken
+    const paramsList = practiceItems(s.id, cur).flatMap((it) => [...poolInstances(it)])
+    for (const t of introSentences(s, paramsList)) add(t)
+  }
   for (const r of cur.representations.values()) add(r.intro)
   for (const e of cur.explanations.values()) {
     const feeders = practiceItems(e.skill, cur).filter(

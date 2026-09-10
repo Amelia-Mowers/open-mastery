@@ -1,6 +1,6 @@
 id: g7.ee.distribute-solve
 name: Solve equations like p(x + q) = r
-short: "Find x when it is inside parentheses"
+short: "Find {variable} when it is inside parentheses"
 preamble:
   plain: "Sometimes the letter is tucked inside parentheses, and everything in there is multiplied by the number out front. We deal with that outside number first — and then it is an equation we already know how to solve."
   vocab:

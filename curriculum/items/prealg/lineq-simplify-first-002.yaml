@@ -2,27 +2,31 @@ id: prealg.lineq.simplify-first.002
 skills: [prealg.lineq.simplify-first]
 difficulty: 2
 representation: balance-scale
-params: { a: 3, b: 2, c: 6, ans: -7, variable: n }
+params: { c1: 14, c2: 9, c3: 6, d1: 8, ans: 3, variable: y }
 generator:
-  a: { int: [2, 6] }
-  b: { int: [2, 9] }
-  c: { int: [2, 12] }
-  ans: { int: [-9, 9] }
+  c1: { int: [12, 19] }
+  c2: { int: [5, 18], distinct: c3 }
+  c3: { int: [2, 9] }
+  d1: { int: [2, 9] }
+  ans: { int: [2, 6] }
 widget:
   type: equation-input
   config:
-    stem: "Solve: -{a}({variable} - {b}) - {c} = {-a*(ans-b)-c}."
+    stem: "Solve: {c1}{variable} + {c2}{variable} − {c3}{variable} = {d1} + {(c1+c2-c3)*ans - d1}."
 answer: { type: expr, value: "{variable} = {ans}", equivalence: symbolic, form: evaluated, integer: true }
 misconceptions:
-  - id: dropped-the-outer-negative
-    when: "{(-a*(ans-b)-c-c)/(-a)+b}"
-    says: "The minus in front of the parentheses multiplies EVERYTHING inside by −1 — both the {variable} and the −{b}."
-  - id: forgot-the-constant
-    when: "{ans+c}"
-    says: "The −{c} sits outside the parentheses, so it has to be cleared from both sides too."
+  - id: dropped-a-like-term
+    when: "{((c1+c2-c3)*ans)/(c1+c2)}"
+    says: "That's only {c1}{variable} and {c2}{variable} combined — the −{c3}{variable} is a like term too. All three merge: {c1} + {c2} − {c3} = {c1+c2-c3}."
+  - id: added-the-variable-terms
+    when: "{((c1+c2-c3)*ans)/(c1+c2+c3)}"
+    says: "The −{c3}{variable} is taken away, so the {variable}-terms give {c1} + {c2} − {c3} = {c1+c2-c3}, not {c1+c2+c3}."
+  - id: divided-before-combining
+    when: "{((c1+c2-c3)*ans)/c1}"
+    says: "There are three {variable}-terms — combine them into {c1+c2-c3}{variable} FIRST, then divide by that."
 hints:
-  - "Distribute -{a} first."
-  - "-{a}({variable} - {b}) = {-a}{variable} + {a*b}."
+  - "Gather the {variable}-terms on the left and the plain numbers on the right."
+  - "{c1} + {c2} − {c3} = {c1+c2-c3}, so {c1+c2-c3}{variable} = {(c1+c2-c3)*ans}."
 source: { book: openstax-prealgebra-2e, section: "8.2" }
-verify: "{-a*(answer - b) - c == -a*(ans-b) - c}"
-review: { status: draft, by: "@claude-fable-5", date: 2026-08-26 }
+verify: "{c1*answer + c2*answer - c3*answer == d1 + ((c1+c2-c3)*ans - d1)}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

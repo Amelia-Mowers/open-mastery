@@ -504,7 +504,7 @@ export function LessonPlayer({
   const paramsKey = JSON.stringify(params)
   const beats: IntroBeat[] = useMemo(() => {
     if (!intro) return []
-    const all = introBeats({ ...intro, problem: problemLine(timeline, params) ?? undefined })
+    const all = introBeats({ ...intro, problem: problemLine(timeline, params) ?? undefined }, params)
     if (!intro.playSkill && !intro.playRep) return all
     return all.filter((b) => (b.kind === 'rep' ? intro.playRep : intro.playSkill))
     // eslint-disable-next-line react-hooks/exhaustive-deps

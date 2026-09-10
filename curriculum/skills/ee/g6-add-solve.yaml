@@ -1,6 +1,6 @@
 id: g6.ee.add-solve
 name: Solve x + p = q using the Subtraction Property of Equality
-short: "Find x when something was added"
+short: "Find {variable} when something was added"
 preamble:
   plain: "Sometimes a number is hiding in an equation. It had something added to it, and all we can see is the total. To find it, we take that same amount away from both sides — and the number is left on its own."
   vocab:

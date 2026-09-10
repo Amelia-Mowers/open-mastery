@@ -1,6 +1,6 @@
 id: prealg.lineq.multiply
 name: Solve x/a = b using the Multiplication Property of Equality
-short: "Find x when it was divided"
+short: "Find {variable} when it was divided"
 preamble:
   plain: "Here x was divided by a number, and all we can see is the result. To undo that, we multiply both sides by that same number — and x stands on its own."
   vocab:

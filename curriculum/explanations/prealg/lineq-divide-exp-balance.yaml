@@ -22,6 +22,6 @@ timeline:
         - id: multiplied-instead-of-divided
           when: "multiply {a}"
           says: "Multiplying by {a} makes it {a} times bigger still. To undo × {a}, divide."
-  - { t: 19, patch: { left: "{variable}", right: "{b/a}", op: null }, caption: "One {variable} alone balances {b/a}: {variable} = {b/a}." }
+  - { t: 19, patch: { equation: ["{variable}", " = ", "{b/a}"], left: "{variable}", right: "{b/a}", op: null }, caption: "One {variable} alone balances {b/a}: {variable} = {b/a}." }
   - { t: 21, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

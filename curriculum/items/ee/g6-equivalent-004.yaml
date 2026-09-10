@@ -1,0 +1,21 @@
+id: g6.ee.equivalent.004
+skills: [g6.ee.equivalent]
+difficulty: 3
+representation: worked-equation
+params: { a: 4, b: 7, c: 16, variable: x }
+generator: { a: { int: [3, 7] }, b: { int: [3, 8] }, c: { int: [12, 19] } }
+widget: { type: expression-input, config: { stem: "Expand: {a}({b}{variable} + {c})." } }
+answer: { type: expr, value: "{a*b}{variable} + {a*c}", equivalence: symbolic, form: expanded }
+misconceptions:
+  - id: distributed-to-first-term-only
+    when: "{a*b}{variable} + {c}"
+    says: "The {a} multiplies EVERY part inside: {a}·{b}{variable} AND {a}·{c}. The {c} was left untouched."
+  - id: added-instead-of-multiplied
+    when: "{a+b}{variable} + {a*c}"
+    says: "{a} copies of {b}{variable} is a MULTIPLY — {a} × {b} = {a*b} of the {variable}s, not {a} + {b}."
+hints:
+  - "Multiply {a} by EACH part: {a}·{b}{variable} and {a}·{c}."
+  - "{a}·{b} = {a*b} and {a}·{c} = {a*c}: {a*b}{variable} + {a*c}."
+source: { book: ccss-ee-progression, section: "6.EE.A.3" }
+verify: "{a}*({b}*{variable} + {c})"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

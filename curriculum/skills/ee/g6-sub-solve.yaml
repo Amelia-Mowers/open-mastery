@@ -1,6 +1,6 @@
 id: g6.ee.sub-solve
 name: Solve x − p = q using the Addition Property of Equality
-short: "Find x when something was taken away"
+short: "Find {variable} when something was taken away"
 preamble:
   plain: "Sometimes the number we want had something taken away from it, and all we can see is what was left. To find it, we add that same amount back to both sides — and the number stands on its own."
   vocab:

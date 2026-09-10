@@ -55,7 +55,7 @@ describe('intro beats', () => {
     expect(first.action.kind).toBe('lesson')
     expect(first.preamble?.plain).toBeTruthy()
     // the child-facing name headlines the skill beat; the formal one stays
-    expect(first.skillShort).toBe('Find x when something was added')
+    expect(first.skillShort).toBe('Find {variable} when something was added')
     expect(first.skillName).toMatch(/Subtraction Property of Equality/)
     expect(first.repIntro?.intro).toBeTruthy()
     expect(first.introDue).toEqual({ skill: true, rep: true })

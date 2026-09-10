@@ -200,5 +200,9 @@ export function adaptBalancePatch(
   }
   if ('leftIn' in patch) out.leftIn = patch['leftIn'] === true
   if ('rightIn' in patch) out.rightIn = patch['rightIn'] === true
+  if ('leftItems' in patch)
+    out.leftItems = Array.isArray(patch['leftItems']) ? patch['leftItems'].map(str) : null
+  if ('rightItems' in patch)
+    out.rightItems = Array.isArray(patch['rightItems']) ? patch['rightItems'].map(str) : null
   return out
 }

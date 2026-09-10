@@ -110,10 +110,12 @@ let tmpSeq = 0
 async function encode(sentence: string, audio: Float32Array, rate: number): Promise<void> {
   const wav = join(outDir, `_tmp${tmpSeq++}.wav`)
   writeFileSync(wav, wavBytes(audio, rate))
+  const out = join(outDir, fileOf(sentence))
+  mkdirSync(dirname(out), { recursive: true })
   await execFileP('ffmpeg', [
     '-y', '-loglevel', 'error', '-i', wav,
     '-c:a', 'libopus', '-b:a', '24k', '-ac', '1',
-    join(outDir, fileOf(sentence)),
+    out,
   ])
   unlinkSync(wav)
 }

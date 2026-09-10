@@ -1,6 +1,6 @@
 id: g7.ee.two-step
 name: Solve two-step equations px + q = r
-short: "Two moves to find x"
+short: "Two moves to find {variable}"
 preamble:
   plain: "Here x is hiding behind two operations: a multiply and an add. We peel them off in reverse — undo the add first, then the multiply — and the equation stays true the whole way."
   vocab:

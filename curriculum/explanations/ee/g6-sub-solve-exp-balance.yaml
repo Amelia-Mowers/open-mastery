@@ -18,6 +18,6 @@ timeline:
         - id: subtracted-instead-of-added
           when: "subtract {p}"
           says: "The {p} was already taken away — taking away more leaves even less. Put it back: add {p} to both pans."
-  - { t: 19, patch: { left: "{variable}", right: "{p+d}", op: null }, caption: "With the {p} put back on both pans, {variable} stands alone: {variable} = {p+d}." }
+  - { t: 19, patch: { equation: ["{variable}", " = ", "{p+d}"], left: "{variable}", right: "{p+d}", op: null }, caption: "With the {p} put back on both pans, {variable} stands alone: {variable} = {p+d}." }
   - { t: 21, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

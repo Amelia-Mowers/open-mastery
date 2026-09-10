@@ -90,14 +90,17 @@ export function problemLine(
   return null
 }
 
-export function introBeats(spec: IntroSpec): IntroBeat[] {
+export function introBeats(spec: IntroSpec, params: Params): IntroBeat[] {
   const beats: IntroBeat[] = []
+  // the child-facing short name may template the problem's own letter
+  // ("Find {variable} when something was added" over y + 38 = 85)
+  const skillName = renderText(spec.skillName, params)
   if (spec.plain !== undefined && spec.plain !== '')
     beats.push({
       kind: 'skill',
-      headline: spec.skillName,
+      headline: skillName,
       caption: spec.plain,
-      speak: skillSpeak(spec.skillName, spec.plain),
+      speak: skillSpeak(skillName, spec.plain),
       manual: true,
     })
   for (const v of spec.vocab ?? [])
@@ -116,17 +119,29 @@ export function introBeats(spec: IntroSpec): IntroBeat[] {
 }
 
 /** every line a skill's intro can speak (the problem beat is per
- * explanation instance — the enumerator adds it with `problemSpeak`) */
-export function introSentences(skill: {
-  name: string
-  short?: string | undefined
-  preamble?: { plain: string; vocab: Array<{ term: string; meaning: string }> } | undefined
-}): string[] {
-  return introBeats({
-    skillName: skill.short ?? skill.name,
-    plain: skill.preamble?.plain,
-    vocab: skill.preamble?.vocab,
-    playSkill: true,
-    playRep: false,
-  }).map((b) => b.speak)
+ * explanation instance — the enumerator adds it with `problemSpeak`).
+ * The short name may template the problem's letter, so the enumerator
+ * passes every instance's params and dedupes the variants. */
+export function introSentences(
+  skill: {
+    name: string
+    short?: string | undefined
+    preamble?: { plain: string; vocab: Array<{ term: string; meaning: string }> } | undefined
+  },
+  paramsList: ReadonlyArray<Params>,
+): string[] {
+  const out = new Set<string>()
+  for (const params of paramsList.length > 0 ? paramsList : [{}])
+    for (const b of introBeats(
+      {
+        skillName: skill.short ?? skill.name,
+        plain: skill.preamble?.plain,
+        vocab: skill.preamble?.vocab,
+        playSkill: true,
+        playRep: false,
+      },
+      params as Params,
+    ))
+      out.add(b.speak)
+  return [...out]
 }

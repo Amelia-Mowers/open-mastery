@@ -9,6 +9,6 @@ timeline:
   - { t: 8, patch: { eqHighlight: ["3"], rightIn: true, highlight: right }, caption: "= {b} says both sides weigh the SAME — {b} on the right pan, and the scale balances.", expect: { type: pick, value: ["3"], prompt: "Which piece — or pieces — of the equation go on the RIGHT pan?" } }
   - { t: 12, patch: { eqHighlight: [], highlight: left.coef }, caption: "The left pan holds {p}/{q} of {variable} — not a whole one." }
   - { t: 16, patch: { op: multiply, by: "{q}/{p}", highlight: null }, caption: "× {q}/{p} on both sides — the reciprocal of {p}/{q}. A fraction times its reciprocal is 1, so ONE whole {variable} is left. So what is {variable}?", expect: { type: op, value: "multiply {q}/{p}", prompt: "What ONE move to both pans leaves exactly one {variable} on the left?", hint: "The reciprocal of {p}/{q} is {q}/{p}. Multiply both sides by it. (Dividing by {p} first works too — this way does it in one move.)" } }
-  - { t: 20, patch: { left: "{variable}", right: "{q*b/p}", op: null }, caption: "{p}/{q} × {q}/{p} = 1, so {variable} stands alone. {variable} = {q*b/p}." }
+  - { t: 20, patch: { equation: ["{variable}", " = ", "{q*b/p}"], left: "{variable}", right: "{q*b/p}", op: null }, caption: "{p}/{q} × {q}/{p} = 1, so {variable} stands alone. {variable} = {q*b/p}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

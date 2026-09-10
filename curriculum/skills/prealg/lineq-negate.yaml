@@ -1,6 +1,6 @@
 id: prealg.lineq.negate
 name: Solve -x = b, the opposite of x
-short: "Find x from its opposite"
+short: "Find {variable} from its opposite"
 preamble:
   plain: "A minus sign in front of a letter means its opposite. So if we know what the opposite equals, the number itself is the opposite of THAT — one flip, and it is solved."
   vocab:
@@ -13,4 +13,3 @@ fluency: false
 instruction:
   - prealg.lineq.negate.exp-flip
   - prealg.lineq.negate.exp-worked
-  - prealg.lineq.negate.exp-balance

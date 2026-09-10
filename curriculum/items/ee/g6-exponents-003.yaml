@@ -1,0 +1,18 @@
+id: g6.ee.exponents.003
+skills: [g6.ee.exponents]
+difficulty: 3
+representation: number-line
+params: { c: 15 }
+generator: { c: { set: [13, 15, 16, 17, 18, 19] } }
+widget: { type: numeric-input, config: { stem: "Evaluate: {c}²." } }
+answer: { type: expr, value: "{c*c}", form: evaluated, integer: true }
+misconceptions:
+  - id: multiplied-by-two
+    when: "{2*c}"
+    says: "{c}² means {c} used as a FACTOR twice — {c} × {c} — not {c} × 2."
+hints:
+  - "{c}² means {c} used as a factor twice."
+  - "{c} × {c} = {c*c}."
+source: { book: ccss-ee-progression, section: "6.EE.A.1" }
+verify: "{answer / c == c}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

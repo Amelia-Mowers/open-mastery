@@ -86,12 +86,12 @@ const PREFETCH_CONCURRENCY = 3
  * fileOf() in scripts/voice-sentences.ts) */
 async function fileOf(snippet: string): Promise<string> {
   const digest = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(snippet))
-  return (
-    [...new Uint8Array(digest)]
-      .map((b) => b.toString(16).padStart(2, '0'))
-      .join('')
-      .slice(0, 20) + '.ogg'
-  )
+  const h = [...new Uint8Array(digest)]
+    .map((b) => b.toString(16).padStart(2, '0'))
+    .join('')
+    .slice(0, 20)
+  // sharded by the first two hex chars: HF caps a directory at 10k files
+  return `${h.slice(0, 2)}/${h}.ogg`
 }
 
 function storedVolume(): number {

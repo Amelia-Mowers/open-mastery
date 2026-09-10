@@ -1,6 +1,6 @@
 id: prealg.lineq.divide
 name: Solve ax = b using the Division Property of Equality
-short: "Find x when it was multiplied"
+short: "Find {variable} when it was multiplied"
 preamble:
   plain: "Here the hidden number was multiplied, and we only see the result. To find it, we divide both sides by that same number — and x is left on its own."
   vocab:

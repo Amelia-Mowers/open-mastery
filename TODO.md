@@ -109,6 +109,12 @@ Not K–12 — the middle-school band plus the parent's view:
       DISPLAY text only — spoken text is enumerated from the same
       builders, so route the substitution through a display-only step or
       the corpus hash churns.
+- [ ] isomorphs-only items are never check-eligible (found 2026-09-09):
+      `isCheckEligible` (cairn/src/core/curriculum.ts:65) and the
+      [check_items] invariant both require `generator != null`, but
+      curriculum/CLAUDE.md says to PREFER `isomorphs:` when difficulty
+      matters — following the doc silently exempts an item from checks.
+      Either make curated pools check-eligible or fix the doc.
 - [ ] Per-problem difficulty analytics (enabled by discrete pools):
       (itemId, paramHash) now has repeated observations — aggregate
       per-instance correct rates in the guide view; later IRT-style

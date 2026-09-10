@@ -44,7 +44,11 @@ try {
 const have = new Set()
 for await (const f of listFiles({ repo, accessToken: token })) have.add(f.path)
 
-const local = readdirSync(dir).filter((f) => f.endsWith('.ogg'))
+// recursive: the corpus is sharded into 2-hex-prefix directories
+const local = readdirSync(dir, { recursive: true })
+  .map(String)
+  .map((f) => f.replaceAll('\\', '/'))
+  .filter((f) => f.endsWith('.ogg'))
 const todo = local.filter((f) => process.env.FORCE || !have.has(f))
 
 if (process.env.PRUNE) {

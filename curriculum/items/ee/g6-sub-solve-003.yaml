@@ -1,0 +1,21 @@
+id: g6.ee.sub-solve.003
+skills: [g6.ee.sub-solve]
+difficulty: 3
+representation: tape-diagram
+params: { p: 167, d: 248, variable: x }
+generator: { p: { int: [130, 290] }, d: { int: [300, 480] } }
+widget: { type: equation-input, config: { stem: "Solve: {variable} − {p} = {d}." } }
+answer: { type: expr, value: "{variable} = {p+d}", equivalence: symbolic, form: evaluated, integer: true }
+misconceptions:
+  - id: subtracted-instead-of-added
+    when: "{d-p}"
+    says: "That's {d} MINUS {p}. The {p} was already taken away — to get {variable} back whole, add {p} to both sides."
+  - id: answered-the-remainder
+    when: "{d}"
+    says: "{d} is what was LEFT after the {p} came off. {variable} is the whole amount before that — put the {p} back: {d} + {p}."
+hints:
+  - "What operation undoes subtracting {p}?"
+  - "Add {p} to both sides: {variable} = {d} + {p}."
+source: { book: ccss-ee-progression, section: "6.EE.B.7" }
+verify: "{answer - p == d}"
+review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }
