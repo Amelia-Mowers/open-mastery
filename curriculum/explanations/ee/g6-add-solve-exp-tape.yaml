@@ -4,7 +4,7 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", " + {p}", " = ", "{p+d}"], cells: ["{variable}", "{p}"], total: "{p+d}", cellsIn: 0, totalIn: false }, caption: "An empty bar — the equation builds it, piece by piece." }
+  - { t: 0, patch: { equation: ["{variable}", " + {p}", " = ", "{p+d}"], cells: ["{variable}", "{p}"], total: "{p+d}", cellsIn: 0, totalIn: false }, caption: "{variable} + {p} = {p+d}: {variable} and {p} together make {p+d}." }
   - t: 4
     patch: { eqHighlight: ["0"], cellsIn: 1, highlight: ["1"] }
     caption: "{variable} is the first piece of the bar — the part we are looking for."

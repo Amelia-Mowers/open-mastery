@@ -796,6 +796,20 @@ scrubbing back). Author them under the caption rules above:
 - Any change here is voice-corpus copy: render + upload before deploy
   (`cairn/scripts/check-voice-coverage.ts` lists what is missing).
 
+## The OPENER states the problem's mathematics (Mia, 2026-09-11)
+
+"The problem in symbols — each side takes its place on the scale" is
+FILLER: it fits any lesson unchanged (the portability test), so it
+says nothing — and on a first lesson it is doubly dead, because the
+rep beat just introduced the picture. The same goes for numberless
+method statements ("Both sides need simplifying", "One known pair
+unlocks every other row"): true, portable, empty. Open with the problem's OWN
+mathematics, numbers in the sentence ("{variable} + {p} = {p+d}:
+{variable} with {p} added makes {p+d}."); a pointer at the picture
+may TRAIL, never lead. "On the board:" and its kin add nothing — the
+board is visibly there. Watch [gate_telegraph]: the opener must state
+the PROBLEM, not the decomposition facts the first gates ask.
+
 ## Lead with what it IS
 
 Opening captions teach the concept AFFIRMATIVELY ("6² means a square:

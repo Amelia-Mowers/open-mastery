@@ -4,7 +4,7 @@ representation: tape-diagram
 widget: tape-diagram
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{variable}", "/{a}", " = ", "{b}"], parts: "{a}", partLabel: "", total: "{variable}", totalIn: false, removed: "others" }, caption: "A tape of equal parts — the equation says how many." }
+  - { t: 0, patch: { equation: ["{variable}", "/{a}", " = ", "{b}"], parts: "{a}", partLabel: "", total: "{variable}", totalIn: false, removed: "others" }, caption: "{variable}/{a} = {b}: {b} is ONE of {variable}'s {a} equal parts." }
   - t: 4
     patch: { removed: [], eqHighlight: ["1"] }
     caption: "{a} equal parts — and the equation says what ONE is worth."
