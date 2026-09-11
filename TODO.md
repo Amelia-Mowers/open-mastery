@@ -139,6 +139,14 @@ Not K–12 — the middle-school band plus the parent's view:
 - [ ] Grading consistency: some expr items lack form: evaluated (28/4
       accepted for x = 7); sign-dropped wrong answers (x=−6 for
       4(x+3)=−36, 3x − 6) have no hooks.
+- [ ] Erroneous-example gate kind (GOLDEN_WIDGET §8b.4, Booth et al.
+      2013): a gate that shows a plausible WRONG move and asks what
+      broke — the misconception catalog ({id, when, says}) is already
+      the content. Needs a gate type + player UI + authoring rules.
+- [ ] test-proportional teaches only the YES case; the mastery check
+      is the first NO a student ever sees (batch-4 review; grounded in
+      contrasting cases, GOLDEN_WIDGET §8b.5). Add a NO-table beat or
+      a second worked pass on a non-proportional table.
 - [ ] Per-problem difficulty analytics (enabled by discrete pools):
       (itemId, paramHash) now has repeated observations — aggregate
       per-instance correct rates in the guide view; later IRT-style

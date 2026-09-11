@@ -150,6 +150,155 @@ Run this once per slab, before the first skill is written:
    `representation:` matches, `verify:` on those items.
 
 
+## 8. Pedagogical grounding (2026-09-11) — the standard against the literature
+
+A review of §1–7 against the learning-science literature, plus new
+guidelines it produced. Citations are the load-bearing ones; each
+names the finding we rely on, not just a paper.
+
+### 8a. Existing rules the literature supports
+
+- **Stepwise gates + manual Continue (segmenting under learner
+  control).** Presenting an animated explanation in learner-paced
+  segments beats continuous presentation (Mayer & Chandler 2001, *J.
+  Educational Psychology* 93). Our clock-holds at caption boundaries
+  and Continue-gated beats are this principle; keep every autoplaying
+  sequence pausable and scrubbable.
+- **Gates that MOVE the picture ([gate_moves_nothing]).** Behavioral
+  activity is not cognitive activity: interaction helps only when the
+  action forces processing of the content (generative learning;
+  Fiorella & Mayer 2016, *Educational Psychology Review* 28). A click
+  that changes nothing is decoration; a confirm that performs the
+  student's move is the model being built.
+- **Progressive reveal / never print the answer.** Generating an
+  answer beats reading it (generation effect, Slamecka & Graf 1978;
+  testing effect, Roediger & Karpicke 2006, *Psychological Science*
+  17). Our labelled/cellsIn/reveal staging is the widget-level form.
+- **The scaffolded lead + expertise-reversal guard.** Worked examples
+  with steps that fade as competence grows outperform both pure
+  problem solving and unfaded examples (Renkl & Atkinson 2003,
+  *Educational Psychologist* 38); guidance that helps novices HARMS
+  more advanced learners (expertise reversal, Kalyuga et al. 2003,
+  *Educational Psychologist* 38). The answer-box skip keeping full
+  credit is exactly the reversal guard.
+- **Misconception diagnosis over "wrong, try again."** Elaborated
+  feedback that says what-and-why beats verification-only feedback
+  (Shute 2008, *Review of Educational Research* 78). Our {id, when,
+  says} standard is the authored form of this.
+- **eqHighlight/mark pairing (signaling).** Visual cues that direct
+  attention to the named element improve learning from complex
+  visuals (signaling principle: van Gog, in Mayer's *Cambridge
+  Handbook of Multimedia Learning*, 2014). Symbol → region pairing is
+  signaling done twice over.
+- **Vocab beats before the lesson (pre-training).** Learning the
+  names and characteristics of components BEFORE the causal story
+  reduces load during it (pre-training principle, Mayer & Pilegard,
+  *Cambridge Handbook*, 2014).
+- **Preamble voice ("we/you", across-a-table).** Conversational style
+  outperforms formal style in multimedia lessons (personalization
+  principle, Mayer 2014).
+- **Rotation + rep intros (teach a picture before serving it).**
+  Multiple external representations pay off only when the learner can
+  translate between them — each new representation carries a real
+  learning cost that must be paid deliberately (Ainsworth 2006, the
+  DeFT framework, *Learning and Instruction* 16). Teaching an unseen
+  representation before the first item framed in it IS paying that
+  cost; serving it cold is where MERs fail.
+- **Concreteness fading (models fade toward the worked board;
+  [worked_primary]).** Beginning concrete and explicitly fading to
+  the abstract outperforms either alone (Fyfe, McNeil, Son &
+  Goldstone 2014, *Educational Psychology Review* 26). instruction[]
+  ordering with worked-equation never first is this, catalog-wide.
+- **Negate leaving the balance.** The balance model is empirically
+  weak for equations with negative terms — students' errors cluster
+  exactly there, and the model "detaches" (Vlassis 2002, *Educational
+  Studies in Mathematics* 49; echoed across the 34-study review of
+  Otten, Van den Heuvel-Panhuizen & Veldhuis 2019, *International
+  Journal of STEM Education* 6:30). The 2026-09-10 ruling (opposite-
+  flip instead) is what the literature recommends.
+- **Motion carries meaning only.** Animation helps only when the
+  motion corresponds to the conceptual change and is learner-paced;
+  otherwise statics do as well or better (Tversky, Morrison &
+  Bétrancourt 2002, *Int. J. Human-Computer Studies* 57 — the
+  congruence and apprehension principles). House motion rules (§5)
+  already say this; treat decorative motion as a defect.
+
+### 8b. New guidelines (adopted 2026-09-11)
+
+1. **Comparison is SIMULTANEOUS or it isn't comparison.** Comparing
+   two methods/objects side by side builds flexibility and conceptual
+   knowledge better than studying them sequentially (Rittle-Johnson &
+   Star 2007, *J. Educational Psychology* 99). When a lesson's point
+   is that two things are equivalent or one is better, both must be
+   on screen at once, aligned for the eye: the derive-table's
+   original|rewritten columns, compare-rates' two arcs on one line.
+   Never "show A, clear, show B".
+2. **One new element per step.** Element interactivity is the load
+   that matters (Sweller's cognitive load theory): a patch that
+   introduces two new pieces at once (a region AND a badge AND a
+   relabel) splits attention. If a confirm needs to change several
+   things, stage them across the confirm animation, dominant first.
+3. **Signal sparsely and transiently.** One mark/highlight at a time;
+   clear it when the narration moves on (mark: null). A board with
+   three simultaneous highlights signals nothing (signaling works by
+   SELECTION — van Gog 2014).
+4. **Erroneous examples are teaching material, not just feedback.**
+   Explaining why a WRONG worked step is wrong builds conceptual
+   knowledge beyond correct examples alone (Booth, Lange, Koedinger &
+   Newton 2013, *Learning and Instruction* 25). Queued direction: a
+   gate kind that shows a plausible wrong move and asks what broke —
+   the misconception catalog is already the content for it.
+5. **Contrast before telling.** A concept lands harder when the
+   learner has first grappled with cases that differ in exactly the
+   critical feature (contrasting cases: Schwartz & Bransford 1998,
+   *Cognition and Instruction* 16). test-proportional's YES table
+   needs its NO neighbor (currently the mastery check is the first NO
+   a student ever sees — backlogged as a timeline fix).
+6. **Keep captions short because they are narrated.** Narrating text
+   that is also printed at length risks the redundancy effect (Mayer;
+   Kalyuga, Chandler & Sweller). Our resolution: SYMBOLS live on the
+   board, the caption is 1–2 short sentences, and the voice reads
+   only the caption. A caption long enough to wrap thrice is a
+   redundancy bug even if the copy is good.
+7. **The number line's power is its linearity.** Linear-board
+   experience causally improves numerical magnitude knowledge (Siegler
+   & Ramani 2009, *J. Educational Psychology* 101; Booth & Siegler
+   2008). So: equal-interval ticks always, 0 labeled (shipped
+   2026-09-10), never a nonlinear or broken axis, and never reuse the
+   line for a relation it cannot pace out linearly.
+8. **Retrieval is the review; keep reviews raw.** Long-term retention
+   comes from retrieval practice, spaced (Roediger & Karpicke 2006;
+   Cepeda et al. 2006 meta-analysis) — FSRS reviews serving the raw
+   mastered form, unassisted, is the right call; resist making
+   reviews "nicer" with scaffolds.
+9. **Vary the surface, keep the structure.** A pool whose isomorphs
+   vary only digits teaches digit-blindness; varying non-critical
+   features (contexts, letters, which side the unknown sits) while
+   holding the critical structure is what makes the structure visible
+   (variation theory, Marton; interleaving, Rohrer & Taylor 2007,
+   *Instructional Science* 35). Prefer isomorph lists that vary a
+   surface feature deliberately, and let practice interleave skills
+   rather than block them.
+
+### 8c. Tensions to watch (research qualifies us, not the reverse)
+
+- **Rotation vs. fading.** Ainsworth's cost argument cuts both ways:
+  every added representation taxes the learner before it pays. Our
+  engine rotates representations through practice — right for
+  variety, but watch per-skill rep counts (3 is the floor, it should
+  not silently become 5) and never rotate before the first picture
+  has actually taught (the promised-instance mechanism is the guard).
+- **Guidance-first vs. productive failure.** Kapur (2008, *Cognition
+  and Instruction* 26) shows unscaffolded struggle BEFORE instruction
+  can outperform instruction-first for conceptual knowledge. Our
+  model is guidance-first everywhere. If we ever test an "attempt
+  before the lesson" flow, it is a policy experiment for pilot data,
+  not an authoring change.
+- **Immediate feedback.** We give it everywhere; Shute (2008) notes
+  delayed feedback can benefit transfer for able learners. Keep
+  immediate (right for procedural fluency and for children), but this
+  is a tunable, not a law.
+
 ## Invisible, never absent (2026-09-01)
 
 When a widget hides content that will appear later — an unfilled label,
