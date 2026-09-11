@@ -312,7 +312,18 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
               `the note on screen ('${note}') names the move this gate asks for — say it on the step that CONFIRMS the move instead`,
             )
           const prompt = st.expect?.prompt
-          if (prompt === undefined) continue
+          if (prompt === undefined) {
+            // the player falls back to a generic line ("Your move — write
+            // the next step"): vague, and disconnected from the caption
+            if (st.expect !== undefined)
+              push(
+                'warning',
+                'gate_no_prompt',
+                `${e.id}.timeline[${i}]`,
+                `this ${st.expect.type} gate has no prompt — the student gets the generic fallback; ask the question the move answers`,
+              )
+            continue
+          }
           if (!prompt.includes('?'))
             push(
               'warning',

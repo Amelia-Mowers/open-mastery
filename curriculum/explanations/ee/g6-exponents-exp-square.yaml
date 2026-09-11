@@ -11,7 +11,7 @@ timeline:
     expect:
       type: numeric
       value: "{c}"
-      prompt: "{c}² — how many rows does the square have?"
+      prompt: "How many rows does the square have?"
       hint: "The base {c} is the side length."
   - t: 8
     patch: { colsIn: true }

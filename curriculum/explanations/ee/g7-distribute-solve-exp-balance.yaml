@@ -15,6 +15,7 @@ timeline:
     expect:
       type: op
       value: "subtract {b}"
+      prompt: "What do you do to BOTH pans to clear the + {b}?"
       misconceptions:
         - id: multiplied-back
           when: "multiply {a}"

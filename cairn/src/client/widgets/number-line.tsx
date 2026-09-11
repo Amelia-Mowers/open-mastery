@@ -332,7 +332,7 @@ export const createNumberLine: WidgetFactory<NumberLineParams, NumberLineAnswer,
                     transition: 'color 0.25s ease, background 0.25s ease',
                   }}
                 >
-                  {shows(t) ? t : ''}
+                  {shows(t) ? String(t).replace('-', '−') : ''}
                 </span>
               </button>
             )

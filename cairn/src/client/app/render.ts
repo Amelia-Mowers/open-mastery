@@ -159,7 +159,9 @@ export function adaptNumberLinePatch(
         const label = j.label === undefined ? undefined : renderText(String(j.label), params)
         for (let i = 0; i < Math.max(0, Math.min(shown, count)); i++) {
           const arc: Arc = { from: start + i * size, to: start + (i + 1) * size }
-          if (label !== undefined) arc.label = label
+          // a long run repeating its size label on every hop is noise —
+          // past four jumps, the first label speaks for the row
+          if (label !== undefined && (count <= 4 || i === 0)) arc.label = label
           arcs.push(deco(j, arc))
         }
       }

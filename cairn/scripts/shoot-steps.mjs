@@ -66,17 +66,39 @@ it('steps', () => {
   if (!w) throw new Error('widget did not build')
   const { container, rerender } = render(<>{w.element}</>)
   const frames = []
+  const rt = (raw) => {
+    if (!raw) return ''
+    const r = renderTemplate(String(raw), params, { numberStyle: 'fraction' })
+    return r.ok ? r.value : String(raw)
+  }
+  // the equation banner is student-visible ABOVE the widget — sticky
+  // segments + highlights, exactly as the player derives them
+  let eq = null
+  let eqHl = []
   for (const st of e.timeline) {
     if (!st.patch) continue
     w.apply(st.patch)
     rerender(<>{w.element}</>)
+    if (Array.isArray(st.patch.equation)) eq = st.patch.equation.map((seg) => rt(seg))
+    if (Array.isArray(st.patch.eqHighlight)) eqHl = st.patch.eqHighlight.map(Number)
     // captions MUST go through the template engine, exactly as
     // LessonPlayer does (renderText). Dumping them raw made correct
     // lessons read as broken ("{a}·1 + {b}") in every review strip, and
     // would equally have hidden a real templating fault.
-    const raw = st.caption ?? ''
-    const r = raw ? renderTemplate(raw, params, { numberStyle: 'fraction' }) : null
-    frames.push({ t: st.t, html: container.innerHTML, caption: r?.ok ? r.value : raw })
+    const gate = st.expect
+      ? {
+          type: st.expect.type,
+          prompt: rt(st.expect.prompt) || '(default prompt)',
+          hint: rt(st.expect.hint),
+        }
+      : null
+    frames.push({
+      t: st.t,
+      html: container.innerHTML,
+      caption: rt(st.caption),
+      eq: eq ? eq.map((seg, i) => ({ seg, hl: eqHl.includes(i) })) : null,
+      gate,
+    })
   }
   writeFileSync(${JSON.stringify(join(tmp, 'frames.json'))}, JSON.stringify(frames))
 })
@@ -96,9 +118,11 @@ const page = `<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="
 ${frames
   .map(
     (f) => `<div style="background:#fffdf9;border:1px solid #e6ddd0;border-radius:12px;padding:16px;margin-bottom:14px">
-  <div style="font:700 11px sans-serif;letter-spacing:.08em;color:#b05f28;margin-bottom:10px">t=${f.t}</div>
+  <div style="font:700 11px sans-serif;letter-spacing:.08em;color:#b05f28;margin-bottom:10px">t=${f.t}${f.gate ? ' · GATE (' + f.gate.type + ')' : ''}</div>
+  ${f.eq ? '<div class="lesson-equation" style="margin-bottom:8px">' + f.eq.map((p) => '<span class="eq-seg' + (p.hl ? ' eq-hl' : '') + '">' + p.seg + '</span>').join('') + '</div>' : ''}
   <div style="max-width:520px;margin:0 auto">${f.html}</div>
   <p style="font:600 14px 'Lora',Georgia,serif;color:#5c5245;text-align:center;margin:14px 0 0">${f.caption}</p>
+  ${f.gate ? '<p style="font:600 13.5px \'Lora\',Georgia,serif;color:#8a4d1d;text-align:center;background:#faf3e8;border:1.5px dashed #d8cdbb;border-radius:10px;padding:8px 12px;margin:10px auto 0;max-width:480px">? ' + f.gate.prompt + (f.gate.hint ? '<br><span style="color:#8b8070;font-size:12.5px">hint: ' + f.gate.hint + '</span>' : '') + '</p>' : ''}
 </div>`,
   )
   .join('')}
@@ -118,7 +142,7 @@ try {
     [
       '--headless',
       '--disable-gpu',
-      `--window-size=600,${Math.min(4000, 150 + frames.length * 270)}`,
+      `--window-size=600,${Math.min(14000, 200 + frames.length * 560)}`,
       '--virtual-time-budget=25000',
       '--run-all-compositor-stages-before-draw',
       `--screenshot=${out}`,

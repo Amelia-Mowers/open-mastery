@@ -11,7 +11,7 @@ timeline:
     expect:
       type: numeric
       value: "{n}"
-      prompt: "{n}³ — the first factor: how far does ONE jump go?"
+      prompt: "The first factor: how far does ONE jump go?"
       hint: "The base {n} is the jump size."
   - t: 8
     patch: { jumps: { size: "{n}", count: "{n}", label: "+{n}" } }
@@ -36,7 +36,7 @@ timeline:
     expect:
       type: numeric
       value: "{n}"
-      prompt: "{n}³ — two factors made the big jump of {n*n}. How many big jumps does the LAST factor take?"
+      prompt: "Two factors made the big jump of {n*n}. How many big jumps does the LAST factor take?"
       hint: "Three factors: {n} × {n} × {n}. Two are spent inside each big jump — the one left counts them."
   - { t: 24, patch: { equation: ["{n}³", " = ", "{n*n*n}"], eqHighlight: ["2"], marker: "{n*n*n}", labelled: ["{n*n}", "{n*n*n}"] }, caption: "{n} jumps of {n*n} land on {n*n*n}. {n}³ = {n*n*n}." }
   - { t: 27, handoff: { prompt: "Now you try." } }

@@ -15,7 +15,7 @@ timeline:
       hint: "The count and the unknown it multiplies."
   - t: 8
     patch: { eqHighlight: ["3"], weightIn: true }
-    caption: "= {b}: the other side holds a weight of {b}. It balances."
+    caption: "The other side holds a weight of {b} — and the hanger balances."
     expect:
       type: pick
       value: ["3"]

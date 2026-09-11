@@ -14,6 +14,7 @@ timeline:
     expect:
       type: op
       value: "add {p}"
+      prompt: "What do you do to BOTH pans to make {variable} whole again?"
       misconceptions:
         - id: subtracted-instead-of-added
           when: "subtract {p}"

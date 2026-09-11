@@ -11,7 +11,7 @@ timeline:
     expect:
       type: numeric
       value: "{c}"
-      prompt: "{c}² — the first factor: how far does ONE jump go?"
+      prompt: "The first factor: how far does ONE jump go?"
       hint: "The base {c} is the jump size."
   - t: 8
     patch: { eqHighlight: [], jumps: { size: "{c}", count: "{c}", label: "+{c}" } }
