@@ -60,10 +60,13 @@ export function buildIndex(bundle: Bundle): CurriculumIndex {
   }
 }
 
-/** Check-item eligibility (§4.1 CI rule, §5): generator-backed, non-choice,
- * non-rubric, not a faded example. */
+/** Check-item eligibility (§4.1 CI rule, §5): a CLOSED POOL with at
+ * least two instances (a generator, or a curated isomorph list — the
+ * authoring preference, since curation pins difficulty), non-choice,
+ * non-rubric, not a faded example. Two instances is the floor so the
+ * check can serve an instance the student was not just practicing. */
 export const isCheckEligible = (it: Item): boolean =>
-  it.generator != null &&
+  (it.generator != null || (it.isomorphs?.length ?? 0) >= 2) &&
   it.widget.type !== 'choice' &&
   // a STRUCTURED input hands over the form of the answer ([ ]x [±] [ ] says
   // "two terms, sign between") — legitimate scaffolding for practice,

@@ -126,6 +126,12 @@ ${frames
 </div>`,
   )
   .join('')}
+<script>
+// the product pins capped boards to their newest line (a React effect
+// that serialized innerHTML cannot carry) — do the same before the shot
+for (const el of document.querySelectorAll('div'))
+  if (el.scrollHeight > el.clientHeight + 4) el.scrollTop = el.scrollHeight
+</script>
 </body>`
 const pagePath = join(dist, '_steps.html')
 writeFileSync(pagePath, page)

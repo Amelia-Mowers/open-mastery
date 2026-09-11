@@ -219,7 +219,10 @@ plus either generator seeds 1–19 (ISOMORPH_POOL) or a hand-authored
 **Prefer `isomorphs:` when difficulty matters**: random draws are swingy
 (3×5 and 13×12 as the "same" problem). A curated list pins each
 instance's difficulty — and misconception `when`s must avoid colliding
-on every LISTED set, which the validator checks exactly.
+on every LISTED set, which the validator checks exactly. Curated pools
+are fully CHECK-ELIGIBLE (≥2 isomorphs; ruled 2026-09-11) — the old
+generator-only eligibility is gone, so migrate toward curated lists as
+items get difficulty-reviewed.
 
 ## The skill graph derives from STANDARDS, not textbooks
 

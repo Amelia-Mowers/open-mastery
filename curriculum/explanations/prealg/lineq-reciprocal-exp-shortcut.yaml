@@ -4,7 +4,7 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{p}/{q} {variable} = {b}", mark: "{p}/{q}" }, caption: "{p}/{q} of {variable} makes {b} — only a fraction of {variable} is showing." }
+  - { t: 0, patch: { start: "{p}/{q} {variable} = {b}", mark: "{p}/{q}" }, caption: "{p}/{q} of {variable} makes {b} — the coefficient is a fraction, so only a fraction of {variable} is showing." }
   - { t: 4, patch: { line: "{q}/{p} · {p}/{q} {variable} = {q}/{p} · {b}", note: "the same move on both sides", mark: "{q}/{p}" }, caption: "× {q}/{p} on both sides — the same factor on BOTH sides keeps the equation true.", expect: { type: op, value: "multiply {q}/{p}", prompt: "{p}/{q} is in the way. What ONE factor on both sides turns it into 1?", hint: "A fraction times its reciprocal is 1. The reciprocal of {p}/{q} is {q}/{p}." } }
   - { t: 9, patch: { line: "{variable} = {q}/{p} · {b}", note: "reciprocals multiply to 1", mark: null }, caption: "A fraction times its reciprocal is 1 — the left side collapses to just {variable}." }
   - { t: 13, patch: { line: "{variable} = {q} · {b} ÷ {p}", note: "{q}/{p} of {b}, spelled out" }, caption: "First multiply: {q} · {b} = {q*b}. Then the ÷ {p}. So what is {variable}?" }

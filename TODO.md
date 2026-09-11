@@ -69,12 +69,7 @@ Not K–12 — the middle-school band plus the parent's view:
       invariant warnings) — shoot-steps.mjs already drives the widget
       this way; make it a `?view=zoo&exp=<id>&steps=1` route. Doubles as a
       student recap after the handoff once vetted.
-- [ ] `[vocab_unused]` invariant: a preamble term that no caption of the
-      skill's primary lesson ever says is defined, not taught (measured
-      2026-09-09: the four Properties of Equality, distributive property
-      and inverse appear in 0 captions). Pair with a caption pass that
-      names the term at the confirm step; pick IM's glossary over
-      OpenStax's where they differ.
+- [x] `[vocab_unused]` invariant — done (2026-09-11), plus [ascii_minus]; all 13 flags resolved by weaving the terms into their lessons.
 - [ ] Voice display/speech escape (designed 2026-09-02, build when first
       needed): `[[shown|spoken]]` in captions/prompts — display side in
       the caption renderer, spoken side inside mathToSpeech (shared with
@@ -93,31 +88,21 @@ Not K–12 — the middle-school band plus the parent's view:
       small 2 is a COUNT" — nothing marks the 2). Add a per-line
       highlight patch key (span or token index) mirroring eqHighlight,
       then retrofit the exp-worked captions that point at pieces.
-- [ ] worked-equation first line shrinks/re-wraps when later lines land
-      (2026-09-09 review, §5 stable footprint): reserve the final layout
-      from frame one — fixed font scale per board, not per line count.
-- [ ] renderText negative numbers print ASCII "-" (mixes with authored
-      "−" on the same board, 2026-09-09 review). Emit the true minus in
-      DISPLAY text only — spoken text is enumerated from the same
-      builders, so route the substitution through a display-only step or
-      the corpus hash churns.
-- [ ] isomorphs-only items are never check-eligible (found 2026-09-09):
-      `isCheckEligible` (cairn/src/core/curriculum.ts:65) and the
-      [check_items] invariant both require `generator != null`, but
-      curriculum/CLAUDE.md says to PREFER `isomorphs:` when difficulty
-      matters — following the doc silently exempts an item from checks.
-      Either make curated pools check-eligible or fix the doc.
+- [x] worked-equation first-line shrink — done (2026-09-11): one 24px
+      size for every line; emphasis is weight + color.
+- [x] display minus — done: renderText promotes value hyphens, ticks
+      print −, graders normalize U+2212, and [ascii_minus] lints
+      authored copy (2026-09-11).
+- [x] isomorphs check-eligibility — done (2026-09-11): curated pools
+      with ≥2 isomorphs are check-eligible in engine and validator;
+      migrate toward curated lists as items get difficulty-reviewed.
 - [ ] Stepwise lead reported blank once after clicking equation chips
       during the narration hold (2026-09-10 review, simplify-first
       balance; not reproducible on reload). If seen again: trace which
       click path fires while waitingOn is null and guard it.
-- [ ] Input–output tables should DERIVE, not verify (batch-5 review;
-      needs Mia's ruling per IM-FIRST): equivalent/combine exp-table
-      verify the rewritten expression against rows it never shows —
-      a two-column expression table (original | rewritten) would make
-      "matches for every x" visible, and combine's table never pairs
-      the like terms. Rep record split (input-output-table) is done;
-      the derive redesign is not.
+- [x] Input–output tables DERIVE — done (2026-09-11): equivalent,
+      combine and write-expression tables land the rewritten column;
+      evaluate is exempt (nothing rewritten — noted in its file).
 - [ ] Widget gaps still open from batch 5 (rest fixed 2026-09-11):
       the "15² draws 15 overlapping side labels" claim needs a repro
       (the widget draws one label per side); evaluate-table can't
@@ -128,14 +113,13 @@ Not K–12 — the middle-school band plus the parent's view:
 - [x] Grading consistency — done (2026-09-11: form: evaluated on the
       six worked final gates — items already carried it; dropped-the-
       sign and flipped-the-constant-sign hooks landed).
-- [ ] Erroneous-example gate kind (GOLDEN_WIDGET §8b.4, Booth et al.
-      2013): a gate that shows a plausible WRONG move and asks what
-      broke — the misconception catalog ({id, when, says}) is already
-      the content. Needs a gate type + player UI + authoring rules.
-- [ ] test-proportional teaches only the YES case; the mastery check
-      is the first NO a student ever sees (batch-4 review; grounded in
-      contrasting cases, GOLDEN_WIDGET §8b.5). Add a NO-table beat or
-      a second worked pass on a non-proportional table.
+- [ ] POSTPONED (Mia, 2026-09-11): erroneous-example gate kind
+      (GOLDEN_WIDGET §8b.4, Booth et al. 2013) — a gate that shows a
+      plausible WRONG move and asks what broke; the misconception
+      catalog is already the content. Revisit after the pilot cut.
+- [x] test-proportional NO case — done (2026-09-11): worked and table
+      lessons close on a contrast table whose changed pair breaks the
+      constant ({k+1} ≠ {k}), derived from the same family pool.
 - [ ] Per-problem difficulty analytics (enabled by discrete pools):
       (itemId, paramHash) now has repeated observations — aggregate
       per-instance correct rates in the guide view; later IRT-style

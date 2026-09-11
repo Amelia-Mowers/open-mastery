@@ -124,10 +124,13 @@ export function createWorkedEquation(
               )}
               <div
                 style={{
-                  font: `600 ${last ? 26 : 22}px 'Lora', Georgia, serif`,
+                  // ONE size for every line: the old 26→22 shrink re-wrapped
+                  // the opening line whenever a new line landed (§5 stable
+                  // footprint) — emphasis is weight + color now
+                  font: `${last ? 700 : 600} 24px 'Lora', Georgia, serif`,
                   color: last ? '#2e2822' : '#8b8070',
                   padding: '3px 0',
-                  transition: 'color 0.3s ease, font-size 0.3s ease',
+                  transition: 'color 0.3s ease',
                 }}
               >
                 {markedSpans(l.text, state.marks).map((seg, j) =>

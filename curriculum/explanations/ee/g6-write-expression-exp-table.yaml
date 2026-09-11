@@ -21,6 +21,13 @@ timeline:
       value: "{(p+3)*a+p}"
       prompt: "Feed it {p+3}: {a} × {p+3}, then {p} more — what comes out?"
       hint: "Same moves, new number."
-  - { t: 13, patch: { equation: ["{p} more than ", "{a} × {variable}", " → ", "{a}{variable} + {p}"], eqHighlight: ["3"] }, caption: "Times {a}, then {p} more: {a}{variable} + {p}." }
-  - { t: 16, handoff: { prompt: "Now you try." } }
+  - t: 13
+    patch: { equation: ["{p} more than ", "{a} × {variable}", " → ", "{a}{variable} + {p}"], eqHighlight: ["3"], cols: ["{variable}", "what comes out", "{a}{variable} + {p}"], rows: [["{p+1}", "{(p+1)*a+p}", "{(p+1)*a+p}"], ["{p+3}", "{(p+3)*a+p}", "{(p+3)*a+p}"]], reveal: "2", highlight: null }
+    caption: "{a}{variable} + {p} gets its own column — the SAME numbers, row for row. Times {a}, then {p} more, for every {variable}."
+    expect:
+      type: expr
+      value: "{a}{variable} + {p}"
+      prompt: "In symbols — what expression gives every row?"
+      hint: "Times {a} first, then + {p}: {a}{variable} + {p}."
+  - { t: 17, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-01 }

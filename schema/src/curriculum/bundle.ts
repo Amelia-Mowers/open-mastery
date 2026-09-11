@@ -103,6 +103,77 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
   const skillById = new Map(bundle.skills.map((s) => [s.id, s]))
   const itemById = new Map(bundle.items.map((i) => [i.id, i]))
   const explById = new Map(bundle.explanations.map((e) => [e.id, e]))
+
+  // ---- a taught term must be USED ([vocab_unused], 2026-09-11) ----
+  // A vocab beat teaches a word; if no caption, note, prompt or hint of
+  // the skill's explanations ever uses it, the beat trains "skip these"
+  // (expand/sales tax/complex fraction all shipped unused before this).
+  // Substring match on the lowercased term covers inflections
+  // ("expand" hits "expanded").
+  {
+    const explText = new Map<string, string>()
+    for (const e of bundle.explanations) {
+      let t = ''
+      for (const st of e.timeline) {
+        if (st.caption) t += ' ' + st.caption
+        if (typeof st.patch?.['note'] === 'string') t += ' ' + st.patch['note']
+        if (st.expect?.prompt) t += ' ' + st.expect.prompt
+        if (st.expect?.hint) t += ' ' + st.expect.hint
+        if (st.handoff?.prompt) t += ' ' + st.handoff.prompt
+      }
+      explText.set(e.id, t.toLowerCase())
+    }
+    for (const sk of bundle.skills) {
+      const vocab = sk.preamble?.vocab ?? []
+      if (vocab.length === 0) continue
+      const text = bundle.explanations
+        .filter((e) => e.skill === sk.id)
+        .map((e) => explText.get(e.id) ?? '')
+        .join(' ')
+      for (const v of vocab) {
+        const term = v.term.toLowerCase()
+        if (!text.includes(term))
+          push(
+            'warning',
+            'vocab_unused',
+            sk.id,
+            `the vocab beat teaches '${v.term}' but no caption, note, prompt or hint of the skill's lessons uses it — use the word you teach, or drop the beat`,
+          )
+      }
+    }
+  }
+
+  // ---- display copy uses the true minus ([ascii_minus], 2026-09-11) ----
+  // "−k = -8" mixing glyphs was a live review finding. Templates ({-b},
+  // {a-c}) are stripped first — hyphens INSIDE braces are expression
+  // syntax, not display.
+  {
+    const flag = (where: string, src: unknown): void => {
+      if (typeof src !== 'string') return
+      const t = src.replace(/\{[^}]*\}/g, '#')
+      if (/(^|[\s(=·×÷+,])-\d/.test(t) || /[\d#)a-z] - [\d#(a-z]/i.test(t))
+        push(
+          'warning',
+          'ascii_minus',
+          where,
+          `display copy uses an ASCII hyphen as a minus ('${src.slice(0, 50)}…') — use −`,
+        )
+    }
+    for (const e of bundle.explanations)
+      e.timeline.forEach((st, i) => {
+        const where = `${e.id}.timeline[${i}]`
+        flag(where, st.caption)
+        flag(where, st.expect?.prompt)
+        flag(where, st.expect?.hint)
+        flag(where, st.patch?.['note'])
+        flag(where, st.patch?.['start'])
+        const line = st.patch?.['line']
+        if (typeof line === 'string') flag(where, line)
+        else if (Array.isArray(line)) for (const l of line) flag(where, l)
+        const eq = st.patch?.['equation']
+        if (Array.isArray(eq)) for (const seg of eq) flag(where, seg)
+      })
+  }
   // ---- every representation a lesson draws in has an intro record ----
   // (a representation met cold is the bug the intro beat exists to fix;
   // a bundle with no records at all is an older shape or a fixture and
@@ -842,7 +913,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
     const checkEligible = bundle.items.filter(
       (it) =>
         it.skills.includes(s.id) &&
-        it.generator != null &&
+        (it.generator != null || (it.isomorphs?.length ?? 0) >= 2) &&
         it.widget.type !== 'choice' &&
         // structured inputs (term-input) hand over the answer's form —
         // practice scaffolding, never check evidence (mirrors
@@ -857,7 +928,7 @@ export function validateBundle(bundle: Bundle, opts: ValidateOptions = {}): Issu
         gate,
         'check_items',
         s.id,
-        `needs ≥2 generator-backed, non-choice, non-rubric, non-structured items eligible as check items (has ${checkEligible.length})`,
+        `needs ≥2 closed-pool (generator or ≥2 isomorphs), non-choice, non-rubric, non-structured items eligible as check items (has ${checkEligible.length})`,
       )
     // FORM-MISMATCH guard (fail loudly): an item's declared representation
     // names the explanation its walkthrough prefers. If that explanation

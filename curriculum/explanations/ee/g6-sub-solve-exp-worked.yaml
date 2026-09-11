@@ -6,6 +6,6 @@ params_from: item
 timeline:
   - { t: 0, patch: { start: "{variable} − {p} = {d}", mark: "− {p}" }, caption: "{variable} with {p} taken away. The − {p} is all that stands between {variable} and its value." }
   - { t: 4, patch: { line: "{variable} − {p} + {p} = {d} + {p}", note: "the same move on both sides", mark: "+ {p}" }, caption: "+ {p} on both sides — that is what undoes the − {p}. The {p}s cancel: what is {variable}?", expect: { type: op, value: "add {p}", prompt: "What do you do to BOTH sides to put the {p} back?", hint: "{p} is SUBTRACTED from {variable}. The opposite of subtracting {p} is adding {p} — on both sides." , misconceptions: [ { id: subtracted-instead-of-added, when: "subtract {p}", says: "The {p} was already taken away — taking away more leaves even less. Put it back: add {p} to both sides." } ] } }
-  - { t: 8.5, patch: { line: "{variable} = {p+d}", note: "−{p} + {p} = 0", mark: null }, caption: "{variable} = {p+d}.", expect: { type: expr, value: "{variable} = {p+d}", form: evaluated, prompt: "The {p}s cancel — simplify. What is {variable}?" } }
+  - { t: 8.5, patch: { line: "{variable} = {p+d}", note: "−{p} + {p} = 0", mark: null }, caption: "{variable} = {p+d}. Adding the same amount to both sides kept it true — the Addition Property of Equality.", expect: { type: expr, value: "{variable} = {p+d}", form: evaluated, prompt: "The {p}s cancel — simplify. What is {variable}?" } }
   - { t: 11, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

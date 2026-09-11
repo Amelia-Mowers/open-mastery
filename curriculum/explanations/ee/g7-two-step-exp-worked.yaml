@@ -4,7 +4,7 @@ representation: worked-equation
 widget: worked-equation
 params_from: item
 timeline:
-  - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}", mark: ["{a}{variable}", "+ {b}"] }, caption: "TWO things are done to {variable}: multiplied by {a}, then {b} added — and the order they come off matters." }
+  - { t: 0, patch: { start: "{a}{variable} + {b} = {a*ans+b}", mark: ["{a}{variable}", "+ {b}"] }, caption: "TWO things are done to {variable}: multiplied by {a}, then {b} added — a two-step equation, and the order they come off matters." }
   - t: 4
     patch: { line: "{a}{variable} + {b} − {b} = {a*ans+b} − {b}", note: "the same move on both sides", mark: "− {b}" }
     caption: "The add came LAST, so it comes off FIRST — undo in reverse order."

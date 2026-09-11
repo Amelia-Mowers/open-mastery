@@ -13,7 +13,16 @@ timeline:
       value: "{k}"
       prompt: "Row 1 first — what is its y divided by its x?"
       hint: "{a*k} ÷ {a}."
-  - { t: 8, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "Row three: {e} and {e*k}. {e*k} ÷ {e} — does it match, and is the table proportional?" }
+  - { t: 8, patch: { eqHighlight: [], reveal: "3", highlight: "3" }, caption: "Row three: {e} and {e*k} — the last check before the verdict." }
   - { t: 12, patch: { eqHighlight: ["3"], highlight: null }, caption: "{e*k} ÷ {e} = {k}. Same in EVERY row → proportional, with k = {k}." }
-  - { t: 15, handoff: { prompt: "Now you try." } }
+  - { t: 16, patch: { eqHighlight: [], cols: ["x", "y"], rows: [["{a}", "{a*k}"], ["{c}", "{c*k+c}"], ["{e}", "{e*k}"]], reveal: "2", highlight: "2" }, caption: "Now a DIFFERENT table, same test. Row 1 still gives {k} — does the changed row 2?" }
+  - t: 20
+    patch: { reveal: "2", highlight: "2" }
+    caption: "{c*k+c} ÷ {c} = {k+1}, not {k} — ONE different row breaks it: NOT proportional."
+    expect:
+      type: numeric
+      value: "{k+1}"
+      prompt: "The changed row — what is its y divided by its x?"
+      hint: "{c*k+c} ÷ {c}."
+  - { t: 24, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }
