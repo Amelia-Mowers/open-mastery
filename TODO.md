@@ -62,16 +62,8 @@ Not K–12 — the middle-school band plus the parent's view:
       stepwise lead inert after verdict, phone header wrap. Still open
       elsewhere in this file: ladder-retry-stepwise, scaffold_step
       events, chunk-size for Pi/Android.
-- [ ] VOICE CORPUS: FINISH THE RENDER (handed off 2026-09-09). The intro
-      rework (spoken headlines, friendlier preambles, the per-instance
-      "Here's how it works on a problem like …" bridge) owes ~800
-      sentences; ~620 are rendered and pushed as files only
-      (MANIFEST=0). On the desktop: `REMOTE=1 node
-      --experimental-transform-types scripts/render-voice-corpus.ts`
-      (REMOTE now also counts files already in the repo, so only the
-      remainder renders; use render-voice-corpus-gpu.sh for cuda), then
-      `node scripts/upload-voice-corpus.mjs` WITH the manifest, then
-      `npm run voice:check`. Until then the Pages deploy fails on coverage.
+- [x] VOICE CORPUS render backlog — done (2026-09-11: 11,138 sentences
+      live, sharded ab/…, single-commit uploader, coverage green).
 - [ ] Storyboard view for review: every step of a timeline as one row
       (widget state, caption, gate prompt, hint, misconception line,
       invariant warnings) — shoot-steps.mjs already drives the widget
@@ -126,19 +118,16 @@ Not K–12 — the middle-school band plus the parent's view:
       "matches for every x" visible, and combine's table never pairs
       the like terms. Rep record split (input-output-table) is done;
       the derive redesign is not.
-- [ ] Widget gaps from batch 5: cube/exponents banner can't light base
-      vs exponent separately ("4³" is one segment); 15² draws 15
-      overlapping side labels; multiply-nl step 1 shows an empty line
-      under a caption about parts; reciprocal-nl never draws the {p}
-      parts the division rests on; evaluate-table can't highlight the
-      substituted cell alone.
-- [ ] Item-pool depth: several skills still serve the same item as raw
-      practice AND mastery check (cube/evaluate/exponents .003,
-      unit-rate, reciprocal, divide/multiply tape items) — one
-      check-eligible item per skill. Authoring slab.
-- [ ] Grading consistency: some expr items lack form: evaluated (28/4
-      accepted for x = 7); sign-dropped wrong answers (x=−6 for
-      4(x+3)=−36, 3x − 6) have no hooks.
+- [ ] Widget gaps still open from batch 5 (rest fixed 2026-09-11):
+      the "15² draws 15 overlapping side labels" claim needs a repro
+      (the widget draws one label per side); evaluate-table can't
+      highlight the substituted CELL alone (cell-level highlight is a
+      ratio-table extension).
+- [x] Item-pool depth — done (2026-09-11: seven sibling check items,
+      80 items total; raw practice and mastery check no longer share).
+- [x] Grading consistency — done (2026-09-11: form: evaluated on the
+      six worked final gates — items already carried it; dropped-the-
+      sign and flipped-the-constant-sign hooks landed).
 - [ ] Erroneous-example gate kind (GOLDEN_WIDGET §8b.4, Booth et al.
       2013): a gate that shows a plausible WRONG move and asks what
       broke — the misconception catalog ({id, when, says}) is already
