@@ -1,5 +1,13 @@
 /** Screenshot EVERY STEP of a lesson timeline, not just its final frame.
  *
+ * READING A STRIP: each frame shows the state AFTER that step's patch
+ * (patch-at-confirm). A gate chip under a frame is the question asked
+ * BEFORE that state existed — so a highlight visible in the same frame
+ * as its gate is usually the CONFIRM, not a telegraph. Judge leaks
+ * against the PREVIOUS frame, which is what the student sees while the
+ * gate is open. Capped boards are scroll-pinned to their newest line,
+ * as in the product.
+ *
  * scripts/shoot-widgets.sh captures one image per explanation — the resting
  * state — which is exactly why mid-animation faults (arcs adrift, strokes
  * too thin, a value that never appears) kept reaching the user. This drives
