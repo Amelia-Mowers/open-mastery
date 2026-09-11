@@ -47,7 +47,7 @@ timeline:
     expect:
       type: numeric
       value: "{d}"
-      prompt: "Look at the bar: {p+d} across, and {p} of it is the second piece. How long is the first piece?"
+      prompt: "The {p} section is off, and {p} came off the total with it. How long is the piece that is left — {variable}?"
       hint: "Cover the {p} section. What is left of the {p+d}?"
   - { t: 24, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

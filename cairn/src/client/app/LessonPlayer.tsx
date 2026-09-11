@@ -108,7 +108,15 @@ function tapeSetup(
     const p = s.patch
     if (!p) continue
     // bar-model form: unequal labeled cells
+    // a tape is a LENGTH: a negative cell or total has no width. An item
+    // with a negative pool sharing this family's identifiers (divide.004)
+    // must fall back to caption-only, not draw a minus-long bar
+    const nonNegative = (v: unknown): boolean => {
+      const n = evalNumber(v, params)
+      return n === null || n >= 0
+    }
     if ('cells' in p && Array.isArray(p['cells']) && 'total' in p) {
+      if (!(p['cells'] as unknown[]).every(nonNegative) || !nonNegative(p['total'])) return null
       const cells = (p['cells'] as unknown[]).map((v) => renderText(String(v), params))
       if (cells.length < 1 || cells.length > 10) return null
       return {
@@ -121,6 +129,7 @@ function tapeSetup(
     if (!('parts' in p) || !('partLabel' in p) || !('total' in p)) continue
     const parts = evalNumber(p['parts'], params)
     if (parts === null || parts < 1 || parts > 14) return null
+    if (!nonNegative(p['total'])) return null
     return {
       parts,
       partLabel: renderText(String(p['partLabel']), params),

@@ -41,6 +41,6 @@ timeline:
         - id: divided-instead-of-multiplied
           when: "divide {a}"
           says: "{variable} is already cut into {a} parts — dividing again makes them smaller. To rebuild the whole, multiply."
-  - { t: 20, patch: { total: "{a*b}", highlight: [] }, caption: "{b} × {a} = {a*b}. The whole bar — {variable} — is {a*b}." }
+  - { t: 20, patch: { equation: ["{variable}", " = ", "{a*b}"], total: "{variable} = {a*b}", highlight: [] }, caption: "{b} × {a} = {a*b}. The whole bar — {variable} — is {a*b}." }
   - { t: 23, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

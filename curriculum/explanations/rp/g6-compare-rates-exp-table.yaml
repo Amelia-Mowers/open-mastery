@@ -25,7 +25,7 @@ timeline:
       hint: "Share ${(u+d)*a2} equally across the {a2} pencils."
   - t: 20
     patch: { eqHighlight: ["0"], highlight: "2" }
-    caption: "${u} beats ${u+d}: Pack A is the better buy."
+    caption: "${u} is less than ${u+d}: Pack A is the better buy."
     expect:
       type: pick
       value: ["0"]
