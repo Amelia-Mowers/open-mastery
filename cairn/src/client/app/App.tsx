@@ -235,17 +235,26 @@ function AboutPanel() {
         An open-source, <b>mastery-based math program</b>. Your student works along a skill
         graph and doesn&rsquo;t move on until they&rsquo;ve shown they understand each skill;
         spaced review brings mastered skills back before they fade. The demo carries a growing
-        slice of grades 6 and 7 — not yet either full course. The middle-school band is being
-        finished for our fall pilot, with grades 3&ndash;5 and 9&ndash;12 to follow.
+        slice of grades 6 and 7 — the middle-school band is being finished for our fall pilot,
+        with grades 3&ndash;5 and 9&ndash;12 to follow.
       </p>
-      <p>
-        No multiple choice: answers are typed, or built move by move — like sorting the pieces
-        of an equation onto a balance scale. Every skill is taught with animated, fully narrated
-        lessons in several pictures (a balance scale, a bar model, a number line, the worked
-        symbols), and a stuck student can watch the exact problem in front of them worked
-        through. Wrong answers get feedback that names the actual mistake, not just &ldquo;try
-        again.&rdquo;
-      </p>
+      <ul className="about-features">
+        <li>
+          No multiple choice — answers are typed, or built move by move, like sorting the
+          pieces of an equation onto a balance scale.
+        </li>
+        <li>
+          Animated, fully narrated lessons in several pictures: a balance scale, a bar model, a
+          number line, the worked symbols.
+        </li>
+        <li>
+          Stuck on a problem? Watch that exact problem worked through, step by step.
+        </li>
+        <li>
+          Wrong answers get feedback that names the actual mistake, not just &ldquo;try
+          again.&rdquo;
+        </li>
+      </ul>
       <p className="muted">
         The demo runs entirely in your browser — no account, no server; answers and progress
         never leave this device. Type a name below to try it as a student.{' '}

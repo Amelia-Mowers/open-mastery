@@ -648,6 +648,10 @@ body {
 }
 .stem { animation: stem-in 0.5s ease; border-radius: 8px; }
 
+/* landing feature list */
+.about-features { margin: 10px 0 14px; padding-left: 22px; }
+.about-features li { margin: 6px 0; line-height: 1.5; }
+
 /* ---- guide dashboard ---- */
 .guide-flag {
   /* a pause worth a look, not an alarm: warm amber, never a red wall */
