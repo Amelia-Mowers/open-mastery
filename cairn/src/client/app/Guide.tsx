@@ -301,72 +301,109 @@ function StudentDetail({
             {d.placedGrade !== null && ` · started at grade ${d.placedGrade}`}
           </p>
 
-          <h3 className="guide-detail-h">Where the moves break</h3>
+          <h3 className="guide-detail-h">Sticking points</h3>
           {d.stuck.length === 0 ? (
             <p className="muted">
               Nothing sticking out yet — no step has been missed more than once.
             </p>
           ) : (
-            <ul className="guide-stuck">
-              {d.stuck.slice(0, 6).map((sk) => {
-                const named = Object.entries(sk.misconceptions).sort((a, b) => b[1] - a[1])[0]
-                return (
-                  <li key={`${sk.explanationId}#${sk.stepIndex}`}>
-                    <strong>{sk.skillName}</strong> · step {sk.stepIndex + 1}
-                    <span className="muted">
-                      {' '}
-                      — {sk.misses} miss{sk.misses === 1 ? '' : 'es'}
-                      {sk.reveals > 0 && `, ${sk.reveals} shown`}
-                    </span>
-                    {named && <div className="guide-misc">keeps doing: {named[0]}</div>}
-                  </li>
-                )
-              })}
-            </ul>
+            <div className="guide-table-scroll">
+              <table className="guide-table guide-detail-table">
+                <thead>
+                  <tr>
+                    <th>skill</th>
+                    <th>step</th>
+                    <th className="guide-num">missed</th>
+                    <th className="guide-num">shown</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {d.stuck.slice(0, 6).map((sk) => {
+                    const named = Object.entries(sk.misconceptions).sort((a, b) => b[1] - a[1])[0]
+                    return (
+                      <tr key={`${sk.explanationId}#${sk.stepIndex}`}>
+                        <td>
+                          <strong>{sk.skillName}</strong>
+                          {named && <div className="guide-misc">keeps doing: {named[0]}</div>}
+                        </td>
+                        <td>{sk.stepIndex + 1}</td>
+                        <td className="guide-num">{sk.misses}</td>
+                        <td className="guide-num">{sk.reveals > 0 ? sk.reveals : '—'}</td>
+                      </tr>
+                    )
+                  })}
+                </tbody>
+              </table>
+            </div>
           )}
 
           <h3 className="guide-detail-h">Skills</h3>
-          <ul className="guide-detail-skills">
-            {d.skills.map((sk) => {
-              const focused = row?.guideFocus === sk.skillId
-              return (
-                <li key={sk.skillId}>
-                  {sk.name}
-                  <span className="muted">
-                    {' '}
-                    — {Math.round(sk.masteryPct * 100)}%
-                    {/* a declared starting grade is not earned mastery */}
-                    {sk.placed ? ' (assumed from grade)' : ` · ${sk.phase}`}
-                    {sk.lapsed && ' · slipped'}
-                  </span>
-                  {sk.phase !== 'mastered' && (
-                    <button
-                      className={focused ? 'btn btn-quiet guide-focus guide-focus-on' : 'btn btn-quiet guide-focus'}
-                      title={focused ? 'Stop focusing this skill' : 'Serve this skill next'}
-                      onClick={() => act(focused ? 'unfocus' : 'focus', sk.skillId)}
-                    >
-                      {focused ? '★ focused' : '☆ focus'}
-                    </button>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
+          <div className="guide-table-scroll">
+            <table className="guide-table guide-detail-table">
+              <thead>
+                <tr>
+                  <th>skill</th>
+                  <th className="guide-num">mastery</th>
+                  <th>status</th>
+                  <th aria-label="focus" />
+                </tr>
+              </thead>
+              <tbody>
+                {d.skills.map((sk) => {
+                  const focused = row?.guideFocus === sk.skillId
+                  return (
+                    <tr key={sk.skillId}>
+                      <td>{sk.name}</td>
+                      <td className="guide-num">{Math.round(sk.masteryPct * 100)}%</td>
+                      <td className="muted">
+                        {/* a declared starting grade is not earned mastery */}
+                        {sk.placed ? 'assumed from grade' : sk.phase}
+                        {sk.lapsed && ' · slipped'}
+                      </td>
+                      <td>
+                        {sk.phase !== 'mastered' && (
+                          <button
+                            className={focused ? 'btn btn-quiet guide-focus guide-focus-on' : 'btn btn-quiet guide-focus'}
+                            title={focused ? 'Stop focusing this skill' : 'Serve this skill next'}
+                            onClick={() => act(focused ? 'unfocus' : 'focus', sk.skillId)}
+                          >
+                            {focused ? '★ focused' : '☆ focus'}
+                          </button>
+                        )}
+                      </td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </div>
 
           <h3 className="guide-detail-h">Recent work</h3>
-          <ul className="guide-recent">
-            {d.recent.slice(0, 12).map((r, i) => (
-              <li key={i}>
-                <span className={r.correct ? 'guide-ok' : 'guide-bad'}>{r.correct ? '✓' : '✗'}</span>{' '}
-                {r.skillName}
-                <span className="muted">
-                  {' '}
-                  · {r.itemKind}
-                  {r.assisted && ' · helped'} · {(r.latencyMs / 1000).toFixed(1)}s
-                </span>
-              </li>
-            ))}
-          </ul>
+          <div className="guide-table-scroll">
+            <table className="guide-table guide-detail-table">
+              <thead>
+                <tr>
+                  <th aria-label="result" />
+                  <th>skill</th>
+                  <th>kind</th>
+                  <th className="guide-num">time</th>
+                </tr>
+              </thead>
+              <tbody>
+                {d.recent.slice(0, 12).map((r, i) => (
+                  <tr key={i}>
+                    <td className={r.correct ? 'guide-ok' : 'guide-bad'}>{r.correct ? '✓' : '✗'}</td>
+                    <td>{r.skillName}</td>
+                    <td className="muted">
+                      {r.itemKind}
+                      {r.assisted && ' · helped'}
+                    </td>
+                    <td className="guide-num muted">{(r.latencyMs / 1000).toFixed(1)}s</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         </>
       )}
     </section>

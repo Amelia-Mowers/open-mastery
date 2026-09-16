@@ -337,9 +337,11 @@ body {
   margin: 16px 0 6px; font: 700 12px 'Nunito Sans', sans-serif;
   letter-spacing: 0.08em; text-transform: uppercase; color: #8a5320;
 }
-.guide-stuck, .guide-detail-skills, .guide-recent { margin: 0; padding-left: 18px; }
-.guide-stuck li, .guide-detail-skills li, .guide-recent li { margin-bottom: 4px; }
-.guide-misc { font-size: 13px; color: #8a5320; }
+.guide-detail-table { min-width: 0; }
+.guide-detail-table td { padding: 7px 10px; }
+.guide-detail-table .btn { padding: 2px 8px; }
+.guide-num { text-align: right; white-space: nowrap; }
+.guide-misc { font-size: 13px; color: #8a5320; font-weight: 400; }
 .guide-ok { color: #3f6a4d; font-weight: 700; }
 .guide-bad { color: #b04528; font-weight: 700; }
 
