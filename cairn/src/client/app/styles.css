@@ -7,6 +7,8 @@ body {
   font-family: 'Nunito Sans', system-ui, sans-serif;
 }
 .shell { max-width: 760px; margin: 0 auto; padding: 0 20px 60px; }
+/* the guide is a dashboard: roster + live rail need the room */
+.shell-wide { max-width: 1160px; }
 .topbar {
   display: flex; align-items: center; gap: 10px;
   padding: 12px 0; margin-bottom: 18px;
@@ -651,6 +653,30 @@ body {
 /* landing feature list */
 .about-features { margin: 10px 0 14px; padding-left: 22px; }
 .about-features li { margin: 6px 0; line-height: 1.5; }
+
+/* guide layout: main column + live feed rail (stacks on narrow) */
+.guide-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 0; }
+@media (min-width: 1000px) {
+  .guide-grid { grid-template-columns: minmax(0, 1fr) 330px; gap: 18px; align-items: start; }
+  .guide-rail { position: sticky; top: 12px; }
+  .guide-rail .event-stream { max-height: 68vh; overflow-y: auto; overflow-x: hidden; }
+  .guide-rail .event-row { flex-wrap: wrap; }
+  .guide-rail .event-seq { display: none; }
+}
+.guide-unpause { margin-left: 10px; font-weight: 700; color: #8a5320; }
+.guide-focus { margin-left: 8px; }
+.guide-focus-on { color: #8a5320; font-weight: 700; }
+.guide-detail-paused { margin-bottom: 10px; }
+
+/* per-student popup */
+.guide-modal-backdrop {
+  position: fixed; inset: 0; background: rgba(46, 40, 34, 0.42); z-index: 40;
+  display: flex; align-items: flex-start; justify-content: center; padding: 4vh 16px;
+}
+.guide-modal {
+  width: min(640px, 100%); max-height: 88vh; overflow-y: auto;
+  box-shadow: 0 18px 50px rgba(46, 40, 34, 0.3);
+}
 
 /* ---- guide dashboard ---- */
 .guide-flag {

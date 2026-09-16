@@ -3,7 +3,7 @@
  * never linked from the student UI (invariant 3: students see only their own
  * progress). The dev/demo surface has no auth; the real server gates this. */
 import { useCallback, useEffect, useState } from 'react'
-import type { CairnApi, GuideStudentDetail, GuideView, RecentEvents } from './api'
+import type { CairnApi, GuideStudent, GuideStudentDetail, GuideView, RecentEvents } from './api'
 
 /** guide-facing (not child-facing) reason copy — plain parent language,
  * describing what happened and implying the next move, never alarm */
@@ -63,7 +63,8 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
   const flagCount = flaggedStudents.reduce((n, st) => n + st.flags.length, 0)
 
   return (
-    <div>
+    <div className="guide-grid">
+      <div className="guide-main">
       <section className="card">
         <h1 className="dash-h">Your class</h1>
         {view.students.length === 0 ? (
@@ -105,6 +106,7 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
           {flaggedStudents.map((st) => {
             const first = st.flags[0]!
             const more = st.flags.length - 1
+            const pausedSkills = [...new Set(st.flags.map((f) => f.skillId).filter((x): x is string => x !== null))]
             return (
               <div key={st.id} className="guide-flag" role="listitem">
                 <button className="btn btn-quiet guide-flag-name" onClick={() => setOpenStudent(st.id)}>
@@ -113,6 +115,18 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
                 {FLAG_COPY[first.reason] ?? 'is paused on'}{' '}
                 <em>{first.skillName ?? 'a skill'}</em>
                 {more > 0 && <span className="muted"> and {more} more</span>}
+                {pausedSkills.length > 0 && (
+                  <button
+                    className="btn btn-quiet guide-unpause"
+                    onClick={() => {
+                      void Promise.all(
+                        pausedSkills.map((sk) => api.guideAction(st.id, 'unpause', sk)),
+                      ).then(refresh)
+                    }}
+                  >
+                    Unpause{pausedSkills.length > 1 ? ' all' : ''}
+                  </button>
+                )}
               </div>
             )
           })}
@@ -120,7 +134,13 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
       )}
 
       {openStudent !== null && (
-        <StudentDetail api={api} id={openStudent} onClose={() => setOpenStudent(null)} />
+        <StudentDetail
+          api={api}
+          id={openStudent}
+          row={view.students.find((st) => st.id === openStudent) ?? null}
+          onChanged={refresh}
+          onClose={() => setOpenStudent(null)}
+        />
       )}
 
       {view.students.length > 0 && (
@@ -183,8 +203,11 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
           </div>
         </section>
       )}
+      </div>
 
-      <EventStream api={api} />
+      <aside className="guide-rail">
+        <EventStream api={api} />
+      </aside>
     </div>
   )
 }
@@ -195,14 +218,31 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
 function StudentDetail({
   api,
   id,
+  row,
+  onChanged,
   onClose,
 }: {
   api: CairnApi
   id: string
+  row: GuideStudent | null
+  onChanged: () => void
   onClose: () => void
 }) {
   const [d, setD] = useState<GuideStudentDetail | null>(null)
   const [err, setErr] = useState<string | null>(null)
+  // a dialog closes on Escape — table stakes for a popup
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose()
+    }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+  const pausedSkills = [
+    ...new Set((row?.flags ?? []).map((f) => f.skillId).filter((x): x is string => x !== null)),
+  ]
+  const act = (action: 'unpause' | 'focus' | 'unfocus', skillId?: string) =>
+    void api.guideAction(id, action, skillId).then(onChanged)
 
   useEffect(() => {
     let live = true
@@ -222,13 +262,35 @@ function StudentDetail({
   }, [api, id])
 
   return (
-    <section className="card guide-detail" aria-label={`${id} detail`}>
+    <div className="guide-modal-backdrop" onClick={onClose}>
+    <section
+      className="card guide-detail guide-modal"
+      role="dialog"
+      aria-modal="true"
+      aria-label={`${id} detail`}
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="guide-detail-head">
         <h2 className="dash-h">{id}</h2>
         <button className="btn btn-quiet" onClick={onClose}>
           Close
         </button>
       </div>
+      {pausedSkills.length > 0 && (
+        <div className="guide-detail-paused">
+          {pausedSkills.map((sk) => {
+            const fl = row?.flags.find((f) => f.skillId === sk)
+            return (
+              <div key={sk} className="guide-flag">
+                Paused: <em>{fl?.skillName ?? sk}</em>
+                <button className="btn btn-quiet guide-unpause" onClick={() => act('unpause', sk)}>
+                  Unpause
+                </button>
+              </div>
+            )
+          })}
+        </div>
+      )}
       {err !== null && <p className="muted">Could not load this student.</p>}
       {d === null && err === null && <p className="muted">Loading…</p>}
       {d !== null && (
@@ -265,18 +327,30 @@ function StudentDetail({
 
           <h3 className="guide-detail-h">Skills</h3>
           <ul className="guide-detail-skills">
-            {d.skills.map((sk) => (
-              <li key={sk.skillId}>
-                {sk.name}
-                <span className="muted">
-                  {' '}
-                  — {Math.round(sk.masteryPct * 100)}%
-                  {/* a declared starting grade is not earned mastery */}
-                  {sk.placed ? ' (assumed from grade)' : ` · ${sk.phase}`}
-                  {sk.lapsed && ' · slipped'}
-                </span>
-              </li>
-            ))}
+            {d.skills.map((sk) => {
+              const focused = row?.guideFocus === sk.skillId
+              return (
+                <li key={sk.skillId}>
+                  {sk.name}
+                  <span className="muted">
+                    {' '}
+                    — {Math.round(sk.masteryPct * 100)}%
+                    {/* a declared starting grade is not earned mastery */}
+                    {sk.placed ? ' (assumed from grade)' : ` · ${sk.phase}`}
+                    {sk.lapsed && ' · slipped'}
+                  </span>
+                  {sk.phase !== 'mastered' && (
+                    <button
+                      className={focused ? 'btn btn-quiet guide-focus guide-focus-on' : 'btn btn-quiet guide-focus'}
+                      title={focused ? 'Stop focusing this skill' : 'Serve this skill next'}
+                      onClick={() => act(focused ? 'unfocus' : 'focus', sk.skillId)}
+                    >
+                      {focused ? '★ focused' : '☆ focus'}
+                    </button>
+                  )}
+                </li>
+              )
+            })}
           </ul>
 
           <h3 className="guide-detail-h">Recent work</h3>
@@ -296,6 +370,7 @@ function StudentDetail({
         </>
       )}
     </section>
+    </div>
   )
 }
 
@@ -306,7 +381,9 @@ function StudentDetail({
  * that every view above is folded from. */
 function EventStream({ api }: { api: CairnApi }) {
   const [data, setData] = useState<RecentEvents | null>(null)
-  const [open, setOpen] = useState(false)
+  // live by default: an activity feed that must be discovered is dead
+  // weight; the toggle pauses it instead
+  const [open, setOpen] = useState(true)
 
   useEffect(() => {
     if (!open) return
@@ -336,7 +413,7 @@ function EventStream({ api }: { api: CairnApi }) {
           Event log{data !== null && <span className="muted"> · {data.total} events</span>}
         </h2>
         <button className="btn btn-quiet" onClick={() => setOpen(!open)}>
-          {open ? 'Hide' : 'Watch it live'}
+          {open ? 'Pause feed' : 'Resume'}
         </button>
       </div>
       {!open ? (

@@ -69,7 +69,16 @@ export type EventBody =
   /** raw, from client; the server combines these into guide_flags */
   | { kind: 'signal'; signal: 'idle' | 'focus_lost' | 'focus_gained' | 'pace'; value?: number }
   | { kind: 'guide_flag'; reason: FlagReason; skillId?: string }
-  | { kind: 'guide_intervention'; note?: string }
+  | {
+      /** a guide acted: unpause clears a paused skill's flags and its
+       * session counters; focus pins the student's next serves to one
+       * skill (and overrides soft parking); unfocus releases it.
+       * Additive fields on the frozen kind — plain notes still valid. */
+      kind: 'guide_intervention'
+      note?: string
+      action?: 'unpause' | 'focus' | 'unfocus'
+      skillId?: string
+    }
   | { kind: 'session'; phase: 'start' | 'end' }
   /** One MOVE inside a stepwise problem: which gate, what they did, and
    * whether it was right. Without this the engine can only say a problem

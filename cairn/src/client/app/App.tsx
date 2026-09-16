@@ -160,7 +160,7 @@ function AppInner({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppP
 
 function GuidePage({ api, onBack, autoSeed }: { api: CairnApi; onBack: () => void; autoSeed?: boolean }) {
   return (
-    <main className="shell">
+    <main className="shell shell-wide">
       <header className="topbar">
         <span className="cairn-mark" aria-hidden>
           <i /> <i /> <i />

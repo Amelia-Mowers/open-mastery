@@ -35,6 +35,7 @@ import {
   type NextAction,
   type SessionState,
   type StudentState,
+  freshSkillSession,
 } from '../core/index.ts'
 
 export interface SiteResult {
@@ -511,7 +512,10 @@ export class SiteCore {
     })
   }
 
-  next(studentId: string, focusSkill?: string | null, forceFocus = false): SiteResult {
+  next(studentId: string, focusSkillIn?: string | null, forceFocus = false): SiteResult {
+    // a guide-pinned skill acts as the default focus; an explicit student
+    // choice still wins for that serve
+    const focusSkill = focusSkillIn ?? this.slot(studentId).student.guideFocus ?? null
     const st = this.slot(studentId)
     const ctx = this.ctxFor(studentId)
     const action = nextAction(
@@ -666,6 +670,33 @@ export class SiteCore {
       latencyMs: typeof body['latencyMs'] === 'number' ? body['latencyMs'] : 0,
     })
     applyEvent(this.slot(studentId).student, ev, this.bktFor())
+    return ok({ ok: true })
+  }
+
+  /** A guide acts on a student: unpause a paused skill (clears its flags
+   * and session counters), or focus/unfocus the student's serves onto one
+   * skill. Event-sourced — the fold and session replay apply the same
+   * event, so the action survives reloads. */
+  guideAction(studentId: string, body: Record<string, unknown>): SiteResult {
+    const action = body['action']
+    const skillId = typeof body['skillId'] === 'string' ? body['skillId'] : undefined
+    if (action !== 'unpause' && action !== 'focus' && action !== 'unfocus')
+      return err(400, 'action must be unpause | focus | unfocus')
+    if ((action === 'unpause' || action === 'focus') && skillId === undefined)
+      return err(400, `${action} requires skillId`)
+    if (skillId !== undefined && !this.cur.skills.has(skillId)) return err(404, 'unknown skill')
+    const st = this.slot(studentId)
+    const ev = this.ctxFor(studentId).stamp({
+      kind: 'guide_intervention',
+      action,
+      ...(skillId !== undefined ? { skillId } : {}),
+    })
+    applyEvent(st.student, ev, this.bktFor())
+    if (action === 'unpause' && skillId !== undefined) {
+      // the live session mirrors what replay derives from the event
+      st.session.bySkill[skillId] = freshSkillSession()
+      delete st.session.pendingHint[skillId]
+    }
     return ok({ ok: true })
   }
 
@@ -859,7 +890,7 @@ export class SiteCore {
     const mine = this.log.filter((e) => e.studentId === studentId)
     if (mine.length === 0 && Object.keys(st.student.skills).length === 0)
       return err(404, `unknown student '${studentId}'`)
-    const skillName = (id: string): string => this.cur.skills.get(id)?.name ?? id
+    const skillName = (id: string): string => this.shortName(id)
 
     // recent work, newest first — the guide reads this like a timeline
     const recent = mine
@@ -949,7 +980,7 @@ export class SiteCore {
   }
 
   guideView(): SiteResult {
-    const skillName = (id: string): string => this.cur.skills.get(id)?.name ?? id
+    const skillName = (id: string): string => this.shortName(id)
     const lastActive = new Map<string, number>()
     for (const e of this.log) lastActive.set(e.studentId, e.t)
     const students = [...this.slots.entries()]
@@ -971,6 +1002,7 @@ export class SiteCore {
           points: this.pointsFor(id),
           mastered: skills.filter((k) => k.phase === 'mastered').length,
           working: skills.filter((k) => k.phase !== 'mastered'),
+          guideFocus: slot.student.guideFocus ?? null,
           flags: slot.student.openFlags.map((f) => ({
             reason: f.reason,
             skillId: f.skillId ?? null,

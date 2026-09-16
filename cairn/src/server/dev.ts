@@ -99,6 +99,11 @@ export function createDevSite(bundle: Bundle, opts: DevSiteOptions = {}): DevSit
       return send(res, core.recentEvents(Number(url.searchParams.get('limit') ?? 40)))
     if (req.method === 'GET' && url.pathname === '/api/guide-student')
       return send(res, core.guideStudent(url.searchParams.get('id') ?? ''))
+    if (req.method === 'POST' && url.pathname === '/api/guide-action') {
+      const body = (await readBody(req)) as Record<string, unknown>
+      const sid = typeof body['studentId'] === 'string' ? body['studentId'] : ''
+      return send(res, core.guideAction(sid, body))
+    }
     if (req.method === 'POST' && url.pathname === '/api/seed-class') {
       const { seedDemoClass } = await import('../site/simulate.ts')
       return send(res, { status: 200, body: { seeded: seedDemoClass(core) } })

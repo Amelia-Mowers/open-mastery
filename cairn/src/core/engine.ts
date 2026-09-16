@@ -109,6 +109,13 @@ export function restoreSession(
     if (ev.kind === 'session' && ev.phase === 'start') from = i + 1
   }
   for (const ev of ordered.slice(from)) {
+    if (ev.kind === 'guide_intervention' && ev.action === 'unpause' && ev.skillId !== undefined) {
+      // the guide cleared the pause: counters restart, exactly as the
+      // live path resets them when the event lands
+      session.bySkill[ev.skillId] = freshSkillSession()
+      delete session.pendingHint[ev.skillId]
+      continue
+    }
     if (ev.kind === 'attempt') {
       // probe attempts belong to the PREREQ's own counters, exactly as the
       // live path scopes them

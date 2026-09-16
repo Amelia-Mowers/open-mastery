@@ -118,6 +118,7 @@ export interface GuideStudent {
   points: number
   mastered: number
   working: Array<{ skillId: string; name: string; phase: string; masteryPct: number; lapsed: boolean }>
+  guideFocus: string | null
   flags: Array<{ reason: string; skillId: string | null; skillName: string | null; t: number }>
   lastActive: number
 }
@@ -223,6 +224,9 @@ export interface CairnApi {
   /** the live event log — the proof this is an engine */
   recentEvents(limit?: number): Promise<RecentEvents>
   seedClass(): Promise<void>
+  /** guide action on a student: unpause a paused skill, or focus/unfocus
+   * their serves onto one skill */
+  guideAction(studentId: string, action: 'unpause' | 'focus' | 'unfocus', skillId?: string): Promise<void>
   /** grades the catalog can teach, for the sign-in grade picker */
   grades(): Promise<{ available: number[] }>
   /** place the student at a grade (everything below is assumed known) */
@@ -372,6 +376,14 @@ export class SiteApi implements CairnApi {
   async needsPlacement(): Promise<{ needsPlacement: boolean }> {
     const r = await fetch(this.url('/api/needs-placement'))
     return this.json<{ needsPlacement: boolean }>(r, 'needs placement')
+  }
+
+  async guideAction(studentId: string, action: 'unpause' | 'focus' | 'unfocus', skillId?: string): Promise<void> {
+    await fetch(`${this.base}/api/guide-action`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({ studentId, action, ...(skillId ? { skillId } : {}) }),
+    })
   }
 
   async seedClass(): Promise<void> {

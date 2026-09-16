@@ -244,4 +244,10 @@ export class DemoApi implements CairnApi {
     this.persist()
     return Promise.resolve()
   }
+
+  guideAction(studentId: string, action: 'unpause' | 'focus' | 'unfocus', skillId?: string): Promise<void> {
+    this.core.guideAction(studentId, { action, ...(skillId ? { skillId } : {}) })
+    this.persist()
+    return Promise.resolve()
+  }
 }

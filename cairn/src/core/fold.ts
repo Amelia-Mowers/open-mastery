@@ -62,6 +62,8 @@ export interface StudentState {
   placedGrade?: number
   /** open guide flags (read model for the dashboard) */
   openFlags: Array<{ reason: string; skillId?: string; t: number }>
+  /** a guide pinned this skill: serves prefer it while it is servable */
+  guideFocus?: string
   deleted: boolean
 }
 
@@ -188,6 +190,15 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
       )
       break
     }
+    case 'guide_intervention': {
+      if (ev.action === 'unpause')
+        state.openFlags = state.openFlags.filter(
+          (fl) => ev.skillId !== undefined && fl.skillId !== ev.skillId,
+        )
+      else if (ev.action === 'focus' && ev.skillId !== undefined) state.guideFocus = ev.skillId
+      else if (ev.action === 'unfocus') delete state.guideFocus
+      break
+    }
     case 'student_deleted': {
       state.deleted = true
       break
@@ -197,11 +208,10 @@ export function applyEvent(state: StudentState, ev: CairnEvent, params: ParamsFo
     // count one problem several times. Per-step BKT is a deliberate
     // later decision (TODO), not an oversight.
     case 'step_attempt':
-    // hint (free — never consumes an attempt), signal, guide_intervention,
-    // session, clock_set: no mastery-model effect
+    // hint (free — never consumes an attempt), signal, session,
+    // clock_set: no mastery-model effect
     case 'hint':
     case 'signal':
-    case 'guide_intervention':
     case 'session':
     case 'clock_set':
       break
