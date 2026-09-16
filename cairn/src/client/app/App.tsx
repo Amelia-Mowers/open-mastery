@@ -232,21 +232,27 @@ function AboutPanel() {
       <h1>Cairn</h1>
       <LandingLoop />
       <p>
-        An open-source, self-hostable <b>mastery-learning engine</b> for school math —{' '}
-        <b>grades 6–7 today, 3–12 in progress</b>. Every skill is
-        taught with animated lessons in several representations — a balance scale, a bar model, a
-        number line, the worked symbols — and practiced as <b>stepwise problems</b> you work move
-        by move, with an answer box always open if you can already solve it. Skills unlock along a
-        graph derived from the Common Core standards, and mastered skills come back for spaced
-        review.
+        An open-source, <b>mastery-based math program</b>. This demo carries a growing slice of
+        grades 6–7 — <b>not yet either full grade</b> — with the middle-school band being
+        finished for our fall pilot and grades 3–5 and 9–12 to follow. Your student works along
+        a skill graph and doesn&rsquo;t move on until they&rsquo;ve shown they understand each
+        skill; spaced review brings mastered skills back before they fade.
+      </p>
+      <p>
+        <b>No multiple choice</b> — answers are typed, or built move by move (sorting the pieces
+        of an equation onto a balance scale). Every skill is taught with animated lessons in
+        several pictures — a balance scale, a bar model, a number line, the worked symbols —{' '}
+        <b>fully narrated</b>, and a stuck student can watch the exact problem in front of them
+        worked through. Wrong answers get feedback that names <b>the actual mistake</b>, not
+        just &ldquo;try again.&rdquo;
       </p>
       <p className="muted">
-        The engine runs entirely in your browser — event log and all, no server; answers and
-        progress never leave this device. Type a name below to try it as a student.{' '}
+        The demo runs entirely in your browser — no account, no server; answers and progress
+        never leave this device. Type a name below to try it as a student.{' '}
         <a href="https://github.com/Amelia-Mowers/open-mastery" target="_blank" rel="noreferrer">
           Source on GitHub
         </a>
-        {' · '}AGPL engine, CC BY curriculum.
+        {' · '}AGPL engine, CC BY curriculum · free for families, forever.
       </p>
     </section>
   )
@@ -436,7 +442,7 @@ function JoinCard({ onJoin, onGuide, about }: { onJoin: (id: string) => void; on
         </div>
         {onGuide && (
           <p className="muted join-guide-link">
-            Running the room?{' '}
+            Parent or teacher?{' '}
             <button className="btn btn-quiet" onClick={onGuide}>
               Open the guide view →
             </button>
