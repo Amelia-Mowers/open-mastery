@@ -125,10 +125,11 @@ Not K–12 — the middle-school band plus the parent's view:
       per-instance correct rates in the guide view; later IRT-style
       calibration per instance instead of per-item difficulty tiers.
 - [ ] Build step 5: real site server (SQLite SiteStore, auth/enrollment).
-- [ ] Guide v2: per-student drill-in (their map + event timeline),
-      intervention actions (clear a flag, assign focus), real auth
-      (arrives with step 5). v1 shipped: ?view=guide, roster +
-      needs-attention, ?seed=1 synthetic class.
+- [ ] Guide v2 remainder: real auth (arrives with step 5) and deeper
+      analytics (per-skill trends over time). Shipped 2026-09-16:
+      per-student drill-in modal (stuck steps, skills, recent work),
+      unpause + focus interventions (guide_intervention event through
+      fold/restoreSession), live event rail, short names throughout.
 - [ ] Flow-gap polish list (below) closed.
 - [ ] Deployment + pricing story: per-seat HOSTED plans (~$12/seat is
       2–4% of a center's per-student revenue — "one retained student pays
@@ -204,8 +205,8 @@ Blocking items and the front door were fixed 2026-08-27/28. Remaining:
       (5%→67% on one answer reads arbitrary; BKT is genuinely that fast,
       so this is a display-scale question) and check the grant card
       actually shows in the demo flow.
-- [ ] S-02 guide roster shows stale skill/stones — read from the same
-      projection as the student view; rows open a student detail (guide v2).
+- [x] S-02 guide roster shows stale skill/stones — reads the folded
+      projection; rows open the student-detail modal (2026-09-16).
 - [ ] S-04 practice scaffolds must not print the answer (the number-line
       scaffold is labeled through the final value) — withhold-terminal-
       value mode, reveal on submit.
