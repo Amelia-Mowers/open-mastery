@@ -232,19 +232,19 @@ function AboutPanel() {
       <h1>Cairn</h1>
       <LandingLoop />
       <p>
-        An open-source, <b>mastery-based math program</b>. This demo carries a growing slice of
-        grades 6–7 — <b>not yet either full grade</b> — with the middle-school band being
-        finished for our fall pilot and grades 3–5 and 9–12 to follow. Your student works along
-        a skill graph and doesn&rsquo;t move on until they&rsquo;ve shown they understand each
-        skill; spaced review brings mastered skills back before they fade.
+        An open-source, <b>mastery-based math program</b>. Your student works along a skill
+        graph and doesn&rsquo;t move on until they&rsquo;ve shown they understand each skill;
+        spaced review brings mastered skills back before they fade. The demo carries a growing
+        slice of grades 6 and 7 — not yet either full course. The middle-school band is being
+        finished for our fall pilot, with grades 3&ndash;5 and 9&ndash;12 to follow.
       </p>
       <p>
-        <b>No multiple choice</b> — answers are typed, or built move by move (sorting the pieces
-        of an equation onto a balance scale). Every skill is taught with animated lessons in
-        several pictures — a balance scale, a bar model, a number line, the worked symbols —{' '}
-        <b>fully narrated</b>, and a stuck student can watch the exact problem in front of them
-        worked through. Wrong answers get feedback that names <b>the actual mistake</b>, not
-        just &ldquo;try again.&rdquo;
+        No multiple choice: answers are typed, or built move by move — like sorting the pieces
+        of an equation onto a balance scale. Every skill is taught with animated, fully narrated
+        lessons in several pictures (a balance scale, a bar model, a number line, the worked
+        symbols), and a stuck student can watch the exact problem in front of them worked
+        through. Wrong answers get feedback that names the actual mistake, not just &ldquo;try
+        again.&rdquo;
       </p>
       <p className="muted">
         The demo runs entirely in your browser — no account, no server; answers and progress

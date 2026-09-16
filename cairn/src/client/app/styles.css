@@ -650,9 +650,11 @@ body {
 
 /* ---- guide dashboard ---- */
 .guide-flag {
-  background: #f5dfda; color: #96453a; border-radius: 9px;
-  padding: 10px 14px; margin: 6px 0; font-size: 14.5px;
+  /* a pause worth a look, not an alarm: warm amber, never a red wall */
+  background: #f7ecd8; color: #6b5a33; border-left: 3px solid #caa04f;
+  border-radius: 9px; padding: 10px 14px; margin: 6px 0; font-size: 14.5px;
 }
+.guide-flag-name { font-weight: 700; padding: 0 2px; }
 .guide-table-scroll { overflow-x: auto; }
 .guide-table { width: 100%; border-collapse: collapse; font-size: 13.5px; min-width: 560px; }
 .guide-table th {

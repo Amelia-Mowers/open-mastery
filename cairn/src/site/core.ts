@@ -293,6 +293,16 @@ export class SiteCore {
     return r.value
   }
 
+  /** Start a fresh working session for a student (the demo's seed uses
+   * this to model day boundaries; per-session counters — attempt caps,
+   * serve counts — reset, while the student's learning state persists). */
+  newSession(studentId: string): SiteResult {
+    const st = this.slot(studentId)
+    st.session = freshSession()
+    st.pending = null
+    return ok({ ok: true })
+  }
+
   /** A held review is its own accomplishment: the student proved a memory
    * survived a gap, and the gap to the NEXT one just grew. FSRS already
    * knows both numbers — say them, so spaced repetition reads as strength

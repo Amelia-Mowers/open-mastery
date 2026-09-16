@@ -34,10 +34,10 @@ describe('guide dashboard UI', () => {
     await waitFor(() => screen.getByText(/No students yet/))
     await user.click(screen.getByRole('button', { name: 'Seed a demo class' }))
     await waitFor(() => screen.getByText('Roster'))
-    expect(screen.getByText('Needs attention')).toBeInTheDocument()
+    expect(screen.getByText('Worth a look')).toBeInTheDocument()
     // guide-facing copy, not raw reason codes
     expect(screen.queryByText(/corrective_exhausted/)).toBeNull()
-    expect(screen.getAllByText(/hint ladder|earlier skill|attempt cap/).length).toBeGreaterThan(0)
+    expect(screen.getAllByText(/all the hints|earlier skill|a lot of tries/).length).toBeGreaterThan(0)
     // flagged students float to the top of the roster
     const rows = screen.getAllByRole('row').slice(1)
     expect(rows[0]!.textContent).toContain('⚑')

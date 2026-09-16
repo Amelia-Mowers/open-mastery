@@ -21,9 +21,9 @@ export interface Archetype {
  * student (flags for the guide), and someone who only just started */
 export const ARCHETYPES: Record<string, Archetype> = {
   quick: { pCorrect: 1, usesHints: false, acceptsChecks: true, steps: 90 },
-  steady: { pCorrect: 0.85, usesHints: false, acceptsChecks: true, steps: 70 },
-  striver: { pCorrect: 0.7, usesHints: true, acceptsChecks: true, steps: 60 },
-  struggling: { pCorrect: 0.3, usesHints: true, acceptsChecks: false, steps: 40 },
+  steady: { pCorrect: 0.9, usesHints: false, acceptsChecks: true, steps: 70 },
+  striver: { pCorrect: 0.78, usesHints: true, acceptsChecks: true, steps: 60 },
+  struggling: { pCorrect: 0.35, usesHints: true, acceptsChecks: false, steps: 40 },
   starter: { pCorrect: 1, usesHints: false, acceptsChecks: false, steps: 6 },
 }
 
@@ -38,6 +38,10 @@ export function seedStudent(core: SiteCore, studentId: string, kind: keyof typeo
   const a = ARCHETYPES[kind] ?? ARCHETYPES['steady']!
   const rng = mulberry32(hashName(studentId))
   for (let i = 0; i < a.steps; i++) {
+    // a real student works in SESSIONS — without day boundaries the
+    // per-session attempt cap parks even steady students, and the guide
+    // opens on a wall of false alarms (2026-09-16 review)
+    if (i > 0 && i % 12 === 0) core.newSession(studentId)
     const r = core.next(studentId)
     const body = r.body as { action: NextAction }
     const action = body.action

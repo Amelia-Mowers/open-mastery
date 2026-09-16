@@ -5,11 +5,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import type { CairnApi, GuideStudentDetail, GuideView, RecentEvents } from './api'
 
-/** guide-facing (not child-facing) reason copy */
+/** guide-facing (not child-facing) reason copy — plain parent language,
+ * describing what happened and implying the next move, never alarm */
 const FLAG_COPY: Record<string, string> = {
-  corrective_exhausted: 'worked the full hint ladder and is still stuck',
-  prereq_failure: 'is missing an earlier skill (probe failed)',
-  attempt_cap: 'hit the session attempt cap',
+  corrective_exhausted: 'worked through all the hints and is still stuck on',
+  prereq_failure: 'may be missing an earlier skill needed for',
+  attempt_cap: 'took a lot of tries without cracking',
 }
 
 const PHASE_LABEL: Record<string, string> = {
@@ -55,9 +56,11 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
 
   if (view === null) return <p className="muted loading">Loading…</p>
 
-  const flagged = view.students.flatMap((s) =>
-    s.flags.map((f) => ({ student: s.id, ...f })),
-  )
+  // group by STUDENT: five kids with paused skills is five rows, not a
+  // wall of nineteen warnings (dashboard rule: exceptions are summarized,
+  // the raw feed lives in the drill-in)
+  const flaggedStudents = view.students.filter((st) => st.flags.length > 0)
+  const flagCount = flaggedStudents.reduce((n, st) => n + st.flags.length, 0)
 
   return (
     <div>
@@ -85,34 +88,40 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
         ) : (
           <p className="muted">
             {view.students.length} students ·{' '}
-            {flagged.length === 0 ? 'no open flags' : `${flagged.length} open flag${flagged.length === 1 ? '' : 's'}`}
+            {flaggedStudents.length === 0
+              ? 'everyone is moving along'
+              : `${view.students.length - flaggedStudents.length} moving along · ${flaggedStudents.length} worth a look`}
           </p>
         )}
       </section>
 
-      {flagged.length > 0 && (
+      {flaggedStudents.length > 0 && (
         <section className="card">
-          <h2 className="dash-h">Needs attention</h2>
-          {flagged.map((f, i) => (
-            <div key={i} className="guide-flag" role="listitem">
-              <strong>{f.student}</strong>{' '}
-              {FLAG_COPY[f.reason] ?? `flagged (${f.reason})`}
-              {f.skillName && (
-                <>
-                  {' '}
-                  on <em>{f.skillName}</em>
-                </>
-              )}
-            </div>
-          ))}
+          <h2 className="dash-h">Worth a look</h2>
+          <p className="muted">
+            Cairn paused these skills so nobody grinds alone — a short sit-down together usually
+            clears them.
+          </p>
+          {flaggedStudents.map((st) => {
+            const first = st.flags[0]!
+            const more = st.flags.length - 1
+            return (
+              <div key={st.id} className="guide-flag" role="listitem">
+                <button className="btn btn-quiet guide-flag-name" onClick={() => setOpenStudent(st.id)}>
+                  {st.id}
+                </button>{' '}
+                {FLAG_COPY[first.reason] ?? 'is paused on'}{' '}
+                <em>{first.skillName ?? 'a skill'}</em>
+                {more > 0 && <span className="muted"> and {more} more</span>}
+              </div>
+            )
+          })}
         </section>
       )}
 
       {openStudent !== null && (
         <StudentDetail api={api} id={openStudent} onClose={() => setOpenStudent(null)} />
       )}
-
-      <EventStream api={api} />
 
       {view.students.length > 0 && (
         <section className="card">
@@ -174,6 +183,8 @@ export function Guide({ api, autoSeed = false }: { api: CairnApi; autoSeed?: boo
           </div>
         </section>
       )}
+
+      <EventStream api={api} />
     </div>
   )
 }
@@ -330,8 +341,8 @@ function EventStream({ api }: { api: CairnApi }) {
       </div>
       {!open ? (
         <p className="muted">
-          Every serve, answer and step lands here as a versioned, sequenced row. This log is the
-          source of truth — the map, the roster and every mastery estimate are folded from it.
+          A live feed of everything that happens — every problem served, every answer, every
+          step. Everything above is computed from this record, and nothing else.
         </p>
       ) : data === null ? (
         <p className="muted">Loading…</p>
