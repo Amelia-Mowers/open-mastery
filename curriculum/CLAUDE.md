@@ -76,6 +76,51 @@ the box ([lead_ends_quiet], [double_ask], [gate_telegraph],
 [gate_takes_answer]). These guidelines govern what the words say at each
 of those moments.
 
+## FORMAL LANGUAGE FIRST, DERIVED FROM SOURCES (Mia, 2026-09-18)
+
+A real parent's review of the first lesson found what our copy rules had
+missed: "a number is hiding in an equation" and a chain of vague "the
+number"s. Both are defects, not style. The ruling: START FORMAL — we
+have no mechanism for an informal→formal transition, so informal
+language never gets repaired later — and DERIVE the words from the
+sources, not from what sounds friendly.
+
+1. **No metaphor may stand in for the mathematical relation.** Nothing
+   is "hiding" in x + 8 = 21 — the equation shows everything; solving
+   means finding the value of the variable that makes the equation TRUE
+   (CCSS 6.EE.B.5, IM g6-u6). The hiding frame feeds the letter-as-object
+   misconception (Küchemann 1978) and the operational reading of "="
+   that Knuth 2006 showed predicts equation-solving failure. A metaphor
+   may describe a REPRESENTATION that genuinely embodies it (envelopes
+   conceal their contents; pans balance) — while that widget is on
+   screen, and never as the account of the mathematics itself.
+2. **Name the role; never a bare "the number"/"the letter" for a thing
+   that has a name.** In x + 8 = 21, "the number" could be x, 8, or 21 —
+   ambiguous reference taxes the student exactly at the hard moment. Say
+   "the variable", "the coefficient", "the solution", "the whole". "The
+   number" is only right when the referent IS an undistinguished number
+   (a word problem's own "some number" phrasing, "the same number on
+   both sides").
+3. **Vocabulary definitions come from the source's glossary,** adapted
+   minimally for speech — IM first edition wording is the default
+   ("A variable is a letter that represents a number", "A solution to an
+   equation is a number that can be used in place of the variable to
+   make the equation true", "A coefficient is a number that is
+   multiplied by a variable"). Don't invent friendlier paraphrases; a
+   plain gloss may be APPENDED to the term, never substituted for it.
+4. **Define before first use, then USE the term.** The vocab beat plays
+   on the first skill that needs the word — including a graph ROOT a
+   student can meet first — and the skill's captions/prompts must then
+   say the word ([vocab_unused] enforces use, but not in the preamble:
+   put the term in timeline copy too). Duplicating a definition on two
+   entry skills is fine (like terms already is); leaving the first
+   equation lesson without "variable" while it teaches "Subtraction
+   Property of Equality" is the inversion that shipped.
+5. **Use the band's own working set, no more.** For 6-7 EE that is:
+   variable, coefficient, equation, solution, value, true, like terms,
+   expression, exponent, base. Do not import terms the sources don't use
+   at this band (no "constant" for one-step equations).
+
 ## Author the timeline AND its gates together, under the rules (2026-08-30)
 
 A full review day found the worked-equation timelines the most

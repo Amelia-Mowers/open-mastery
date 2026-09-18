@@ -2,8 +2,10 @@ id: g6.ee.add-solve
 name: Solve x + p = q using the Subtraction Property of Equality
 short: "Find {variable} when something was added"
 preamble:
-  plain: "Sometimes a number is hiding in an equation. It had something added to it, and all we can see is the total. To find it, we take that same amount away from both sides — and the number is left on its own."
+  plain: "An equation says that two sides are equal. Here, a number was added to the variable, and the equation shows the total. To solve it, we find the value of the variable that makes the equation true: subtract that same number from both sides, and the variable stands alone."
   vocab:
+    - { term: variable, meaning: "A letter that represents a number." }
+    - { term: solution, meaning: "A number that can be used in place of the variable to make the equation true." }
     - { term: Subtraction Property of Equality, meaning: "If you subtract the same number from both sides of an equation, it stays true." }
 standards: [CCSS.MATH.CONTENT.6.EE.B.7]
 source: { book: ccss-ee-progression, section: "6.EE.B.7" }

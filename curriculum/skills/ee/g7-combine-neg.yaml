@@ -4,7 +4,7 @@ short: "Gather matching terms with minus signs"
 preamble:
   plain: "In 9y − 8 − 3y − 2, the y-terms still go together — and so do the subtracted numbers. Taking away 8 and then 2 is taking away 10 in all."
   vocab:
-    - { term: like terms, meaning: "Terms with the same letter part — they can be combined." }
+    - { term: like terms, meaning: "Terms with the same variable part — they can be combined." }
 standards: [CCSS.MATH.CONTENT.7.EE.A.1]
 source: { book: ccss-ee-progression, section: "7.EE.A.1" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

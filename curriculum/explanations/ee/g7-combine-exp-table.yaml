@@ -23,12 +23,12 @@ timeline:
       hint: "{a}·2 + {b} − {c}·2 + {d}."
   - t: 13.5
     patch: { eqHighlight: ["0", "2"], highlight: null }
-    caption: "{a}{variable} and −{c}{variable} have the SAME letter part — they gather together, apart from the plain numbers."
+    caption: "{a}{variable} and −{c}{variable} have the SAME variable part — they gather together, apart from the plain numbers."
     expect:
       type: pick
       value: ["0", "2"]
       prompt: "Which pieces of the expression are the {variable}-terms — the ones that gather together?"
-      hint: "Same letter part, wherever they sit in the line."
+      hint: "Same variable part, wherever they sit in the line."
   - t: 17.5
     patch: { cols: ["{variable}", "value", "{a-c}{variable} + {b+d}"], rows: [["1", "{a-c+b+d}", "{a-c+b+d}"], ["2", "{2*a-2*c+b+d}", "{2*a-2*c+b+d}"], ["3", "{3*a-3*c+b+d}", "{3*a-3*c+b+d}"]], reveal: "3", eqHighlight: [] }
     caption: "{a-c}{variable} + {b+d} gets its own column — the SAME value in every row. So what shorter expression makes this table?"

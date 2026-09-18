@@ -4,15 +4,15 @@ representation: ratio-table
 widget: ratio-table
 params_from: item
 timeline:
-  - { t: 0, patch: { equation: ["{100/n}%", " of ? = ", "{k}"], cols: ["percent", "amount"], rows: [["{100/n}%", "{k}"], ["100%", "{n*k}"]], reveal: "0" }, caption: "{k} is {100/n}% of the number — the whole hides at 100%." }
+  - { t: 0, patch: { equation: ["{100/n}%", " of ? = ", "{k}"], cols: ["percent", "amount"], rows: [["{100/n}%", "{k}"], ["100%", "{n*k}"]], reveal: "0" }, caption: "{k} is {100/n}% of the whole — and the whole sits at 100%." }
   - t: 4
     patch: { eqHighlight: ["0", "2"], reveal: "1", highlight: "1" }
-    caption: "{100/n}% of the number is {k} — and {100/n}% is 1/{n} of it."
+    caption: "{100/n}% of the whole is {k} — and {100/n}% is 1/{n} of it."
     expect:
       type: pick
       value: ["0", "2"]
       prompt: "Which piece — or pieces — make the KNOWN row: a percent and its amount?"
   - { t: 8.5, patch: { eqHighlight: [], factor: { from: "1", to: "2", text: "×{n}" } }, caption: "×{n} climbs from 1/{n} to the whole. So what is the WHOLE?", expect: { type: numeric, value: "{n}", prompt: "From {k} up to the whole — times what?", hint: "All {n} parts." } }
-  - { t: 13, patch: { reveal: "2", highlight: "2" }, caption: "At 100%: {n} × {k} = {n*k}. The number is {n*k}." }
+  - { t: 13, patch: { reveal: "2", highlight: "2" }, caption: "At 100%: {n} × {k} = {n*k}. The whole is {n*k}." }
   - { t: 16, handoff: { prompt: "Now you try." } }
 review: { status: draft, by: "@claude-fable-5", date: 2026-09-09 }

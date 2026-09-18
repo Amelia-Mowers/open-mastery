@@ -2,7 +2,7 @@ id: g7.ee.distribute-solve
 name: Solve equations like p(x + q) = r
 short: "Find {variable} when the equation has parentheses"
 preamble:
-  plain: "Sometimes the letter is tucked inside parentheses, and everything in there is multiplied by the number out front. We deal with that outside number first — and then it is an equation we already know how to solve."
+  plain: "Sometimes the variable sits inside parentheses, and everything in there is multiplied by the number out front. We deal with that outside number first — and then it is an equation we already know how to solve."
   vocab:
     - { term: expand, meaning: "Rewrite 3(x + 2) as 3x + 6 — each part inside gets multiplied." }
 standards: [CCSS.MATH.CONTENT.7.EE.B.4.A]

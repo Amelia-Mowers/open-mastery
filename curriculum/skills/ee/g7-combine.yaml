@@ -2,9 +2,9 @@ id: g7.ee.combine
 name: Combine like terms to simplify an expression
 short: "Gather the matching terms"
 preamble:
-  plain: "Sometimes the same letter shows up in an expression more than once. We gather those terms together, gather the plain numbers together — and the expression becomes one short line."
+  plain: "Sometimes the same variable shows up in an expression more than once. We combine those like terms, gather the plain numbers together — and the expression becomes one short line."
   vocab:
-    - { term: like terms, meaning: "Terms with the same letter part — they can be added together." }
+    - { term: like terms, meaning: "Terms with the same variable part — they can be added together." }
 standards: [CCSS.MATH.CONTENT.7.EE.A.1]
 source: { book: ccss-ee-progression, section: "7.EE.A.1" }
 bkt_defaults: { L0: 0.2, T: 0.08, S: 0.12, G: 0.25 }

@@ -7,7 +7,7 @@ timeline:
   - { t: 0, patch: { equation: ["{variable}", " + {p}", " = ", "{p+d}"], cells: ["{variable}", "{p}"], total: "{p+d}", cellsIn: 0, totalIn: false }, caption: "{variable} + {p} = {p+d}: {variable} and {p} together make {p+d}." }
   - t: 4
     patch: { eqHighlight: ["0"], cellsIn: 1, highlight: ["1"] }
-    caption: "{variable} is the first piece of the bar — the part we are looking for."
+    caption: "The variable {variable} is the first piece of the bar — the value we are looking for."
     expect:
       type: pick
       value: ["0"]
@@ -43,7 +43,7 @@ timeline:
           says: "Adding {p} makes the bar longer. The {p} piece is already inside the {p+d} — take it off to see what's left."
   - t: 20
     patch: { equation: ["{variable}", " = ", "{d}"], eqHighlight: [], highlight: ["1", "2"], total: "{variable} = {d}", totalOp: null }
-    caption: "{p+d} − {p} = {d}. The first piece — {variable} — is {d}."
+    caption: "{p+d} − {p} = {d}. The solution: {variable} = {d}."
     expect:
       type: numeric
       value: "{d}"

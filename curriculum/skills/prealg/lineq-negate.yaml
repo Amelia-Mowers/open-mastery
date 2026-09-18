@@ -2,7 +2,7 @@ id: prealg.lineq.negate
 name: Solve -x = b, the opposite of x
 short: "Find {variable} from its opposite"
 preamble:
-  plain: "A minus sign in front of a letter means its opposite. If the opposite of the number is known, we flip it back — the number is the opposite of that value."
+  plain: "A minus sign in front of the variable means its opposite. If we know what the opposite equals, we flip it back — the value of the variable is the opposite of that."
   vocab:
     - { term: opposite, meaning: "The same number on the other side of zero: the opposite of 2 is −2." }
 prereqs: [prealg.lineq.multiply]
