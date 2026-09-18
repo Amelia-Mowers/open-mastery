@@ -64,11 +64,13 @@
   silent text card in front of the lesson — the only unnarrated screen
   in the app, and the easiest to click past. It is gone. The player now
   plays the intro AS BEATS over the stage at negative times, through the
-  same transport and narration: the skill beat (headline = the
-  child-facing `short` name, kicker NEW SKILL, the lesson's sample
-  problem under the headline, the preamble's plain explanation as the
-  line), one beat per vocabulary term (headline = the
-  term, its meaning as the line), the PROBLEM bridge ("Here's how it
+  same transport and narration: one beat per vocabulary term FIRST
+  (headline = the term capitalized, its meaning as the line — before
+  the skill beat because the plain explanation USES the terms; Mia,
+  2026-09-18), then the skill beat (headline = the child-facing `short`
+  name, kicker NEW SKILL, the lesson's sample problem under the
+  headline, the preamble's plain explanation as the
+  line), the PROBLEM bridge ("Here's how it
   works on a problem like x + 8 = 21." — the first moment the equation
   banner is on screen; skill and vocab beats hide it), then the
   REPRESENTATION's own introduction ("This is a tape diagram…", from

@@ -3,11 +3,12 @@
  *
  * In order, each shown once per student and skipped afterwards (they stay
  * on the step track, so scrubbing back still reaches them):
+ *   - VOCAB beats, one per term: the term as the headline, its meaning as
+ *     the line. Hold for Continue. They come FIRST because the skill
+ *     beat's plain explanation USES the terms (Mia, 2026-09-18).
  *   - SKILL beat (a skill's first lesson only): the child-facing name as
  *     the headline, the preamble's plain explanation as the line. Holds
  *     for a manual Continue.
- *   - VOCAB beats, one per term: the term as the headline, its meaning as
- *     the line. Hold for Continue.
  *   - PROBLEM beat: "Here's how it works on a problem like x + 8 = 21."
  *     — the first moment the lesson's equation is on screen.
  *   - REP beat (the first time this student meets a representation, in
@@ -116,6 +117,11 @@ export function introBeats(spec: IntroSpec, params: Params): IntroBeat[] {
   // the child-facing short name may template the problem's own letter
   // ("Find {variable} when something was added" over y + 38 = 85)
   const skillName = renderText(spec.skillName, params)
+  // vocabulary FIRST: the skill beat's plain explanation USES the terms
+  // ("the variable", "makes the equation true"), so they are defined
+  // before the sentence that needs them
+  for (const v of spec.vocab ?? [])
+    beats.push({ kind: 'vocab', headline: capFirst(v.term), caption: closed(v.meaning), speak: vocabSpeak(v), manual: true })
   if (spec.plain !== undefined && spec.plain !== '')
     beats.push({
       kind: 'skill',
@@ -124,8 +130,6 @@ export function introBeats(spec: IntroSpec, params: Params): IntroBeat[] {
       speak: skillSpeak(skillName, spec.plain),
       manual: true,
     })
-  for (const v of spec.vocab ?? [])
-    beats.push({ kind: 'vocab', headline: capFirst(v.term), caption: closed(v.meaning), speak: vocabSpeak(v), manual: true })
   // the problem bridge belongs to the skill's intro: it only makes sense
   // after "here's the idea", never on its own before a rep beat
   if (beats.length > 0 && spec.problem !== undefined && spec.problem.length > 0)

@@ -127,26 +127,26 @@ describe('explanation player', () => {
         onDone={() => {}}
       />,
     )
-    // the skill beat: headline where the widget will be, the plain line
-    // as the (narrated) caption, the board already set above
-    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('NEW SKILL')
-    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('Solve ax = b')
-    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Undo multiplication by dividing both sides.')
+    // vocab comes FIRST — the skill beat's plain line uses the terms.
+    // Headlines are capitalized for display; the yaml term stays lowercase
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('A TERM TO KNOW')
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('Equation')
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent(
+      'a math sentence saying two things are equal.',
+    )
     expect(widgetStage(container)).toHaveAttribute('hidden')
-    // a skill beat waits for the student — no clock, a Continue
+    // a vocab beat waits for the student — no clock, a Continue
     expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument()
     // the whole track is there: three intro pips + the four lesson steps
     expect(screen.getAllByRole('button', { name: /Go to intro/ })).toHaveLength(3)
     expect(screen.getAllByRole('button', { name: /Go to step/ })).toHaveLength(4)
 
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
-    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('A TERM TO KNOW')
-    // headlines are capitalized for display; the yaml term stays lowercase
-    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('Equation')
-    // the box shows the meaning; the headline is on screen (and spoken)
-    expect(screen.getByTestId('lesson-caption')).toHaveTextContent(
-      'a math sentence saying two things are equal.',
-    )
+    // then the skill beat: headline where the widget will be, the plain
+    // line as the (narrated) caption
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('NEW SKILL')
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('Solve ax = b')
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Undo multiplication by dividing both sides.')
     expect(screen.getByRole('button', { name: 'Continue' })).toBeInTheDocument()
 
     // the rep beat reveals the widget in its opening state, and runs on
@@ -188,8 +188,8 @@ describe('explanation player', () => {
         onDone={() => {}}
       />,
     )
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // skill → vocab
-    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // vocab → problem/rep
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // vocab → skill
+    fireEvent.click(screen.getByRole('button', { name: 'Continue' })) // skill → problem/rep
     goToStep(1, 2) // land on the opening frame
     // start line + the two problem lines — each exactly once
     expect(container.querySelectorAll('[data-line]')).toHaveLength(3)
@@ -211,7 +211,7 @@ describe('explanation player', () => {
     // scrubbing back reaches them
     expect(screen.getAllByRole('button', { name: /Go to intro/ })).toHaveLength(3)
     fireEvent.click(screen.getByRole('button', { name: 'Go to intro 1 of 3' }))
-    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Undo multiplication by dividing both sides.')
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('a math sentence saying two things are equal.')
     expect(widgetStage(container)).toHaveAttribute('hidden')
   })
 
@@ -226,7 +226,7 @@ describe('explanation player', () => {
       />,
     )
     expect(screen.getAllByRole('button', { name: /Go to intro/ })).toHaveLength(2)
-    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('Undo multiplication by dividing both sides.')
+    expect(screen.getByTestId('lesson-caption')).toHaveTextContent('a math sentence saying two things are equal.')
     cleanup()
     render(
       <LessonPlayer
@@ -242,14 +242,14 @@ describe('explanation player', () => {
   })
 
   it('intro beats SPEAK their headline, show only the line, and bridge into the problem', () => {
-    expect(skillSpeak('Find x', 'A number is hiding')).toBe('New skill: Find x. A number is hiding.')
+    expect(skillSpeak('Find x', 'The variable was added to')).toBe('New skill: Find x. The variable was added to.')
     expect(vocabSpeak({ term: 'cube', meaning: 'three equal factors!' })).toBe(
       'A term to know: cube. three equal factors!',
     )
     const beats = introBeats(
       {
         skillName: 'Find {variable}',
-        plain: 'A number is hiding.',
+        plain: 'The variable stands alone.',
         vocab: [{ term: 'cube', meaning: 'three equal factors' }],
         problem: ['x + 8 = 21'],
         rep: { name: 'tape', intro: 'This is a tape diagram.' },
@@ -258,11 +258,12 @@ describe('explanation player', () => {
       },
       { variable: 'y' },
     )
-    expect(beats.map((b) => b.kind)).toEqual(['skill', 'vocab', 'problem', 'rep'])
-    expect(beats[0]!.headline).toBe('Find y')
-    expect(beats[0]!.speak).toBe('New skill: Find y. A number is hiding.')
+    expect(beats.map((b) => b.kind)).toEqual(['vocab', 'skill', 'problem', 'rep'])
+    expect(beats[0]!.headline).toBe('Cube')
+    expect(beats[0]!.caption).toBe('three equal factors.')
+    expect(beats[1]!.headline).toBe('Find y')
+    expect(beats[1]!.speak).toBe('New skill: Find y. The variable stands alone.')
     expect(beats.map((b) => b.manual)).toEqual([true, true, false, false])
-    expect(beats[1]!.caption).toBe('three equal factors.')
     expect(beats[2]!.speak).toBe("Here's how it works with x + 8 = 21.")
     // no skill intro ⇒ no problem bridge either (it is the skill's, not the rep's)
     expect(
