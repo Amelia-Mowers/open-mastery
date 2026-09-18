@@ -10,6 +10,7 @@
  * truth and are rendered by the player. */
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react'
 import { speech } from '../tts/speech'
+import { trackLesson } from './analytics'
 import { VoiceControl, VoiceGenSpinner } from '../tts/VoiceToggle'
 import type { ReactElement } from 'react'
 import type { Explanation } from '@openmastery/schema'
@@ -519,6 +520,11 @@ export function LessonPlayer({
   tail = 'handoff',
   autoplay = true,
 }: LessonPlayerProps) {
+  // anonymous count of lessons that start playing — walkthroughs (zoo
+  // previews, post-miss worked examples) are not lesson serves
+  useEffect(() => {
+    if (kind !== 'walkthrough') trackLesson(explanation.id)
+  }, [explanation.id, kind])
   // INTRO BEATS ride in front of the timeline at negative times, over the
   // same stage and transport. Which beats are on the track: the ones that
   // are DUE (skill beats on a skill's first lesson, the rep beat the first

@@ -3,6 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { speech } from '../tts/speech'
 import type { Explanation } from '@openmastery/schema'
 import { SiteApi, type AttemptOutcome, type CairnApi, type ServerNext } from './api'
+import { trackView } from './analytics'
 import { LessonPlayer } from './LessonPlayer'
 import { ItemCard } from './ItemCard'
 import { Dashboard } from './Dashboard'
@@ -79,6 +80,22 @@ function AppInner({ apiBase = '', initialStudent, apiFactory, demoBanner }: AppP
    * or the link on the join card) */
   const [guideMode, setGuideMode] = useState(urlParam('view') === 'guide')
   const zooMode = urlParam('view') === 'zoo'
+  // anonymous view counting on the deployed demo only (see analytics.ts
+  // for the complete list of what is sent — never answers or progress)
+  const viewName = guideMode
+    ? 'guide'
+    : zooMode
+      ? urlParam('exp') !== null
+        ? `zoo/${urlParam('exp')}`
+        : 'zoo'
+      : pendingStudent !== null
+        ? 'grade'
+        : student === ''
+          ? 'join'
+          : 'student'
+  useEffect(() => {
+    trackView(viewName)
+  }, [viewName])
   // honest about the one external fetch: pre-rendered voice audio streams
   // from a public corpus; the ENGINE and all answers/progress stay local
   const banner = demoBanner === true && (
@@ -257,7 +274,8 @@ function AboutPanel() {
       </ul>
       <p className="muted">
         The demo runs entirely in your browser — no account, no server; answers and progress
-        never leave this device. Type a name below to try it as a student.{' '}
+        never leave this device. We count anonymous page views (no cookies, nothing personal).
+        Type a name below to try it as a student.{' '}
         <a href="https://github.com/Amelia-Mowers/open-mastery" target="_blank" rel="noreferrer">
           Source on GitHub
         </a>
