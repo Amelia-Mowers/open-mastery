@@ -63,6 +63,11 @@ const closed = (s: string): string => {
   return /[.!?]$/.test(t) ? t : `${t}.`
 }
 
+/** vocab HEADLINES start with a capital ("Variable", "Subtraction
+ * Property of Equality") — display only: the spoken string keeps the
+ * term's own casing so corpus keys don't churn */
+const capFirst = (s: string): string => s.charAt(0).toUpperCase() + s.slice(1)
+
 export const skillSpeak = (name: string, plain: string): string =>
   `New skill: ${closed(name)} ${closed(plain)}`
 export const vocabSpeak = (v: { term: string; meaning: string }): string =>
@@ -120,7 +125,7 @@ export function introBeats(spec: IntroSpec, params: Params): IntroBeat[] {
       manual: true,
     })
   for (const v of spec.vocab ?? [])
-    beats.push({ kind: 'vocab', headline: v.term, caption: closed(v.meaning), speak: vocabSpeak(v), manual: true })
+    beats.push({ kind: 'vocab', headline: capFirst(v.term), caption: closed(v.meaning), speak: vocabSpeak(v), manual: true })
   // the problem bridge belongs to the skill's intro: it only makes sense
   // after "here's the idea", never on its own before a rep beat
   if (beats.length > 0 && spec.problem !== undefined && spec.problem.length > 0)

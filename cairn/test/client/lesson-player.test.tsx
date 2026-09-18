@@ -141,7 +141,8 @@ describe('explanation player', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Continue' }))
     expect(screen.getByTestId('lesson-intro')).toHaveTextContent('A TERM TO KNOW')
-    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('equation')
+    // headlines are capitalized for display; the yaml term stays lowercase
+    expect(screen.getByTestId('lesson-intro')).toHaveTextContent('Equation')
     // the box shows the meaning; the headline is on screen (and spoken)
     expect(screen.getByTestId('lesson-caption')).toHaveTextContent(
       'a math sentence saying two things are equal.',
